@@ -1,7 +1,8 @@
 name: SpawnControl
 main: com.aranai.spawncontrol.SpawnControl
-version: 0.8.2
-author: Timberjaw
+version: 0.9
+author: morganm,Timberjaw
+database: true
 commands:
   setspawn:
     description: Sets the global spawn

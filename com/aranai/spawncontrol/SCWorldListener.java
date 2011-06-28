@@ -5,6 +5,8 @@ import org.bukkit.World;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 
+import com.aranai.spawncontrol.config.ConfigOptions;
+
 /**
  * Handle events for all World related events
  * @author Timberjaw
@@ -12,7 +14,6 @@ import org.bukkit.event.world.WorldLoadEvent;
 public class SCWorldListener extends WorldListener {
     private final SpawnControl plugin;
     
-
     public SCWorldListener(SpawnControl instance) {
         plugin = instance;
     }
@@ -37,8 +38,7 @@ public class SCWorldListener extends WorldListener {
     	 * Override spawn if one is available and behavior_globalspawn is enabled
     	 */
     	
-    	int db = plugin.getSetting("behavior_globalspawn");
-    	if(db != SpawnControl.Settings.GLOBALSPAWN_DEFAULT)
+    	if( plugin.getConfig().getBoolean(ConfigOptions.SETTING_WORLD_OVERRIDE, false) )
     	{
 	    	SpawnControl.log.info("[SpawnControl] Setting global spawn for '"+name+"'.");
 	    	

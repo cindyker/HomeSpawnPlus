@@ -7,7 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
 
+import com.aranai.spawncontrol.config.Config;
+import com.aranai.spawncontrol.config.ConfigOptions;
+import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 /**
@@ -16,311 +20,55 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  */
 public class SCPlayerListener extends PlayerListener {
     private final SpawnControl plugin;
-    
+    private Config config;
+    private static PermissionHandler permissionHandler;
+    private boolean isPerm3 = false;
 
     public SCPlayerListener(SpawnControl instance) {
         plugin = instance;
+        config = plugin.getConfig();
+        
+        Plugin permissionsPlugin = plugin.getServer().getPluginManager().getPlugin("Permissions");
+        String permVersion = permissionsPlugin.getDescription().getVersion();
+        if( permVersion.startsWith("3") ) {
+        	isPerm3 = true;
+        }
+        
+        permissionHandler = ((Permissions) permissionsPlugin).getHandler();
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
+    /** Get the spawn group the player is associated with.
+     * 
+     * @param p
+     * @return
+     */
+    /*
+    @SuppressWarnings("deprecation")
+	private String getPlayerSpawnGroup(Player p)
     {
-    	// Split the command in case it has parameters
-    	String[] cmd = args;
-        String commandName = command.getName().toLowerCase();
-        Player p = null;
-        
-        if(sender instanceof Player)
-        {
-        	p = (Player)sender;
-        }
+    	if( p == null )
+    		return null;
     	
-    	// Set Home
-    	if(plugin.getSetting("enable_home") == SpawnControl.Settings.YES && commandName.equals("sethome"))
-    	{
-    		String setter = p.getName();;
-    		String homeowner = setter;
-    		Location l = p.getLocation();
-    		
-    		// Check cooldown exemption and status
-    		long cooldown = this.cooldownLeft(p, "sethome");
-    		if(cooldown > 0)
-    		{
-    			p.sendMessage("Cooldown is in effect. You must wait " + cooldown + " seconds.");
-    			return true;
-    		}
-    		
-    		// Set cooldown
-    		this.setCooldown(p, "sethome");
-    		
-    		if(cmd.length > 0 && !this.canUseSetHomeProxy(p))
-    		{
-    			// User is trying to set home for another user but they don't have permission
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else if(!this.canUseSetHomeBasic(p))
-    		{
-    			// User is trying to set home but they don't have permission
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else
-    		{
-    			if(cmd.length > 0)
-    			{
-    				// Setting home for different player
-    				homeowner = cmd[0];
-    			}
-    			
-	    		if(plugin.setHome(homeowner, l, setter))
-	    		{
-	    			p.sendMessage("Home set successfully!");
-	    		}
-	    		else
-	    		{
-	    			p.sendMessage("Could not set Home!");
-	    		}
-    		}
-    		
-    		return true;
+    	String world = p.getWorld().getName();
+    	String group = null;
+    	
+    	
+    	
+    	if( isPerm3 ) {
+			User user = permissionHandler.getUserObject(world, p.getName());
+			LinkedHashSet<Entry> parents = user.getParents(world);
+			for(Entry e : parents) {
+				e.get
+			}
     	}
-    	
-    	// Home
-    	if(plugin.getSetting("enable_home") == SpawnControl.Settings.YES && commandName.equals("home"))
-    	{
-    		// Check cooldown exemption and status
-    		long cooldown = this.cooldownLeft(p, "home");
-    		if(cooldown > 0)
-    		{
-    			p.sendMessage("Cooldown is in effect. You must wait " + cooldown + " seconds.");
-    			return true;
-    		}
-    		
-    		// Set cooldown
-    		this.setCooldown(p, "home");
-    		
-    		// Send player home
-    		if(!this.canUseHomeBasic(p))
-    		{
-    			// User doesn't have access to this command
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else
-    		{
-	    		SpawnControl.log.info("[SpawnControl] Attempting to send player "+p.getName()+" to home.");
-	        	plugin.sendHome(p);
-    		}
-        	return true;
+    	else {
+    		group = permissionHandler.getGroup(p.getWorld().getName(), p.getName());
     	}
+		plugin.sendToGroupSpawn(Permissions.Security.getGroup(p.getWorld().getName(), p.getName()), p);
     	
-    	// Spawn (globalspawn)
-    	if(plugin.getSetting("enable_globalspawn") == SpawnControl.Settings.YES && (commandName.equals("spawn") || commandName.equals("globalspawn")))
-    	{
-    		// Check cooldown exemption and status
-    		long cooldown = this.cooldownLeft(p, "spawn");
-    		if(cooldown > 0)
-    		{
-    			p.sendMessage("Cooldown is in effect. You must wait " + cooldown + " seconds.");
-    			return true;
-    		}
-    		
-    		// Set cooldown
-    		this.setCooldown(p, "spawn");
-    		
-    		// Send player to spawn
-    		if(!this.canUseSpawn(p))
-    		{
-    			// User doesn't have access to this command
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else
-    		{
-    			int spawnBehavior = plugin.getSetting("behavior_spawn");
-    			String spawnType = "global";
-    			
-    			// Check permissions availability for group spawn
-    			if(spawnBehavior == SpawnControl.Settings.SPAWN_GROUP && !plugin.usePermissions)
-    			{
-    				SpawnControl.log.warning("[SpawnControl] Spawn behavior set to 'group' but group support is not available. Using global spawn.");
-    				spawnBehavior = SpawnControl.Settings.SPAWN_GLOBAL;
-    			}
-    			
-    			switch(spawnBehavior)
-    			{
-	    			case SpawnControl.Settings.SPAWN_HOME:
-						// Send player to home
-						plugin.sendHome(p);
-					break;
-    				case SpawnControl.Settings.SPAWN_GROUP:
-    					// Send player to group spawn
-    					plugin.sendToGroupSpawn(Permissions.Security.getGroup(p.getWorld().getName(), p.getName()), p);
-    				break;
-    				case SpawnControl.Settings.SPAWN_GLOBAL:
-    				default:
-    					// Send player to global spawn
-    					plugin.sendToSpawn(p);
-    				break;
-    			}
-    			
-	    		SpawnControl.log.info("[SpawnControl] Sending player "+p.getName()+" to spawn ("+spawnType+").");
-    		}
-        	return true;
-    	}
-    	
-    	// Set spawn (globalspawn)
-    	if(plugin.getSetting("enable_globalspawn") == SpawnControl.Settings.YES && (commandName.equals("setspawn") || commandName.equals("setglobalspawn")))
-    	{
-    		// Set global spawn
-    		if(!this.canUseSetSpawn(p))
-    		{
-    			// User doesn't have access to this command
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else
-    		{
-	    		SpawnControl.log.info("[SpawnControl] Attempting to set global spawn.");
-	        	if(plugin.setSpawn(p.getLocation(), p.getName()))
-	        	{
-	        		p.sendMessage("Global spawn set successfully!");
-	        	}
-	        	else
-	        	{
-	        		p.sendMessage("Could not set global spawn.");
-	        	}
-    		}
-        	return true;
-    	}
-    	
-    	// Set Group Spawn
-    	if(plugin.getSetting("enable_groupspawn") == SpawnControl.Settings.YES && commandName.equals("setgroupspawn"))
-    	{    		
-    		String group = null;
-    		
-    		// Set group spawn
-    		if(!this.canUseSetGroupSpawn(p))
-    		{
-    			// User doesn't have access to this command
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else if(!(cmd.length > 0))
-    		{
-    			// User didn't specify a group
-    			p.sendMessage("Command format: /setgroupspawn [group]");
-    		}
-    		else
-    		{
-    			group = cmd[0];
-	    		SpawnControl.log.info("[SpawnControl] Setting group spawn for '"+group+"'.");
-	        	if(plugin.setGroupSpawn(group, p.getLocation(), p.getName()))
-	        	{
-	        		p.sendMessage("Group spawn for "+group+" set successfully!");
-	        	}
-	        	else
-	        	{
-	        		p.sendMessage("Could not set group spawn for "+group+".");
-	        	}
-    		}
-        	return true;
-    	}
-    	
-    	// Group Spawn
-    	if(plugin.getSetting("enable_groupspawn") == SpawnControl.Settings.YES && commandName.equals("groupspawn"))
-    	{
-    		// Check cooldown exemption and status
-    		long cooldown = this.cooldownLeft(p, "groupspawn");
-    		if(cooldown > 0)
-    		{
-    			p.sendMessage("Cooldown is in effect. You must wait " + cooldown + " seconds.");
-    			return true;
-    		}
-    		
-    		// Set cooldown
-    		this.setCooldown(p, "groupspawn");
-    		
-    		// Send player to group spawn
-    		if(!this.canUseGroupSpawn(p))
-    		{
-    			// User doesn't have access to this command
-    			p.sendMessage("You don't have permission to do that.");
-    		}
-    		else
-    		{
-    			// Get group spawn for player
-    			String group = Permissions.Security.getGroup(p.getWorld().getName(), p.getName());
-	    		SpawnControl.log.info("[SpawnControl] Attempting to send player "+p.getName()+" to group spawn.");
-	        	plugin.sendToGroupSpawn(group, p);
-    		}
-        	return true;
-    	}
-    	
-    	// Check settings
-    	
-    	// Set setting
-    	if(commandName.equals("sc_config") && this.canUseScConfig(p))
-    	{
-    		if(cmd.length < 2)
-    		{
-    			// Command format is wrong
-    			p.sendMessage("Command format: /sc_config [setting] [value]");
-    		}
-    		else
-    		{
-	    		// Verify setting
-	    		if(!SpawnControl.validSettings.contains(cmd[0]))
-	    		{
-	    			// Bad setting key
-	    			p.sendMessage("Unknown configuration value.");
-	    		}
-	    		else
-	    		{
-	    			// Parse value
-	    			try
-	    			{
-	    				int tmpval = Integer.parseInt(cmd[1]);
-	    				
-	    				if(tmpval < 0)
-	    				{
-	    					p.sendMessage("Value must be >= 0.");
-	    				}
-	    				else
-	    				{
-	    					// Save
-	    					if(!plugin.setSetting(cmd[0], tmpval, p.getName()))
-	    					{
-	    						p.sendMessage("Could not save value for '"+cmd[0]+"'!");
-	    					}
-	    					else
-	    					{
-	    						p.sendMessage("Saved value for '"+cmd[0]+"'.");
-	    					}
-	    				}
-	    			}
-	    			catch(Exception ex)
-	    			{
-	    				// Bad number
-	    				p.sendMessage("Couldn't read value.");
-	    			}
-	    		}
-    		}
-    		return true;
-    	}
-    	
-    	// Import config
-    	if(commandName.equals("scimportconfig") && p.isOp())
-    	{
-    		SpawnControl.log.info("[SpawnControl] Attempting to import player configuration file.");
-    		plugin.importConfig();
-    		return true;
-    	}
-    	
-    	// Import group config
-    	if(commandName.equals("scimportgroupconfig") && p.isOp())
-    	{
-    		SpawnControl.log.info("[SpawnControl] Attempting to import group configuration file.");
-    		plugin.importGroupConfig();
-    		return true;
-    	}
-    	
-    	return true;
+		return null;
     }
+    */
     
     public void onPlayerJoin(PlayerJoinEvent e)
     {

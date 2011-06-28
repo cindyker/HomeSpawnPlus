@@ -1,56 +1,59 @@
 package com.aranai.spawncontrol;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.logging.*;
-import java.sql.*;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
-// Import permissions package
+import com.aranai.spawncontrol.config.Config;
+import com.aranai.spawncontrol.config.ConfigFactory;
+import com.aranai.spawncontrol.storage.Storage;
+import com.aranai.spawncontrol.storage.StorageException;
+import com.aranai.spawncontrol.storage.StorageFactory;
+import com.nijiko.permissions.PermissionHandler;
+import com.nijiko.permissions.User;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 /**
  * SpawnControl for Bukkit
  *
- * @author Timberjaw
+ * @author morganm, Timberjaw
  */
 public class SpawnControl extends JavaPlugin {
-    private final SCPlayerListener playerListener = new SCPlayerListener(this);
-    private final SCWorldListener worldListener = new SCWorldListener(this);
-    protected Connection conn;
-    public static Logger log;
-    public final static String directory = "plugins/SpawnControl";
-    public final static String db = "jdbc:sqlite:" + SpawnControl.directory + File.separator + "spawncontrol.db";
+    public static Logger log = Logger.getLogger("SpawnControl");;
     
-    // Schema version
-    public static final int SchemaVersion = 1;
+    public final static String YAML_CONFIG_ROOT_PATH = "plugins/mSpawnControl/";
+	public final static String BASE_PERMISSION_NODE = "SpawnControl";
     
-    // SQL Strings
-    protected static String SQLCreatePlayersTable = "CREATE TABLE `players` (`id` INTEGER PRIMARY KEY, `name` varchar(32) NOT NULL, "
-		+"`world` varchar(50), `x` REAL, `y` REAL, `z` REAL, `r` REAL, `p` REAL, "
-		+"`updated` INTEGER, `updated_by` varchar(32));";
-    protected static String SQLCreatePlayersIndex = "CREATE UNIQUE INDEX playerIndex on `players` (`name`,`world`);";
-    protected static String SQLCreateGroupsTable = "CREATE TABLE `groups` (`id` INTEGER PRIMARY KEY, `name` varchar(32) NOT NULL, "
-		+"`world` varchar(50), `x` REAL, `y` REAL, `z` REAL, `r` REAL, `p` REAL, "
-		+"`updated` INTEGER, `updated_by` varchar(32));";
-    protected static String SQLCreateGroupsIndex = "CREATE UNIQUE INDEX groupIndex on `groups` (`name`,`world`);";
-    
+    private Storage storage;
+ 
     // Permissions
+    @Deprecated
     public static Permissions Permissions = null;
+    
     public boolean usePermissions = false;
+    private PermissionHandler permissionHandler;
+    private Config config;
     
     // Cache variables
     private Hashtable<String,Integer> activePlayerIds;
@@ -62,213 +65,162 @@ public class SpawnControl extends JavaPlugin {
     private String lastSetting;
     private int lastSettingValue;
     
-    // Settings
-    public static final class Settings {
-    	public static final int UNSET = -1;
-    	public static final int NO = 0;
-    	public static final int YES = 1;
-    	public static final int DEATH_NONE = 0;
-    	public static final int DEATH_HOME = 1;
-    	public static final int DEATH_GROUPSPAWN = 2;
-    	public static final int DEATH_GLOBALSPAWN = 3;
-    	public static final int JOIN_NONE = 0;
-    	public static final int JOIN_HOME = 1;
-    	public static final int JOIN_GROUPSPAWN = 2;
-    	public static final int JOIN_GLOBALSPAWN = 3;
-    	public static final int GLOBALSPAWN_DEFAULT = 0;
-    	public static final int GLOBALSPAWN_OVERRIDE = 1;
-    	public static final int SPAWN_GLOBAL = 0;
-    	public static final int SPAWN_GROUP = 1;
-    	public static final int SPAWN_HOME = 2;
+    // singleton instance - not declared final as the plugin can be reloaded, and the instance
+    // will change to the new plugin.  But at most there will always be only one plugin object
+    // loaded.
+    private static SpawnControl instance;
+    
+    private final SpawnControlPlugin spawnControlPlugin;
+    private final Server server;
+    private final PluginDescriptionFile pluginDescription;
+    
+    /** Private constructor guarantees Singleton instance.
+     */
+    private SpawnControl(SpawnControlPlugin scp) {
+    	spawnControlPlugin = scp;
+    	server = scp.getServer();
+    	pluginDescription = scp.getDescription();
     }
     
-    public static final List<String> validSettings = Arrays.asList(
-    		"enable_home", "enable_groupspawn", "enable_globalspawn",
-    		"behavior_join", "behavior_death", "behavior_globalspawn", "behavior_spawn",
-    		"cooldown_home", "cooldown_sethome", "cooldown_spawn", "cooldown_groupspawn" 
-    );
-
-    public SpawnControl()
-    {
-    	super();
+    /** This CAN return null in the event the plugin is unloaded. 
+     * 
+     * @return the singleton instance or null if there is none
+     */
+    public static SpawnControl getInstance() {
+    	return instance;
     }
     
-    // Initialize database
-    private void initDB()
-    {
-    	ResultSet rs = null;
-    	Statement st = null;
-    	
-    	try
-        {
-    		Class.forName("org.sqlite.JDBC");
-        	conn = DriverManager.getConnection(db);
-        	
-        	DatabaseMetaData dbm = conn.getMetaData();
-        	
-        	// Check players table
-            rs = dbm.getTables(null, null, "players", null);
-            if (!rs.next())
-            {
-            	// Create table
-            	log.info("[SpawnControl]: Table 'players' not found, creating.");
-            	
-            	conn.setAutoCommit(false);
-                st = conn.createStatement();
-                st.execute(SpawnControl.SQLCreatePlayersTable);
-                st.execute(SpawnControl.SQLCreatePlayersIndex);
-                conn.commit();
-                
-                log.info("[SpawnControl]: Table 'players' created.");
-            }
-            
-            // Check groups table
-            rs = dbm.getTables(null, null, "groups", null);
-            if (!rs.next())
-            {
-            	// Create table
-            	log.info("[SpawnControl]: Table 'groups' not found, creating.");
-            	
-            	conn.setAutoCommit(false);
-                st = conn.createStatement();
-                st.execute(SpawnControl.SQLCreateGroupsTable);
-                st.execute(SpawnControl.SQLCreateGroupsIndex);
-                conn.commit();
-                
-                log.info("[SpawnControl]: Table 'groups' created.");
-            }
-            
-            // Check settings table
-            boolean needSettings = false;
-            rs = dbm.getTables(null, null, "settings", null);
-            if (!rs.next())
-            {
-            	// Create table
-            	needSettings = true;
-            	System.out.println("[SpawnControl]: Table 'settings' not found, creating.");
-            	
-            	conn.setAutoCommit(false);
-                st = conn.createStatement();
-                st.execute("CREATE TABLE `settings` (`setting` varchar(32) PRIMARY KEY, `value` INT, "
-                		+"`updated` INTEGER, `updated_by` varchar(32));");
-                conn.commit();
-                
-                log.info("[SpawnControl]: Table 'settings' created.");
-            }
-        	
-	        rs.close();
-	        conn.close();
-	        
-	        if(needSettings)
-	        {
-	            // Insert default settings
-		        this.setSetting("enable_home", Settings.YES, "initDB");
-		        this.setSetting("enable_groupspawn", Settings.YES, "initDB");
-		        this.setSetting("enable_globalspawn", Settings.YES, "initDB");
-		        this.setSetting("behavior_death", Settings.DEATH_GLOBALSPAWN, "initDB");
-		        this.setSetting("behavior_join", Settings.JOIN_NONE, "initDB");
-		        this.setSetting("behavior_globalspawn", Settings.GLOBALSPAWN_DEFAULT, "initDB");
-		        this.setSetting("behavior_spawn", Settings.SPAWN_GLOBAL, "initDB");
-		        this.setSetting("schema_version", SpawnControl.SchemaVersion, "initDB");
-		        this.setSetting("cooldown_home", 0, "initDB");
-		        this.setSetting("cooldown_sethome", 0, "initDB");
-		        this.setSetting("cooldown_groupspawn", 0, "initDB");
-		        this.setSetting("cooldown_spawn", 0, "initDB");
-	        }
-	        
-	        // Check schema version
-	    	int sv = this.getSetting("schema_version");
-	    	if(sv < SpawnControl.SchemaVersion)
-	    	{
-	    		SCUpdater.run(sv, this);
-	    	}
-        }
-        catch(SQLException e)
-        {
-        	// ERROR
-        	System.out.println("[initDB] DB ERROR - " + e.getMessage() + " | SQLState: " + e.getSQLState() + " | Error Code: " + e.getErrorCode());
-        }
-        catch(Exception e)
-        {
-        	// Error
-        	System.out.println("Error: " + e.getMessage());
-        	e.printStackTrace();
-        }
+    public synchronized static void createInstance(SpawnControlPlugin scp) {
+		instance = new SpawnControl(scp);
     }
-
+    
+    /** Divergent from typical singleton pattern, our singleton CAN be unloaded.
+     * 
+     */
+    public static void clearInstance() {
+    	instance = null;
+    }
+    
+    /** Returns the Config object SpawnControl is currently using.
+     * 
+     * @return
+     */
+    public Config getConfig()
+    {
+    	return config;
+    }
+    
+    public void initDB() {
+        spawnControlPlugin.initDB();
+    }
+    
+    /** Load our data from the backing data store.
+     * 
+     * @throws IOException
+     * @throws StorageException
+     */
+    public void loadDB() throws IOException, StorageException {
+        storage = StorageFactory.getInstance(StorageFactory.Type.EBEANS, this);
+        
+        // Make sure storage system is initialized
+        storage.initializeStorage();
+        
+        // TODO: possibly pre-cache the data here later
+    }
+    
+    /** Initialize permission system.
+     * 
+     */
+    private void initPerm() {
+        Plugin permissionsPlugin = server.getPluginManager().getPlugin("Permissions");
+        if( permissionsPlugin != null )
+        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+        else
+	    	log.warning("[SpawnControl] Permissions system not enabled, using isOP instead.");
+    }
+    
     public void onEnable() {
+    	boolean loadError = false;
+    	
     	log = Logger.getLogger("Minecraft");
     	
-    	// Initialize active player ids and homes
-        this.activePlayerIds = new Hashtable<String,Integer>();
-        this.homes = new Hashtable<Integer,Location>();
-        
-        // Initialize active group ids and group spawns
-        this.activeGroupIds = new Hashtable<String,Integer>();
-        this.groupSpawns = new Hashtable<Integer,Location>();
-        
-        // Initialize respawn list
-        this.respawning = new Hashtable<String,Boolean>();
-        
-        // Initialize cooldown list
-        this.cooldowns = new Hashtable<String,Long>();
-        
-        // Initialize last setting info
-        this.lastSetting = "";
-        this.lastSettingValue = -1;
-    	
-    	// Make sure we have a local folder for our database and such
-        if (!new File(directory).exists()) {
-            try {
-                (new File(directory)).mkdir();
-            } catch (Exception e) {
-                SpawnControl.log.log(Level.SEVERE, "[SpawnControl]: Unable to create spawncontrol/ directory.");
-            }
-        }
-        
-        // Initialize the database
-        this.initDB();
-        
-        // Initialize permissions system
-    	Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-
-    	if(SpawnControl.Permissions == null) {
-    	    if(test != null) {
-    	    	SpawnControl.Permissions = (Permissions)test;
-    	    	this.usePermissions = true;
-    	    } else {
-    	    	log.warning("[SpawnControl] Permissions system not enabled, using isOP instead.");
-    	    }
+    	// load our configuration and database
+    	try {
+    		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
+    		
+            this.loadDB();
     	}
+    	catch(Exception e) {
+    		loadError = true;
+    		log.severe("Error loading plugin: "+pluginDescription.getName());
+    		e.printStackTrace();
+    	}
+    	
+    	if( loadError ) {
+    		log.severe("Error detected when loading plugin "+ pluginDescription.getName() +", plugin shutting down.");
+    		server.getPluginManager().disablePlugin(spawnControlPlugin);
+    		return;
+    	}
+    	
+    	initPerm();
+    	
+        PluginManager pm = server.getPluginManager();
+    	SCPlayerListener playerListener = new SCPlayerListener(this);
         
-        // Register our events
-        PluginManager pm = getServer().getPluginManager();
+    	// Register our events
+        pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, spawnControlPlugin);
+        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, spawnControlPlugin);
+        pm.registerEvent(Event.Type.WORLD_LOAD, new SCWorldListener(this), Priority.Monitor, spawnControlPlugin);
         
-        // Get player join
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
-        
-        // Get player respawn
-        pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, this);
-        
-        // Get world load
-        pm.registerEvent(Event.Type.WORLD_LOAD, worldListener, Priority.Monitor, this);
-        
-        // Enable message
-        PluginDescriptionFile pdfFile = this.getDescription();
-        log.info( "[SpawnControl] version [" + pdfFile.getVersion() + "] loaded" );
+        log.info( "["+pluginDescription.getName()+"] version [" + pluginDescription.getVersion() + "] loaded" );
     }
     
     public void onDisable() {
-        // Disable message
-    	PluginDescriptionFile pdfFile = this.getDescription();
-    	log.info( "[SpawnControl] version [" + pdfFile.getVersion() + "] unloaded" );
+    	log.info( "[SpawnControl] version [" + pluginDescription.getVersion() + "] unloaded" );
     }
     
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-    	return this.playerListener.onCommand(sender, command, commandLabel, args);
+    /** Return true if the given player has access to the given permission node.
+     * 
+     * @param p
+     * @param permissionNode
+     * @return
+     */
+    public boolean hasPermission(Player p, String permissionNode) {
+    	return permissionHandler.has(p, permissionNode);
     }
     
+	/** Utility method for making sure a cooldown is available before we execute a
+	 * command.  If the cooldown is available, this will update the cooldown to the current
+	 * time (thus starting the cooldown).
+	 * 
+	 * It also writes a message to the player letting them know they are still in cooldown.
+	 * 
+	 * @param p
+	 * @param cooldownName
+	 * @return true if cooldown is available, false if currently in cooldown period
+	 */
+	public boolean cooldownCheck(Player p, String cooldownName) {
+		/*
+		HashMap<String, Long> playerCooldowns = cooldowns.get(playerName);
+		if( playerCooldowns == null ) {
+			playerCooldowns = new HashMap<String, Long>();
+			cooldowns.put(playerName, playerCooldowns);
+		}
+		
+		long cooldownTimeLeft = playerCooldowns.get(cooldown);
+		*/
+		
+		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
+		if(cooldownTimeLeft > 0)
+		{
+			p.sendMessage("Cooldown is in effect. You must wait " + cooldownTimeLeft + " seconds.");
+			return true;
+		}
+		
+		setCooldown(p, cooldownName);
+		return false;
+	}
+	
     // Get timestamp
     public int getTimeStamp()
     {
@@ -533,6 +485,25 @@ public class SpawnControl extends JavaPlugin {
         }
         
         return success;
+    }
+
+    /** For any defined spawn groups we have setup, check to see if if the given
+     * Player is in any of them.
+     * 
+     * @param world
+     * @param playerName
+     * @return the spawn group the player is in or null if none
+     */
+    public String getSpawnGroupName(String world, String playerName)
+    {
+    	User user = permissionHandler.getUserObject(world, playerName);
+    	for(String group : activeGroupIds.keySet()) {
+    		if( user.inGroup(world, group) )
+    			return group;
+    	}
+    	
+    	// if we make it here, the user is not in any of our defined spawn groups
+    	return null;
     }
     
     // Get group spawn

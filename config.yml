@@ -1,0 +1,10 @@
+enabledCommands:
+  home: true
+  sethome: true
+  spawn: true
+  setspawn: true
+  groupspawn: true
+  setgroupspawn: true
+spawn:
+  behavior: global
+  override_world: true

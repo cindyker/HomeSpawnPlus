@@ -17,6 +17,10 @@ import com.aranai.spawncontrol.entity.Spawn;
 /** This is just a basic shell that handles setting up the SpawnControl singleton
  * instance and dealing with Bukkit-related overrides and methods.
  * 
+ * This also guarantees various methods of JavaPlugin aren't being used randomly throughout
+ * the app (since this object is never referenced or passed), ensuring higher portability
+ * during future Bukkit upgrades.
+ * 
  * @author morganm
  *
  */

@@ -3,6 +3,7 @@
  */
 package com.aranai.spawncontrol.storage;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -46,7 +47,7 @@ public class StorageEBeans implements Storage {
             db.find(Spawn.class).findRowCount();
         } catch (PersistenceException ex) {
             log.info("Installing database for "
-                    + plugin.getDescription().getName()
+                    + plugin.getPluginName()
                     + " due to first time usage");
             plugin.initDB();
         }
@@ -94,6 +95,26 @@ public class StorageEBeans implements Storage {
 		query.setParameter("group", group);
 		
 		return query.findUnique();
+	}
+
+	/* We make the assumption that there are relatively few spawns and group combinations,
+	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
+	 * them for the valid group list.
+	 * 
+	 * (non-Javadoc)
+	 * @see com.aranai.spawncontrol.storage.Storage#getSpawnDefinedGroups()
+	 */
+	public Set<String> getSpawnDefinedGroups() {
+		Set<String> groups = new HashSet<String>();
+		Set<Spawn> spawns = getAllSpawns();
+		
+		for(Spawn spawn : spawns) {
+			String group = spawn.getGroup();
+			if( group != null )
+				groups.add(group);
+		}
+		
+		return groups;
 	}
 
 	/* (non-Javadoc)

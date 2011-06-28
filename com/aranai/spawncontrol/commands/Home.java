@@ -20,7 +20,7 @@ public class Home extends BaseCommand
 			return true;
 
 		SpawnControl.log.info("[SpawnControl] Attempting to send player "+p.getName()+" to home.");
-		plugin.sendHome(p);
+		util.sendHome(p);
 		
 		return true;
 	}

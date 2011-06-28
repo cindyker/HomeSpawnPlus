@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import com.aranai.spawncontrol.SpawnControl;
 import com.aranai.spawncontrol.command.BaseCommand;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 /**
  * @author morganm
@@ -22,9 +21,8 @@ public class GroupSpawn extends BaseCommand
 			return true;
 		
 		// Get group spawn for player
-		String group = Permissions.Security.getGroup(p.getWorld().getName(), p.getName());
-		SpawnControl.log.info("[SpawnControl] Attempting to send player "+p.getName()+" to group spawn.");
-		plugin.sendToGroupSpawn(group, p);
+		SpawnControl.log.info(SpawnControl.logPrefix + " Attempting to send player "+p.getName()+" to group spawn.");
+		util.sendToGroupSpawn(p);
 		
 		return true;
 	}

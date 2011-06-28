@@ -1,10 +1,73 @@
+spawn:
+  # The default world.  This world is used anywhere you see "global spawn" referenced below
+  # and also in the event all else fails (no home set, no spawn set in current world, etc),
+  # a player will be sent to the spawn in whatever world you define here.
+  defaultWorld: world
+
+  # Controls spawn behavior of players when they connect to the server.
+  # (note all of these are relative to whatever world the player lost logged out in)
+  #
+  #   default = player logs in wherever they last logged out at
+  #   home = player always logs in at home 
+  #   group = player always logs in at their group spawn
+  #   world = player always logs in at the spawn of the world they last logged out at
+  #   global = player always logs in at the global spawn
+  # 
+  onjoin: default
+
+  # Controls respawn behavior of players when they die.
+  # (note all of these are relative to whatever world the player dies in)
+  #
+  #   default = player will respawn wherever Bukkit sends them (usually spawn of current world, should be same as 'world' below)
+  #     However, this is a good way to disable this plugin from handling ondeath events in case you have another plugin handling
+  #     these events that you prefer to use.
+  #   home = player will spawn in world they died in, first trying their home (if set), then defaulting to that worlds spawn
+  #   multihome = same as home, except if player has no home set in current world, it will take them to their home in default world
+  #   group = player will spawn at current world group spawn
+  #   world = player will spawn at the current world spawn
+  #   global = player always respawns at the global spawn (default world)
+  ondeath: home
+
+  # Controls behavior when the /spawn command is used.
+  # (note all of these are keyed by whatever world the player is in when they run the command)
+  #
+  #   world = player is sent to the current world spawn
+  #   group = player is sent to their group spawn in the current world
+  #   home = identical to ondeath.home
+  #   global = player is sent to the global spawn (default world)
+  oncommand: world
+
+  # set to true to enable group spawn functionality.  When set, you can use the /setgroupspawn [group]
+  # command to set spawns for specific groups.  Maybe useful for RPG classes, PvP factions, whatever.
+  groups: false
+
+  # set to true if you want plugin to change the spawn of the actual map (ie. even if you turn this plugin
+  # off later, whatever default spawn you set in various worlds will stay)
+  override_world: true
+
+# you can globally enable/disable individual commands here.
+# permissions for each command are: SpawnControl.command.<commandName>.use
+# for example to let players use "/home", you would give them SpawnControl.command.home.use
+# Some commands have sub-permissions as documented below.
+#
+# All commands can have cooldowns and you can define global cooldowns below, or specific
+# cooldowns for a group using permissions. Cooldown permissions are:
+#   SpawnControl.command.<commandName>.cooldown.#
+#   SpawnControl.command.CooldownExempt.<commandName>   - or can use * to be exempt from all cooldowns
 enabledCommands:
+  # sub-permission: SpawnControl.command.home.others - can teleport to others homes
   home: true
+  # sub-permission: SpawnControl.command.sethome.others - can change other peoples homes
   sethome: true
   spawn: true
   setspawn: true
   groupspawn: true
   setgroupspawn: true
-spawn:
-  behavior: global
-  override_world: true
+
+# cooldowns for various commands can be defined here (these are used if no group-specific
+# cooldown permissions are found)
+cooldowns:
+  home: 120
+  spawn: 120
+  setspawn: 0
+  groupspawn: 0

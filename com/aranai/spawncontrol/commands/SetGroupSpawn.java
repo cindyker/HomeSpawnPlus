@@ -27,15 +27,9 @@ public class SetGroupSpawn extends BaseCommand
 		}
 		else {
 			group = args[0];
-			SpawnControl.log.info("[SpawnControl] Setting group spawn for '"+group+"'.");
-			if(plugin.setGroupSpawn(group, p.getLocation(), p.getName()))
-			{
-				p.sendMessage("Group spawn for "+group+" set successfully!");
-			}
-			else
-			{
-				p.sendMessage("Could not set group spawn for "+group+".");
-			}
+			SpawnControl.log.info(SpawnControl.logPrefix + " Setting group spawn for '"+group+"'.");
+			util.setGroupSpawn(group, p.getLocation(), p.getName());
+			p.sendMessage("Group spawn for "+group+" set successfully!");
 		}
 		
 		return true;

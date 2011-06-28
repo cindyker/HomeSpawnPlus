@@ -13,9 +13,11 @@ import com.aranai.spawncontrol.config.ConfigOptions;
  */
 public class SCWorldListener extends WorldListener {
     private final SpawnControl plugin;
+    private final SpawnUtils util;
     
     public SCWorldListener(SpawnControl instance) {
         plugin = instance;
+        util = plugin.getSpawnUtils();
     }
     
     public void onWorldLoad(WorldLoadEvent event)
@@ -23,15 +25,10 @@ public class SCWorldListener extends WorldListener {
     	World w = event.getWorld();
     	String name = w.getName();
     	
-    	/*
-    	 * Set spawn if one has not yet been set (new world)
-    	 */
-    	
-    	if(!plugin.getGroupData("scglobal", w))
-		{
-			// No spawn set, use world spawn location
-			SpawnControl.log.info("[SpawnControl]: No global spawn found, setting global spawn to world spawn.");
-			plugin.setGroupSpawn("scglobal", w.getSpawnLocation(), "onWorldLoaded");
+    	//  Set spawn if one has not yet been set (new world)
+    	if( util.getSpawn(w.getName()) == null ) {
+			SpawnControl.log.info(SpawnControl.logPrefix + " No global spawn found, setting global spawn to world spawn.");
+			util.setSpawn(w.getSpawnLocation(), "onWorldLoad");
 		}
     	
     	/*
@@ -42,7 +39,7 @@ public class SCWorldListener extends WorldListener {
     	{
 	    	SpawnControl.log.info("[SpawnControl] Setting global spawn for '"+name+"'.");
 	    	
-	    	Location spawn = plugin.getSpawn(w);
+	    	Location spawn = util.getSpawn(w.getName());
 	    	
 	    	if(spawn != null)
 	    	{
@@ -52,7 +49,7 @@ public class SCWorldListener extends WorldListener {
 	    	else
 	    	{
 	    		// No spawn available
-	    		SpawnControl.log.info("[SpawnControl] No spawn available for '"+name+"'!");
+	    		SpawnControl.log.info(SpawnControl.logPrefix + " No spawn available for '"+name+"'!");
 	    	}
     	}
     }

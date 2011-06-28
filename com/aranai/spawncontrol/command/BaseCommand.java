@@ -5,7 +5,9 @@ package com.aranai.spawncontrol.command;
 
 import org.bukkit.entity.Player;
 
+import com.aranai.spawncontrol.CooldownManager;
 import com.aranai.spawncontrol.SpawnControl;
+import com.aranai.spawncontrol.SpawnUtils;
 import com.aranai.spawncontrol.config.ConfigOptions;
 
 /** Abstract class that takes care of some routine tasks for commands, to keep those
@@ -17,6 +19,8 @@ import com.aranai.spawncontrol.config.ConfigOptions;
 public abstract class BaseCommand implements Command {
 
 	protected SpawnControl plugin;
+	protected SpawnUtils util;
+	private CooldownManager cooldownManager;
 	private boolean enabled;
 	private String permissionNode;
 	private String commandName;
@@ -28,6 +32,8 @@ public abstract class BaseCommand implements Command {
 	 */
 	public Command setPlugin(SpawnControl plugin) {
 		this.plugin = plugin;
+		this.util = plugin.getSpawnUtils();
+		this.cooldownManager = plugin.getCooldownManager();
 		enabled = plugin.getConfig().getBoolean(getEnabledConfigFlag(), Boolean.FALSE);
 		return this;
 	}
@@ -92,7 +98,7 @@ public abstract class BaseCommand implements Command {
 	}
 	
 	protected boolean cooldownCheck(Player p) {
-		return plugin.cooldownCheck(p, getCommandName());
+		return cooldownManager.cooldownCheck(p, getCommandName());
 	}
 
 	/** Return true if the player has permission to run this command.  If they

@@ -14,7 +14,8 @@ import com.aranai.spawncontrol.SpawnControl;
 public class StorageFactory {
 	public static enum Type
 	{
-		EBEANS
+		EBEANS,
+		CACHED_EBEANS
 	}
 	
 	public static Storage getInstance(Type storageType, SpawnControl plugin)
@@ -22,6 +23,9 @@ public class StorageFactory {
 	{
 		if ( storageType == Type.EBEANS ) {
 			return new StorageEBeans(plugin);
+		}
+		else if( storageType == Type.CACHED_EBEANS ) {
+			return new StorageCache(new StorageEBeans(plugin));
 		}
 		else {
 			throw new StorageException("Unable to create Storage interface.");

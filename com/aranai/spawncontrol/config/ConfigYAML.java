@@ -28,7 +28,6 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.fillr.Updater;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -73,16 +72,9 @@ public class ConfigYAML extends ConfigYAMLNode implements Config {
      * @param config
      * @return
      */
+    /*
     public static Config load(String config) {
         File file = new File(ModuleLoader.ROOT_PATH + config);
-
-        /*
-        // if it does not exist, attempt to download it if possible :-)
-        if (!file.exists()) {
-            Updater updater = LWC.getInstance().getPlugin().getUpdater();
-            updater.downloadConfig(config);
-        }
-        */
 
         ConfigYAML configuration = new ConfigYAML(file);
         configuration.load();
@@ -90,6 +82,7 @@ public class ConfigYAML extends ConfigYAMLNode implements Config {
 
         return configuration;
     }
+    */
 
     /**
      * Loads the configuration file. All errors are thrown away.

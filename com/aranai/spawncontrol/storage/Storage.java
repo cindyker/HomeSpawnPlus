@@ -27,6 +27,8 @@ public interface Storage {
 	public Spawn getSpawn(String world);
 	public Spawn getSpawn(String world, String group);
 	
+	public Set<String> getSpawnDefinedGroups();
+	
 	public Set<Home> getAllHomes();
 	public Set<Spawn> getAllSpawns();
 	

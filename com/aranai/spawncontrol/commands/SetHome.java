@@ -36,10 +36,8 @@ public class SetHome extends BaseCommand
 		if(args.length > 0)
 			homeowner = args[0];
 
-		if(plugin.setHome(homeowner, l, setter))
-			p.sendMessage("Home set successfully!");
-		else
-			p.sendMessage("Could not set Home!");
+		util.setHome(homeowner, l, setter);
+		p.sendMessage("Home set successfully!");
 
 		return true;
 	}

@@ -46,4 +46,16 @@ public interface Config {
      * @return string or default
      */
     public String getString(String path, String def);
+    
+    /**
+     * Gets an integer at a location. This will either return an integer
+     * or the default value. If the object at the particular location is not
+     * actually a integer, the default value will be returned. However, other
+     * number types will be casted to an integer.
+     *
+     * @param path path to node (dot notation)
+     * @param def  default value
+     * @return int or default
+     */
+    public int getInt(String path, int def);
 }

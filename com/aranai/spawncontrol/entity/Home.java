@@ -8,8 +8,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
+import com.aranai.spawncontrol.SpawnControl;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -33,6 +38,10 @@ public class Home {
     
     @NotEmpty
     @Length(max=32)
+    private String updatedBy;
+    
+    @NotEmpty
+    @Length(max=32)
 	private String world;
     
     @NotEmpty
@@ -41,6 +50,34 @@ public class Home {
     private double y;
     @NotEmpty
     private double z;
+    
+    @Transient
+    private transient Location location;
+    
+    public Home() {}
+    
+    /** Create a new Home object given the player and location.
+     * 
+     * @param playerName
+     * @param l
+     */
+    public Home(String playerName, Location l, String updatedBy) {
+    	setPlayerName(playerName);
+    	setWorld(l.getWorld().getName());
+    	setX(l.getX());
+    	setY(l.getY());
+    	setZ(l.getZ());
+    	setUpdatedBy(updatedBy);
+    }
+    
+    public Location getLocation() {
+    	if( location == null ) {
+	    	World w = SpawnControl.getInstance().getServer().getWorld(world);
+	    	location = new Location(w, x, y, z);
+    	}
+    	
+    	return location;
+    }
     
 	public int getId() {
 		return id;
@@ -77,5 +114,13 @@ public class Home {
 	}
 	public void setZ(double z) {
 		this.z = z;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 }

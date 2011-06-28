@@ -22,13 +22,9 @@ public class SetSpawn extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-		SpawnControl.log.info("[SpawnControl] Attempting to set global spawn.");
-		if(plugin.setSpawn(p.getLocation(), p.getName())) {
-			p.sendMessage("Global spawn set successfully!");
-		}
-		else {
-			p.sendMessage("Could not set global spawn.");
-		}
+		SpawnControl.log.info(SpawnControl.logPrefix + " Attempting to set global spawn.");
+		util.setSpawn(p.getLocation(), p.getName());
+		p.sendMessage("Global spawn set successfully!");
 		
 		return true;
 	}

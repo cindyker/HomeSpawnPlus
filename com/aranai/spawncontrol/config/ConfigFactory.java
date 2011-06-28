@@ -29,7 +29,7 @@ public class ConfigFactory {
 	 * @throws IOException
 	 */
 	public static Config getInstance(Type storageType, SpawnControl plugin, Object arg1)
-	throws StorageException, IOException
+	throws ConfigException, IOException
 {
 	if ( storageType == Type.YAML ) {
 		if( arg1 instanceof File )

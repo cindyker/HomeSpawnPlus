@@ -1,5 +1,5 @@
-name: SpawnControl
-main: com.aranai.spawncontrol.SpawnControl
+name: mSpawnControl
+main: com.aranai.spawncontrol.SpawnControlPlugin
 version: 0.9
 author: morganm,Timberjaw
 database: true

@@ -3,6 +3,7 @@
  */
 package com.aranai.spawncontrol.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +18,7 @@ import org.bukkit.World;
 import com.aranai.spawncontrol.SpawnControl;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;
+import com.avaje.ebean.validation.NotNull;
 
 /**
  * @author morganm
@@ -26,7 +28,7 @@ import com.avaje.ebean.validation.NotEmpty;
 @Table(name="MSC_Spawn",
 		uniqueConstraints={
 			@UniqueConstraint(columnNames={"name"}),
-			@UniqueConstraint(columnNames={"world", "group"})
+			@UniqueConstraint(columnNames={"world", "group_name"})
 		}
 )
 public class Spawn {
@@ -49,13 +51,14 @@ public class Spawn {
     /* Optional group associated with this spawn.
      */
     @Length(max=32)
+    @Column(name="group_name")
 	private String group;
     
-    @NotEmpty
+    @NotNull
     private double x;
-    @NotEmpty
+    @NotNull
     private double y;
-    @NotEmpty
+    @NotNull
     private double z;
     
     @Transient

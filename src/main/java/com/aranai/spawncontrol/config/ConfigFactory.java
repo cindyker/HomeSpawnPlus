@@ -34,8 +34,12 @@ public class ConfigFactory {
 	if ( storageType == Type.YAML ) {
 		if( arg1 instanceof File )
 			return new ConfigYAML((File) arg1);
-		else
-			throw new ConfigException("Unable to create Config interface: invalid YAML config file argument");
+		else if( arg1 instanceof String ) {
+			File file = new File((String) arg1);
+			return new ConfigYAML(file);
+		}
+			
+		throw new ConfigException("Unable to create Config interface: invalid YAML config file argument");
 	}
 	else {
 		throw new ConfigException("Unable to create Config interface.");

@@ -17,7 +17,7 @@ public class GroupSpawn extends BaseCommand
 {
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
-		if( defaultCommandChecks(p) )
+		if( !defaultCommandChecks(p) )
 			return true;
 		
 		// Get group spawn for player

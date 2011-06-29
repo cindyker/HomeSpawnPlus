@@ -5,6 +5,8 @@ package com.aranai.spawncontrol.command;
 
 import org.bukkit.entity.Player;
 
+import com.aranai.spawncontrol.SpawnControl;
+
 /**
  * @author morganm
  *
@@ -31,4 +33,6 @@ public interface Command {
 	 * @return
 	 */
 	public boolean isEnabled();
+	
+	public Command setPlugin(SpawnControl plugin);
 }

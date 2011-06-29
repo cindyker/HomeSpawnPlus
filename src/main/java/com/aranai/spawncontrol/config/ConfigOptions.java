@@ -9,7 +9,7 @@ package com.aranai.spawncontrol.config;
  */
 public interface ConfigOptions {
 	public static final String DEFAULT_WORLD = "spawn.defaultWorld";
-	public static final String COMMAND_TOGGLE_BASE = "enabledCommands";
+	public static final String COMMAND_TOGGLE_BASE = "disabledCommands.";
 	
 //	public static final String ENABLE_HOME = "enable_home";
 //	public static final String ENABLE_GLOBAL_SPAWN = "enable_globalspawn";

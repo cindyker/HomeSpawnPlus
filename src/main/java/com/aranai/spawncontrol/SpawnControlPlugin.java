@@ -18,8 +18,8 @@ import com.aranai.spawncontrol.entity.Spawn;
  * instance and dealing with Bukkit-related overrides and methods.
  * 
  * This also guarantees various methods of JavaPlugin aren't being used randomly throughout
- * the app (since this object is never referenced or passed), ensuring higher portability
- * during future Bukkit upgrades.
+ * the app (since this object is never referenced or passed outside of SpawnControl), ensuring
+ * higher portability during future Bukkit upgrades.
  * 
  * @author morganm
  *

@@ -3,6 +3,7 @@
  */
 package com.aranai.spawncontrol.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +18,7 @@ import org.bukkit.World;
 import com.aranai.spawncontrol.SpawnControl;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;
+import com.avaje.ebean.validation.NotNull;
 
 /**
  * @author morganm
@@ -25,7 +27,7 @@ import com.avaje.ebean.validation.NotEmpty;
 @Entity()
 @Table(name="MSC_Home",
 		uniqueConstraints=
-			@UniqueConstraint(columnNames={"world", "playerName"})
+			@UniqueConstraint(columnNames={"world", "player_name"})
 )
 public class Home {
     @Id
@@ -34,6 +36,7 @@ public class Home {
     
     @NotEmpty
     @Length(max=32)
+    @Column(name="player_name")
     private String playerName;
     
     @NotEmpty
@@ -44,11 +47,11 @@ public class Home {
     @Length(max=32)
 	private String world;
     
-    @NotEmpty
+    @NotNull
     private double x;
-    @NotEmpty
+    @NotNull
     private double y;
-    @NotEmpty
+    @NotNull
     private double z;
     
     @Transient

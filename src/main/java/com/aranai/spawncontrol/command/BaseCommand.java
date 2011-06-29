@@ -34,7 +34,7 @@ public abstract class BaseCommand implements Command {
 		this.plugin = plugin;
 		this.util = plugin.getSpawnUtils();
 		this.cooldownManager = plugin.getCooldownManager();
-		enabled = plugin.getConfig().getBoolean(getEnabledConfigFlag(), Boolean.FALSE);
+		enabled = !plugin.getConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
 		return this;
 	}
 	
@@ -45,7 +45,7 @@ public abstract class BaseCommand implements Command {
 		return enabled;
 	}
 	
-	protected String getEnabledConfigFlag() {
+	protected String getDisabledConfigFlag() {
 		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
 	}
 	

@@ -235,13 +235,9 @@ public class SpawnUtils {
     	}
     	
     	// first, try to get the default spawn based upon the config 
-		String configDefaultWorldName = plugin.getConfig().getString(ConfigOptions.DEFAULT_WORLD);
+		String configDefaultWorldName = plugin.getConfig().getString(ConfigOptions.DEFAULT_WORLD, "world");
 		World world = server.getWorld(configDefaultWorldName);
 		
-		// if that didn't work, try world "world"
-		if( world == null )
-			world = server.getWorld("world");
-
 		// if that didn't work, just get the first world that Bukkit has in it's list
 		if( world == null )
 			world = server.getWorlds().get(0);

@@ -3,6 +3,7 @@
  */
 package com.aranai.spawncontrol;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -48,10 +49,10 @@ public class SpawnUtils {
     		return;
     	
     	// try the home they have set for this world
-		Location l = getHome(p.getName(), p.getWorld());
+		Home home = getHome(p.getName(), p.getWorld());
 		
-		if( l != null )
-	    	p.teleport(l);
+		if( home != null )
+	    	p.teleport(home.getLocation());
 		else
 			sendToSpawn(p);					// if no home is set, send them to spawn
     }
@@ -262,18 +263,59 @@ public class SpawnUtils {
     /** Return the home location of the given player and world.
      * 
      * @param playerName
+     * @param worldName
+     * @return the home location or null if no home is set
+     */
+    public Home getHome(String playerName, String worldName)
+    {
+    	return plugin.getStorage().getHome(worldName, playerName);
+    }
+    /** Return the home location of the given player and world.
+     * 
+     * @param playerName
      * @param world
      * @return the home location or null if no home is set
      */
-    public Location getHome(String playerName, World world)
-    {
-    	Location l = null;
+    public Home getHome(String playerName, World world) {
+    	return getHome(playerName, world.getName());
+    }
+    
+    /** Look for a partial name match for a home on a given world
+     * 
+     * @param playerName
+     * @param worldName
+     * @return the Home object or null if none found
+     */
+    public Home getBestMatchHome(String playerName, String worldName) {
+    	Set<Home> homes = plugin.getStorage().getAllHomes();
     	
-    	Home home = plugin.getStorage().getHome(world.getName(), playerName);
-    	if( home != null )
-    		l = home.getLocation();
+    	// first find any possible homes based on the input
+    	ArrayList<Home> possibles = new ArrayList<Home>();
+    	for(Home home : homes) {
+    		String homeOwner = home.getPlayerName();
+    		if( homeOwner.contains(playerName) ) {
+    			possibles.add(home);
+    		}
+    	}
     	
-    	return l;
+    	if( possibles.size() == 1 )
+    		return possibles.get(0);
+    	
+    	Home bestMatch = null;
+    	// now find the best match out of all the possibilities.  Could have fancier algorithm later,
+    	// but for now it just returns the first name it finds that startswith the player input.
+    	for(Home home : possibles) {
+    		String homeOwner = home.getPlayerName();
+    		if( homeOwner.startsWith(playerName) ) {
+    			bestMatch = home;
+    			break;
+    		}
+    	}
+    	// still no match out of the possibilities?  just take the first one on the list
+    	if( bestMatch == null )
+    		bestMatch = possibles.get(0);
+    	
+    	return bestMatch;
     }
     
     // Get group spawn

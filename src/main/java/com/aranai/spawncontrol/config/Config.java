@@ -3,16 +3,26 @@
  */
 package com.aranai.spawncontrol.config;
 
-/** Our configuration which determines how a number of things about how the mod operates.
- * Intended to be used with ConfigOptions class for setting names, which keeps the interface
- * fairly generic and flexible and still allows for different implementations (ie. YAML, SQL,
- * properties, etc).
+/** Our configuration which determines how a number of things about how this mod operates.
+ * Intended to be used with ConfigOptions class for setting nodes as String keys.
  * 
  * @author morganm
  *
  */
 public interface Config {
+	/** Should be called after the config option is created to allow it to do any loading
+	 * it needs to do.
+	 * 
+	 * @throws ConfigException
+	 */
 	public void load() throws ConfigException;
+	
+	/** Should be called whenever the config options change and you want them serialized
+	 * out to the backing store.
+	 * 
+	 * @throws ConfigException
+	 */
+	public boolean save() throws ConfigException;
 	
     /**
      * Gets a boolean for a given node. This will either return an boolean

@@ -1,0 +1,18 @@
+To Build:
+  The easiest way to build this project is to use Apache ant, all you have to do is type "ant" in the project directory and you'll get a working JAR in the "dist/" directory.
+
+  But first, you need to download the 3 dependencies and put them into the "lib/" directory:
+    * craftbukkit-0.0.1-SNAPSHOT.jar    (tested with #935)
+    * Permission.jar                    (tested with version 3.x) 
+    * sqllite.jar                       - this is only required for the SpawnControl Converter. If you won't use this, feel free to delete the class and then you don't need this JAR. Most people have a copy of this laying around in their minecraft server lib directory already.
+
+
+Notable enhancements beyond SpawnControl:
+
+  Uses Bukkit persistence, so can be configured to use sqlLite or MySQL in your bukkit.yml
+  spawn/home save player direction, so they are restored pointing exactly the way you set them
+  separate config.yml for setting options
+  Can set per-world home
+  Can now set death spawn to always be same-world, preferring home first (if set on that world),
+    then group spawn (if exists), then world spawn
+  Added ability & permissions for teleporting to other peoples homes

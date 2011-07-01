@@ -20,7 +20,7 @@ public abstract class BaseCommand implements Command {
 
 	protected SpawnControl plugin;
 	protected SpawnUtils util;
-	private CooldownManager cooldownManager;
+	protected CooldownManager cooldownManager;
 	private boolean enabled;
 	private String permissionNode;
 	private String commandName;
@@ -97,6 +97,11 @@ public abstract class BaseCommand implements Command {
 		return null;
 	}
 	
+	/** check the default command cooldown for the player
+	 * 
+	 * @param p
+	 * @return true if cooldown is available, false if currently in cooldown period
+	 */
 	protected boolean cooldownCheck(Player p) {
 		return cooldownManager.cooldownCheck(p, getCommandName());
 	}

@@ -1,5 +1,5 @@
 name: mSpawnControl
-main: com.aranai.spawncontrol.SpawnControlPlugin
+main: com.aranai.spawncontrol.SpawnControl
 version: 0.9
 author: morganm,Timberjaw
 database: true
@@ -43,4 +43,7 @@ commands:
     usage: /<command>  
   scimportgroupconfig:
     description: Imports group spawns from SpawnControl hMod
+    usage: /<command>
+  convert:
+    description: Load and convert data from another data store
     usage: /<command>

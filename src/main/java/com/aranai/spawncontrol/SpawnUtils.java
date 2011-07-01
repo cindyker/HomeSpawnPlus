@@ -27,6 +27,8 @@ import com.nijiko.permissions.User;
  */
 public class SpawnUtils {
 	private static final Logger log = SpawnControl.log;
+	private static final String MSC_WORLD_SPAWN_GROUP = "MSC_GLOBAL";
+	
 	private final String logPrefix = SpawnControl.logPrefix;
 
 	private final SpawnControl plugin;
@@ -155,9 +157,7 @@ public class SpawnUtils {
 		// if we get an object back, we already have a Home set for this player/world combo, so we
 		// just update the x/y/z location of it.
     	if( home != null ) {
-    		home.setX(l.getX());
-			home.setY(l.getY());
-			home.setZ(l.getZ());
+    		home.setLocation(l);
 			home.setUpdatedBy(updatedBy);
     	}
     	// this is a new home for this player/world combo, create a new object
@@ -174,7 +174,7 @@ public class SpawnUtils {
      */
     public void setSpawn(Location l, String updatedBy)
     {
-    	setGroupSpawn(null, l, updatedBy);
+    	setGroupSpawn(MSC_WORLD_SPAWN_GROUP, l, updatedBy);
     }
     
     /** Set the spawn for a given world and group.
@@ -186,13 +186,13 @@ public class SpawnUtils {
     public void setGroupSpawn(String group, Location l, String updatedBy)
     {
     	Spawn spawn = plugin.getStorage().getSpawn(l.getWorld().getName(), group);
+    	log.info(logPrefix + " setGroupSpawn(), spawn lookup = "+spawn);
+    	
 		// if we get an object back, we already have a Spawn set for this world/group combo, so we
 		// just update the x/y/z location of it.
     	if( spawn != null ) {
-    		spawn.setX(l.getX());
-    		spawn.setY(l.getY());
-    		spawn.setZ(l.getZ());
-    		spawn.setUpdatedBy(updatedBy);
+    		spawn.setLocation(l);
+    		spawn.setPitch(l.getPitch());
     	}
     	// this is a new spawn for this world/group combo, create a new object
     	else
@@ -204,7 +204,7 @@ public class SpawnUtils {
     // Get spawn
     public Location getSpawn(String worldName)
     {
-    	return getGroupSpawn(null, worldName);
+    	return getGroupSpawn(MSC_WORLD_SPAWN_GROUP, worldName);
     }
     
     /** Return the global default spawn (ie. there is only one, this is not the multi-world spawn).

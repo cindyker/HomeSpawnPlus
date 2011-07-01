@@ -46,7 +46,6 @@ public class CommandProcessor
 	 * @param cmd
 	 */
 	public void addCommand(Command cmd) {
-		SpawnControl.log.info(SpawnControl.logPrefix + " attempting to add command " + cmd.getCommandName());
 		cmd.setPlugin(plugin);
 		
 		// skip commands that are disabled in the config
@@ -54,7 +53,7 @@ public class CommandProcessor
 			return;
 		
 		cmdHash.put(cmd.getCommandName(), cmd);
-		SpawnControl.log.info(SpawnControl.logPrefix + " added command " + cmd.getCommandName());
+//		SpawnControl.log.info(SpawnControl.logPrefix + " added command " + cmd.getCommandName());
 		
 		String[] aliases = cmd.getCommandAliases();
 		if( aliases != null )

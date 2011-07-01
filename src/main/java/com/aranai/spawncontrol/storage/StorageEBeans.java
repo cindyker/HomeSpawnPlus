@@ -88,7 +88,7 @@ public class StorageEBeans implements Storage {
 	@Override
 	public Spawn getSpawn(String world, String group) {
 		EbeanServer db = plugin.getDatabase();
-		String q = "find spawn where world = :world and group = :group";
+		String q = "find spawn where world = :world and group_name = :group";
 		
 		Query<Spawn> query = db.createQuery(Spawn.class, q);
 		query.setParameter("world", world);

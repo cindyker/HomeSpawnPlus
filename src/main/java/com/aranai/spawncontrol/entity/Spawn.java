@@ -3,6 +3,8 @@
  */
 package com.aranai.spawncontrol.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,13 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.aranai.spawncontrol.SpawnControl;
+import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
 
 /**
@@ -36,7 +39,7 @@ public class Spawn {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
     
-    @NotEmpty
+    @NotNull
     @Length(max=32)
 	private String world;
     
@@ -44,13 +47,14 @@ public class Spawn {
     @Length(max=32)
 	private String name;
     
-    @NotEmpty
+    @NotNull
     @Length(max=32)
     private String updatedBy;
     
     /* Optional group associated with this spawn.
      */
     @Length(max=32)
+    @NotNull
     @Column(name="group_name")
 	private String group;
     
@@ -61,7 +65,16 @@ public class Spawn {
     @NotNull
     private double z;
     
-    @Transient
+    private float pitch;
+	private float yaw;
+	
+	@Version
+	private Timestamp lastModified;
+	
+	@CreatedTimestamp
+	private Timestamp dateCreated;
+    
+	@Transient
     private transient Location location;
     
     public Spawn() {}
@@ -73,18 +86,24 @@ public class Spawn {
      * @param group the Group this spawn represents. Can be null to represent global spawn for the given world.
      */
     public Spawn(Location l, String updatedBy, String group) {
-    	setWorld(l.getWorld().getName());
-    	setX(l.getX());
-    	setY(l.getY());
-    	setZ(l.getZ());
+    	setLocation(l);
     	setUpdatedBy(updatedBy);
     	setGroup(group);
+    }
+    
+    public void setLocation(Location l) {
+    	setWorld(l.getWorld().getName());
+		setX(l.getX());
+		setY(l.getY());
+		setZ(l.getZ());
+		setYaw(l.getYaw());
+		setPitch(l.getPitch());
     }
     
     public Location getLocation() {
     	if( location == null ) {
 	    	World w = SpawnControl.getInstance().getServer().getWorld(world);
-	    	location = new Location(w, x, y, z);
+	    	location = new Location(w, x, y, z, yaw, pitch);
     	}
     	
     	return location;
@@ -139,5 +158,37 @@ public class Spawn {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+	
+    public float getPitch() {
+		return pitch;
+	}
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+	}
+
+	public float getYaw() {
+		return yaw;
+	}
+
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+	}
+	
+    public Timestamp getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Timestamp lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	public Timestamp getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Timestamp dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 }

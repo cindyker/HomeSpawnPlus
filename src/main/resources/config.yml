@@ -54,15 +54,15 @@ spawn:
 # cooldowns for a group using permissions. Cooldown permissions are:
 #   SpawnControl.command.<commandName>.cooldown.#
 #   SpawnControl.command.CooldownExempt.<commandName>   - or can use * to be exempt from all cooldowns
-enabledCommands:
+disabledCommands:
   # sub-permission: SpawnControl.command.home.others - can teleport to others homes
-  home: true
+  home: false
   # sub-permission: SpawnControl.command.sethome.others - can change other peoples homes
-  sethome: true
-  spawn: true
-  setspawn: true
-  groupspawn: true
-  setgroupspawn: true
+  sethome: false
+  spawn: false
+  setspawn: false
+  groupspawn: false
+  setgroupspawn: false
 
 # cooldowns for various commands can be defined here (these are used if no group-specific
 # cooldown permissions are found)

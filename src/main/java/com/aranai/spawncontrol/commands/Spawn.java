@@ -20,7 +20,6 @@ public class Spawn extends BaseCommand
 
 	@Override
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args) {
-		System.out.println("Running spawn command");
 		if( !defaultCommandChecks(p) )
 			return true;
 

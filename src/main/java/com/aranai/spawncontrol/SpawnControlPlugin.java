@@ -33,6 +33,8 @@ public class SpawnControlPlugin extends JavaPlugin
     	SpawnControl.createInstance(this);
     	SpawnControl.getInstance().onEnable();
     	cmdProcessor = new CommandProcessor(SpawnControl.getInstance());
+    	
+//    	Configuration c = this.getConfiguration();
     }
     
 	@Override
@@ -45,6 +47,8 @@ public class SpawnControlPlugin extends JavaPlugin
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	return cmdProcessor.onCommand(sender, command, commandLabel, args);
     }
+    
+    public ClassLoader getPluginClassLoader() { return getClassLoader(); }
     
 	/** Invoke the underlying EBEAN installDDL() method to initialize our database.
 	 * 

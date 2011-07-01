@@ -3,23 +3,23 @@
  */
 package com.aranai.spawncontrol.command;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.aranai.spawncontrol.SpawnControl;
-import com.aranai.spawncontrol.commands.Home;
-import com.aranai.spawncontrol.commands.SetHome;
-import com.aranai.spawncontrol.commands.SetSpawn;
-import com.aranai.spawncontrol.commands.Spawn;
 
 /**
  * @author morganm
@@ -35,97 +35,11 @@ public class CommandProcessor
 		cmdHash = new HashMap<String, Command>();
 		
 		// initialize commands and add them to our command map
-		Command[] commands = {new Home(), new Spawn(), new SetHome(), new SetSpawn()};;
-//		List<Command> commands = getCommands();
+		List<Command> commands = getCommands();
 		for(Command cmd : commands)
 			addCommand(cmd);
 	}
 	
-	/** Automatically find all Command objects and return them.
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	public List<Command> getCommands() {
-		List<Command> cmds = new ArrayList<Command>();
-		
-		try {
-			Class[] classes = getClasses("com.aranai.spawncontrol.commands");
-			
-			for(Class c : classes) {
-				SpawnControl.log.info(SpawnControl.logPrefix + " Trying command class " +c);
-				Class[] interfaces = c.getInterfaces();
-				for(Class i : interfaces) {
-					if( i.equals(Command.class) ) {
-						Command cmd = (Command) i.newInstance();
-						SpawnControl.log.info(SpawnControl.logPrefix + " Adding command class "+cmd);
-						cmds.add(cmd);
-					}
-				}
-			}
-		}
-		catch(Exception e) {
-			SpawnControl.log.severe(SpawnControl.logPrefix + " error trying to load command objects");
-			e.printStackTrace();
-		}
-		
-		return cmds;
-	}
-	
-   /**
-     * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
-     *
-     * @param packageName The base package
-     * @return The classes
-     * @throws ClassNotFoundException
-     * @throws IOException
-     */
-    @SuppressWarnings("rawtypes")
-	private static Class[] getClasses(String packageName)
-            throws ClassNotFoundException, IOException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        assert classLoader != null;
-        String path = packageName.replace('.', '/');
-        Enumeration<URL> resources = classLoader.getResources(path);
-        List<File> dirs = new ArrayList<File>();
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-			SpawnControl.log.severe(SpawnControl.logPrefix + " processing resource "+resource);
-            dirs.add(new File(resource.getFile()));
-        }
-        ArrayList<Class> classes = new ArrayList<Class>();
-        for (File directory : dirs) {
-            classes.addAll(findClasses(directory, packageName));
-        }
-        return classes.toArray(new Class[classes.size()]);
-    }
-	
-    /**
-     * Recursive method used to find all classes in a given directory and subdirs.
-     *
-     * @param directory   The base directory
-     * @param packageName The package name for classes found inside the base directory
-     * @return The classes
-     * @throws ClassNotFoundException
-     */
-    @SuppressWarnings("rawtypes")
-	private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
-        List<Class> classes = new ArrayList<Class>();
-        if (!directory.exists()) {
-            return classes;
-        }
-        File[] files = directory.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                assert !file.getName().contains(".");
-                classes.addAll(findClasses(file, packageName + "." + file.getName()));
-            } else if (file.getName().endsWith(".class")) {
-                classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
-            }
-        }
-        return classes;
-    }
-    
 	/** Add a command to the command processor.  If the command is disabled, it will be
 	 * ignored.
 	 * 
@@ -188,15 +102,90 @@ public class CommandProcessor
 			return false;
 		
 		Command cmd = cmdHash.get(commandName);
-		SpawnControl.log.info(SpawnControl.logPrefix + " found cmd "+cmd);
+//		SpawnControl.log.info(SpawnControl.logPrefix + " found cmd "+cmd);
 		if( cmd != null )
 			return cmd.execute(p, bukkitCommand, args);
 		else
 			return false;
 	}
 	
-	
+	   public Set<URL> getUrlsForName(String name) {
+	        try {
+	            final Set<URL> result = new HashSet<URL>();
 
+	            String resourceName = name.replace(".", "/");
+	            final Enumeration<URL> urls = plugin.getClassLoader().getResources(resourceName);
+	            while (urls.hasMoreElements()) {
+	                URL url = urls.nextElement();
+	                result.add(new URL(url.toExternalForm().substring(0, url.toExternalForm().lastIndexOf(resourceName))));
+	            }
+
+	            return result;
+	        } catch (IOException e) {
+	            throw new RuntimeException(e);
+	        }
+	    }
+	   
+	/** Find all Command objects and return them.  This works by looking for a file on the classpath
+	 * which has all the command object list. To keep this automated, there is an ant build script
+	 * that automatically finds all classes in the ".commands" package and builds the file to then be
+	 * found at runtime later by this method.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public List<Command> getCommands() {
+		List<Command> cmds = new ArrayList<Command>();
+
+		ClassLoader loader = plugin.getClassLoader();
+		InputStream is = loader.getResourceAsStream("META-INF/commandlist");
+		
+		if( is == null )
+			throw new NullPointerException("Could not get commandlist resource");
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		String line;
+		try {
+			while( (line=reader.readLine()) != null ) {
+				try {
+					Class c = Class.forName(line, true, loader);
+//					SpawnControl.log.info(SpawnControl.logPrefix + " Trying command class " +c);
+
+					// check if class extends the BaseCommand class, which implements the Command interface
+					Class superClass = c.getSuperclass();
+					if( BaseCommand.class.equals(superClass) ) {
+						Command cmd = (Command) c.newInstance();
+//						SpawnControl.log.info(SpawnControl.logPrefix + " Adding command class "+cmd);
+						cmds.add(cmd);
+					}
+					// No BaseCommand super, check to see if class implements Command interface directly
+					else {
+						Class[] interfaces = c.getInterfaces();
+						for(Class i : interfaces) {
+							if( i.equals(Command.class) ) {
+								Command cmd = (Command) c.newInstance();
+//								SpawnControl.log.info(SpawnControl.logPrefix + " Adding command class "+cmd);
+								cmds.add(cmd);
+							}
+						}
+					}
+					
+				}
+				catch(Exception e) {
+					SpawnControl.log.severe(SpawnControl.logPrefix + " error trying to load command object "+line);
+					e.printStackTrace();
+				}
+			}
+		}
+		catch(Exception e) {
+			SpawnControl.log.severe(SpawnControl.logPrefix + " error trying to load command objects");
+			e.printStackTrace();
+		}
+		
+		return cmds;
+	}
+	
+	
 	/*
 	public boolean defunct()
 	{

@@ -87,6 +87,8 @@ public class SpawnControl {
     	instance = null;
     }
     
+    public ClassLoader getClassLoader() { return spawnControlPlugin.getPluginClassLoader(); }
+    
     /** Returns the Config object SpawnControl is currently using.
      * 
      * @return

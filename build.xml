@@ -8,10 +8,12 @@
 			<include name="**/*.jar" />
 			<include name="**/*.zip" />
 		</fileset>
+		<pathelement path="${build.home}" />
 	</path>
 
 	<target name="prepare">
 		<mkdir dir="${build.home}" />
+		<mkdir dir="${build.metainf}" />
 		<mkdir dir="${dist.home}" />
 	</target>
 
@@ -26,7 +28,14 @@
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile" description="Generates distribution jar file">
+	<target name="buildCommandList" depends="compile" description="Build project command list file">
+		<java classname="com.aranai.spawncontrol.command.CommandFileGenerator" >
+			<classpath refid="project.classpath" />
+			<arg file="${commandlistfile}" />
+		</java>
+	</target>
+	
+	<target name="dist" depends="buildCommandList" description="Generates distribution jar file">
 		<copy todir="${build.home}">
 			<fileset dir="${config.home}">
 				<include name="**/*.yml"/>

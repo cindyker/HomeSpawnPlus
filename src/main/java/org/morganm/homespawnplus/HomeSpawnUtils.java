@@ -29,7 +29,7 @@ import com.nijiko.permissions.User;
 public class HomeSpawnUtils {
 	private static final Logger log = HomeSpawnPlus.log;
 	private static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
-    private static final String LightPurple = "\u00A7d";
+//    private static final String LightPurple = "\u00A7d";
     private static final String Yellow = "\u00A7e";
 	
 	private final String logPrefix = HomeSpawnPlus.logPrefix;

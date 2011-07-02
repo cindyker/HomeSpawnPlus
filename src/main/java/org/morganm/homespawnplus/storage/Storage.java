@@ -24,6 +24,10 @@ public interface Storage {
 	 */
 	public void initializeStorage();
 	
+	/** Notify the backing store that it should purge any in-memory cache it has.
+	 */
+	public void purgeCache();
+	
 	public Home getHome(String world, String playerName);
 	public Spawn getSpawn(String world);
 	public Spawn getSpawn(String world, String group);

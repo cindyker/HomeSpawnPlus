@@ -14,7 +14,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 
@@ -29,7 +28,6 @@ public class HSPPlayerListener extends PlayerListener {
     @SuppressWarnings("unused")
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
-    private final Config config;
     private final HomeSpawnUtils util;
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
@@ -39,7 +37,6 @@ public class HSPPlayerListener extends PlayerListener {
         logPrefix = HomeSpawnPlus.logPrefix;
         
         plugin = instance;
-        config = plugin.getConfig();
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
     }
@@ -49,7 +46,7 @@ public class HSPPlayerListener extends PlayerListener {
      * @param preferredBehavior
      */
     private void doSpawn(Player p, String configBehaviorOption) {
-    	String behavior = config.getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
+    	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
     	
     	// default behavior is do nothing
     	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
@@ -73,7 +70,7 @@ public class HSPPlayerListener extends PlayerListener {
             return;
         
         // config option needs to be enabled in order to use this feature
-        if( !config.getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
+        if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
 //        	log.info(logPrefix + " " + ConfigOptions.ENABLE_HOME_BEDS + " is disabled");
         	return;
         }

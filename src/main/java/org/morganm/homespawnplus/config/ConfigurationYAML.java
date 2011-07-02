@@ -42,6 +42,15 @@ public class ConfigurationYAML extends Configuration implements Config {
 		super.load();
     }
 
+	/** Right now we don't allow updates in-game, so we don't do anything, because if we
+	 * let it save, all the comments are lost.  In the future, I may allow in-game updates
+	 * to the config file and this will just call super.save();
+	 */
+	@Override
+	public boolean save() {
+		return true;
+	}
+	
 	/** Code adapted from Puckerpluck's MultiInv plugin.
 	 * 
 	 * @param string

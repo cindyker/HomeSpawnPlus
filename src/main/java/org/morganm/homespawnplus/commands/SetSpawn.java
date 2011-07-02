@@ -24,7 +24,7 @@ public class SetSpawn extends BaseCommand
 
 		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to set global spawn.");
 		util.setSpawn(p.getLocation(), p.getName());
-		p.sendMessage("Global spawn set successfully!");
+		util.sendMessage(p, "World spawn set successfully.");
 		
 		return true;
 	}

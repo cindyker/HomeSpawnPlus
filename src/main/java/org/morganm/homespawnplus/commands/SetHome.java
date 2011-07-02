@@ -30,7 +30,7 @@ public class SetHome extends BaseCommand
 		if(args.length > 0 && !plugin.hasPermission(p, OTHER_SETHOME_PERMISSION))
 		{
 			// User is trying to set home for another user but they don't have permission
-			p.sendMessage("You don't have permission to do that.");
+			util.sendMessage(p, "You don't have permission to do that.");
 			return true;
 		}
 

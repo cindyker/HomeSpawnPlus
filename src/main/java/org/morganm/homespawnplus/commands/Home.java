@@ -17,7 +17,8 @@ public class Home extends BaseCommand
 	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".home.others";
 	
 	@Override
-	public boolean execute(Player p, org.bukkit.command.Command command, String[] args) {
+	public boolean execute(Player p, org.bukkit.command.Command command, String[] args)
+	{
 		// are they trying to go to someone else's home and do they have permission?
 		if( args.length > 0 && plugin.hasPermission(p, OTHER_HOME_PERMISSION) ) {
 			if( !cooldownManager.cooldownCheck(p, "home.others") )
@@ -42,11 +43,12 @@ public class Home extends BaseCommand
 			else
 				p.sendMessage("No home found for player "+args[0]+" on world "+world);
 		}
+		// just someone typing /home - do normal checks and send them on their way
 		else {
 			if( !defaultCommandChecks(p) )
 				return true;
 
-			HomeSpawnPlus.log.info("[SpawnControl] Attempting to send player "+p.getName()+" to home.");
+			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to home.");
 			util.sendHome(p);
 		}
 		

@@ -1,17 +1,17 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.9
+version: 0.5
 author: morganm
 database: true
 commands:
   setspawn:
-    description: Sets the global spawn
+    description: Sets the spawn for this world
     usage: /<command>
   spawn:
-    description: Respawns you at the global spawn
+    description: Respawns you at the world spawn
     usage: /<command>
   globalspawn:
-    description: Respawns you at the global spawn
+    description: Respawns you at the global spawn (default world)
     usage: /<command>
   setgroupspawn:
     description: Sets the group spawn
@@ -33,17 +33,9 @@ commands:
   home:
     description: Respawns you at your home
     usage: /<command>
-  sc_config:
-    description: Modifies SpawnControl configuration variables
-    usage: |
-        Incorrect usage of command /<command>. Examples:
-           /<command> setting value - sets [setting] to [value]
-  scimportconfig:
-    description: Imports player homes from SpawnControl hMod
-    usage: /<command>  
-  scimportgroupconfig:
-    description: Imports group spawns from SpawnControl hMod
-    usage: /<command>
   hspconvert:
     description: Load and convert data from another data store
     usage: /<command>
+  hsp:
+    description: Load and convert data from another data store
+    usage: /<command> [reloadconfig|reloaddata]

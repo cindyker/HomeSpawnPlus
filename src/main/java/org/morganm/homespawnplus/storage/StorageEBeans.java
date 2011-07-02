@@ -50,7 +50,7 @@ public class StorageEBeans implements Storage {
             log.info("Installing database for "
                     + plugin.getPluginName()
                     + " due to first time usage");
-            plugin.initDB();
+            plugin.installDatabaseDDL();
         }
 	}
 	
@@ -146,5 +146,11 @@ public class StorageEBeans implements Storage {
 	@Override
 	public void writeSpawn(Spawn spawn) {
         plugin.getDatabase().save(spawn);
+	}
+
+	@Override
+	public void purgeCache() {
+		// in theory we should pass this call through to the EBEAN server, but it doesn't
+		// offer any support for this functionality.  So we do nothing.
 	}
 }

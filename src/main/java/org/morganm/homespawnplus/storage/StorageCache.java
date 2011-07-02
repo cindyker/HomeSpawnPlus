@@ -225,4 +225,14 @@ public class StorageCache implements Storage
 			allSpawns.add(spawn);
 	}
 
+	@Override
+	public void purgeCache() {
+		allHomes.clear();
+		allSpawns.clear();
+		spawnDefinedGroups.clear();
+		homes.clear();
+		spawns.clear();
+		groupSpawns.clear();
+	}
+
 }

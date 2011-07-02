@@ -87,7 +87,7 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @throws IOException
      * @throws StorageException
      */
-    public void loadDB() throws IOException, StorageException {
+    public void initializeDatabase() throws IOException, StorageException {
         storage = StorageFactory.getInstance(StorageFactory.Type.EBEANS, this);
         
         // Make sure storage system is initialized
@@ -112,6 +112,11 @@ public class HomeSpawnPlus extends JavaPlugin {
 	    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
     }
     
+    public void loadConfig() throws ConfigException, IOException {
+		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
+		config.load();
+    }
+    
     public void onEnable() {
     	boolean loadError = false;
     	
@@ -127,10 +132,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	// load our configuration and database
     	try {
-    		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
-    		config.load();
-    		
-            this.loadDB();
+    		loadConfig();
+            initializeDatabase();
     	}
     	catch(Exception e) {
     		loadError = true;
@@ -177,7 +180,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	return cmdProcessor.onCommand(sender, command, commandLabel, args);
     }
     
-    public void initDB() {
+    public void installDatabaseDDL() {
         installDDL();
     }
     

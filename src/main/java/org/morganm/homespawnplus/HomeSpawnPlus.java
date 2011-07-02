@@ -19,6 +19,7 @@ import org.morganm.homespawnplus.command.CommandProcessor;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
@@ -88,7 +89,8 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @throws StorageException
      */
     public void initializeDatabase() throws IOException, StorageException {
-        storage = StorageFactory.getInstance(StorageFactory.Type.EBEANS, this);
+    	int type = config.getInt(ConfigOptions.STORAGE_TYPE, 0);
+        storage = StorageFactory.getInstance(type, this);
         
         // Make sure storage system is initialized
         storage.initializeStorage();

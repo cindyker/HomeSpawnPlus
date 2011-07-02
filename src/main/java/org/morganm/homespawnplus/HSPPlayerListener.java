@@ -41,27 +41,29 @@ public class HSPPlayerListener extends PlayerListener {
         bedClicks = new HashMap<String, ClickedEvent>();
     }
 
-    /** Maybe should be moved to util?
+    /** Maybe should be moved to util?  Return location player was sent to.
      * 
      * @param preferredBehavior
      */
-    private void doSpawn(Player p, String configBehaviorOption) {
+    private Location doSpawn(Player p, String configBehaviorOption) {
     	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
     	
     	// default behavior is do nothing
     	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
-    		return;
+    		return null;
     	
     	if( behavior.equals(ConfigOptions.VALUE_HOME) )
-    		util.sendHome(p);
+    		return util.sendHome(p);
     	else if( behavior.equals(ConfigOptions.VALUE_MULTIHOME) )
-	    	util.sendHome(p);			// TODO: need to implement multi home algorithm
+	    	return util.sendHome(p);			// TODO: need to implement multi home algorithm
     	else if( behavior.equals(ConfigOptions.VALUE_GROUP) )
-	    	util.sendToGroupSpawn(p);
+	    	return util.sendToGroupSpawn(p);
     	else if( behavior.equals(ConfigOptions.VALUE_WORLD) )
-    		util.sendToSpawn(p);
+    		return util.sendToSpawn(p);
     	else if( behavior.equals(ConfigOptions.VALUE_GLOBAL) )
-    		util.sendToGlobalSpawn(p);
+    		return util.sendToGlobalSpawn(p);
+    	else
+    		return null;
     }
     
     @Override
@@ -141,11 +143,11 @@ public class HSPPlayerListener extends PlayerListener {
     	{
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
     		
-    		// Send player to global spawn
+    		// Send player to spawn
     		util.sendToSpawn(p);
     		
     		// Set home for player
-    		util.setHome(p.getName(), util.getSpawn(p.getWorld().getName()).getLocation(), HomeSpawnPlus.logPrefix);
+//    		util.setHome(p.getName(), util.getSpawn(p.getWorld().getName()).getLocation(), HomeSpawnPlus.logPrefix);
     	}
     	
     	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
@@ -155,8 +157,10 @@ public class HSPPlayerListener extends PlayerListener {
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
     	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
-    	doSpawn(e.getPlayer(), ConfigOptions.SETTING_JOIN_BEHAVIOR);
-    }
+    	Location l = doSpawn(e.getPlayer(), ConfigOptions.SETTING_DEATH_BEHAVIOR);
+    	if( l != null )
+    		e.setRespawnLocation(l);
+   }
  
     private class ClickedEvent {
     	public Location location;

@@ -5,7 +5,9 @@ package org.morganm.homespawnplus.storage;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 
@@ -17,6 +19,11 @@ import org.morganm.homespawnplus.entity.Spawn;
  */
 public class StorageCache implements Storage
 {
+	@SuppressWarnings("unused")
+	private static final Logger log = HomeSpawnPlus.log;
+	
+	@SuppressWarnings("unused")
+	private final String logPrefix;
 	private Storage original;
 
 	// only populated if getallHomes() is called
@@ -30,15 +37,17 @@ public class StorageCache implements Storage
 	// all homes, organized by world then player
 	private HashMap <String, HashMap<String, Home>> homes;
 	// all spawns, organized by world
-	private HashMap <String, Spawn> spawns;
+//	private HashMap <String, Spawn> spawns;
 	// group spawns organized by world then group
 	private HashMap <String, HashMap<String, Spawn>> groupSpawns;
 	
 	public StorageCache(Storage original) {
 		this.original = original;
 		homes = new HashMap <String, HashMap<String, Home>>();
-		spawns = new HashMap <String, Spawn>();
+//		spawns = new HashMap <String, Spawn>();
 		groupSpawns = new HashMap <String, HashMap<String, Spawn>>();
+		
+		logPrefix = HomeSpawnPlus.logPrefix;
 	}
 	
 	/* (non-Javadoc)
@@ -75,6 +84,9 @@ public class StorageCache implements Storage
 	 */
 	@Override
 	public Spawn getSpawn(String world) {
+		return getSpawn(world, Storage.HSP_WORLD_SPAWN_GROUP);
+		
+		/*
 		Spawn spawn = spawns.get(world);
 		// not cached, lets get it from backing store
 		if( spawn == null ) {
@@ -83,6 +95,7 @@ public class StorageCache implements Storage
 		}
 		
 		return spawn;
+		*/
 	}
 
 	/* (non-Javadoc)
@@ -99,10 +112,12 @@ public class StorageCache implements Storage
 		Spawn spawn = worldSpawns.get(group);
 		// not cached, lets get it from backing store
 		if( spawn == null ) {
+//			log.info(logPrefix + " no cached spawn found for "+world+","+group+", calling backing store");
 			spawn = original.getSpawn(world, group);
 			worldSpawns.put(group, spawn);					// add it to cache
 		}
 		
+//		log.info(logPrefix + " getSpawn for "+world+","+group+" returning object "+spawn);
 		return spawn;
 	}
 	
@@ -135,7 +150,7 @@ public class StorageCache implements Storage
 		String world = spawn.getWorld();
 		String group = spawn.getGroup();
 		
-		spawns.put(world, spawn);
+//		spawns.put(world, spawn);
 		
 		HashMap<String, Spawn> worldSpawns = groupSpawns.get(world);
 		if( worldSpawns == null ) {
@@ -143,6 +158,8 @@ public class StorageCache implements Storage
 			groupSpawns.put(world, worldSpawns);
 		}
 		worldSpawns.put(group, spawn);
+		
+//		log.info(logPrefix + " updated cached spawn for "+world+","+group+" to "+spawn);
 		
 		// if the spawnDefinedGroups cache is populated and group isn't null, make sure this group is in the set.
 		if( spawnDefinedGroups != null && group != null )
@@ -231,7 +248,7 @@ public class StorageCache implements Storage
 		allSpawns.clear();
 		spawnDefinedGroups.clear();
 		homes.clear();
-		spawns.clear();
+//		spawns.clear();
 		groupSpawns.clear();
 	}
 

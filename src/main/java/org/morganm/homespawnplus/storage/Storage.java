@@ -15,6 +15,8 @@ import org.morganm.homespawnplus.entity.Spawn;
  *
  */
 public interface Storage {
+	public static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
+	
 	/* This method is called to intialize the storage system.  If using a DB back end, this
 	 * is the method that should create the tables if they don't exist.
 	 * 

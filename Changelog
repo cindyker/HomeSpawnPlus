@@ -1,3 +1,8 @@
+v0.6 - July 2, 2011
+Added config option for choosing in-memory cache
+Fixed bugs related to in-memory cache
+Fixed a bug with spawning on death using wrong config setting
+
 v0.5.1 - July 1, 2011
 Fixed command cooldowns.
 Fixed some permissions issues

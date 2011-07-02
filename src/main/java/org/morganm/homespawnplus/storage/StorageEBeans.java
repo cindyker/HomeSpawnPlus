@@ -74,6 +74,9 @@ public class StorageEBeans implements Storage {
 	 */
 	@Override
 	public Spawn getSpawn(String world) {
+		return getSpawn(world, Storage.HSP_WORLD_SPAWN_GROUP);
+		
+		/*
 		EbeanServer db = plugin.getDatabase();
 		String q = "find spawn where world = :world";
 		
@@ -81,6 +84,7 @@ public class StorageEBeans implements Storage {
 		query.setParameter("world", world);
 		
 		return query.findUnique();
+		*/
 	}
 
 	/* (non-Javadoc)

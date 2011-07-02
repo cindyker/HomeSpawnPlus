@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.Storage;
 
 import com.nijiko.permissions.Entry;
 import com.nijiko.permissions.EntryType;
@@ -28,7 +29,7 @@ import com.nijiko.permissions.User;
  */
 public class HomeSpawnUtils {
 	private static final Logger log = HomeSpawnPlus.log;
-	private static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
+	
 //    private static final String LightPurple = "\u00A7d";
     private static final String Yellow = "\u00A7e";
 	
@@ -54,23 +55,30 @@ public class HomeSpawnUtils {
 		p.sendMessage(Yellow + message);
 	}
 	
-    public void sendHome(Player p)
+    public Location sendHome(Player p)
     {
     	if( p == null )
-    		return;
+    		return null;
     	
     	// try the home they have set for this world
 		Home home = getHome(p.getName(), p.getWorld());
+    	Location l = home.getLocation();
+//		log.info(logPrefix + " sendHome got object "+home+" for player "+p.getName()+", location = "+l);
 		
-		if( home != null )
-	    	p.teleport(home.getLocation());
-		else
-			sendToSpawn(p);					// if no home is set, send them to spawn
+		if( l != null ) {
+	    	p.teleport(l);
+	    	return l;
+		}
+		else {
+			return sendToSpawn(p);					// if no home is set, send them to spawn
+		}
     }
     
-    public void sendToGlobalSpawn(Player p)
+    public Location sendToGlobalSpawn(Player p)
     {
-    	p.teleport(getDefaultSpawn().getLocation());
+    	Location l = getDefaultSpawn().getLocation(); 
+    	p.teleport(l);
+    	return l;
     }
     
     /** Send a player to the spawn for their given world, or if none is set for that world,
@@ -78,7 +86,7 @@ public class HomeSpawnUtils {
      * 
      * @param p
      */
-    public void sendToSpawn(Player p)
+    public Location sendToSpawn(Player p)
     {
     	Spawn spawn = getSpawn(p.getWorld().getName());
     	if( spawn == null )
@@ -86,10 +94,12 @@ public class HomeSpawnUtils {
     	
 		if( spawn == null ) {
 			log.severe(logPrefix+ " No valid spawn found for player "+p.getName()+"!");
-			return;
+			return null;
 		}
 		
-    	p.teleport(spawn.getLocation());
+		Location l = spawn.getLocation();
+    	p.teleport(l);
+    	return l;
     }
     
     /** Find the group spawn (if any) for a player and send them there.  If no group spawn can
@@ -97,14 +107,13 @@ public class HomeSpawnUtils {
      * 
      * @param p
      */
-    public void sendToGroupSpawn(Player p) {
+    public Location sendToGroupSpawn(Player p) {
     	// if group spawning is disabled, or this player doesn't have group spawn permissions
     	// or if we aren't even using permissions at all, then just use the default spawn
     	if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
     			|| !plugin.isUsePermissions()
     			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".groupspawn.use") ) {
-    		sendToSpawn(p);
-    		return;
+    		return sendToSpawn(p);
     	}
     	
     	String world = p.getWorld().getName();
@@ -147,11 +156,14 @@ public class HomeSpawnUtils {
         		}
         	}
         	
-        	if( groupSpawn != null )
+        	if( groupSpawn != null ) {
+        		Location l = groupSpawn.getLocation();
         		p.teleport(groupSpawn.getLocation());
+        		return l;
+        	}
     		// if no spawn defined for any of the players groups, send them to default spawn
     		else
-    			sendToSpawn(p);
+    			return sendToSpawn(p);
     	}
     	// Permissions 2 the player could only have a single group defined - just use that.
     	else {
@@ -159,11 +171,14 @@ public class HomeSpawnUtils {
 			String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), userName);
     		Spawn spawn = plugin.getStorage().getSpawn(world, group);
     		
-    		if( spawn != null )
-    			p.teleport(spawn.getLocation());
+    		if( spawn != null ) {
+    			Location l = spawn.getLocation();
+    			p.teleport(l);
+    			return l;
+    		}
     		// if no spawn defined for the players group, send them to default spawn
     		else
-    			sendToSpawn(p);
+    			return sendToSpawn(p);
     	}
     }
     
@@ -191,7 +206,7 @@ public class HomeSpawnUtils {
      */
     public void setSpawn(Location l, String updatedBy)
     {
-    	setGroupSpawn(HSP_WORLD_SPAWN_GROUP, l, updatedBy);
+    	setGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, l, updatedBy);
     }
     
     /** Set the spawn for a given world and group.
@@ -203,13 +218,13 @@ public class HomeSpawnUtils {
     public void setGroupSpawn(String group, Location l, String updatedBy)
     {
     	Spawn spawn = plugin.getStorage().getSpawn(l.getWorld().getName(), group);
-    	log.info(logPrefix + " setGroupSpawn(), spawn lookup = "+spawn);
+//    	log.info(logPrefix + " setGroupSpawn(), spawn lookup = "+spawn);
     	
 		// if we get an object back, we already have a Spawn set for this world/group combo, so we
 		// just update the x/y/z location of it.
     	if( spawn != null ) {
     		spawn.setLocation(l);
-    		spawn.setPitch(l.getPitch());
+    		spawn.setUpdatedBy(updatedBy);
     	}
     	// this is a new spawn for this world/group combo, create a new object
     	else
@@ -220,7 +235,7 @@ public class HomeSpawnUtils {
 
     public Spawn getSpawn(String worldName)
     {
-    	return getGroupSpawn(HSP_WORLD_SPAWN_GROUP, worldName);
+    	return getGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, worldName);
     }
     
     /** Return the global default spawn (ie. there is only one, this is not the multi-world spawn).
@@ -276,7 +291,7 @@ public class HomeSpawnUtils {
 			// world spawn coordinates and complain loudly in the logs.
 			if( spawn == null ) {
 				log.warning(logPrefix + " ERROR: could not find default Spawn - improvising!");
-				spawn = new Spawn(l, logPrefix, HSP_WORLD_SPAWN_GROUP);
+				spawn = new Spawn(l, logPrefix, Storage.HSP_WORLD_SPAWN_GROUP);
 			}
 		}
 		
@@ -354,7 +369,7 @@ public class HomeSpawnUtils {
     		spawn = plugin.getStorage().getSpawn(worldName, group);
     	
     	if( spawn == null )
-        	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"'!");
+        	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"' on world "+worldName+"!");
     	
     	return spawn;
     	

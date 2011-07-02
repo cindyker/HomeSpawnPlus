@@ -90,6 +90,8 @@ public class Home {
 		setZ(l.getZ());
 		setYaw(l.getYaw());
 		setPitch(l.getPitch());
+		
+		location = l;
     }
     
     public Location getLocation() {
@@ -118,24 +120,28 @@ public class Home {
 	}
 	public void setWorld(String world) {
 		this.world = world;
+		location = null;
 	}
 	public double getX() {
 		return x;
 	}
 	public void setX(double x) {
 		this.x = x;
+		location = null;
 	}
 	public double getY() {
 		return y;
 	}
 	public void setY(double y) {
 		this.y = y;
+		location = null;
 	}
 	public double getZ() {
 		return z;
 	}
 	public void setZ(double z) {
 		this.z = z;
+		location = null;
 	}
 
 	public String getUpdatedBy() {
@@ -168,6 +174,7 @@ public class Home {
 
 	public void setPitch(float pitch) {
 		this.pitch = pitch;
+		location = null;
 	}
 
 	public float getYaw() {
@@ -176,5 +183,6 @@ public class Home {
 
 	public void setYaw(float yaw) {
 		this.yaw = yaw;
+		location = null;
 	}
 }

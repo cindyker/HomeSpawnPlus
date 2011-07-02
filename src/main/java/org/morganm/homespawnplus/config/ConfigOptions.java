@@ -8,6 +8,8 @@ package org.morganm.homespawnplus.config;
  *
  */
 public interface ConfigOptions {
+	public static final String STORAGE_TYPE = "core.storage";
+	
 	public static final String DEFAULT_WORLD = "spawn.defaultWorld";
 	public static final String COMMAND_TOGGLE_BASE = "disabledCommands.";
 	

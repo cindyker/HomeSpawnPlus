@@ -98,6 +98,8 @@ public class Spawn {
 		setZ(l.getZ());
 		setYaw(l.getYaw());
 		setPitch(l.getPitch());
+		
+		location = l;
     }
     
     public Location getLocation() {
@@ -120,24 +122,28 @@ public class Spawn {
 	}
 	public void setWorld(String world) {
 		this.world = world;
+		location = null;
 	}
 	public double getX() {
 		return x;
 	}
 	public void setX(double x) {
 		this.x = x;
+		location = null;
 	}
 	public double getY() {
 		return y;
 	}
 	public void setY(double y) {
 		this.y = y;
+		location = null;
 	}
 	public double getZ() {
 		return z;
 	}
 	public void setZ(double z) {
 		this.z = z;
+		location = null;
 	}
 	public String getName() {
 		return name;
@@ -166,6 +172,7 @@ public class Spawn {
 
 	public void setPitch(float pitch) {
 		this.pitch = pitch;
+		location = null;
 	}
 
 	public float getYaw() {
@@ -174,6 +181,7 @@ public class Spawn {
 
 	public void setYaw(float yaw) {
 		this.yaw = yaw;
+		location = null;
 	}
 	
     public Timestamp getLastModified() {

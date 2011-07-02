@@ -1,3 +1,8 @@
+core:
+  # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined by bukkit.yml)
+  # 1 - Cached Ebeans - same as #0, but with in-memory caching for performance
+  storage: 1
+
 home:
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'HomeSpawnPlus.home.bedsethome' permission.

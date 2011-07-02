@@ -1,7 +1,7 @@
-name: mSpawnControl
-main: com.aranai.spawncontrol.SpawnControl
+name: HomeSpawnPlus
+main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 0.9
-author: morganm,Timberjaw
+author: morganm
 database: true
 commands:
   setspawn:
@@ -44,6 +44,6 @@ commands:
   scimportgroupconfig:
     description: Imports group spawns from SpawnControl hMod
     usage: /<command>
-  convert:
+  hspconvert:
     description: Load and convert data from another data store
     usage: /<command>

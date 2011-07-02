@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="mSpawnControl" default="dist" basedir=".">
+<project name="HomeSpawnPlus" default="dist" basedir=".">
         <property file="${basedir}/build.local.properties" />
         <property file="${basedir}/build.properties" />
 
@@ -29,7 +29,7 @@
 	</target>
 
 	<target name="buildCommandList" depends="compile" description="Build project command list file">
-		<java classname="com.aranai.spawncontrol.command.CommandFileGenerator" >
+		<java classname="org.morganm.homespawnplus.command.CommandFileGenerator" >
 			<classpath refid="project.classpath" />
 			<arg file="${commandlistfile}" />
 		</java>

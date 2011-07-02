@@ -73,7 +73,7 @@ disabledCommands:
 # Cooldown exemption permissions are:
 #   HomeSpawnPlus.command.CooldownExempt.<commandName>   - can use * to be exempt from all cooldowns
 #   
-cooldowns:
+cooldown:
   home: 120
   spawn: 120
   setspawn: 0

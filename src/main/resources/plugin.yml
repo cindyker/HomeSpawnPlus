@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.5
+version: 0.5.1
 author: morganm
 database: true
 commands:

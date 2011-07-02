@@ -203,6 +203,7 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @return
      */
     public boolean hasPermission(Player p, String permissionNode) {
+//    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 
     		return permissionHandler.has(p, permissionNode);
     	else

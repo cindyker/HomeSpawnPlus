@@ -21,7 +21,7 @@ public class Home extends BaseCommand
 	{
 		// are they trying to go to someone else's home and do they have permission?
 		if( args.length > 0 && plugin.hasPermission(p, OTHER_HOME_PERMISSION) ) {
-			if( !cooldownManager.cooldownCheck(p, "home.others") )
+			if( !cooldownCheck(p) )
 				return true;
 			
 			String world;

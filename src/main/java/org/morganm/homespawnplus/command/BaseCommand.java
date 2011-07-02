@@ -114,7 +114,7 @@ public abstract class BaseCommand implements Command {
 	 */
 	protected boolean hasPermission(Player p) {
 		if( permissionNode == null )
-			permissionNode = "HomeSpawnPlus.command" + getCommandName() + ".use";
+			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName() + ".use";
 		
 		if( !plugin.hasPermission(p, permissionNode) ) {
 			p.sendMessage("You don't have permission to do that.");

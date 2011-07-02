@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus;
 
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.config.ConfigOptions;
@@ -15,16 +16,24 @@ import org.morganm.homespawnplus.config.ConfigOptions;
  *
  */
 public class CooldownManager {
+	@SuppressWarnings("unused")
+	private static final Logger log = HomeSpawnPlus.log;
+	
 	private final HomeSpawnPlus plugin;
+	@SuppressWarnings("unused")
+	private final String logPrefix;
 	
     private Hashtable<String, Long> cooldowns;
 
     public CooldownManager(HomeSpawnPlus plugin) {
     	this.plugin = plugin;
+    	this.logPrefix = HomeSpawnPlus.logPrefix;
+    	
+    	cooldowns = new Hashtable<String, Long>();
     }
     
     private boolean isExemptFromCooldown(Player p, String cooldown) {
-    	if( plugin.getPermissionHandler().has(p, HomeSpawnPlus.BASE_PERMISSION_NODE+"CooldownExempt."+cooldown) )
+    	if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".CooldownExempt."+cooldown) )
     		return true;
     	else
     		return false;
@@ -47,12 +56,12 @@ public class CooldownManager {
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
 		if(cooldownTimeLeft > 0)
 		{
-			p.sendMessage("Cooldown is in effect. You must wait " + cooldownTimeLeft + " seconds.");
-			return true;
+			plugin.getUtil().sendMessage(p, "Cooldown is in effect. You must wait " + cooldownTimeLeft + " seconds.");
+			return false;
 		}
 		
 		setCooldown(p, cooldownName);
-		return false;
+		return true;
 	}
 	
     public void setCooldown(Player p, String cooldown)
@@ -60,7 +69,8 @@ public class CooldownManager {
     	int cooldownAmount = plugin.getConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
     	
     	if(cooldownAmount > 0) {
-    		cooldowns.put(p.getName()+"."+cooldown, System.currentTimeMillis());
+//    		log.info(logPrefix + " saving cooldown "+p.getName()+"."+cooldown+", cooldownAmount = "+cooldownAmount);
+    		cooldowns.put(p.getName()+"."+cooldown, new Long(System.currentTimeMillis()));
     	}
     }
     
@@ -73,6 +83,7 @@ public class CooldownManager {
     public long getCooldownRemaining(Player p, String cooldown)
     {
     	long cooldownRemaining = 0;
+//    	log.info(logPrefix + " checking cooldown for "+cooldown+", player "+p.getName());
 
     	int cooldownAmount = plugin.getConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
     	if( cooldownAmount == 0 )
@@ -82,6 +93,8 @@ public class CooldownManager {
     	Long cooldownStartTime = cooldowns.get(key);
     	if( cooldownStartTime != null )
     	{
+//        	log.info(logPrefix + " cooldown start Time for key "+key+" = "+cooldownStartTime/1000);
+        	
     		// Compare time
     		long timeElapsed = (System.currentTimeMillis() - cooldownStartTime)/1000;
     		
@@ -91,6 +104,7 @@ public class CooldownManager {
     			cooldownRemaining = cooldownAmount-timeElapsed;
     	}
     	
+//    	log.info(logPrefix + " cooldown remaining for key "+key+" = "+cooldownRemaining);
     	return cooldownRemaining;
     }
 }

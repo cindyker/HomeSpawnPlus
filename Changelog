@@ -1,8 +1,12 @@
-v0.5
+v0.5.1 - July 1, 2011
+Fixed command cooldowns.
+Fixed some permissions issues
+
+v0.5 - July 1, 2011
 Added support for setting home using a bed
 First public release
 
-v0.4
+v0.4 - Jun 30, 2011
 Added support for visiting other players homes, protected by permissions
 Lots of testing, lots of bug fixes
 

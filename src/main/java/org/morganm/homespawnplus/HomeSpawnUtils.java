@@ -30,6 +30,7 @@ public class HomeSpawnUtils {
 	private static final Logger log = HomeSpawnPlus.log;
 	private static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
     private static final String LightPurple = "\u00A7d";
+    private static final String Yellow = "\u00A7e";
 	
 	private final String logPrefix = HomeSpawnPlus.logPrefix;
 
@@ -50,7 +51,7 @@ public class HomeSpawnUtils {
 	 * @param message
 	 */
 	public void sendMessage(Player p, String message) {
-		p.sendMessage(LightPurple + message);
+		p.sendMessage(Yellow + message);
 	}
 	
     public void sendHome(Player p)

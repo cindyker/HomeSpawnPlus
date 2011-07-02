@@ -14,7 +14,7 @@ import org.morganm.homespawnplus.command.BaseCommand;
  */
 public class Home extends BaseCommand
 {
-	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".home.others";
+	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
 	
 	@Override
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args)

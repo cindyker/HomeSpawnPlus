@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.convert.Essentials23;
 import org.morganm.homespawnplus.convert.SpawnControl;
@@ -18,8 +19,8 @@ public class HSPConvert extends BaseCommand {
 
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
+		if( !isEnabled() || !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".admin") )
+			return false;
 		
 		if( args.length < 1 ) {
 			p.sendMessage("Usage: /"+getCommandName()+" [essentials|spawncontrol]");

@@ -16,7 +16,7 @@ import org.morganm.homespawnplus.command.BaseCommand;
  */
 public class SetHome extends BaseCommand
 {
-	private static final String OTHER_SETHOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".sethome.others";
+	private static final String OTHER_SETHOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + "command.sethome.others";
 	
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {

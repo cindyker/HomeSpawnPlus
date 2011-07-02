@@ -1,10 +1,10 @@
-v0.1
-Initial version
+v0.5
+Added support for setting home using a bed
+First public release
 
-v0.2
-Lots of refactored code to support MySQL backend using Bukkit persistence
-Added YML config files
-Permission 3.0 support
+v0.4
+Added support for visiting other players homes, protected by permissions
+Lots of testing, lots of bug fixes
 
 v0.3
 Added conversion utilities from Essentials and SpawnControl
@@ -12,10 +12,10 @@ Added additional config options for controlling spawn behavior
 Added ability to disable every command just by using config options, to
 allow admins to easily deal with command conflicts with any other plugins
 
-v0.4
-Added support for visiting other players homes, protected by permissions
-Lots of testing, lots of bug fixes
+v0.2
+Lots of refactored code to support MySQL backend using Bukkit persistence
+Added YML config files
+Permission 3.0 support
 
-v0.5
-Added support for setting home using a bed
-First public release
+v0.1
+Initial version

@@ -193,6 +193,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         List<Class<?>> classList = new LinkedList<Class<?>>();
         classList.add(Home.class);
         classList.add(Spawn.class);
+        classList.add(org.morganm.homespawnplus.entity.Player.class);
         return classList;
     }
     

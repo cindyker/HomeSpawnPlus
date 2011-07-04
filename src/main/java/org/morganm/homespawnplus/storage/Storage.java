@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.storage;
 import java.util.Set;
 
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
 
 
@@ -29,6 +30,9 @@ public interface Storage {
 	/** Notify the backing store that it should purge any in-memory cache it has.
 	 */
 	public void purgeCache();
+	
+	public Player getPlayer(String name);
+	public void writePlayer(Player player);
 	
 	public Home getHome(String world, String playerName);
 	public Spawn getSpawn(String world);

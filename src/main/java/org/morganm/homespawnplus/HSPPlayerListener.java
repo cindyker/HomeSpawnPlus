@@ -138,16 +138,22 @@ public class HSPPlayerListener extends PlayerListener {
     {
     	Player p = e.getPlayer();
     	
-		// Probably a new player
-    	if(util.getHome(p.getName(), p.getWorld()) == null)
-    	{
-    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
-    		
-    		// Send player to spawn
-    		util.sendToSpawn(p);
-    		
-    		// Set home for player
-//    		util.setHome(p.getName(), util.getSpawn(p.getWorld().getName()).getLocation(), HomeSpawnPlus.logPrefix);
+		// Is this a new player?
+    	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
+    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Possible new player "+p.getName()+" detected, checking.");
+    		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
+    		plugin.getStorage().writePlayer(storagePlayer);
+
+    		// also make sure they don't have a home set.  it's possible if they were running HomeSpawnPlus
+    		// before the above Player check was created, that they already have a home set even though
+    		// they weren't in the Player table yet.  In that case, we've already recorded them as a player
+    		// now so just fall through to the default onjoin logic.
+    		if( plugin.getStorage().getHome(p.getWorld().getName(), p.getName()) == null ) {
+	    		// send the new player to the default world spawn
+	    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
+	    		util.sendToSpawn(p);
+	    		return;
+    		}
     	}
     	
     	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");

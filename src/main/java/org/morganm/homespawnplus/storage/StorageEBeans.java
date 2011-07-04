@@ -11,6 +11,7 @@ import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
 
 import com.avaje.ebean.EbeanServer;
@@ -156,5 +157,15 @@ public class StorageEBeans implements Storage {
 	public void purgeCache() {
 		// in theory we should pass this call through to the EBEAN server, but it doesn't
 		// offer any support for this functionality.  So we do nothing.
+	}
+
+	@Override
+	public Player getPlayer(String name) {
+		return plugin.getDatabase().find(Player.class).where().ieq("name", name).findUnique();
+	}
+
+	@Override
+	public void writePlayer(Player player) {
+        plugin.getDatabase().save(player);
 	}
 }

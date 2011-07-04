@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
 
 
@@ -34,6 +35,8 @@ public class StorageCache implements Storage
 	// flat list of all groups that are used in spawngroups
 	private Set<String> spawnDefinedGroups;
 	
+	// cache of players 
+	private HashMap<String, Player> players;
 	// all homes, organized by world then player
 	private HashMap <String, HashMap<String, Home>> homes;
 	// all spawns, organized by world
@@ -46,6 +49,7 @@ public class StorageCache implements Storage
 		homes = new HashMap <String, HashMap<String, Home>>();
 //		spawns = new HashMap <String, Spawn>();
 		groupSpawns = new HashMap <String, HashMap<String, Spawn>>();
+		players = new HashMap<String, Player>();
 		
 		logPrefix = HomeSpawnPlus.logPrefix;
 	}
@@ -250,6 +254,21 @@ public class StorageCache implements Storage
 		homes.clear();
 //		spawns.clear();
 		groupSpawns.clear();
+		players.clear();
+		
+		original.purgeCache();
 	}
 
+	@Override
+	public Player getPlayer(String name) {
+		Player p = original.getPlayer(name);
+		players.put(name, p);
+		return p;
+	}
+
+	@Override
+	public void writePlayer(Player player) {
+		players.remove(player.getName());
+		original.writePlayer(player);
+	}
 }

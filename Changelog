@@ -1,3 +1,7 @@
+v0.6.1 - July 3, 2011
+Fixed issue with players being mistaken for new and sent back to spawn
+whenever they logged in if they had no home set
+
 v0.6 - July 2, 2011
 Added config option for choosing in-memory cache
 Fixed bugs related to in-memory cache

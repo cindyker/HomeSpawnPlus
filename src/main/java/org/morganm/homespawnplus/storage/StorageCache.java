@@ -136,6 +136,9 @@ public class StorageCache implements Storage
 			homes.put(world, worldHomes);
 		}
 		worldHomes.put(playerName, home);
+		
+		if( allHomes != null )
+			allHomes.add(home);
 	}
 
 	/** Called only when getAllHomes() hits the database to return all homes - since we have
@@ -168,6 +171,9 @@ public class StorageCache implements Storage
 		// if the spawnDefinedGroups cache is populated and group isn't null, make sure this group is in the set.
 		if( spawnDefinedGroups != null && group != null )
 			spawnDefinedGroups.add(group);
+		
+		if( allSpawns != null )
+			allSpawns.add(spawn);
 	}
 	
 	/** Called only when getAllSpawns() hits the database to return all spawns - since we have
@@ -270,5 +276,19 @@ public class StorageCache implements Storage
 	public void writePlayer(Player player) {
 		players.remove(player.getName());
 		original.writePlayer(player);
+	}
+
+	@Override
+	public void removeHome(Home home) {
+		String world = home.getWorld();
+		String playerName = home.getPlayerName();
+		
+		HashMap<String, Home> worldHomes = homes.get(world);
+		if( worldHomes != null )
+			worldHomes.remove(playerName);
+		if( allHomes != null )
+			allHomes.remove(home);
+		
+		original.removeHome(home);
 	}
 }

@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.entity.Home;
 
 
 /**
@@ -47,6 +48,7 @@ public class HSPPlayerListener extends PlayerListener {
      */
     private Location doSpawn(Player p, String configBehaviorOption) {
     	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
+    	System.out.println("doSpawn, behavior = "+behavior);
     	
     	// default behavior is do nothing
     	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
@@ -54,8 +56,21 @@ public class HSPPlayerListener extends PlayerListener {
     	
     	if( behavior.equals(ConfigOptions.VALUE_HOME) )
     		return util.sendHome(p);
-    	else if( behavior.equals(ConfigOptions.VALUE_MULTIHOME) )
-	    	return util.sendHome(p);			// TODO: need to implement multi home algorithm
+    	else if( behavior.equals(ConfigOptions.VALUE_MULTIHOME) ) {
+    		Home home = util.getHome(p.getName(), p.getWorld());
+    		
+    		// no home set on current world, send them to default world
+    		if( home == null ) {
+        		home = util.getHome(p.getName(), util.getDefaultWorld());
+        		if( home != null )
+        			return home.getLocation();
+        		// if home is null, this will fall-through to sendHome() below which will just
+        		// send them to the spawn in the current world
+    		}
+    		
+    		// they have a home set on this world, send them there
+			return util.sendHome(p);
+    	}
     	else if( behavior.equals(ConfigOptions.VALUE_GROUP) )
 	    	return util.sendToGroupSpawn(p);
     	else if( behavior.equals(ConfigOptions.VALUE_WORLD) )

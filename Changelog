@@ -1,3 +1,7 @@
+v0.6.2 - July 9, 2011
+Added ability for players to delete their homes (/home delete)
+Fixed multihome spawning
+
 v0.6.1 - July 3, 2011
 Fixed issue with players being mistaken for new and sent back to spawn
 whenever they logged in if they had no home set

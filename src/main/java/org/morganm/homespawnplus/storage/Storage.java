@@ -45,4 +45,6 @@ public interface Storage {
 	
 	public void writeHome(Home home);
 	public void writeSpawn(Spawn spawn);
+	
+	public void removeHome(Home home);
 }

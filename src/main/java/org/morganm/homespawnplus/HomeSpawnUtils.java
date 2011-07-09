@@ -55,14 +55,16 @@ public class HomeSpawnUtils {
 		p.sendMessage(Yellow + message);
 	}
 	
-    public Location sendHome(Player p)
-    {
-    	if( p == null )
-    		return null;
-    	
-    	// try the home they have set for this world
-		Home home = getHome(p.getName(), p.getWorld());
-    	Location l = home.getLocation();
+	public Location sendHome(Player p, String world) {
+		if( p == null || world == null )
+			return null;
+		
+		Home home = getHome(p.getName(), world);
+		
+		Location l = null;
+		if( home != null )
+			l = home.getLocation();
+		
 //		log.info(logPrefix + " sendHome got object "+home+" for player "+p.getName()+", location = "+l);
 		
 		if( l != null ) {
@@ -72,6 +74,11 @@ public class HomeSpawnUtils {
 		else {
 			return sendToSpawn(p);					// if no home is set, send them to spawn
 		}
+	}
+	
+    public Location sendHome(Player p)
+    {
+    	return sendHome(p, p.getWorld().getName());
     }
     
     public Location sendToGlobalSpawn(Player p)
@@ -238,6 +245,13 @@ public class HomeSpawnUtils {
     	return getGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, worldName);
     }
     
+    public String getDefaultWorld() {
+    	if( defaultSpawnWorld == null )
+    		getDefaultSpawn();		// this will find the default spawn world and set defaultSpawnWorld variable
+    	
+    	return defaultSpawnWorld;
+    }
+    
     /** Return the global default spawn (ie. there is only one, this is not the multi-world spawn).
      * 
      *  This checks, in order:
@@ -333,12 +347,14 @@ public class HomeSpawnUtils {
     	ArrayList<Home> possibles = new ArrayList<Home>();
     	for(Home home : homes) {
     		String homeOwner = home.getPlayerName();
-    		if( homeOwner.contains(playerName) ) {
+    		if( worldName.equals(home.getWorld()) && homeOwner.contains(playerName) ) {
     			possibles.add(home);
     		}
     	}
     	
-    	if( possibles.size() == 1 )
+    	if( possibles.size() == 0 )
+    		return null;
+    	else if( possibles.size() == 1 )
     		return possibles.get(0);
     	
     	Home bestMatch = null;

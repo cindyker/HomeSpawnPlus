@@ -168,4 +168,9 @@ public class StorageEBeans implements Storage {
 	public void writePlayer(Player player) {
         plugin.getDatabase().save(player);
 	}
+
+	@Override
+	public void removeHome(Home home) {
+		plugin.getDatabase().delete(home);
+	}
 }

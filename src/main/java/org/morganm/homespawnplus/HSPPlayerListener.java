@@ -149,6 +149,7 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     }
     
+    @Override
     public void onPlayerJoin(PlayerJoinEvent e)
     {
     	Player p = e.getPlayer();
@@ -173,6 +174,26 @@ public class HSPPlayerListener extends PlayerListener {
     	
     	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	doSpawn(p, ConfigOptions.SETTING_JOIN_BEHAVIOR);
+    }
+    
+    private void updateQuitLocation(Player p)
+    {
+    	Location quitLocation = p.getLocation();
+    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
+    	playerStorage.updateLastLogoutLocation(quitLocation);
+    	plugin.getStorage().writePlayer(playerStorage);
+    }
+    
+    @Override
+    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
+    {
+    	updateQuitLocation(event.getPlayer());
+    }
+    
+    @Override
+    public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
+    {
+    	updateQuitLocation(event.getPlayer());
     }
     
     public void onPlayerRespawn(PlayerRespawnEvent e)

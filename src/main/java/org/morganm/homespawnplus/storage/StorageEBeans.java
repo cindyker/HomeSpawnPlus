@@ -16,6 +16,8 @@ import org.morganm.homespawnplus.entity.Spawn;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.SqlQuery;
+import com.avaje.ebean.SqlUpdate;
 
 /** Implements storage using Bukkit Ebeans system.  This can be backed by either MySQL
  * or sqlLite depending on what the admin has configured in their bukkit.yml: it makes no
@@ -28,9 +30,11 @@ public class StorageEBeans implements Storage {
     private static final Logger log = HomeSpawnPlus.log;
 
 	private final HomeSpawnPlus plugin;
+	private final String logPrefix;
 	
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
+		this.logPrefix = HomeSpawnPlus.logPrefix;
 		
 		initializeStorage();
 	}
@@ -47,12 +51,44 @@ public class StorageEBeans implements Storage {
             
             db.find(Home.class).findRowCount();
             db.find(Spawn.class).findRowCount();
+            db.find(Player.class).findRowCount();
         } catch (PersistenceException ex) {
             log.info("Installing database for "
                     + plugin.getPluginName()
                     + " due to first time usage");
             plugin.installDatabaseDDL();
         }
+        
+        try {
+        	upgradeDatabase();
+        } catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	private void upgradeDatabase() {
+		int knownVersion = 063;		// start by assuming current version
+		
+		EbeanServer db = plugin.getDatabase();
+		try {
+			SqlQuery query = db.createSqlQuery("select world from hsp_player");
+			query.findList();
+		}
+		catch(PersistenceException e) {
+			knownVersion = 062;
+		}
+		
+		if( knownVersion < 063 ) {
+			log.info(logPrefix + " Upgrading from version 0.6.2 database to version 0.6.3");
+			SqlUpdate update = db.createSqlUpdate("ALTER TABLE hsp_player "
+					+ "ADD(`world` varchar(32) DEFAULT NULL"
+					+ ",`x` double DEFAULT NULL"
+					+ ",`y` double DEFAULT NULL"
+					+ ",`z` double DEFAULT NULL"
+					+ ",`pitch` float DEFAULT NULL"
+					+ ",`yaw` float DEFAULT NULL);"
+			);
+			update.execute();
+			log.info(logPrefix + " Upgrade from version 0.6.2 database to version 0.6.3 complete");
+		}
 	}
 	
 	/* (non-Javadoc)

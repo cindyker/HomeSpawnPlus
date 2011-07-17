@@ -9,10 +9,12 @@ package org.morganm.homespawnplus.config;
  */
 public interface ConfigOptions {
 	public static final String STORAGE_TYPE = "core.storage";
+	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";
 	
 	public static final String DEFAULT_WORLD = "spawn.defaultWorld";
 	public static final String COMMAND_TOGGLE_BASE = "disabledCommands.";
 	
+	public static final String ENABLE_RECORD_LAST_LOGOUT = "spawn.recordLastLogout";
 	public static final String ENABLE_HOME_BEDS = "home.bedsethome";
 	public static final String ENABLE_GROUP_SPAWN = "spawn.groups";
 

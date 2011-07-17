@@ -1,3 +1,12 @@
+v0.7
+made it so "defaultWorld" is also the default spawn world for new players
+added "core.defaultPermissions" so admins can enable defaultPermissions if
+they aren't using a Permission-compatible plugin
+added an option for telling HomeSpawnPlus to track player last logout location
+and send them there on next login (if onJoin="default"), instead of letting
+default Bukkit track location, which seems to get it wrong sometimes (sends
+people to surface or down into lava, etc)
+
 v0.6.2 - July 9, 2011
 Added ability for players to delete their homes (/home delete)
 Fixed multihome spawning

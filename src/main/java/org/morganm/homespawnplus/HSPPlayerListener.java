@@ -48,11 +48,23 @@ public class HSPPlayerListener extends PlayerListener {
      */
     private Location doSpawn(Player p, String configBehaviorOption) {
     	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
-    	System.out.println("doSpawn, behavior = "+behavior);
+    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
     	
     	// default behavior is do nothing
     	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
-    		return null;
+    	{
+    		if( plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+	    		org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
+	    		Location lastLogoutLocation = null;
+	    		if( storagePlayer != null )
+	    			lastLogoutLocation = storagePlayer.getLastLogoutLocation();
+	
+	    		log.info(logPrefix + " sending to lastLogoutLocation "+lastLogoutLocation); 
+				return lastLogoutLocation;
+    		}
+    		else
+    			return null;
+    	}
     	
     	if( behavior.equals(ConfigOptions.VALUE_HOME) )
     		return util.sendHome(p);
@@ -167,7 +179,10 @@ public class HSPPlayerListener extends PlayerListener {
     		if( plugin.getStorage().getHome(p.getWorld().getName(), p.getName()) == null ) {
 	    		// send the new player to the default world spawn
 	    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
-	    		util.sendToSpawn(p);
+	    		
+	    		Location l = util.getDefaultSpawn().getLocation();
+	    		util.delayedTeleport(p, l);
+	    		
 	    		return;
     		}
     	}
@@ -178,10 +193,12 @@ public class HSPPlayerListener extends PlayerListener {
     
     private void updateQuitLocation(Player p)
     {
-    	Location quitLocation = p.getLocation();
-    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
-    	playerStorage.updateLastLogoutLocation(quitLocation);
-    	plugin.getStorage().writePlayer(playerStorage);
+    	if( plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+	    	Location quitLocation = p.getLocation();
+	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
+	    	playerStorage.updateLastLogoutLocation(quitLocation);
+	    	plugin.getStorage().writePlayer(playerStorage);
+    	}
     }
     
     @Override

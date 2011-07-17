@@ -127,6 +127,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	pluginName = pluginDescription.getName();
     	logPrefix = "[" + pluginName + "]";
     	
+    	org.morganm.homespawnplus.entity.Player.setServer(getServer());
+    	
     	jarFile = getFile();
     	
     	cooldownManager = new CooldownManager(this);
@@ -158,6 +160,9 @@ public class HomeSpawnPlus extends JavaPlugin {
         pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, this);
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Priority.Monitor, this);
+        
         pm.registerEvent(Event.Type.WORLD_LOAD, new HSPWorldListener(this), Priority.Monitor, this);
         
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
@@ -209,8 +214,16 @@ public class HomeSpawnPlus extends JavaPlugin {
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 
     		return permissionHandler.has(p, permissionNode);
-    	else
-    		return p.isOp();
+    	else {
+    		if( p.isOp() )
+    			return true;
+    		
+    		List<String> defaultPerms = config.getStringList(ConfigOptions.DEFAULT_PERMISSIONS, null);
+    		if( defaultPerms.contains(permissionNode) )
+    			return true;
+    		else
+    			return false;
+    	}
     }
     
     /** Return true if we found and are using Permissions system, false if not.

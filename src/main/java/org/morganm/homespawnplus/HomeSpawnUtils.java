@@ -390,4 +390,28 @@ public class HomeSpawnUtils {
     	return spawn;
     	
     }
+    
+    /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
+     * the server if you teleport them during certain events (such as onPlayerJoin).
+     * 
+     * @param p
+     * @param l
+     */
+    public void delayedTeleport(Player p, Location l) {
+    	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DelayedTeleport(p, l));
+    }
+    
+    private class DelayedTeleport implements Runnable {
+    	private Player p;
+    	private Location l;
+    	
+    	public DelayedTeleport(Player p, Location l) {
+    		this.p = p;
+    		this.l = l;
+    	}
+    	
+    	public void run() {
+    		p.teleport(l);
+    	}
+    }
 }

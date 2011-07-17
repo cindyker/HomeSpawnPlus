@@ -14,6 +14,7 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 
@@ -33,6 +34,8 @@ import com.avaje.ebean.validation.NotNull;
 		}
 )
 public class Player {
+	private static transient Server server;
+	
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -43,18 +46,22 @@ public class Player {
 
     @Length(max=32)
 	private String world;
-    private double x;
-    private double y;
-    private double z;
+    private Double x;
+    private Double y;
+    private Double z;
     
-    private float pitch;
-	private float yaw;
+    private Float pitch;
+	private Float yaw;
 	
 	@Version
 	private Timestamp lastModified;
 	
 	@CreatedTimestamp
 	private Timestamp dateCreated;
+	
+	public static void setServer(Server server) {
+		Player.server = server;
+	}
 	
     public Player() {}
     public Player(org.bukkit.entity.Player player) {
@@ -75,8 +82,14 @@ public class Player {
     }
     
     public Location getLastLogoutLocation() {
-    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(world);
-    	return new Location(w, x, y, z, yaw, pitch);
+    	if( server == null )
+    		server = HomeSpawnPlus.getInstance().getServer();
+    	
+    	if( getWorld() == null )
+    		return null;
+    	
+    	World w = server.getWorld(getWorld());
+    	return new Location(w, getX(), getY(), getZ(), getYaw(), getPitch());
     }
     
 	public int getId() {
@@ -112,34 +125,34 @@ public class Player {
 	public void setWorld(String world) {
 		this.world = world;
 	}
-	public double getX() {
+	public Double getX() {
 		return x;
 	}
-	public void setX(double x) {
+	public void setX(Double x) {
 		this.x = x;
 	}
-	public double getY() {
+	public Double getY() {
 		return y;
 	}
-	public void setY(double y) {
+	public void setY(Double y) {
 		this.y = y;
 	}
-	public double getZ() {
+	public Double getZ() {
 		return z;
 	}
-	public void setZ(double z) {
+	public void setZ(Double z) {
 		this.z = z;
 	}
-	public float getPitch() {
+	public Float getPitch() {
 		return pitch;
 	}
-	public void setPitch(float pitch) {
+	public void setPitch(Float pitch) {
 		this.pitch = pitch;
 	}
-	public float getYaw() {
+	public Float getYaw() {
 		return yaw;
 	}
-	public void setYaw(float yaw) {
+	public void setYaw(Float yaw) {
 		this.yaw = yaw;
 	}
 }

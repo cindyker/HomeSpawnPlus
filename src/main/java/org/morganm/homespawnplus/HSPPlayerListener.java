@@ -48,7 +48,7 @@ public class HSPPlayerListener extends PlayerListener {
      */
     private Location doSpawn(Player p, String configBehaviorOption) {
     	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
-    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
+//    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
     	
     	// default behavior is do nothing
     	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
@@ -59,7 +59,7 @@ public class HSPPlayerListener extends PlayerListener {
 	    		if( storagePlayer != null )
 	    			lastLogoutLocation = storagePlayer.getLastLogoutLocation();
 	
-	    		log.info(logPrefix + " sending to lastLogoutLocation "+lastLogoutLocation); 
+//	    		log.info(logPrefix + " sending to lastLogoutLocation "+lastLogoutLocation); 
 				return lastLogoutLocation;
     		}
     		else

@@ -1,4 +1,4 @@
-v0.7
+v0.7 - July 17, 2011
 made it so "defaultWorld" is also the default spawn world for new players
 added "core.defaultPermissions" so admins can enable defaultPermissions if
 they aren't using a Permission-compatible plugin

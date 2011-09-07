@@ -6,12 +6,15 @@ package org.morganm.homespawnplus.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 import org.bukkit.util.config.Configuration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.SpawnStrategy;
 
 
 /**
@@ -76,4 +79,19 @@ public class ConfigurationYAML extends Configuration implements Config {
             }
         }
     }
+
+    /** TODO: add caching so we aren't string->enum converting on every join/death
+     * 
+     */
+	@Override
+	public List<SpawnStrategy> getStrategies(String node) {
+		List<SpawnStrategy> spawnStrategies = new ArrayList<SpawnStrategy>();
+    	List<String> strategies = getStringList(node, null);
+
+    	for(String s : strategies) {
+    		spawnStrategies.add(SpawnStrategy.mapStringToStrategy(s));
+    	}
+    	
+		return spawnStrategies;
+	}
 }

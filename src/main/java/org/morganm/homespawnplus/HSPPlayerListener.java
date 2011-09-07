@@ -2,6 +2,7 @@ package org.morganm.homespawnplus;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -42,30 +43,37 @@ public class HSPPlayerListener extends PlayerListener {
         bedClicks = new HashMap<String, ClickedEvent>();
     }
 
+    private boolean isVerboseLogging() {
+    	return plugin.getConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
+    }
+    
     /** Maybe should be moved to util?  Return location player was sent to.
      * 
      * @param preferredBehavior
      */
     private Location doSpawn(Player p, String configBehaviorOption) {
-    	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
+//    	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
 //    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
     	
+    	List<SpawnStrategy> strategies = plugin.getConfig().getStrategies(configBehaviorOption);
+    	Location l = util.getSpawnLocation(p, strategies);
+    	
     	// default behavior is do nothing
-    	if( behavior.equals(ConfigOptions.VALUE_DEFAULT) )
-    	{
-    		if( plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
-	    		org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
-	    		Location lastLogoutLocation = null;
-	    		if( storagePlayer != null )
-	    			lastLogoutLocation = storagePlayer.getLastLogoutLocation();
-	
-//	    		log.info(logPrefix + " sending to lastLogoutLocation "+lastLogoutLocation); 
-				return lastLogoutLocation;
+    	if( l == null ) {
+    		// if we are spawning and the RECORD_LAST_LOGOUT config is set, then we lookup
+    		// our last logout location and return that
+    		if( ConfigOptions.SETTING_SPAWN_BEHAVIOR.equals(configBehaviorOption) &&
+    				plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+    			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
+    			Location lastLogoutLocation = null;
+    			if( storagePlayer != null )
+    				l = storagePlayer.getLastLogoutLocation();
     		}
-    		else
-    			return null;
     	}
     	
+    	return l;
+    	
+    	/*
     	if( behavior.equals(ConfigOptions.VALUE_HOME) )
     		return util.sendHome(p);
     	else if( behavior.equals(ConfigOptions.VALUE_MULTIHOME) ) {
@@ -91,6 +99,7 @@ public class HSPPlayerListener extends PlayerListener {
     		return util.sendToGlobalSpawn(p);
     	else
     		return null;
+    		*/
     }
     
     @Override
@@ -126,14 +135,14 @@ public class HSPPlayerListener extends PlayerListener {
         			
         			plugin.getUtil().sendMessage(player, "Your home has been set to this location.");
         			bedClicks.remove(player.getName());
-            		event.setCancelled(true);
+//            		event.setCancelled(true);
         		}
         	}
         	// otherwise this is first click, tell them to click again to save their home
         	else {
         		bedClicks.put(player.getName(), new ClickedEvent(b.getLocation(), System.currentTimeMillis()));
         		plugin.getUtil().sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
-        		event.setCancelled(true);
+//        		event.setCancelled(true);
         	}
         }
     }
@@ -168,7 +177,9 @@ public class HSPPlayerListener extends PlayerListener {
     	
 		// Is this a new player?
     	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
-    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Possible new player "+p.getName()+" detected, checking.");
+    		if( isVerboseLogging() )
+    			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected, checking.");
+    		
     		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
     		plugin.getStorage().writePlayer(storagePlayer);
 
@@ -178,7 +189,8 @@ public class HSPPlayerListener extends PlayerListener {
     		// now so just fall through to the default onjoin logic.
     		if( plugin.getStorage().getHome(p.getWorld().getName(), p.getName()) == null ) {
 	    		// send the new player to the default world spawn
-	    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
+    			if( isVerboseLogging() )
+    				HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
 	    		
 	    		Location l = util.getDefaultSpawn().getLocation();
 	    		util.delayedTeleport(p, l);
@@ -187,7 +199,8 @@ public class HSPPlayerListener extends PlayerListener {
     		}
     	}
     	
-    	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
+    	if( isVerboseLogging() )
+    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	doSpawn(p, ConfigOptions.SETTING_JOIN_BEHAVIOR);
     }
     
@@ -215,7 +228,8 @@ public class HSPPlayerListener extends PlayerListener {
     
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
-    	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
+    	if( isVerboseLogging() )
+    		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
     	Location l = doSpawn(e.getPlayer(), ConfigOptions.SETTING_DEATH_BEHAVIOR);
     	if( l != null )
     		e.setRespawnLocation(l);

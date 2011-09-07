@@ -5,6 +5,7 @@ package org.morganm.homespawnplus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -53,6 +54,82 @@ public class HomeSpawnUtils {
 	 */
 	public void sendMessage(Player p, String message) {
 		p.sendMessage(Yellow + message);
+	}
+	
+	/** This is called when a player is spawning (either onJoin or onDeath) and its job is to
+	 * follow the strategies given to find the preferred Location to send the player.
+	 * 
+	 * @param p
+	 * @return
+	 */
+	public Location getSpawnLocation(Player p, List<SpawnStrategy> spawnStrategies) {
+		Location l = null;
+		
+		String playerName = p.getName();
+		
+		for(SpawnStrategy s : spawnStrategies) {
+			// we stop as soon as we have a valid location to return
+			if( l != null )
+				break;
+			
+			Home home = null;
+			Spawn spawn = null;
+			switch(s) {
+			case HOME_THIS_WORLD_ONLY:
+				home = getHome(playerName, p.getWorld());
+				if( home != null )
+					l = home.getLocation();
+				break;
+
+				// try home on this world first, if not, use home on default world
+			case HOME_MULTI_WORLD:
+				home = getHome(playerName, p.getWorld());
+				if( home != null )
+					l = home.getLocation();
+				else {
+					home = getHome(playerName, getDefaultWorld());
+					if( home != null )
+						l = home.getLocation();
+				}
+				break;
+
+			case HOME_DEFAULT_WORLD:
+				home = getHome(playerName, getDefaultWorld());
+				if( home != null )
+					l = home.getLocation();
+				break;
+				
+			case SPAWN_THIS_WORLD_ONLY:
+				spawn = getSpawn(p.getWorld().getName());
+				if( spawn != null )
+					l = spawn.getLocation();
+				break;
+				
+			case SPAWN_DEFAULT_WORLD:
+				l = getDefaultSpawn().getLocation();
+				break;
+				
+			case SPAWN_GROUP:
+				// TODO: this should be refactored into it's own method when I get around to refactoring
+				// this whole class.
+				String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), playerName);
+				spawn = getGroupSpawn(group, p.getWorld().getName());
+	    		
+	    		if( spawn != null )
+	    			l = spawn.getLocation();
+	    		break;
+				
+			case SPAWN_NEAREST_SPAWN:
+				// TODO: not yet implemented
+				break;
+			}
+		}
+		
+		// if all strategies fail, we default to spawn on the default world
+		if( l == null )
+			l = getDefaultSpawn().getLocation();
+		
+		return l;
 	}
 	
 	public Location sendHome(Player p, String world) {

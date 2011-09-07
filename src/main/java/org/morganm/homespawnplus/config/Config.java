@@ -5,6 +5,8 @@ package org.morganm.homespawnplus.config;
 
 import java.util.List;
 
+import org.morganm.homespawnplus.SpawnStrategy;
+
 /** Our configuration which determines how a number of things about how this mod operates.
  * Intended to be used with ConfigOptions class for setting nodes as String keys.
  * 
@@ -84,4 +86,6 @@ public interface Config {
      * @return list of strings
      */
     public List<String> getStringList(String path, List<String> def);
+    
+    public List<SpawnStrategy> getStrategies(String node);
 }

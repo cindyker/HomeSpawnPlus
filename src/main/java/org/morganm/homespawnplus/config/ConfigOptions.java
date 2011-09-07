@@ -8,6 +8,8 @@ package org.morganm.homespawnplus.config;
  *
  */
 public interface ConfigOptions {
+	public static final String VERBOSE_LOGGING = "verboseLogging";
+	
 	public static final String STORAGE_TYPE = "core.storage";
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";
 	
@@ -38,4 +40,14 @@ public interface ConfigOptions {
 	public static final String SETTING_WORLD_OVERRIDE = "spawn.override_world";
 	
 	public static final String COOLDOWN_BASE = "cooldown.";
+	
+	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
+	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";
+	public static final String STRATEGY_HOME_MULTI_WORLD = "homeMultiWorld";
+	public static final String STRATEGY_HOME_NEAREST_HOME = "homeNearestHome";
+	public static final String STRATEGY_SPAWN_THIS_WORLD_ONLY = "spawnLocalWorld";
+	public static final String STRATEGY_SPAWN_DEFAULT_WORLD = "spawnDefaultWorld";
+	public static final String STRATEGY_SPAWN_GROUP = "spawnGroup";
+	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearestSpawn";
+	public static final String STRATEGY_DEFAULT = "default";
 }

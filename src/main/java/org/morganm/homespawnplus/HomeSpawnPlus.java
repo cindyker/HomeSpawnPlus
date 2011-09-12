@@ -52,6 +52,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     
     private PluginDescriptionFile pluginDescription;
     private CooldownManager cooldownManager;
+    private WarmupManager warmupManager;
     private HomeSpawnUtils spawnUtils;
     private String pluginName;
     private Storage storage;
@@ -132,6 +133,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	jarFile = getFile();
     	
     	cooldownManager = new CooldownManager(this);
+    	warmupManager = new WarmupManager(this);
     	spawnUtils = new HomeSpawnUtils(this);
     	
     	// load our configuration and database
@@ -155,6 +157,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
         PluginManager pm = getServer().getPluginManager();
     	HSPPlayerListener playerListener = new HSPPlayerListener(this);
+    	HSPEntityListener entityListener = new HSPEntityListener(this);
         
     	// Register our events
         pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, this);
@@ -162,8 +165,16 @@ public class HomeSpawnPlus extends JavaPlugin {
         pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Priority.Monitor, this);
-        
         pm.registerEvent(Event.Type.WORLD_LOAD, new HSPWorldListener(this), Priority.Monitor, this);
+        
+        // TODO: need option for warmupMoveDisable
+        if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) ) {
+            pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Monitor, this);
+            
+            pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
+        }
         
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
 
@@ -246,6 +257,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     public PermissionHandler getPermissionHandler() { return permissionHandler; }
     
     public CooldownManager getCooldownManager() { return cooldownManager; }
+    
+    public WarmupManager getWarmupmanager() { return warmupManager; }
     
     public HomeSpawnUtils getUtil() { return spawnUtils; }
     

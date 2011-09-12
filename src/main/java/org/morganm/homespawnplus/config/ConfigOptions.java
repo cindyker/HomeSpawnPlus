@@ -13,6 +13,10 @@ public interface ConfigOptions {
 	public static final String STORAGE_TYPE = "core.storage";
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";
 	
+	public static final String USE_WARMUPS = "warmups.enabled";
+	public static final String WARMUPS_ON_MOVE_CANCEL = "warmups.onMoveCancel";
+	public static final String WARMUPS_ON_DAMAGE_CANCEL = "warmups.onDamageCancel";
+	
 	public static final String DEFAULT_WORLD = "spawn.defaultWorld";
 	public static final String COMMAND_TOGGLE_BASE = "disabledCommands.";
 	
@@ -40,6 +44,7 @@ public interface ConfigOptions {
 	public static final String SETTING_WORLD_OVERRIDE = "spawn.override_world";
 	
 	public static final String COOLDOWN_BASE = "cooldown.";
+	public static final String WARMUP_BASE = "warmup.";
 	
 	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
 	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";

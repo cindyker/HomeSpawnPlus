@@ -14,7 +14,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 
@@ -31,16 +34,18 @@ public class HSPPlayerListener extends PlayerListener {
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
+    private final WarmupManager warmupManager;
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
     private long lastCleanup;
-
+    
     public HSPPlayerListener(HomeSpawnPlus instance) {
         logPrefix = HomeSpawnPlus.logPrefix;
         
         plugin = instance;
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
+        warmupManager = plugin.getWarmupmanager();
     }
 
     private boolean isVerboseLogging() {
@@ -243,5 +248,20 @@ public class HSPPlayerListener extends PlayerListener {
     		this.location = location;
     		this.timestamp = timestamp;
     	}
+    }
+    
+    
+    // WARMUP-RELATED HOOKS
+    @Override
+    public void onPlayerMove(PlayerMoveEvent event) {
+		warmupManager.processPlayerMove(event);
+    }
+    @Override
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+		warmupManager.processPlayerTeleport(event);
+    }
+    @Override
+    public void onPlayerPortal(PlayerPortalEvent event) {
+		warmupManager.processPlayerPortal(event);
     }
 }

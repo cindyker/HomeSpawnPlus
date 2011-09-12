@@ -283,6 +283,25 @@ public class HomeSpawnUtils {
     	plugin.getStorage().writeHome(home);
     }
    
+    public void setSpawn(String spawnName, Location l, String updatedBy)
+    {
+    	Spawn spawn = plugin.getStorage().getSpawnByName(spawnName);
+    	
+		// if we get an object back, we already have a Spawn set for this spawnName, so we
+		// just update the x/y/z location of it.
+    	if( spawn != null ) {
+    		spawn.setLocation(l);
+    		spawn.setUpdatedBy(updatedBy);
+    	}
+    	// this is a new spawn for this world/group combo, create a new object
+    	else {
+    		spawn = new Spawn(l, updatedBy);
+    		spawn.setName(spawnName);
+    	}
+    	
+    	plugin.getStorage().writeSpawn(spawn);    	
+    }
+    
     /** Set the spawn for a given world.
      * 
      * @param l
@@ -311,8 +330,10 @@ public class HomeSpawnUtils {
     		spawn.setUpdatedBy(updatedBy);
     	}
     	// this is a new spawn for this world/group combo, create a new object
-    	else
-    		spawn = new Spawn(l, updatedBy, group);
+    	else {
+    		spawn = new Spawn(l, updatedBy);
+    		spawn.setGroup(group);
+    	}
     	
     	plugin.getStorage().writeSpawn(spawn);
     }
@@ -382,7 +403,8 @@ public class HomeSpawnUtils {
 			// world spawn coordinates and complain loudly in the logs.
 			if( spawn == null ) {
 				log.warning(logPrefix + " ERROR: could not find default Spawn - improvising!");
-				spawn = new Spawn(l, logPrefix, Storage.HSP_WORLD_SPAWN_GROUP);
+				spawn = new Spawn(l, logPrefix);
+				spawn.setGroup(Storage.HSP_WORLD_SPAWN_GROUP);
 			}
 		}
 		

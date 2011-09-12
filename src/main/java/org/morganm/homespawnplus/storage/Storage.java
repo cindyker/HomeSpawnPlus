@@ -37,6 +37,7 @@ public interface Storage {
 	public Home getHome(String world, String playerName);
 	public Spawn getSpawn(String world);
 	public Spawn getSpawn(String world, String group);
+	public Spawn getSpawnByName(String name);
 	
 	public Set<String> getSpawnDefinedGroups();
 	

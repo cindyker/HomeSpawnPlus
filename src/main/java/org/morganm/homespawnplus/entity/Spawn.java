@@ -85,10 +85,10 @@ public class Spawn {
      * @param updatedBy
      * @param group the Group this spawn represents. Can be null to represent global spawn for the given world.
      */
-    public Spawn(Location l, String updatedBy, String group) {
+    public Spawn(Location l, String updatedBy) {
     	setLocation(l);
     	setUpdatedBy(updatedBy);
-    	setGroup(group);
+//    	setGroup(group);
     }
     
     public void setLocation(Location l) {

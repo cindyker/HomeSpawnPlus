@@ -139,6 +139,17 @@ public class StorageEBeans implements Storage {
 		return query.findUnique();
 	}
 
+	@Override
+	public Spawn getSpawnByName(String name) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find spawn where name = :name";
+		
+		Query<Spawn> query = db.createQuery(Spawn.class, q);
+		query.setParameter("name", name);
+		
+		return query.findUnique();
+	}
+
 	/* We make the assumption that there are relatively few spawns and group combinations,
 	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
 	 * them for the valid group list.

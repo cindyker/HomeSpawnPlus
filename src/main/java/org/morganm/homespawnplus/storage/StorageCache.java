@@ -125,6 +125,12 @@ public class StorageCache implements Storage
 		return spawn;
 	}
 	
+	@Override
+	public Spawn getSpawnByName(String name) {
+		// TODO: too lazy to cache this right now, just pass through
+		return original.getSpawnByName(name);
+	}
+	
 	// update a Home in the in-memory cache
 	private void updateHome(Home home) {
 		String world = home.getWorld();

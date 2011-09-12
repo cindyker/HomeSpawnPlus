@@ -39,3 +39,63 @@ commands:
   hsp:
     description: Load and convert data from another data store
     usage: /<command> [reloadconfig|reloaddata]
+permissions:
+    hsp.*:
+        description: Gives access to all HomeSpawnPlus permissions
+        children:
+            hsp.home.bedsethome: true
+	    hsp.command.CooldownExempt.*: true
+            hsp.command.*: true
+    hsp.home.bedsethome:
+        description: Allows a user to set home by right-clicking a bed
+        default: true
+    hsp.command.*:
+        description: Gives access to all HomeSpawnPlus commands
+        children:
+            hsp.command.home.use: true
+            hsp.command.home.others: true
+            hsp.command.sethome.use: true
+            hsp.command.sethome.others: true
+            hsp.command.spawn.use: true
+            hsp.command.setspawn.use: true
+            hsp.command.setgroupspawn.use: true
+            hsp.command.groupspawn.use: true
+    hsp.command.home.use:
+        description: Allows use of the /home command
+        default: op
+    hsp.command.home.others:
+        description: Allows use of the /home command to teleport to other homes
+        default: op
+    hsp.command.sethome.use:
+        description: Allows use of the /sethome command
+        default: op
+    hsp.command.sethome.others:
+        description: Allows use of the /sethome command to set others homes
+        default: op
+    hsp.command.spawn.use:
+        description: Allows use of the /spawn command
+        default: op
+    hsp.command.setspawn.use:
+        description: Allows use of the /setspawn command
+        default: op
+    hsp.command.setgroupspawn.use:
+        description: Allows use of the /setgroupspawn command
+        default: op
+    hsp.command.groupspawn.use:
+        description: Allows use of the /groupspawn command
+        default: op
+    hsp.command.CooldownExempt.*:
+        description: Exempt from all cooldowns
+        children:
+          hsp.command.CooldownExempt.home
+          hsp.command.CooldownExempt.spawn
+          hsp.command.CooldownExempt.groupspawn
+    hsp.command.CooldownExempt.home:
+        description: Exempt from /home cooldown
+        default: op
+    hsp.command.CooldownExempt.spawn:
+        description: Exempt from /spawn cooldown
+        default: op
+    hsp.command.CooldownExempt.groupspawn:
+        description: Exempt from /groupspawn cooldown
+        default: op

@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.7
+version: 0.8
 author: morganm
 database: true
 commands:
@@ -44,8 +44,17 @@ permissions:
         description: Gives access to all HomeSpawnPlus permissions
         children:
             hsp.home.bedsethome: true
-	    hsp.command.CooldownExempt.*: true
-            hsp.command.*: true
+            hsp.command.home.use: true
+            hsp.command.home.others: true
+            hsp.command.sethome.use: true
+            hsp.command.sethome.others: true
+            hsp.command.spawn.use: true
+            hsp.command.setspawn.use: true
+            hsp.command.setgroupspawn.use: true
+            hsp.command.groupspawn.use: true
+            hsp.command.CooldownExempt.home: true
+            hsp.command.CooldownExempt.spawn: true
+            hsp.command.CooldownExempt.groupspawn: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -87,9 +96,9 @@ permissions:
     hsp.command.CooldownExempt.*:
         description: Exempt from all cooldowns
         children:
-          hsp.command.CooldownExempt.home
-          hsp.command.CooldownExempt.spawn
-          hsp.command.CooldownExempt.groupspawn
+          hsp.command.CooldownExempt.home: true
+          hsp.command.CooldownExempt.spawn: true
+          hsp.command.CooldownExempt.groupspawn: true
     hsp.command.CooldownExempt.home:
         description: Exempt from /home cooldown
         default: op

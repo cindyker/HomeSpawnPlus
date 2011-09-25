@@ -5,7 +5,6 @@ package org.morganm.homespawnplus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -56,25 +55,33 @@ public class HomeSpawnUtils {
 		p.sendMessage(Yellow + message);
 	}
 	
-	/** This is called when a player is spawning (either onJoin or onDeath) and its job is to
-	 * follow the strategies given to find the preferred Location to send the player.
+	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
+	 * is to follow the strategies given to find the preferred Location to send the player.
 	 * 
 	 * @param p
 	 * @return
 	 */
-	public Location getSpawnLocation(Player p, List<SpawnStrategy> spawnStrategies) {
+	public Location getSpawnLocation(Player p, SpawnInfo spawnInfo) {
 		Location l = null;
+		
+		// this is set to true if we encounter the default strategy in the list
+		boolean defaultFlag = false;
 		
 		String playerName = p.getName();
 		
-		for(SpawnStrategy s : spawnStrategies) {
+		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
-			if( l != null )
+			if( l != null || defaultFlag )
 				break;
 			
 			Home home = null;
 			Spawn spawn = null;
 			switch(s) {
+			case SPAWN_NEW_PLAYER:
+				if( spawnInfo.isFirstLogin ) {
+				}
+				break;
+				
 			case HOME_THIS_WORLD_ONLY:
 				home = getHome(playerName, p.getWorld());
 				if( home != null )
@@ -122,11 +129,17 @@ public class HomeSpawnUtils {
 			case SPAWN_NEAREST_SPAWN:
 				// TODO: not yet implemented
 				break;
+				
+			case DEFAULT:
+				defaultFlag = true;
+				break;
 			}
 		}
 		
-		// if all strategies fail, we default to spawn on the default world
-		if( l == null )
+		// if all strategies fail, we default to spawn on the default world, unless the
+		// default flag is set, in which case we just return null so the caller knows to
+		// not send the player anywhere
+		if( l == null && !defaultFlag )
 			l = getDefaultSpawn().getLocation();
 		
 		return l;

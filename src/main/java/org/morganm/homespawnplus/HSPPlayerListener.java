@@ -2,7 +2,6 @@ package org.morganm.homespawnplus;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -14,12 +13,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
-import org.morganm.homespawnplus.entity.Home;
 
 
 /**
@@ -56,18 +51,18 @@ public class HSPPlayerListener extends PlayerListener {
      * 
      * @param preferredBehavior
      */
-    private Location doSpawn(Player p, String configBehaviorOption) {
+    private Location doSpawn(Player p, SpawnInfo spawnInfo) {
 //    	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
 //    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
     	
-    	List<SpawnStrategy> strategies = plugin.getConfig().getStrategies(configBehaviorOption);
-    	Location l = util.getSpawnLocation(p, strategies);
+    	spawnInfo.spawnStrategies = plugin.getConfig().getStrategies(spawnInfo.spawnEventType);
+    	Location l = util.getSpawnLocation(p, spawnInfo);
     	
     	// default behavior is do nothing
     	if( l == null ) {
     		// if we are spawning and the RECORD_LAST_LOGOUT config is set, then we lookup
     		// our last logout location and return that
-    		if( ConfigOptions.SETTING_SPAWN_BEHAVIOR.equals(configBehaviorOption) &&
+    		if( ConfigOptions.SETTING_JOIN_BEHAVIOR.equals(spawnInfo.spawnEventType) &&
     				plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
     			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
     			Location lastLogoutLocation = null;
@@ -180,11 +175,17 @@ public class HSPPlayerListener extends PlayerListener {
     {
     	Player p = e.getPlayer();
     	
+    	SpawnInfo spawnInfo = new SpawnInfo();
+    	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
+    	
 		// Is this a new player?
     	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
     		if( isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected, checking.");
     		
+    		spawnInfo.isFirstLogin = true;
+    		
+    		/*
     		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
     		plugin.getStorage().writePlayer(storagePlayer);
 
@@ -202,11 +203,14 @@ public class HSPPlayerListener extends PlayerListener {
 	    		
 	    		return;
     		}
+    		*/
     	}
     	
     	if( isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
-    	doSpawn(p, ConfigOptions.SETTING_JOIN_BEHAVIOR);
+    	
+    	Location l = doSpawn(p, spawnInfo);
+		util.delayedTeleport(p, l);
     }
     
     private void updateQuitLocation(Player p)
@@ -235,7 +239,11 @@ public class HSPPlayerListener extends PlayerListener {
     {
     	if( isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
-    	Location l = doSpawn(e.getPlayer(), ConfigOptions.SETTING_DEATH_BEHAVIOR);
+    	
+    	SpawnInfo spawnInfo = new SpawnInfo();
+    	spawnInfo.spawnEventType = ConfigOptions.SETTING_DEATH_BEHAVIOR;
+    	Location l = doSpawn(e.getPlayer(), spawnInfo);
+    	
     	if( l != null )
     		e.setRespawnLocation(l);
    }
@@ -252,6 +260,7 @@ public class HSPPlayerListener extends PlayerListener {
     
     
     // WARMUP-RELATED HOOKS
+    /* disabled for now - morganm 9/22/11
     @Override
     public void onPlayerMove(PlayerMoveEvent event) {
 		warmupManager.processPlayerMove(event);
@@ -264,4 +273,5 @@ public class HSPPlayerListener extends PlayerListener {
     public void onPlayerPortal(PlayerPortalEvent event) {
 		warmupManager.processPlayerPortal(event);
     }
+    */
 }

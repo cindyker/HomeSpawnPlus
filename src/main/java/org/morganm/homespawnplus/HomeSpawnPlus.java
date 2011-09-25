@@ -39,7 +39,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     public static String logPrefix;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
-	public final static String BASE_PERMISSION_NODE = "HomeSpawnPlus";
+	public final static String BASE_PERMISSION_NODE = "hsp";
     
     private PermissionHandler permissionHandler;
     private boolean usePermissions = false;
@@ -59,6 +59,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     private File jarFile;
 	private Config config;
     private CommandProcessor cmdProcessor;
+    private HSPPlayerListener playerListener;
+    private HSPEntityListener entityListener;
 
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
      * 
@@ -119,6 +121,25 @@ public class HomeSpawnPlus extends JavaPlugin {
 		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
 		config.load();
     }
+
+    private boolean hasHookedWarmups = false;
+    /** To be efficient, we don't hook warmup events unless the config option is set.  We keep
+     * track in a boolean if we've already hooked it since Bukkit provides no way to unhook.
+     * 
+     */
+    public void hookWarmups() {
+        if( !hasHookedWarmups && config.getBoolean(ConfigOptions.USE_WARMUPS, false) )
+        {
+        	hasHookedWarmups = true;
+        	PluginManager pm = getServer().getPluginManager();
+        	
+            pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Monitor, this);
+            
+            pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
+        }
+    }
     
     public void onEnable() {
     	boolean loadError = false;
@@ -156,8 +177,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	initPermissions();
     	
         PluginManager pm = getServer().getPluginManager();
-    	HSPPlayerListener playerListener = new HSPPlayerListener(this);
-    	HSPEntityListener entityListener = new HSPEntityListener(this);
+    	playerListener = new HSPPlayerListener(this);
+    	entityListener = new HSPEntityListener(this);
         
     	// Register our events
         pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, this);
@@ -166,15 +187,8 @@ public class HomeSpawnPlus extends JavaPlugin {
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.WORLD_LOAD, new HSPWorldListener(this), Priority.Monitor, this);
-        
-        // TODO: need option for warmupMoveDisable
-        if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) ) {
-            pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Monitor, this);
-            
-            pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
-        }
+
+        hookWarmups();
         
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
 

@@ -3,8 +3,10 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
@@ -23,7 +25,19 @@ public class Spawn extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-		// defaults to SPAWN_GLOBAL if no config param is defined
+    	SpawnInfo spawnInfo = new SpawnInfo();
+    	spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_BEHAVIOR;
+    	Location l = util.getSpawnLocation(p, spawnInfo);
+    	
+    	// TODO: need to add group permission checks
+    	
+    	if( l != null )
+    		p.teleport(l);
+    	else
+    		HomeSpawnPlus.log.warning(HomeSpawnPlus.logPrefix + " ERROR; not able to find a spawn location");
+    	
+    	/*
+    	// defaults to SPAWN_GLOBAL if no config param is defined
 		String spawnType = plugin.getConfig().getString(ConfigOptions.SETTING_SPAWN_BEHAVIOR, ConfigOptions.VALUE_GLOBAL);
 
 		// Check permissions availability for group spawn
@@ -45,6 +59,8 @@ public class Spawn extends BaseCommand
 			HomeSpawnPlus.log.warning(HomeSpawnPlus.logPrefix + " ERROR; unknown spawn type "+spawnType);
 		
 		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending player "+p.getName()+" to spawn ("+spawnType+").");
+		*/
+    	
 		return true;
 	}
 }

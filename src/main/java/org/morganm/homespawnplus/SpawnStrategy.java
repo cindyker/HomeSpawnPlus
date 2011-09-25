@@ -14,6 +14,7 @@ public enum SpawnStrategy {
 	HOME_MULTI_WORLD,
 	HOME_DEFAULT_WORLD,
 	SPAWN_THIS_WORLD_ONLY,
+	SPAWN_NEW_PLAYER,
 	SPAWN_DEFAULT_WORLD,
 	SPAWN_GROUP,
 	SPAWN_NEAREST_SPAWN,
@@ -37,6 +38,9 @@ public enum SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_THIS_WORLD_ONLY.equals(s) ) {
 			strategy = SPAWN_THIS_WORLD_ONLY;
+		}
+		else if( ConfigOptions.STRATEGY_SPAWN_NEW_PLAYER.equals(s) ) {
+			strategy = SPAWN_NEW_PLAYER;
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_DEFAULT_WORLD.equals(s) ) {
 			strategy = SPAWN_DEFAULT_WORLD;

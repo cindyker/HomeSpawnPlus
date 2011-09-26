@@ -258,6 +258,7 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     }
     
+    /*
     @Override
     public void onPlayerMove(PlayerMoveEvent event) {
 		warmupManager.processPlayerMove(event);
@@ -270,4 +271,5 @@ public class HSPPlayerListener extends PlayerListener {
     public void onPlayerPortal(PlayerPortalEvent event) {
 		warmupManager.processPlayerPortal(event);
     }
+    */
 }

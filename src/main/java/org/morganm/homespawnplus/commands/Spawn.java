@@ -52,7 +52,12 @@ public class Spawn extends BaseCommand
 						public void setPlayerName(String playerName) {}
 						public void setWarmupId(int warmupId) {}
 					});
+					
+					util.sendMessage(p, "Warmup "+getCommandName()+" started, you must wait "+
+							warmupManager.getWarmupTime(getCommandName())+" seconds.");
 				}
+				else
+					util.sendMessage(p, "Warmup already pending for "+getCommandName());
 			}
 			else
 				p.teleport(l);

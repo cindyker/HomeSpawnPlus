@@ -11,12 +11,14 @@ import org.bukkit.event.entity.EntityListener;
  *
  */
 public class HSPEntityListener extends EntityListener {
+	private WarmupManager warmupManager;
+	
 	public HSPEntityListener(HomeSpawnPlus plugin) {
+		this.warmupManager = plugin.getWarmupmanager();
 	}
 	
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		// TODO Auto-generated method stub
-		super.onEntityDamage(event);
+		warmupManager.processEntityDamage(event);
 	}
 }

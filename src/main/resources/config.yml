@@ -115,9 +115,8 @@ disabledCommands:
 #   hsp.command.CooldownExempt.<commandName>   - can use * to be exempt from all cooldowns
 #   
 cooldown:
-  home: 120
-  spawn: 120
-  setspawn: 0
+  home: 60
+  spawn: 60
   groupspawn: 0
 
 warmup:
@@ -135,5 +134,5 @@ warmup:
   onDamageCancel: false
 
   # individual command warmup timers
-  home: 10
-  spawn: 10
+  home: 5
+  spawn: 5

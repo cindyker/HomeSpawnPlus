@@ -6,19 +6,28 @@ package org.morganm.homespawnplus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * @author morganm
  *
  */
 public class WarmupManager {
+	private static final Logger log = HomeSpawnPlus.log;
+	private final String logPrefix;
+	
 	private static int uniqueWarmupId = 0;
 	
 	private final HashMap<Integer, PendingWarmup> warmupsPending;
@@ -30,6 +39,7 @@ public class WarmupManager {
 	public WarmupManager(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.config = plugin.getConfig();
+		this.logPrefix = HomeSpawnPlus.logPrefix;
 		
 		warmupsPending = new HashMap<Integer, PendingWarmup>();
 		warmupsPendingByPlayerName = new HashMap<String, List<PendingWarmup>>();
@@ -50,7 +60,7 @@ public class WarmupManager {
 	 */
 	public boolean hasWarmup(Player p, String warmupName) {
 		if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) &&
-			config.getBoolean(ConfigOptions.WARMUP_BASE + warmupName, false) &&
+			getWarmupTime(warmupName) > 0 &&
 			!isExemptFromWarmup(p, warmupName) )
 		{
 			return true;
@@ -84,6 +94,10 @@ public class WarmupManager {
 		return warmupPending;
 	}
 	
+	public int getWarmupTime(String warmupName) {
+		return plugin.getConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
+	}
+	
 	/** Start a given warmup.  Return true if the warmup was started successfully, false if not.
 	 * 
 	 * @param playerName
@@ -93,6 +107,12 @@ public class WarmupManager {
 	 */
 	public boolean startWarmup(String playerName, String warmupName, WarmupRunner warmupRunnable) {
 		if( isWarmupPending(playerName, warmupName) ) {		// don't let two of the same warmups start
+			return false;
+		}
+		
+		Player p = plugin.getServer().getPlayer(playerName);
+		if( p == null ) {
+			log.warning(logPrefix + " startWarmup() found null player object for name "+playerName);
 			return false;
 		}
 		
@@ -107,13 +127,16 @@ public class WarmupManager {
 			warmupsPendingByPlayerName.put(playerName, playerWarmups);
 		}
 		
-		int warmupTime = plugin.getConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
+		int warmupTime = getWarmupTime(warmupName);
 		
 		PendingWarmup warmup = new PendingWarmup();
 		warmup.warmupId = warmupId;
 		warmup.playerName = playerName;
 		warmup.warmupName = warmupName;
 		warmup.runner = warmupRunnable;
+		warmup.startTime = System.currentTimeMillis();
+		warmup.warmupTime = warmupTime * 1000;
+		warmup.playerLocation = p.getLocation();
 		
 		warmupRunnable.setWarmupId(warmupId);
 		warmupRunnable.setPlayerName(playerName);
@@ -122,8 +145,15 @@ public class WarmupManager {
 		warmupsPending.put(warmupId, warmup);
 		playerWarmups.add(warmup);
 		
-		// kick off a Bukkit scheduler to the Runnable for the timer given
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, warmup, warmupTime);
+		// kick off a Bukkit scheduler to the Runnable for the timer given.  We run
+		// every 20 ticks (average 20 ticks = 1 second), then check real clock time.
+		//
+		// This allows us two things: A) we can manage to real clock time without a
+		// separate scheduling mechanism, thus if the warmupTime is 5 seconds, we'll
+		// be pretty close to that even on a server running at only 10 TPS.
+		// and B) it allows us to cancelOnMove close to the player move event
+		// without having to hook the expensive onPlayerMove() event.
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, warmup, 20);
 		
 		return true;
 	}
@@ -139,7 +169,7 @@ public class WarmupManager {
 	*/
 	
 	public void cancelWarmup(int warmupId) {
-		
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -154,6 +184,30 @@ public class WarmupManager {
 			return false;
 		else
 			return true;
+	}
+	
+	public void processEntityDamage(EntityDamageEvent event) {
+		// if we aren't supposed to cancel on damage, no further processing required
+		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) )
+			return;
+		
+		Entity e = event.getEntity();
+		Player p = null;
+		if( e instanceof Player ) {
+			p = (Player) e;
+		}
+		
+		if( p != null ) {
+			String playerName = p.getName();
+			List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
+
+			if( playerWarmups != null && !playerWarmups.isEmpty() ) {
+				for(PendingWarmup warmup : playerWarmups) {
+					warmup.cancel();	// possible ConcurrentModification exception?
+					p.sendMessage("You took damage! Warmup "+warmup.warmupName+" cancelled.");
+				}
+			}
+		}
 	}
 	
 	public void processPlayerMove(PlayerMoveEvent event) {
@@ -212,6 +266,10 @@ public class WarmupManager {
 		public String playerName;
 		public String warmupName;
 		public WarmupRunner runner;
+		public int warmupTime = 0;
+		public long startTime = 0;
+		
+		public Location playerLocation;
 		
 		private void cleanup() {
 			warmupsPending.remove(warmupId);
@@ -226,10 +284,40 @@ public class WarmupManager {
 		}
 		
 		public void run() {
-			cleanup();
+			Player p = plugin.getServer().getPlayer(playerName);
+			// this can happen if the player logs out before the warmup fires.  So just cleanup and exit.
+			if( p == null ) {
+				cleanup();
+				return;
+			}
 			
-			// now do whatever the warmup action is
-			runner.run();
+			// has the warmup fired?  If so, run it.
+			if( System.currentTimeMillis() > (startTime + warmupTime) ) {
+				cleanup();
+				
+				// now do whatever the warmup action is
+				runner.run();
+			}
+			// otherwise do some checks and then schedule another run for another 20 ticks out
+			else {
+				boolean scheduleNext = true;
+				
+				if( config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
+					Location currentLoc = p.getLocation();
+					if( playerLocation.getX() != currentLoc.getX() ||
+						playerLocation.getY() != currentLoc.getY() ||
+						playerLocation.getZ() != currentLoc.getZ() ||
+						!playerLocation.getWorld().getName().equals(currentLoc.getWorld().getName()) )
+					{
+						p.sendMessage("You moved! Warmup "+warmupName+" cancelled.");
+						cleanup();
+						scheduleNext = false;
+					}
+				}
+				
+				if( scheduleNext )
+					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, 20);
+			}
 		}
 	}
 }

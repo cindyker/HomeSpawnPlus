@@ -13,7 +13,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 
@@ -258,9 +261,6 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     }
     
-    
-    // WARMUP-RELATED HOOKS
-    /* disabled for now - morganm 9/22/11
     @Override
     public void onPlayerMove(PlayerMoveEvent event) {
 		warmupManager.processPlayerMove(event);
@@ -273,5 +273,4 @@ public class HSPPlayerListener extends PlayerListener {
     public void onPlayerPortal(PlayerPortalEvent event) {
 		warmupManager.processPlayerPortal(event);
     }
-    */
 }

@@ -79,6 +79,9 @@ public class HomeSpawnUtils {
 			switch(s) {
 			case SPAWN_NEW_PLAYER:
 				if( spawnInfo.isFirstLogin ) {
+					spawn = getSpawnByName(ConfigOptions.VALUE_NEW_PLAYER_SPAWN);
+					if( spawn != null )
+						l = spawn.getLocation();
 				}
 				break;
 				
@@ -119,6 +122,7 @@ public class HomeSpawnUtils {
 			case SPAWN_GROUP:
 				// TODO: this should be refactored into it's own method when I get around to refactoring
 				// this whole class.
+				@SuppressWarnings("deprecation")
 				String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), playerName);
 				spawn = getGroupSpawn(group, p.getWorld().getName());
 	    		
@@ -135,12 +139,6 @@ public class HomeSpawnUtils {
 				break;
 			}
 		}
-		
-		// if all strategies fail, we default to spawn on the default world, unless the
-		// default flag is set, in which case we just return null so the caller knows to
-		// not send the player anywhere
-		if( l == null && !defaultFlag )
-			l = getDefaultSpawn().getLocation();
 		
 		return l;
 	}
@@ -294,6 +292,18 @@ public class HomeSpawnUtils {
     		home = new Home(playerName, l, updatedBy);
     	
     	plugin.getStorage().writeHome(home);
+    }
+    
+    public Spawn getSpawnByName(String spawnName) {
+    	Spawn spawn = null;
+    	
+    	if( spawnName != null )
+    		spawn = plugin.getStorage().getSpawnByName(spawnName);
+    	
+    	if( spawn == null )
+        	log.warning(logPrefix + " Could not find or load spawnByName for '"+spawnName+"!");
+    	
+    	return spawn;
     }
    
     public void setSpawn(String spawnName, Location l, String updatedBy)
@@ -500,7 +510,6 @@ public class HomeSpawnUtils {
         	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"' on world "+worldName+"!");
     	
     	return spawn;
-    	
     }
     
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash

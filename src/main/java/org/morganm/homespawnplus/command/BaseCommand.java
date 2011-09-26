@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.CooldownManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
+import org.morganm.homespawnplus.WarmupManager;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 
@@ -21,6 +22,7 @@ public abstract class BaseCommand implements Command {
 	protected HomeSpawnPlus plugin;
 	protected HomeSpawnUtils util;
 	protected CooldownManager cooldownManager;
+	protected WarmupManager warmupManager;
 	private boolean enabled;
 	private String permissionNode;
 	private String commandName;
@@ -34,6 +36,7 @@ public abstract class BaseCommand implements Command {
 		this.plugin = plugin;
 		this.util = plugin.getUtil();
 		this.cooldownManager = plugin.getCooldownManager();
+		this.warmupManager = plugin.getWarmupmanager();
 		enabled = !plugin.getConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
 		return this;
 	}
@@ -106,6 +109,23 @@ public abstract class BaseCommand implements Command {
 		return cooldownManager.cooldownCheck(p, getCommandName());
 	}
 
+	/**
+	 * 
+	 * @return true if this command & player has a warmup associated with it
+	 */
+	protected boolean hasWarmup(Player p) {
+		return warmupManager.hasWarmup(p, getCommandName());
+	}
+	
+	/** check if a warmup is already pending for this command
+	 * 
+	 * @param p
+	 * @return true if warmup is already pending, false if not
+	 */
+	protected boolean isWarmupPending(Player p) {
+		return warmupManager.isWarmupPending(p.getName(), getCommandName());
+	}
+	
 	/** Return true if the player has permission to run this command.  If they
 	 * don't have permission, print them a message saying so and return false.
 	 * 

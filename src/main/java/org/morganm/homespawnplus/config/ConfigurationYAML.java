@@ -43,6 +43,13 @@ public class ConfigurationYAML extends Configuration implements Config {
 			copyConfigFromJar("config.yml");
 		
 		super.load();
+
+		if( getBoolean("spawn.onjoin", false) ) {
+			log.info(logPrefix + " old-style config found, moving and replacing with new default");
+			file.renameTo(new File(file.toString() + ".old"));
+			copyConfigFromJar("config.yml");
+			super.load();
+		}
     }
 
 	/** Right now we don't allow updates in-game, so we don't do anything, because if we

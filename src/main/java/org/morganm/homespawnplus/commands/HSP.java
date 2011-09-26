@@ -26,6 +26,10 @@ public class HSP extends BaseCommand {
 			boolean success = false;
 			try {
 				plugin.loadConfig();
+				
+				// also call hookWarmups, in case admin changed the warmup settings
+				plugin.hookWarmups();
+				
 				success = true;
 			}
 			catch(Exception e) {

@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
 
 
@@ -19,7 +20,7 @@ public class Home extends BaseCommand
 	private static final String DELETE_OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.delete.others";
 	
 	@Override
-	public boolean execute(Player p, org.bukkit.command.Command command, String[] args)
+	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
 	{
 		if( !isEnabled() )
 			return false;
@@ -130,8 +131,40 @@ public class Home extends BaseCommand
 			if( !defaultCommandChecks(p) )
 				return true;
 
-			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to home.");
-			util.sendHome(p);
+			if( hasWarmup(p) ) {
+				if ( !isWarmupPending(p) ) {
+					warmupManager.startWarmup(p.getName(), getCommandName(), new WarmupRunner() {
+						private boolean canceled = false;
+						
+						@Override
+						public void run() {
+							if( !canceled ) {
+								util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting home");
+								util.sendHome(p);
+							}
+						}
+
+						@Override
+						public void setPlayerName(String playerName) {
+						}
+
+						@Override
+						public void setWarmupId(int warmupId) {
+						}
+
+						@Override
+						public void cancel() {
+							canceled = true;
+						}
+					});
+				}
+				else
+					util.sendMessage(p, "Warmup already pending for "+getCommandName());
+			}
+			else {
+				HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to home.");
+				util.sendHome(p);
+			}
 		}
 		
 		return true;

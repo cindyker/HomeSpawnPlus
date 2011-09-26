@@ -122,22 +122,27 @@ public class HomeSpawnPlus extends JavaPlugin {
 		config.load();
     }
 
-    private boolean hasHookedWarmups = false;
+    private boolean hasHookedOnMoveWarmups = false;
+    private boolean hasHookedOnDamageWarmups = false;
     /** To be efficient, we don't hook warmup events unless the config option is set.  We keep
      * track in a boolean if we've already hooked it since Bukkit provides no way to unhook.
-     * 
      */
     public void hookWarmups() {
-        if( !hasHookedWarmups && config.getBoolean(ConfigOptions.USE_WARMUPS, false) )
+        if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) )
         {
-        	hasHookedWarmups = true;
         	PluginManager pm = getServer().getPluginManager();
         	
-            pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Monitor, this);
+        	if( !hasHookedOnMoveWarmups && config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
+            	hasHookedOnMoveWarmups = true;
+	            pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Monitor, this);
+	            pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
+	            pm.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Monitor, this);
+        	}
             
-            pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
+        	if( !hasHookedOnDamageWarmups && config.getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) ) {
+            	hasHookedOnDamageWarmups = true;
+        		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
+        	}
         }
     }
     

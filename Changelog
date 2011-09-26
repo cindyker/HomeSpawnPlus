@@ -1,47 +1,57 @@
+v0.8 - ??
+[*]changed base permission prefix from 'HomeSpawnPlus' to 'hsp'
+[*]added flexible spawn/home strategies, see default 'config.yml' or documentation
+[*]added warmup capability
+[*]added firstLogin capability for newbie spawning
+[*]conceptual notion of "nearest" spawn/home introduced, strategy not fully
+implemented yet
+[*]config options have changed, automatically move old one out of the way and
+copy the new default into place
+
 v0.7 - July 17, 2011
-made it so "defaultWorld" is also the default spawn world for new players
-added "core.defaultPermissions" so admins can enable defaultPermissions if
+[*]made it so "defaultWorld" is also the default spawn world for new players
+[*]added "core.defaultPermissions" so admins can enable defaultPermissions if
 they aren't using a Permission-compatible plugin
-added an option for telling HomeSpawnPlus to track player last logout location
+[*]added an option for telling HomeSpawnPlus to track player last logout location
 and send them there on next login (if onJoin="default"), instead of letting
 default Bukkit track location, which seems to get it wrong sometimes (sends
 people to surface or down into lava, etc)
 
 v0.6.2 - July 9, 2011
-Added ability for players to delete their homes (/home delete)
-Fixed multihome spawning
+[*]Added ability for players to delete their homes (/home delete)
+[*]Fixed multihome spawning
 
 v0.6.1 - July 3, 2011
-Fixed issue with players being mistaken for new and sent back to spawn
+[*]Fixed issue with players being mistaken for new and sent back to spawn
 whenever they logged in if they had no home set
 
 v0.6 - July 2, 2011
-Added config option for choosing in-memory cache
-Fixed bugs related to in-memory cache
-Fixed a bug with spawning on death using wrong config setting
+[*]Added config option for choosing in-memory cache
+[*]Fixed bugs related to in-memory cache
+[*]Fixed a bug with spawning on death using wrong config setting
 
 v0.5.1 - July 1, 2011
-Fixed command cooldowns.
-Fixed some permissions issues
+[*]Fixed command cooldowns.
+[*]Fixed some permissions issues
 
 v0.5 - July 1, 2011
-Added support for setting home using a bed
-First public release
+[*]Added support for setting home using a bed
+[*]First public release
 
 v0.4 - Jun 30, 2011
-Added support for visiting other players homes, protected by permissions
-Lots of testing, lots of bug fixes
+[*]Added support for visiting other players homes, protected by permissions
+[*]Lots of testing, lots of bug fixes
 
 v0.3
-Added conversion utilities from Essentials and SpawnControl
-Added additional config options for controlling spawn behavior
-Added ability to disable every command just by using config options, to
-allow admins to easily deal with command conflicts with any other plugins
+[*]Added conversion utilities from Essentials and SpawnControl
+[*]Added additional config options for controlling spawn behavior
+[*]Added ability to disable every command just by using config options, to
+[*]allow admins to easily deal with command conflicts with any other plugins
 
 v0.2
-Lots of refactored code to support MySQL backend using Bukkit persistence
-Added YML config files
-Permission 3.0 support
+[*]Lots of refactored code to support MySQL backend using Bukkit persistence
+[*]Added YML config files
+[*]Permission 3.0 support
 
 v0.1
-Initial version
+[*]Initial version

@@ -16,15 +16,12 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 public class SetFirstSpawn extends BaseCommand
 {
 	@Override
-	public String[] getCommandAliases() { return new String[] {"setglobalspawn"}; }
-
-	@Override
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 
 		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to set first-time player spawn.");
-		util.setSpawn(ConfigOptions.STRATEGY_SPAWN_NEW_PLAYER, p.getLocation(), p.getName());
+		util.setSpawn(ConfigOptions.VALUE_NEW_PLAYER_SPAWN, p.getLocation(), p.getName());
 		util.sendMessage(p, "First-time player spawn set successfully.");
 		
 		return true;

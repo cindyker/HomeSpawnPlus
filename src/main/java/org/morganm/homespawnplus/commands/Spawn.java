@@ -26,7 +26,7 @@ public class Spawn extends BaseCommand
 			return true;
 
     	SpawnInfo spawnInfo = new SpawnInfo();
-    	spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_BEHAVIOR;
+    	spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_CMD_BEHAVIOR;
     	Location l = util.getSpawnLocation(p, spawnInfo);
     	
     	// TODO: need to add group permission checks

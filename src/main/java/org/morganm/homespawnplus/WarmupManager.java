@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 /**
@@ -23,12 +25,63 @@ public class WarmupManager {
 	private final HashMap<String, List<PendingWarmup>> warmupsPendingByPlayerName;
 	
 	private final HomeSpawnPlus plugin;
+	private final Config config;
 	
 	public WarmupManager(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
+		this.config = plugin.getConfig();
 		
 		warmupsPending = new HashMap<Integer, PendingWarmup>();
 		warmupsPendingByPlayerName = new HashMap<String, List<PendingWarmup>>();
+	}
+	
+    private boolean isExemptFromWarmup(Player p, String warmup) {
+    	if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".WarmupExempt."+warmup) )
+    		return true;
+    	else
+    		return false;
+    }
+    
+	/** Check to see if a given warmup should be enforced for a given player.
+	 * 
+	 * @param p
+	 * @param warmupName
+	 * @return true if warmup should be enforced, flase if not
+	 */
+	public boolean hasWarmup(Player p, String warmupName) {
+		if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) &&
+			config.getBoolean(ConfigOptions.WARMUP_BASE + warmupName, false) &&
+			!isExemptFromWarmup(p, warmupName) )
+		{
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/** Utility method for making sure a warmup is not currently pending already.
+	 * This method does not start the warmup timer, in order to actually start
+	 * the warmup you need to use startWarmup().
+	 * 
+	 * @param p
+	 * @param warmupName
+	 * @return true if warmup is already pending, false if not
+	 */
+	public boolean isWarmupPending(String playerName, String warmupName) {
+		boolean warmupPending = false;
+		
+		List<PendingWarmup> pendingWarmups = warmupsPendingByPlayerName.get(playerName);
+		if( pendingWarmups != null ) {
+			for(PendingWarmup warmup : pendingWarmups) {
+				if( warmup.warmupName.equals(warmupName) ) {
+					warmupPending = true;
+					break;
+				}
+			}
+		}
+			
+		return warmupPending;
 	}
 	
 	/** Start a given warmup.  Return true if the warmup was started successfully, false if not.
@@ -39,6 +92,10 @@ public class WarmupManager {
 	 * @return
 	 */
 	public boolean startWarmup(String playerName, String warmupName, WarmupRunner warmupRunnable) {
+		if( isWarmupPending(playerName, warmupName) ) {		// don't let two of the same warmups start
+			return false;
+		}
+		
 		int warmupId = 0;
 		synchronized(this) {
 			warmupId = ++uniqueWarmupId;
@@ -48,13 +105,6 @@ public class WarmupManager {
 		if( playerWarmups == null ) {
 			playerWarmups = new ArrayList<PendingWarmup>();
 			warmupsPendingByPlayerName.put(playerName, playerWarmups);
-		}
-		
-		for(PendingWarmup pw : playerWarmups) {
-			if( warmupName.equals(pw.warmupName) ) {
-				// already a warmup by that name in progress, don't allow another one to start
-				return false;
-			}
 		}
 		
 		int warmupTime = plugin.getConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
@@ -107,40 +157,51 @@ public class WarmupManager {
 	}
 	
 	public void processPlayerMove(PlayerMoveEvent event) {
+		// if we aren't supposed to cancel on move, no further processing required
+		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) )
+			return;
+		
 		String playerName = event.getPlayer().getName();
 		List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
 		
 		if( playerWarmups != null && !playerWarmups.isEmpty() ) {
 			for(PendingWarmup warmup : playerWarmups) {
-				if( !warmup.runner.onPlayerMove(event) ) {
-					warmup.cancel();	// possible ConcurrentModification exception?
-				}
+				warmup.cancel();	// possible ConcurrentModification exception?
+				event.getPlayer().sendMessage("You moved! Warmup "+warmup.warmupName+" cancelled.");
 			}
 		}
 	}
 	
 	public void processPlayerTeleport(PlayerTeleportEvent event) {
+		// if we aren't supposed to cancel on move, no further processing required
+		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) )
+			return;
+			
 		String playerName = event.getPlayer().getName();
 		List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
 		
 		if( playerWarmups != null && !playerWarmups.isEmpty() ) {
 			for(PendingWarmup warmup : playerWarmups) {
-				if( !warmup.runner.onPlayerTeleport(event) ) {
-					warmup.cancel();	// possible ConcurrentModification exception?
-				}
+				warmup.cancel();	// possible ConcurrentModification exception?
+				event.getPlayer().sendMessage("You moved! Warmup "+warmup.warmupName+" cancelled.");
 			}
 		}
 	}
 	
 	public void processPlayerPortal(PlayerPortalEvent event) {
+		// if we aren't supposed to cancel on move, no further processing required
+		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) )
+			return;
+		
 		String playerName = event.getPlayer().getName();
 		List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
 		
 		if( playerWarmups != null && !playerWarmups.isEmpty() ) {
 			for(PendingWarmup warmup : playerWarmups) {
-				if( !warmup.runner.onPlayerPortal(event) ) {
-					warmup.cancel();	// possible ConcurrentModification exception?
-				}
+				warmup.cancel();	// possible ConcurrentModification exception?
+				event.getPlayer().sendMessage("You moved! Warmup "+warmup.warmupName+" cancelled");
+//				if( !warmup.runner.onPlayerPortal(event) ) {
+//				}
 			}
 		}
 	}
@@ -152,16 +213,20 @@ public class WarmupManager {
 		public String warmupName;
 		public WarmupRunner runner;
 		
-		public void cancel() {
+		private void cleanup() {
 			warmupsPending.remove(warmupId);
 			List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
 			if( playerWarmups != null )
 				playerWarmups.remove(this);
 		}
 		
+		public void cancel() {
+			cleanup();
+			runner.cancel();
+		}
+		
 		public void run() {
-			// first cleanup the warmup from the list
-			cancel();
+			cleanup();
 			
 			// now do whatever the warmup action is
 			runner.run();

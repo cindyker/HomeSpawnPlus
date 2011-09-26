@@ -35,6 +35,10 @@ core:
   # command to set spawns for specific groups.  Maybe useful for RPG classes, PvP factions, whatever.
   groupSpawnEnabled: false
 
+  # set to true to have a bit more verbose logging in your server.log about what
+  # HomeSpawnPlus is doing
+  verboseLogging: false
+
 # The events below allow use of the strategies described here.
 #
 # The strategies are processed in the order listed, so if you list a strategy first

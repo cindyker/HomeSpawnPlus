@@ -7,6 +7,7 @@ v0.8 - ??
 implemented yet
 [*]config options have changed, automatically move old one out of the way and
 copy the new default into place
+[*]BUGFIX: fixed problem that prevented sleeping in beds at night
 
 v0.7 - July 17, 2011
 [*]made it so "defaultWorld" is also the default spawn world for new players

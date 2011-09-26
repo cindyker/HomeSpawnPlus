@@ -20,7 +20,7 @@ public class SetFirstSpawn extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to set first-time player spawn.");
+		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Setting first-time player spawn.");
 		util.setSpawn(ConfigOptions.VALUE_NEW_PLAYER_SPAWN, p.getLocation(), p.getName());
 		util.sendMessage(p, "First-time player spawn set successfully.");
 		

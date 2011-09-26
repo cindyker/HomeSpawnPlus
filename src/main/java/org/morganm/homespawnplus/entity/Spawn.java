@@ -54,7 +54,6 @@ public class Spawn {
     /* Optional group associated with this spawn.
      */
     @Length(max=32)
-    @NotNull
     @Column(name="group_name")
 	private String group;
     

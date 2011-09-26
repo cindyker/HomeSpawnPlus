@@ -136,7 +136,6 @@ public class Home extends BaseCommand
 					warmupManager.startWarmup(p.getName(), getCommandName(), new WarmupRunner() {
 						private boolean canceled = false;
 						
-						@Override
 						public void run() {
 							if( !canceled ) {
 								util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting home");
@@ -144,18 +143,12 @@ public class Home extends BaseCommand
 							}
 						}
 
-						@Override
-						public void setPlayerName(String playerName) {
-						}
-
-						@Override
-						public void setWarmupId(int warmupId) {
-						}
-
-						@Override
 						public void cancel() {
 							canceled = true;
 						}
+						
+						public void setPlayerName(String playerName) {}
+						public void setWarmupId(int warmupId) {}
 					});
 				}
 				else

@@ -44,7 +44,7 @@ public class ConfigurationYAML extends Configuration implements Config {
 		
 		super.load();
 
-		if( getBoolean("spawn.onjoin", false) ) {
+		if( getString("spawn.onjoin") != null ) {
 			log.info(logPrefix + " old-style config found, moving and replacing with new default");
 			file.renameTo(new File(file.toString() + ".old"));
 			copyConfigFromJar("config.yml");

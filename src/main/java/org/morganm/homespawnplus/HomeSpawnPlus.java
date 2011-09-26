@@ -158,10 +158,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	jarFile = getFile();
     	
-    	cooldownManager = new CooldownManager(this);
-    	warmupManager = new WarmupManager(this);
-    	spawnUtils = new HomeSpawnUtils(this);
-    	
     	// load our configuration and database
     	try {
     		loadConfig();
@@ -180,6 +176,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     	
     	initPermissions();
+    	
+    	cooldownManager = new CooldownManager(this);
+    	warmupManager = new WarmupManager(this);
+    	spawnUtils = new HomeSpawnUtils(this);
     	
         PluginManager pm = getServer().getPluginManager();
     	playerListener = new HSPPlayerListener(this);

@@ -46,10 +46,6 @@ public class HSPPlayerListener extends PlayerListener {
         warmupManager = plugin.getWarmupmanager();
     }
 
-    private boolean isVerboseLogging() {
-    	return plugin.getConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
-    }
-    
     /** Maybe should be moved to util?  Return location player was sent to.
      * 
      * @param preferredBehavior
@@ -68,7 +64,6 @@ public class HSPPlayerListener extends PlayerListener {
     		if( ConfigOptions.SETTING_JOIN_BEHAVIOR.equals(spawnInfo.spawnEventType) &&
     				plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
     			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
-    			Location lastLogoutLocation = null;
     			if( storagePlayer != null )
     				l = storagePlayer.getLastLogoutLocation();
     		}
@@ -183,14 +178,15 @@ public class HSPPlayerListener extends PlayerListener {
     	
 		// Is this a new player?
     	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
-    		if( isVerboseLogging() )
+    		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected, checking.");
     		
     		spawnInfo.isFirstLogin = true;
     		
-    		/*
     		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
     		plugin.getStorage().writePlayer(storagePlayer);
+    		
+    		/*
 
     		// also make sure they don't have a home set.  it's possible if they were running HomeSpawnPlus
     		// before the above Player check was created, that they already have a home set even though
@@ -209,11 +205,12 @@ public class HSPPlayerListener extends PlayerListener {
     		*/
     	}
     	
-    	if( isVerboseLogging() )
+    	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	
     	Location l = doSpawn(p, spawnInfo);
-		util.delayedTeleport(p, l);
+    	if( l != null )
+    		util.delayedTeleport(p, l);
     }
     
     private void updateQuitLocation(Player p)
@@ -240,7 +237,7 @@ public class HSPPlayerListener extends PlayerListener {
     
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
-    	if( isVerboseLogging() )
+    	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
     	
     	SpawnInfo spawnInfo = new SpawnInfo();

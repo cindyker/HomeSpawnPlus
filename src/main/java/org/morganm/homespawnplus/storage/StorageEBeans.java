@@ -89,6 +89,9 @@ public class StorageEBeans implements Storage {
 			update.execute();
 			log.info(logPrefix + " Upgrade from version 0.6.2 database to version 0.6.3 complete");
 		}
+		
+		// TODO: upgrade for Spawn.group notNull
+		// SQL: "alter table hsp_spawn modify group_name varchar(32);"
 	}
 	
 	/* (non-Javadoc)

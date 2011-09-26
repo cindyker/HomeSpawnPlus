@@ -18,6 +18,9 @@ commands:
     usage: |
         Incorrect usage of command /<command>. Examples:
            /<command> Admins - sets the group spawn for the 'Admins' group
+  setfirstspawn:
+    description: Sets the newPlayer spawn
+    usage: /<command>
   groupspawn:
     description: Returns you to the group spawn
     usage: |
@@ -55,6 +58,7 @@ permissions:
             hsp.command.CooldownExempt.home: true
             hsp.command.CooldownExempt.spawn: true
             hsp.command.CooldownExempt.groupspawn: true
+            hsp.command.setfirstspawn.use: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -86,6 +90,9 @@ permissions:
         default: op
     hsp.command.setspawn.use:
         description: Allows use of the /setspawn command
+        default: op
+    hsp.command.setfirstspawn.use:
+        description: Allows use of the /setfirstspawn command
         default: op
     hsp.command.setgroupspawn.use:
         description: Allows use of the /setgroupspawn command

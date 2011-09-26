@@ -46,6 +46,10 @@ public class HomeSpawnUtils {
 		this.server = plugin.getServer();
 	}
 	
+    public boolean isVerboseLogging() {
+    	return plugin.getConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
+    }
+
 	/** Send a message to a player in our default mod color.
 	 * 
 	 * @param p
@@ -68,6 +72,10 @@ public class HomeSpawnUtils {
 		boolean defaultFlag = false;
 		
 		String playerName = p.getName();
+
+		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
+		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
+	    	spawnInfo.spawnStrategies = plugin.getConfig().getStrategies(spawnInfo.spawnEventType);
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -300,8 +308,8 @@ public class HomeSpawnUtils {
     	if( spawnName != null )
     		spawn = plugin.getStorage().getSpawnByName(spawnName);
     	
-    	if( spawn == null )
-        	log.warning(logPrefix + " Could not find or load spawnByName for '"+spawnName+"!");
+    	if( spawn == null && isVerboseLogging() )
+        	log.warning(logPrefix + " Could not find or load spawnByName for '"+spawnName+"'!");
     	
     	return spawn;
     }
@@ -506,7 +514,7 @@ public class HomeSpawnUtils {
     	else
     		spawn = plugin.getStorage().getSpawn(worldName, group);
     	
-    	if( spawn == null )
+    	if( spawn == null && isVerboseLogging() )
         	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"' on world "+worldName+"!");
     	
     	return spawn;
@@ -532,6 +540,7 @@ public class HomeSpawnUtils {
     	}
     	
     	public void run() {
+//    		log.info(logPrefix+" delayed teleporting "+p+" to "+l);
     		p.teleport(l);
     	}
     }

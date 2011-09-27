@@ -39,7 +39,8 @@ core:
   # HomeSpawnPlus is doing
   verboseLogging: false
 
-# The events below allow use of the strategies described here.
+# The events below allow use of the strategies described here. Web doc reference:
+# http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #
 # The strategies are processed in the order listed, so if you list a strategy first
 # that is guaranteed to always return a location, such as SPAWN_DEFAULT_WORLD, then

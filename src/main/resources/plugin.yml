@@ -58,6 +58,9 @@ permissions:
             hsp.command.CooldownExempt.home: true
             hsp.command.CooldownExempt.spawn: true
             hsp.command.CooldownExempt.groupspawn: true
+            hsp.command.WarmupExempt.home: true
+            hsp.command.WarmupExempt.spawn: true
+            hsp.command.WarmupExempt.groupspawn: true
             hsp.command.setfirstspawn.use: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
@@ -114,4 +117,19 @@ permissions:
         default: op
     hsp.command.CooldownExempt.groupspawn:
         description: Exempt from /groupspawn cooldown
+        default: op
+    hsp.command.WarmupExempt.*:
+        description: Exempt from all warmups
+        children:
+          hsp.command.WarmupExempt.home: true
+          hsp.command.WarmupExempt.spawn: true
+          hsp.command.WarmupExempt.groupspawn: true
+    hsp.command.WarmupExempt.home:
+        description: Exempt from /home warmup
+        default: op
+    hsp.command.WarmupExempt.spawn:
+        description: Exempt from /spawn warmup
+        default: op
+    hsp.command.WarmupExempt.groupspawn:
+        description: Exempt from /groupspawn warmup
         default: op

@@ -10,11 +10,10 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigException;
-import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.entity.Version;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
@@ -70,8 +69,34 @@ public class StorageEBeans implements Storage {
 		int knownVersion = 80;		// assume current version to start
 		
 		EbeanServer db = plugin.getDatabase();
-		
+
+		Version versionObject = null;
 		try {
+			String q = "find version where id = 1";
+			Query<Version> versionQuery = db.createQuery(Version.class, q);
+			versionObject = versionQuery.findUnique();
+		}
+		// we ignore any exception here, we'll catch it below in the version checks
+		catch(Exception e) {}
+		
+		if( versionObject == null ) {
+			try {
+				SqlUpdate update = db.createSqlUpdate("insert into hsp_version VALUES(1, 80)");
+				update.execute();
+			}
+			// if the insert fails, then we know we are on version 63 (or earlier) of the db schema
+			catch(PersistenceException e) {
+				knownVersion = 63;
+			}
+		}
+		else
+			knownVersion = versionObject.getDatabaseVersion();
+
+		/*
+		try {
+			SqlUpdate update = db.createSqlUpdate("insert into hsp_version VALUES(1,80)");
+			update.execute();
+			
 			// use negative ID and random name so to be guaranteed to not conflict with any
 			// legitmate 
 			SqlUpdate update = db.createSqlUpdate("insert into hsp_spawn VALUES(-1,'world',null,'upgrade_check',null,0,0,0,0,0,SYSDATE(),SYSDATE());");
@@ -83,7 +108,9 @@ public class StorageEBeans implements Storage {
 		catch(PersistenceException e) {
 			knownVersion = 63;
 		}
+		*/
 		
+		// determine if we are at version 62 of the database schema
 		try {
 			SqlQuery query = db.createSqlQuery("select world from hsp_player");
 			query.findList();
@@ -108,7 +135,18 @@ public class StorageEBeans implements Storage {
 		
 		if( knownVersion < 80 ) {
 			log.info(logPrefix + " Upgrading from version 0.6.3 database to version 0.8");
-			SqlUpdate update = db.createSqlUpdate("ALTER TABLE hsp_spawn modify group_name varchar(32)");
+			SqlUpdate update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_version` ("+
+					"`id` int(11) NOT NULL,"+
+					"`database_version` int(11) NOT NULL,"+
+					"PRIMARY KEY (`id`)"+
+					")"
+				);
+			update.execute();
+			update = db.createSqlUpdate("insert into hsp_version VALUES(1,80)");
+			update.execute();
+
+			update = db.createSqlUpdate("ALTER TABLE hsp_spawn modify group_name varchar(32)");
 			update.execute();
 			log.info(logPrefix + " Upgrade from version 0.6.3 database to version 0.8 complete");
 		}

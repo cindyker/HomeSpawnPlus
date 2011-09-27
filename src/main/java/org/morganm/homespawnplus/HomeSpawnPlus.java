@@ -23,6 +23,7 @@ import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
@@ -231,6 +232,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(Home.class);
         classList.add(Spawn.class);
         classList.add(org.morganm.homespawnplus.entity.Player.class);
+        classList.add(Version.class);
         return classList;
     }
     

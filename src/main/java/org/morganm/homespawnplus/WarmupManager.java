@@ -5,6 +5,7 @@ package org.morganm.homespawnplus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -168,7 +169,12 @@ public class WarmupManager {
 	}
 	*/
 	
-	public void cancelWarmup(int warmupId) {
+	/* Seemed like a good idea to have an external way to cancel a warmup, but I'm not
+	 * using it anywhere yet so I'll just leave the empty stub for now and flag it private.
+	 * 
+	 */
+	@SuppressWarnings("unused")
+	private void cancelWarmup(int warmupId) {
 		throw new NotImplementedException();
 	}
 
@@ -186,9 +192,18 @@ public class WarmupManager {
 			return true;
 	}
 	
+	/** To be called when an entity takes damage so that we can respond appropriately
+	 * to any pending warmups.
+	 * 
+	 * @param event
+	 */
 	public void processEntityDamage(EntityDamageEvent event) {
 		// if we aren't supposed to cancel on damage, no further processing required
 		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) )
+			return;
+
+		// don't do any extra processing if there are no pending warmups
+		if( warmupsPending.isEmpty() )
 			return;
 		
 		Entity e = event.getEntity();
@@ -202,14 +217,22 @@ public class WarmupManager {
 			List<PendingWarmup> playerWarmups = warmupsPendingByPlayerName.get(playerName);
 
 			if( playerWarmups != null && !playerWarmups.isEmpty() ) {
-				for(PendingWarmup warmup : playerWarmups) {
-					warmup.cancel();	// possible ConcurrentModification exception?
+				for(Iterator<PendingWarmup> i = playerWarmups.iterator(); i.hasNext();) {
+					PendingWarmup warmup = i.next();
+					
+					// remove it directly to avoid ConcurrentModification exception.  Below
+					// warmup.cancel() will also try to remove the object, but it will just
+					// result in a NOOP since we already remove the element here.
+					i.remove();
+					
+					warmup.cancel();
 					p.sendMessage("You took damage! Warmup "+warmup.warmupName+" cancelled.");
 				}
 			}
 		}
 	}
 	
+	/*
 	public void processPlayerMove(PlayerMoveEvent event) {
 		// if we aren't supposed to cancel on move, no further processing required
 		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) )
@@ -259,6 +282,7 @@ public class WarmupManager {
 			}
 		}
 	}
+	*/
 	
 	private class PendingWarmup implements Runnable {
 		public int warmupId;
@@ -302,6 +326,7 @@ public class WarmupManager {
 			else {
 				boolean scheduleNext = true;
 				
+				// do movement checks to see if player has moved since the warmup started
 				if( config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
 					Location currentLoc = p.getLocation();
 					if( playerLocation.getX() != currentLoc.getX() ||

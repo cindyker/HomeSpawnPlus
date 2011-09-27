@@ -65,18 +65,29 @@ public class StorageEBeans implements Storage {
 	}
 	
 	private void upgradeDatabase() {
-		int knownVersion = 063;		// start by assuming current version
+		int knownVersion = 80;		// start by assuming current version
 		
 		EbeanServer db = plugin.getDatabase();
+		try {
+			SqlUpdate update = db.createSqlUpdate("insert into hsp_spawn VALUES()");
+			update.execute();
+			
+			update = db.createSqlUpdate("delete from hsp_spawn where ...");
+			update.execute();
+		}
+		catch(PersistenceException e) {
+			knownVersion = 63;
+		}
+		
 		try {
 			SqlQuery query = db.createSqlQuery("select world from hsp_player");
 			query.findList();
 		}
 		catch(PersistenceException e) {
-			knownVersion = 062;
+			knownVersion = 62;
 		}
 		
-		if( knownVersion < 063 ) {
+		if( knownVersion < 63 ) {
 			log.info(logPrefix + " Upgrading from version 0.6.2 database to version 0.6.3");
 			SqlUpdate update = db.createSqlUpdate("ALTER TABLE hsp_player "
 					+ "ADD(`world` varchar(32) DEFAULT NULL"
@@ -90,8 +101,12 @@ public class StorageEBeans implements Storage {
 			log.info(logPrefix + " Upgrade from version 0.6.2 database to version 0.6.3 complete");
 		}
 		
-		// TODO: upgrade for Spawn.group notNull
-		// SQL: "alter table hsp_spawn modify group_name varchar(32);"
+		if( knownVersion < 80 ) {
+			log.info(logPrefix + " Upgrading from version 0.6.3 database to version 0.8");
+			SqlUpdate update = db.createSqlUpdate("ALTER TABLE hsp_spawn modify group_name varchar(32)");
+			update.execute();
+			log.info(logPrefix + " Upgrade from version 0.6.3 database to version 0.8 complete");
+		}
 	}
 	
 	/* (non-Javadoc)

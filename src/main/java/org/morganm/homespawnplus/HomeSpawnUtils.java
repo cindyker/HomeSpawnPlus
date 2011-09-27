@@ -215,7 +215,7 @@ public class HomeSpawnUtils {
     	// or if we aren't even using permissions at all, then just use the default spawn
     	if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
     			|| !plugin.isUsePermissions()
-    			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".groupspawn.use") ) {
+    			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.groupspawn.use") ) {
     		return sendToSpawn(p);
     	}
     	

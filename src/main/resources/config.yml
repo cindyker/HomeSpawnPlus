@@ -136,3 +136,7 @@ warmup:
   # individual command warmup timers
   home: 5
   spawn: 5
+
+# DO NOT TOUCH THIS, HSP will update it automatically as needed
+database:
+  version: 63

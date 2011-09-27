@@ -74,6 +74,15 @@ public interface Config {
     public int getInt(String path, int def);
     
     /**
+     * Set a given property path to a value.  Must call save() at some point to
+     * commit data to the backing store.
+     * 
+     * @param path
+     * @param value
+     */
+    public void setProperty(String path, Object value);
+    
+    /**
      * Gets a list of strings. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
      * default will be returned. 'null' can be passed for the default

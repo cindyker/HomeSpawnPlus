@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.config.ConfigException;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -65,14 +67,17 @@ public class StorageEBeans implements Storage {
 	}
 	
 	private void upgradeDatabase() {
-		int knownVersion = 80;		// start by assuming current version
+		int knownVersion = 80;		// assume current version to start
 		
 		EbeanServer db = plugin.getDatabase();
+		
 		try {
-			SqlUpdate update = db.createSqlUpdate("insert into hsp_spawn VALUES()");
+			// use negative ID and random name so to be guaranteed to not conflict with any
+			// legitmate 
+			SqlUpdate update = db.createSqlUpdate("insert into hsp_spawn VALUES(-1,'world',null,'upgrade_check',null,0,0,0,0,0,SYSDATE(),SYSDATE());");
 			update.execute();
 			
-			update = db.createSqlUpdate("delete from hsp_spawn where ...");
+			update = db.createSqlUpdate("delete from hsp_spawn where id = -1");
 			update.execute();
 		}
 		catch(PersistenceException e) {
@@ -203,6 +208,13 @@ public class StorageEBeans implements Storage {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getAllPlayers
+	 */
+	public Set<Player> getAllPlayers() {
+		return plugin.getDatabase().find(Player.class).findSet();
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#writeHome(org.morganm.homespawnplus.Home)
 	 */
 	@Override
@@ -237,5 +249,22 @@ public class StorageEBeans implements Storage {
 	@Override
 	public void removeHome(Home home) {
 		plugin.getDatabase().delete(home);
+	}
+	
+	@Override
+	public void deleteAllData() {
+		EbeanServer db = plugin.getDatabase();
+		db.beginTransaction();
+		
+		SqlUpdate update = db.createSqlUpdate("delete from hsp_spawn");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_home");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_player");
+		update.execute();
+		
+		db.commitTransaction();
 	}
 }

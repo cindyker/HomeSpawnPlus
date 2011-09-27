@@ -33,6 +33,7 @@ public class HSPPlayerListener extends PlayerListener {
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
     private final WarmupManager warmupManager;
+    
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
     private long lastCleanup;
@@ -46,14 +47,11 @@ public class HSPPlayerListener extends PlayerListener {
         warmupManager = plugin.getWarmupmanager();
     }
 
-    /** Maybe should be moved to util?  Return location player was sent to.
+    /** Return location player should be sent to.
      * 
      * @param preferredBehavior
      */
     private Location doSpawn(Player p, SpawnInfo spawnInfo) {
-//    	String behavior = plugin.getConfig().getString(configBehaviorOption, ConfigOptions.VALUE_DEFAULT);
-//    	log.info(logPrefix + " doSpawn, behavior = "+behavior);
-    	
     	spawnInfo.spawnStrategies = plugin.getConfig().getStrategies(spawnInfo.spawnEventType);
     	Location l = util.getSpawnLocation(p, spawnInfo);
     	
@@ -70,34 +68,6 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     	
     	return l;
-    	
-    	/*
-    	if( behavior.equals(ConfigOptions.VALUE_HOME) )
-    		return util.sendHome(p);
-    	else if( behavior.equals(ConfigOptions.VALUE_MULTIHOME) ) {
-    		Home home = util.getHome(p.getName(), p.getWorld());
-    		
-    		// no home set on current world, send them to default world
-    		if( home == null ) {
-        		home = util.getHome(p.getName(), util.getDefaultWorld());
-        		if( home != null )
-        			return home.getLocation();
-        		// if home is null, this will fall-through to sendHome() below which will just
-        		// send them to the spawn in the current world
-    		}
-    		
-    		// they have a home set on this world, send them there
-			return util.sendHome(p);
-    	}
-    	else if( behavior.equals(ConfigOptions.VALUE_GROUP) )
-	    	return util.sendToGroupSpawn(p);
-    	else if( behavior.equals(ConfigOptions.VALUE_WORLD) )
-    		return util.sendToSpawn(p);
-    	else if( behavior.equals(ConfigOptions.VALUE_GLOBAL) )
-    		return util.sendToGlobalSpawn(p);
-    	else
-    		return null;
-    		*/
     }
     
     @Override

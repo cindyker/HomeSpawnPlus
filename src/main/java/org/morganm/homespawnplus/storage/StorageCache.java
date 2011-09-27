@@ -31,6 +31,8 @@ public class StorageCache implements Storage
 	private Set<Home> allHomes;
 	// only populated if getallSpawns() is called
 	private Set<Spawn> allSpawns;
+	// only populated if getallPlayers() is called
+	private Set<Player> allPlayers;
 	
 	// flat list of all groups that are used in spawngroups
 	private Set<String> spawnDefinedGroups;
@@ -182,6 +184,10 @@ public class StorageCache implements Storage
 			allSpawns.add(spawn);
 	}
 	
+	private void updatePlayer(Player player) {
+		players.put(player.getName(), player);
+	}
+	
 	/** Called only when getAllSpawns() hits the database to return all spawns - since we have
 	 * them all in memory already, we store them in the key-value hashes.
 	 * 
@@ -190,6 +196,12 @@ public class StorageCache implements Storage
 	private void updateSpawns(Set<Spawn> allSpawns) {
 		for(Spawn spawn : allSpawns) {
 			updateSpawn(spawn);
+		}
+	}
+	
+	private void updatePlayers(Set<Player> allPlayers) {
+		for(Player player : allPlayers) {
+			updatePlayer(player);
 		}
 	}
 	
@@ -230,6 +242,18 @@ public class StorageCache implements Storage
 		return allSpawns;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getAllPlayers
+	 */
+	public Set<Player> getAllPlayers() {
+		if( allPlayers == null ) {
+			allPlayers = original.getAllPlayers();
+			updatePlayers(allPlayers);
+		}
+		
+		return allPlayers;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.Storage#writeHome(org.morganm.homespawnplus.Home)
 	 */
@@ -274,7 +298,7 @@ public class StorageCache implements Storage
 	@Override
 	public Player getPlayer(String name) {
 		Player p = original.getPlayer(name);
-		players.put(name, p);
+		updatePlayer(p);
 		return p;
 	}
 
@@ -296,5 +320,11 @@ public class StorageCache implements Storage
 			allHomes.remove(home);
 		
 		original.removeHome(home);
+	}
+
+	@Override
+	public void deleteAllData() {
+		purgeCache();
+		original.deleteAllData();
 	}
 }

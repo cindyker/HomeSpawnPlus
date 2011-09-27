@@ -43,9 +43,12 @@ public interface Storage {
 	
 	public Set<Home> getAllHomes();
 	public Set<Spawn> getAllSpawns();
+	public Set<Player> getAllPlayers();
 	
 	public void writeHome(Home home);
 	public void writeSpawn(Spawn spawn);
 	
 	public void removeHome(Home home);
+
+	public void deleteAllData();
 }

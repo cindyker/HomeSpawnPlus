@@ -7,7 +7,9 @@ v0.8 - ??
 implemented yet
 [*]config options have changed, automatically move old one out of the way and
 copy the new default into place
+[*]implemented data backup and restore (use /hsp backup, /hsp restore)
 [*]BUGFIX: fixed problem that prevented sleeping in beds at night
+[*]BUGFIX: fixed a bug that prevented group spawning from working properly
 
 v0.7 - July 17, 2011
 [*]made it so "defaultWorld" is also the default spawn world for new players

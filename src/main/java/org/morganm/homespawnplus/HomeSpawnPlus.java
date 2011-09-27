@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -39,6 +40,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     public static String logPrefix;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
+    public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
     private PermissionHandler permissionHandler;
@@ -240,7 +242,19 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @param permissionNode
      * @return
      */
-    public boolean hasPermission(Player p, String permissionNode) {
+    public boolean hasPermission(CommandSender sender, String permissionNode) {
+    	Player p = null;
+    	
+    	// console always has access
+    	if( sender instanceof ConsoleCommandSender )
+    		return true;
+    	if( sender instanceof Player )
+    		p = (Player) sender;
+    	
+    	// shouldn't happen, but if it does, something weird going on: deny access
+    	if( p == null )
+    		return false;
+    	
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 
     		return permissionHandler.has(p, permissionNode);

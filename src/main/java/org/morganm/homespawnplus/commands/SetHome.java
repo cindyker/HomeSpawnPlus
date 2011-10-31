@@ -41,8 +41,10 @@ public class SetHome extends BaseCommand
 		util.setHome(homeowner, l, setter);
 		if( homeowner != setter ) 
 			util.sendMessage(p, "Home set successfully for player "+homeowner+"!");
-		else
-			util.sendMessage(p, "Home set successfully!");
+		else {
+			if( applyCost(p) )
+				util.sendMessage(p, "Home set successfully!");
+		}
 
 		return true;
 	}

@@ -138,6 +138,16 @@ warmup:
   home: 5
   spawn: 5
 
-# DO NOT TOUCH THIS, HSP will update it automatically as needed
-database:
-  version: 63
+# If you have Vault installed, HSP can use that to charge prices for commands
+# using whatever economy plugin you happen to have installed. Costs will not
+# work if you do not have Vault installed.
+#
+# http://dev.bukkit.org/server-mods/vault/
+costs:
+  # if verbose is true, the player will get a message stating that their account
+  # has been charged whenever they use a command with a cost.
+  verbose: true
+  home: 0
+  sethome: 0
+  spawn: 0
+  groupspawn: 0

@@ -3,6 +3,9 @@
  */
 package org.morganm.homespawnplus.command;
 
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.CooldownManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -50,6 +53,38 @@ public abstract class BaseCommand implements Command {
 	
 	protected String getDisabledConfigFlag() {
 		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
+	}
+	
+	/**
+	 * 
+	 * @param p
+	 * @return true on success, false if there was an error that should prevent the action from taking place
+	 */
+	protected boolean applyCost(Player p) {
+		Economy economy = plugin.getEconomy();
+		if( economy == null )
+			return true;
+		
+		if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+			return true;
+
+		int price = plugin.getConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+		if( price > 0 ) {
+			EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
+			
+			if( response.transactionSuccess() ) {
+				if( plugin.getConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
+					util.sendMessage(p, price + " charged for use of the " + getCommandName() + " command.");
+				}
+				return true;
+			}
+			else {
+				util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
+				return false;
+			}
+		}
+		else
+			return true;	// no cost for this command
 	}
 	
 	/** Most commands for this plugin check 3 things:

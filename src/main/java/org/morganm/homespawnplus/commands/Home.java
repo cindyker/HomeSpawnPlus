@@ -120,7 +120,8 @@ public class Home extends BaseCommand
 				}
 				else {
 					util.sendMessage(p, "Teleporting to player home for "+home.getPlayerName()+" on world \""+home.getWorld()+"\"");
-					p.teleport(home.getLocation());
+					if( applyCost(p) )
+						p.teleport(home.getLocation());
 				}
 			}
 			else
@@ -139,7 +140,8 @@ public class Home extends BaseCommand
 						public void run() {
 							if( !canceled ) {
 								util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting home");
-								util.sendHome(p);
+								if( applyCost(p) )
+									util.sendHome(p);
 							}
 						}
 
@@ -159,7 +161,8 @@ public class Home extends BaseCommand
 			}
 			else {
 				HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to home.");
-				util.sendHome(p);
+				if( applyCost(p) )
+					util.sendHome(p);
 			}
 		}
 		

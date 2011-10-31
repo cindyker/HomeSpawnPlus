@@ -21,7 +21,9 @@ public class GroupSpawn extends BaseCommand
 		
 //		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to group spawn.");
 		
-		util.sendToGroupSpawn(p);
+		if( applyCost(p) )
+			util.sendToGroupSpawn(p);
+		
 		return true;
 	}
 

@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus;
 
+import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -12,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -21,6 +24,17 @@ import com.nijiko.permissions.Entry;
 import com.nijiko.permissions.EntryType;
 import com.nijiko.permissions.Group;
 import com.nijiko.permissions.User;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.BukkitUtil;
+import com.sk89q.worldguard.bukkit.ConfigurationManager;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
+import com.sk89q.worldguard.protection.flags.RegionGroupFlag.RegionGroup;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 
@@ -62,16 +76,16 @@ public class HomeSpawnUtils {
 	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
 	 * is to follow the strategies given to find the preferred Location to send the player.
 	 * 
-	 * @param p
+	 * @param player
 	 * @return
 	 */
-	public Location getSpawnLocation(Player p, SpawnInfo spawnInfo) {
+	public Location getSpawnLocation(Player player, SpawnInfo spawnInfo) {
 		Location l = null;
 		
 		// this is set to true if we encounter the default strategy in the list
 		boolean defaultFlag = false;
 		
-		String playerName = p.getName();
+		String playerName = player.getName();
 
 		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
 		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
@@ -84,7 +98,7 @@ public class HomeSpawnUtils {
 			
 			Home home = null;
 			Spawn spawn = null;
-			switch(s) {
+			switch(s.getType()) {
 			case SPAWN_NEW_PLAYER:
 				if( spawnInfo.isFirstLogin ) {
 					spawn = getSpawnByName(ConfigOptions.VALUE_NEW_PLAYER_SPAWN);
@@ -94,14 +108,14 @@ public class HomeSpawnUtils {
 				break;
 				
 			case HOME_THIS_WORLD_ONLY:
-				home = getHome(playerName, p.getWorld());
+				home = getHome(playerName, player.getWorld());
 				if( home != null )
 					l = home.getLocation();
 				break;
 
 				// try home on this world first, if not, use home on default world
 			case HOME_MULTI_WORLD:
-				home = getHome(playerName, p.getWorld());
+				home = getHome(playerName, player.getWorld());
 				if( home != null )
 					l = home.getLocation();
 				else {
@@ -118,7 +132,7 @@ public class HomeSpawnUtils {
 				break;
 				
 			case SPAWN_THIS_WORLD_ONLY:
-				spawn = getSpawn(p.getWorld().getName());
+				spawn = getSpawn(player.getWorld().getName());
 				if( spawn != null )
 					l = spawn.getLocation();
 				break;
@@ -131,12 +145,34 @@ public class HomeSpawnUtils {
 				// TODO: this should be refactored into it's own method when I get around to refactoring
 				// this whole class.
 				@SuppressWarnings("deprecation")
-				String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), playerName);
-				spawn = getGroupSpawn(group, p.getWorld().getName());
+				String group = plugin.getPermissionHandler().getGroup(player.getWorld().getName(), playerName);
+				spawn = getGroupSpawn(group, player.getWorld().getName());
 	    		
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
 	    		break;
+	    		
+			case SPAWN_SPECIFIC_WORLD:
+				String worldName = s.getData();
+				spawn = getSpawn(worldName);
+				if( spawn != null )
+					l = spawn.getLocation();
+				else
+					log.info("No spawn found for world \""+worldName+"\" for \""+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+"\" strategy");
+				break;
+			
+			case SPAWN_NAMED_SPAWN:
+				String namedSpawn = s.getData();
+				spawn = getSpawnByName(namedSpawn);
+				if( spawn != null )
+					l = spawn.getLocation();
+				else
+					log.info("No spawn found for name \""+namedSpawn+"\" for \""+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+"\" strategy");				
+				break;
+				
+			case SPAWN_WG_REGION:
+				l = getWorldGuardSpawnLocation(player);
+				break;
 				
 			case SPAWN_NEAREST_SPAWN:
 				// TODO: not yet implemented
@@ -149,6 +185,60 @@ public class HomeSpawnUtils {
 		}
 		
 		return l;
+	}
+	
+	/** This code adapted from WorldGuard class
+	 *  com.sk89q.worldguard.bukkit.WorldGuardPlayerList, method
+	 *  onPlayerRespawn().
+	 *  
+	 *  This is because there is no API provided by WorldGuard to determine this externally
+	 *  nor is there a reliable way for me to use Bukkit to call WorldGuard's onPlayerRespawn()
+	 *  directly since HSP's use might not be in a respawn event (for example, HSP might be
+	 *  using this strategy in a /spawn command).
+	 *  
+	 *  So I've had to duplicate/adapt the WorldGuard method directly into HSP in order to
+	 *  accurately check whether or not WorldGuard would respond to the current location with
+	 *  a region spawn. Code is current as of WorldGuard build #309, built Oct 29, 2011.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public Location getWorldGuardSpawnLocation(Player player) {
+		Location loc = null;
+		
+		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		if( p != null ) {
+			WorldGuardPlugin worldGuard = (WorldGuardPlugin) p;
+			Location location = player.getLocation();
+
+			ConfigurationManager cfg = worldGuard.getGlobalStateManager();
+			WorldConfiguration wcfg = cfg.get(player.getWorld());
+
+			if (wcfg.useRegions) {
+				Vector pt = toVector(location);
+				RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
+				ApplicableRegionSet set = mgr.getApplicableRegions(pt);
+
+				Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC);
+
+				if (spawn != null) {
+					RegionGroup group = set.getFlag(DefaultFlag.SPAWN_PERM);
+					Location spawnLoc = BukkitUtil.toLocation(player.getWorld(), spawn);
+
+					if (group != null) {
+						LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
+
+						if (RegionGroupFlag.isMember(set, group, localPlayer)) {
+							loc = spawnLoc;
+						}
+					} else {
+						loc = spawnLoc;
+					}
+				}
+			}
+		}
+		
+		return loc;
 	}
 	
 	public Location sendHome(Player p, String world) {

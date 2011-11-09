@@ -96,7 +96,13 @@ public class ConfigurationYAML extends Configuration implements Config {
     	List<String> strategies = getStringList(node, null);
 
     	for(String s : strategies) {
-    		spawnStrategies.add(SpawnStrategy.mapStringToStrategy(s));
+    		try {
+    			spawnStrategies.add(SpawnStrategy.mapStringToStrategy(s));
+    		}
+    		catch(ConfigException e) {
+    			log.warning(e.getMessage());
+    			e.printStackTrace();
+    		}
     	}
     	
 		return spawnStrategies;

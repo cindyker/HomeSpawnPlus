@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -15,6 +18,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.command.CommandProcessor;
 import org.morganm.homespawnplus.config.Config;
@@ -65,6 +69,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
 
+    // Vault interface variables
+    public static Permission vaultPermission = null;
+    public static Economy vaultEconomy = null;
+
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
      * 
      * @return the singleton instance or null if there is none
@@ -108,16 +116,21 @@ public class HomeSpawnPlus extends JavaPlugin {
      * 
      */
     private void initPermissions() {
-        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
-        if( permissionsPlugin != null ) {
-        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-        	usePermissions = true;
-        	
-        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
-        		usePerm3 = true;
-        }
-        else
-	    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
+    	if( !setupVaultPermissions() ) {
+	        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
+	        if( permissionsPlugin != null ) {
+	        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+	        	usePermissions = true;
+	        	
+	        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
+	        		usePerm3 = true;
+	        }
+	        else
+		    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
+    	}
+    	else {
+	    	log.info(logPrefix+" Vault plugin found, using Vault interface for Permissions");
+    	}
     }
     
     public void loadConfig() throws ConfigException, IOException {
@@ -125,7 +138,32 @@ public class HomeSpawnPlus extends JavaPlugin {
 		config.load();
     }
 
-//    private boolean hasHookedOnMoveWarmups = false;
+    private Boolean setupVaultPermissions()
+    {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            vaultPermission = permissionProvider.getProvider();
+        }
+
+        return (vaultPermission != null);
+    }
+
+    private Boolean setupVaultEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            vaultEconomy = economyProvider.getProvider();
+            log.info(logPrefix + " Vault interface found and will be used for economy-related functions");
+        }
+
+        return (vaultEconomy != null);
+    }
+    
+    public Economy getEconomy() {
+    	return vaultEconomy;
+    }
+    
+    //    private boolean hasHookedOnMoveWarmups = false;
     private boolean hasHookedOnDamageWarmups = false;
     /** To be efficient, we don't hook warmup events unless the config option is set.  We keep
      * track in a boolean if we've already hooked it since Bukkit provides no way to unhook.
@@ -179,6 +217,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     	
     	initPermissions();
+    	setupVaultEconomy();
     	
     	cooldownManager = new CooldownManager(this);
     	warmupManager = new WarmupManager(this);
@@ -256,6 +295,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// shouldn't happen, but if it does, something weird going on: deny access
     	if( p == null )
     		return false;
+    	
+    	// use Vault for permissions, if it was found
+    	if( vaultPermission != null )
+    		return vaultPermission.has(p, permissionNode);
     	
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 

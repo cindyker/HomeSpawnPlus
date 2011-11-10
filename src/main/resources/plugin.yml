@@ -3,6 +3,7 @@ main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 0.8
 author: morganm
 database: true
+softdepend: [Vault]
 commands:
   setspawn:
     description: Sets the spawn for this world
@@ -61,6 +62,10 @@ permissions:
             hsp.command.WarmupExempt.home: true
             hsp.command.WarmupExempt.spawn: true
             hsp.command.WarmupExempt.groupspawn: true
+            hsp.command.CostExempt.groupspawn: true
+            hsp.command.CostExempt.spawn: true
+            hsp.command.CostExempt.home: true
+            hsp.command.CostExempt.sethome: true
             hsp.command.setfirstspawn.use: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
@@ -132,4 +137,23 @@ permissions:
         default: op
     hsp.command.WarmupExempt.groupspawn:
         description: Exempt from /groupspawn warmup
+        default: op
+    hsp.command.CostExempt.*:
+        description: Exempt from all costs
+        children:
+          hsp.command.CostExempt.home: true
+          hsp.command.CostExempt.sethome: true
+          hsp.command.CostExempt.spawn: true
+          hsp.command.CostExempt.groupspawn: true
+    hsp.command.CostExempt.home:
+        description: Exempt from /home costs
+        default: op
+    hsp.command.CostExempt.sethome:
+        description: Exempt from /sethome costs
+        default: op
+    hsp.command.CostExempt.spawn:
+        description: Exempt from /spawn costs
+        default: op
+    hsp.command.CostExempt.groupspawn:
+        description: Exempt from /groupspawn costs
         default: op

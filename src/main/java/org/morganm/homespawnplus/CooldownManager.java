@@ -66,7 +66,7 @@ public class CooldownManager {
 	
     public void setCooldown(Player p, String cooldown)
     {
-    	int cooldownAmount = plugin.getConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
+    	int cooldownAmount = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
     	
     	if(cooldownAmount > 0) {
 //    		log.info(logPrefix + " saving cooldown "+p.getName()+"."+cooldown+", cooldownAmount = "+cooldownAmount);
@@ -85,7 +85,7 @@ public class CooldownManager {
     	long cooldownRemaining = 0;
 //    	log.info(logPrefix + " checking cooldown for "+cooldown+", player "+p.getName());
 
-    	int cooldownAmount = plugin.getConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
+    	int cooldownAmount = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldown, 0);
     	if( cooldownAmount == 0 )
     		return 0;
     	

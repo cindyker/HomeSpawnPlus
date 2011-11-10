@@ -36,7 +36,7 @@ public class HSPWorldListener extends WorldListener {
     	 * Override spawn if one is available and behavior_globalspawn is enabled
     	 */
     	
-    	if( plugin.getConfig().getBoolean(ConfigOptions.SETTING_WORLD_OVERRIDE, false) )
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.SETTING_WORLD_OVERRIDE, false) )
     	{
 	    	HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Setting global spawn for '"+name+"'.");
 	    	

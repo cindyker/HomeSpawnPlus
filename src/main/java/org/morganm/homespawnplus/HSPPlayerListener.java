@@ -13,10 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 
@@ -32,7 +29,7 @@ public class HSPPlayerListener extends PlayerListener {
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
-    private final WarmupManager warmupManager;
+//    private final WarmupManager warmupManager;
     
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
@@ -44,7 +41,7 @@ public class HSPPlayerListener extends PlayerListener {
         plugin = instance;
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
-        warmupManager = plugin.getWarmupmanager();
+//        warmupManager = plugin.getWarmupmanager();
     }
 
     /** Return location player should be sent to.
@@ -52,7 +49,7 @@ public class HSPPlayerListener extends PlayerListener {
      * @param preferredBehavior
      */
     private Location doSpawn(Player p, SpawnInfo spawnInfo) {
-    	spawnInfo.spawnStrategies = plugin.getConfig().getStrategies(spawnInfo.spawnEventType);
+    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
     	Location l = util.getSpawnLocation(p, spawnInfo);
     	
     	// default behavior is do nothing
@@ -60,7 +57,7 @@ public class HSPPlayerListener extends PlayerListener {
     		// if we are spawning and the RECORD_LAST_LOGOUT config is set, then we lookup
     		// our last logout location and return that
     		if( ConfigOptions.SETTING_JOIN_BEHAVIOR.equals(spawnInfo.spawnEventType) &&
-    				plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+    				plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
     			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
     			if( storagePlayer != null )
     				l = storagePlayer.getLastLogoutLocation();
@@ -76,7 +73,7 @@ public class HSPPlayerListener extends PlayerListener {
             return;
         
         // config option needs to be enabled in order to use this feature
-        if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
+        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
 //        	log.info(logPrefix + " " + ConfigOptions.ENABLE_HOME_BEDS + " is disabled");
         	return;
         }
@@ -185,7 +182,7 @@ public class HSPPlayerListener extends PlayerListener {
     
     private void updateQuitLocation(Player p)
     {
-    	if( plugin.getConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
 	    	Location quitLocation = p.getLocation();
 	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
 	    	playerStorage.updateLastLogoutLocation(quitLocation);

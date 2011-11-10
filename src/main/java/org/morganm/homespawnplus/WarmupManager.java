@@ -13,9 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
@@ -39,7 +36,7 @@ public class WarmupManager {
 	
 	public WarmupManager(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
-		this.config = plugin.getConfig();
+		this.config = plugin.getHSPConfig();
 		this.logPrefix = HomeSpawnPlus.logPrefix;
 		
 		warmupsPending = new HashMap<Integer, PendingWarmup>();
@@ -96,7 +93,7 @@ public class WarmupManager {
 	}
 	
 	public int getWarmupTime(String warmupName) {
-		return plugin.getConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
+		return plugin.getHSPConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
 	}
 	
 	/** Start a given warmup.  Return true if the warmup was started successfully, false if not.

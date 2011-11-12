@@ -3,7 +3,7 @@ main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 0.8
 author: morganm
 database: true
-softdepend: [Vault]
+softdepend: [Vault, WorldGuard]
 commands:
   setspawn:
     description: Sets the spawn for this world

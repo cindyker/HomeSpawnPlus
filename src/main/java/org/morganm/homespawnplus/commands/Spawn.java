@@ -26,13 +26,27 @@ public class Spawn extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-    	SpawnInfo spawnInfo = new SpawnInfo();
-    	spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_CMD_BEHAVIOR;
-    	final Location l = util.getSpawnLocation(p, spawnInfo);
+		Location l = null;
+		if( args.length > 0 ) {
+			org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
+			if( spawn != null )
+				l = spawn.getLocation();
+			
+			if( l == null ) {
+				util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
+				return true;
+			}
+		}
+		else {
+			SpawnInfo spawnInfo = new SpawnInfo();
+			spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_CMD_BEHAVIOR;
+			l = util.getSpawnLocation(p, spawnInfo);
+		}
     	
     	// TODO: need to add group permission checks
     	
     	if( l != null ) {
+    		final Location finalL = l;
 			if( hasWarmup(p) ) {
 				if ( !isWarmupPending(p) ) {
 					warmupManager.startWarmup(p.getName(), getCommandName(), new WarmupRunner() {
@@ -42,7 +56,7 @@ public class Spawn extends BaseCommand
 							if( !canceled ) {
 								util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to spawn");
 								if( applyCost(p) )
-									p.teleport(l);
+									p.teleport(finalL);
 							}
 						}
 

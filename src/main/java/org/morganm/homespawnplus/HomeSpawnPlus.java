@@ -10,8 +10,10 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -185,6 +187,41 @@ public class HomeSpawnPlus extends JavaPlugin {
         		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
         	}
         }
+    }
+    
+    private void unhookOtherCommands() {
+    	UsurpCommandExecutor usurp = new UsurpCommandExecutor(this);
+    	
+    	List<String> commands = config.getStringList("usurpCommands", null);
+    	for(String command : commands) {
+        	PluginCommand cmd = getServer().getPluginCommand(command);
+        	// TODO: "being nice" might be best to keep track of the "old" executor
+        	// and restore that if this plugin is unloaded. At this point, restoring
+        	// the old executor requires turning off the usurp config option and
+        	// restarting the server.
+        	cmd.setExecutor(usurp);
+    	}
+    }
+    
+    /** Private class which is used to re-route commands being processed by other plugins
+     * to our plugin instead (if the admin enabled config flag to do so).
+     * 
+     * @author morganm
+     *
+     */
+    private class UsurpCommandExecutor implements CommandExecutor {
+    	private HomeSpawnPlus plugin;
+    	
+    	public UsurpCommandExecutor(HomeSpawnPlus plugin) {
+    		this.plugin = plugin;
+		}
+    	
+		@Override
+		public boolean onCommand(CommandSender sender, Command command, String commandLabel,
+				String[] args) {
+			return plugin.onCommand(sender, command, commandLabel, args);
+		}
+    	
     }
     
     public void onEnable() {

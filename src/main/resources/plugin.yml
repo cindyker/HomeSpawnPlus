@@ -8,6 +8,9 @@ commands:
   setspawn:
     description: Sets the spawn for this world
     usage: /<command>
+  setdefaultspawn:
+    description: Sets the default spawn to a named spawn
+    usage: "/<command> [spawnname]"
   spawn:
     description: Respawns you at the world spawn
     usage: /<command>

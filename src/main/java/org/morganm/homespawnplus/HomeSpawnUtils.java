@@ -60,6 +60,16 @@ public class HomeSpawnUtils {
 		p.sendMessage(Yellow + message);
 	}
 	
+	/** Given a location, return a short string format of the form:
+	 *    world,x,y,z
+	 * 
+	 * @param l
+	 * @return
+	 */
+	public String shortLocationString(Location l) {
+		return l.getWorld().getName()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+	}
+	
 	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
 	 * is to follow the strategies given to find the preferred Location to send the player.
 	 * 
@@ -165,7 +175,26 @@ public class HomeSpawnUtils {
 				break;
 				
 			case SPAWN_NEAREST_SPAWN:
-				// TODO: not yet implemented
+				// simple algorithm for now, it's not called that often and we assume the list
+				// of spawns is relatively small (ie. not in the hundreds or thousands).
+				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
+				Location playerLoc = player.getLocation();
+				
+				double shortestDistance = -1;
+				Spawn closestSpawn = null;
+				for(Spawn theSpawn : allSpawns) {
+					Location theLocation = theSpawn.getLocation();
+					if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
+						double distance = theLocation.distance(playerLoc);
+						if( distance < shortestDistance || shortestDistance == -1 ) {
+							shortestDistance = distance;
+							closestSpawn = theSpawn;
+						}
+					}
+				}
+				
+				if( closestSpawn != null )
+					l = closestSpawn.getLocation();
 				break;
 				
 			case DEFAULT:
@@ -359,7 +388,7 @@ public class HomeSpawnUtils {
     	plugin.getStorage().writeSpawn(spawn);    	
     }
     
-    /** Set the spawn for a given world.
+    /** Set the default spawn for a given world.
      * 
      * @param l
      * @param updatedBy

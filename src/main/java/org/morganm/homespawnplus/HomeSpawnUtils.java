@@ -3,8 +3,6 @@
  */
 package org.morganm.homespawnplus;
 
-import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -14,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -24,17 +21,6 @@ import com.nijiko.permissions.Entry;
 import com.nijiko.permissions.EntryType;
 import com.nijiko.permissions.Group;
 import com.nijiko.permissions.User;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.bukkit.BukkitUtil;
-import com.sk89q.worldguard.bukkit.ConfigurationManager;
-import com.sk89q.worldguard.bukkit.WorldConfiguration;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
-import com.sk89q.worldguard.protection.flags.RegionGroupFlag.RegionGroup;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 
@@ -51,6 +37,7 @@ public class HomeSpawnUtils {
 
 	private final HomeSpawnPlus plugin;
     private final Server server;
+    private WorldGuardInterface wgInterface;
 	
 	// set when we first find the defaultSpawnWorld, cached for future reference
     private String defaultSpawnWorld;
@@ -61,7 +48,7 @@ public class HomeSpawnUtils {
 	}
 	
     public boolean isVerboseLogging() {
-    	return plugin.getConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
+    	return plugin.getHSPConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
     }
 
 	/** Send a message to a player in our default mod color.
@@ -89,7 +76,7 @@ public class HomeSpawnUtils {
 
 		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
 		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
-	    	spawnInfo.spawnStrategies = plugin.getConfig().getStrategies(spawnInfo.spawnEventType);
+	    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -171,7 +158,10 @@ public class HomeSpawnUtils {
 				break;
 				
 			case SPAWN_WG_REGION:
-				l = getWorldGuardSpawnLocation(player);
+				if( wgInterface == null )
+					wgInterface = new WorldGuardInterface(plugin);
+				
+				l = wgInterface.getWorldGuardSpawnLocation(player);
 				break;
 				
 			case SPAWN_NEAREST_SPAWN:
@@ -185,60 +175,6 @@ public class HomeSpawnUtils {
 		}
 		
 		return l;
-	}
-	
-	/** This code adapted from WorldGuard class
-	 *  com.sk89q.worldguard.bukkit.WorldGuardPlayerList, method
-	 *  onPlayerRespawn().
-	 *  
-	 *  This is because there is no API provided by WorldGuard to determine this externally
-	 *  nor is there a reliable way for me to use Bukkit to call WorldGuard's onPlayerRespawn()
-	 *  directly since HSP's use might not be in a respawn event (for example, HSP might be
-	 *  using this strategy in a /spawn command).
-	 *  
-	 *  So I've had to duplicate/adapt the WorldGuard method directly into HSP in order to
-	 *  accurately check whether or not WorldGuard would respond to the current location with
-	 *  a region spawn. Code is current as of WorldGuard build #309, built Oct 29, 2011.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public Location getWorldGuardSpawnLocation(Player player) {
-		Location loc = null;
-		
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-		if( p != null ) {
-			WorldGuardPlugin worldGuard = (WorldGuardPlugin) p;
-			Location location = player.getLocation();
-
-			ConfigurationManager cfg = worldGuard.getGlobalStateManager();
-			WorldConfiguration wcfg = cfg.get(player.getWorld());
-
-			if (wcfg.useRegions) {
-				Vector pt = toVector(location);
-				RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
-				ApplicableRegionSet set = mgr.getApplicableRegions(pt);
-
-				Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC);
-
-				if (spawn != null) {
-					RegionGroup group = set.getFlag(DefaultFlag.SPAWN_PERM);
-					Location spawnLoc = BukkitUtil.toLocation(player.getWorld(), spawn);
-
-					if (group != null) {
-						LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
-
-						if (RegionGroupFlag.isMember(set, group, localPlayer)) {
-							loc = spawnLoc;
-						}
-					} else {
-						loc = spawnLoc;
-					}
-				}
-			}
-		}
-		
-		return loc;
 	}
 	
 	public Location sendHome(Player p, String world) {
@@ -303,7 +239,7 @@ public class HomeSpawnUtils {
     public Location sendToGroupSpawn(Player p) {
     	// if group spawning is disabled, or this player doesn't have group spawn permissions
     	// or if we aren't even using permissions at all, then just use the default spawn
-    	if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
+    	if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
     			|| !plugin.isUsePermissions()
     			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.groupspawn.use") ) {
     		return sendToSpawn(p);
@@ -499,7 +435,7 @@ public class HomeSpawnUtils {
     	}
     	
     	// first, try to get the default spawn based upon the config 
-		String configDefaultWorldName = plugin.getConfig().getString(ConfigOptions.DEFAULT_WORLD, "world");
+		String configDefaultWorldName = plugin.getHSPConfig().getString(ConfigOptions.DEFAULT_WORLD, "world");
 		World world = server.getWorld(configDefaultWorldName);
 		
 		// if that didn't work, just get the first world that Bukkit has in it's list

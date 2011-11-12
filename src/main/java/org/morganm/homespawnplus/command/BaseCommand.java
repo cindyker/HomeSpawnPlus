@@ -40,7 +40,7 @@ public abstract class BaseCommand implements Command {
 		this.util = plugin.getUtil();
 		this.cooldownManager = plugin.getCooldownManager();
 		this.warmupManager = plugin.getWarmupmanager();
-		enabled = !plugin.getConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
+		enabled = !plugin.getHSPConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
 		return this;
 	}
 	
@@ -68,12 +68,12 @@ public abstract class BaseCommand implements Command {
 		if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
 			return true;
 
-		int price = plugin.getConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+		int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
 		if( price > 0 ) {
 			EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
 			
 			if( response.transactionSuccess() ) {
-				if( plugin.getConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
+				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
 					util.sendMessage(p, price + " charged for use of the " + getCommandName() + " command.");
 				}
 				return true;

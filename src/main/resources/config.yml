@@ -1,13 +1,16 @@
 core:
-  # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined by bukkit.yml)
-  # 1 - Cached Ebeans - same as #0, but with in-memory caching for performance
-  # Don't use Cached for now, might be buggy and eBeans has built-in caching
-  # so it should be just as fast unless you have 10's of thousands of entries
+  # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined
+  #     by bukkit.yml)
+  # 1 - Cached Ebeans - same as #0, but with in-memory caching
+  #     for performance
+  # Don't use Cached for now, might be buggy and eBeans has built-in
+  # caching so it should be just as fast unless you have 10's of
+  # thousands of entries
   storage: 0
 
-  # this is ONLY used when a Permissions-compatible plugin isn't found.  In that
-  # case, any permissions listed here are given to everyone by default (ops always
-  # have full permissions)
+  # this is ONLY used when a Permissions-compatible plugin isn't found.
+  # In that case, any permissions listed here are given to everyone by
+  # default (ops always have full permissions)
   defaultPermissions:
     - hsp.command.home.use 
     - hsp.command.sethome.use 
@@ -16,63 +19,76 @@ core:
   # they must also have the 'hsp.home.bedsethome' permission.
   bedsethome: true
  
-  # The default world.  This world is used anywhere you see "global spawn" referenced below
-  # and also in the event all else fails (no home set, no spawn set in current world, etc),
-  # a player will be sent to the spawn in whatever world you define here.
+  # The default world.  This world is used anywhere you see "global
+  # spawn" referenced below and also in the event all else fails (no
+  # home set, no spawn set in current world, etc), a player will be
+  # sent to the spawn in whatever world you define here.
   defaultWorld: world
 
-  # set to true if you want plugin to change the spawn of the actual map (ie. even if you turn this plugin
-  # off later, whatever default spawn you set in various worlds will stay)
+  # set to true if you want plugin to change the spawn of the actual map
+  # (ie. even if you turn this plugin off later, whatever default spawn
+  # you set in various worlds will stay)
   override_world: true
 
-  # if recordLastLogout is true, the plugin will record the precise location the
-  # player logged out at and respawn them there, instead of just letting Bukkit
-  # do it. This is an attempt to work around a bug where people logout close
-  # to a wall and Bukkit tries to respawn them in the wall
+  # if recordLastLogout is true, the plugin will record the precise
+  # location the player logged out at and respawn them there, instead
+  # of just letting Bukkit do it. This is an attempt to work around a
+  # bug where people logout close to a wall and Bukkit tries to respawn
+  # them in the wall
   recordLastLogout: false
 
-  # set to true to enable group spawn functionality.  When set, you can use the /setgroupspawn [group]
-  # command to set spawns for specific groups.  Maybe useful for RPG classes, PvP factions, whatever.
+  # set to true to enable group spawn functionality.  When set, you can
+  # use the /setgroupspawn [group] command to set spawns for specific
+  # groups.  Maybe useful for RPG classes, PvP factions, whatever.
   groupSpawnEnabled: false
 
-  # set to true to have a bit more verbose logging in your server.log about what
-  # HomeSpawnPlus is doing
+  # set to true to have a bit more verbose logging in your server.log
+  # about what HomeSpawnPlus is doing
   verboseLogging: false
 
-# The events below allow use of the strategies described here. Web doc reference:
+# The events below allow use of the strategies described here. Web
+# doc reference:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #
-# The strategies are processed in the order listed, so if you list a strategy first
-# that is guaranteed to always return a location, such as SPAWN_DEFAULT_WORLD, then
-# none of the other strategies will ever fire.
+# The strategies are processed in the order listed, so if you list a
+# strategy first that is guaranteed to always return a location, such
+# as SPAWN_DEFAULT_WORLD, then none of the other strategies will ever
+# fire.
 #
-# Not all strategies make sense for all events, for example "homeDefaultWorld" doesn't
-# make a lot of sense for "onSpawnCommand"; you can use it if you want, but it'll
-# probably just confuse your players.
+# Not all strategies make sense for all events, for example
+# "homeDefaultWorld" doesn't make a lot of sense for "onSpawnCommand";
+# you can use it if you want, but it'll probably just confuse your
+# players.
 #
-# In the event that no strategies return a location, DEFAULT is assumed as the last
-# strategy in the chain (you can explicitly add it if you like).
+# In the event that no strategies return a location, DEFAULT is assumed
+# as the last strategy in the chain (you can explicitly add it if you
+# like).
 #
 # homeLocalWorld: find their primary home on whatever world they are on
 # homeDefaultWorld: find their primary home on the default world
-# homeMultiWorld: convenience strategy combining the above two, searches local
-#   world first then default world
-# homeNearest: NOT YET IMPLEMENTED (will search for nearest home on local world)
+# homeMultiWorld: convenience strategy combining the above two,
+#   searches local world first then default world
+# homeNearest: NOT YET IMPLEMENTED (will search for nearest home on
+#   local world)
 #
-# spawnNewPlayer: this strategy only has an effect on the very first join of a
-#   new player, it will send them to the spawn set by "/setfirstspawn"
-# spawnLocalWorld: send the player to the spawn point defined for the local world
-#   (this does nothing if /setspawn has never been used in that world)
-# spawnDefaultWorld: send the player to default spawn in the default world. This
-#   strategy ALWAYS works, so if you use this, make sure it is at the end of
-#   your strategy list.
-# spawnGroup: send the player to the spawn defined by their Perm2-group, as
-#   defined by "/setgroupspawn" command
-# spawnNearest: NOT YET IMPLEMENTED (will search for nearest spawn in local world)
+# spawnNewPlayer: this strategy only has an effect on the very first
+#   join of a new player, it will send them to the spawn set by
+#   "/setfirstspawn"
+# spawnLocalWorld: send the player to the spawn point defined for the
+#   local world (this does nothing if /setspawn has never been used in
+#   that world)
+# spawnDefaultWorld: send the player to default spawn in the default
+#   world. This strategy ALWAYS works, so if you use this, make sure it
+#   is at the end of your strategy list.
+# spawnGroup: send the player to the spawn defined by their Perm2-group,
+#   as defined by "/setgroupspawn" command
+# spawnNearest: NOT YET IMPLEMENTED (will search for nearest spawn in
+#   local world)
 #
-# default: this is the logical assumed end of every strategy chain, this will
-#   basically not do ANYTHING and let Bukkit do whatever is the default for the
-#   given action. bThis aborts any further strategy processing when it fires.
+# default: this is the logical assumed end of every strategy chain, this
+#   will basically not do ANYTHING and let Bukkit do whatever is the
+#   default for the given action. bThis aborts any further strategy
+#   processing when it fires.
 #
 events:
   # strategies to use when player is joining the game
@@ -96,24 +112,24 @@ events:
 
 # you can globally enable/disable individual commands here.
 # permissions for each command are: hsp.command.<commandName>.use
-# for example to let players use "/home", you would give them hsp.command.home.use
-# Some commands have sub-permissions as documented below.
+# for example to let players use "/home", you would give them:
+# 
+#   hsp.command.home.use
 #
 disabledCommands:
-  # sub-permission: hsp.command.home.others - can teleport to others homes
   home: false
-  # sub-permission: hsp.command.sethome.others - can change other peoples homes
   sethome: false
   spawn: false
   setspawn: false
   groupspawn: false
   setgroupspawn: false
 
-# cooldowns for various commands can be defined here (these are used if no group-specific
-# cooldown permissions are found)
+# cooldowns for various commands can be defined here (these are used if
+# no group-specific cooldown permissions are found)
 #
 # Cooldown exemption permissions are:
-#   hsp.command.CooldownExempt.<commandName>   - can use * to be exempt from all cooldowns
+#   hsp.command.CooldownExempt.<commandName>   - can use * to be exempt
+#     from all cooldowns
 #   
 cooldown:
   home: 60
@@ -121,11 +137,13 @@ cooldown:
   groupspawn: 0
 
 warmup:
-  # globally enable or disable warmups. The other options have no effect if this is not true.
-  # This flag exists as a performance enhancement for those not wishing to use warmups, none
-  # of the extra event types will be hooked at all. (This plugin is extremely efficient about
-  # how it hooks & handles these events, but for those not using warmups at all, no point in
-  # having even the small overhead associated with processing these events)
+  # globally enable or disable warmups. The other options have no effect
+  # if this is not true. This flag exists as a performance enhancement
+  # for those not wishing to use warmups, none of the extra event types
+  # will be hooked at all. (This plugin is extremely efficient about
+  # how it hooks & handles these events, but for those not using warmups
+  # at all, no point in having even the small overhead associated with
+  # processing these events)
   enabled: false
  
   # set to true if movement should cancel a warmup

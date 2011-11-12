@@ -94,7 +94,7 @@ public class HomeSpawnPlus extends JavaPlugin {
      * 
      * @return
      */
-    public Config getConfig()
+    public Config getHSPConfig()
     {
     	return config;
     }
@@ -142,23 +142,33 @@ public class HomeSpawnPlus extends JavaPlugin {
 
     private Boolean setupVaultPermissions()
     {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            vaultPermission = permissionProvider.getProvider();
-        }
-
+    	Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+    	if( vault != null ) {
+	        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+	        if (permissionProvider != null) {
+	            vaultPermission = permissionProvider.getProvider();
+	        }
+    	}
+    	// we don't print any errors on "else" because we just fall back to our own perms code
+    	// at this point and no functionality is lost.
+    	
         return (vaultPermission != null);
     }
 
     private Boolean setupVaultEconomy()
     {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            vaultEconomy = economyProvider.getProvider();
-            log.info(logPrefix + " Vault interface found and will be used for economy-related functions");
-        }
+    	Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+    	if( vault != null ) {
+    		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+    		if (economyProvider != null) {
+    			vaultEconomy = economyProvider.getProvider();
+    			log.info(logPrefix + " Vault interface found and will be used for economy-related functions");
+    		}
+    	}
+    	else
+    		log.info(logPrefix + " Vault not found, HSP economy features are disabled");
 
-        return (vaultEconomy != null);
+		return (vaultEconomy != null);
     }
     
     public Economy getEconomy() {

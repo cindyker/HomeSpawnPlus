@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.8
+version: 0.9
 author: morganm
 database: true
 softdepend: [Vault, WorldGuard]

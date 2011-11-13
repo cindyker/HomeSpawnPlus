@@ -60,7 +60,7 @@ public class SpawnStrategy {
 		else if( ConfigOptions.STRATEGY_SPAWN_GROUP.equals(s) ) {
 			strategy.type = Type.SPAWN_GROUP;
 		}
-		else if( ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD.equals(s) ) {
+		else if( s.startsWith(ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD) ) {
 			String[] strings = s.split(":");
 			if( strings.length < 2 )
 				throw new ConfigException("Invalid strategy: "+s);

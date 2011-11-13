@@ -1,9 +1,14 @@
-v0.9 - in development
-* new feature: WorldGuard region-spawn support via spawnWGregion strategy
+v0.9 - November 12, 2011
+* new feature: WorldGuard region-spawn support via "spawnWGregion" strategy
 * new feature: Economy fees using optional Vault dependency
 * new feature: spawnSpecificWorld strategy
 * new feature: spawnNamedSpawn strategy
-* new command: /setdefaultspawn to allow for defining the default spawn out of multiple named spawns that might exist in a world
+* new command: /setdefaultspawn to allow for defining the default spawn
+out of multiple named spawns that might exist in a world
+* new feature: usurpCommands - admin can specify commands s/he wants this
+plugin to takeover if other plugins are using it (ie. usurp "/home" from
+CommandBook, which loads first alphabetically)
+* new feature: implemented "spawnNearest" spawn strategy
 
 v0.8 - September 27, 2011
 * changed base permission prefix from 'HomeSpawnPlus' to 'hsp'

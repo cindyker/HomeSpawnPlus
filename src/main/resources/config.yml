@@ -1,3 +1,13 @@
+# If you're having problems with other plugins that have registered commands
+# that you want to use with HSP (for example, CommandBook has /home, /spawn
+# and loads first alphabetically), you can uncomment the below lines and
+# HSP will then take over those commands for it's own use when it loads.
+#usurpCommands:
+#  - home
+#  - sethome
+#  - spawn
+#  - setspawn
+
 core:
   # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined
   #     by bukkit.yml)
@@ -161,7 +171,7 @@ warmup:
 # work if you do not have Vault installed.
 #
 # http://dev.bukkit.org/server-mods/vault/
-costs:
+cost:
   # if verbose is true, the player will get a message stating that their account
   # has been charged whenever they use a command with a cost.
   verbose: true

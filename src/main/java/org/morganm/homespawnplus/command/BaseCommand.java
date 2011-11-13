@@ -74,7 +74,7 @@ public abstract class BaseCommand implements Command {
 			
 			if( response.transactionSuccess() ) {
 				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
-					util.sendMessage(p, price + " charged for use of the " + getCommandName() + " command.");
+					util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
 				}
 				return true;
 			}

@@ -205,11 +205,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     	List<String> commands = config.getStringList("usurpCommands", null);
     	for(String command : commands) {
         	PluginCommand cmd = getServer().getPluginCommand(command);
-        	// TODO: "being nice" might be best to keep track of the "old" executor
-        	// and restore that if this plugin is unloaded. At this point, restoring
-        	// the old executor requires turning off the usurp config option and
-        	// restarting the server.
-        	cmd.setExecutor(usurp);
+        	if( cmd != null ) {
+        		log.info(logPrefix + " usurping command "+command+" as specified by usurpCommands config option");
+	        	// TODO: "being nice" might be best to keep track of the "old" executor
+	        	// and restore that if this plugin is unloaded. At this point, restoring
+	        	// the old executor requires turning off the usurp config option and
+	        	// restarting the server.
+	        	cmd.setExecutor(usurp);
+        	}
     	}
     }
     
@@ -285,7 +288,8 @@ public class HomeSpawnPlus extends JavaPlugin {
         hookWarmups();
         
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
-
+    	unhookOtherCommands();
+    	
         log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] loaded" );
     }
     

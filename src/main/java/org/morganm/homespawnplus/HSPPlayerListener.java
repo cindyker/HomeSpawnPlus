@@ -49,7 +49,7 @@ public class HSPPlayerListener extends PlayerListener {
      * @param preferredBehavior
      */
     private Location doSpawn(Player p, SpawnInfo spawnInfo) {
-    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
+//    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
     	Location l = util.getSpawnLocation(p, spawnInfo);
     	
     	// default behavior is do nothing

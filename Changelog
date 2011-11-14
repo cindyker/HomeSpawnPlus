@@ -1,3 +1,7 @@
+v0.9.1 - ???
+* added per-world event control capabilities, so that you can define an event
+strategy chain that takes place only on a specific world
+
 v0.9 - November 12, 2011
 * new feature: WorldGuard region-spawn support via "spawnWGregion" strategy
 * new feature: Economy fees using optional Vault dependency

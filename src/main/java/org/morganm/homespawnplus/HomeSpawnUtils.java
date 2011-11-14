@@ -67,7 +67,10 @@ public class HomeSpawnUtils {
 	 * @return
 	 */
 	public String shortLocationString(Location l) {
-		return l.getWorld().getName()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+		if( l == null )
+			return "null";
+		else
+			return l.getWorld().getName()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
 	}
 	
 	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
@@ -84,9 +87,27 @@ public class HomeSpawnUtils {
 		
 		String playerName = player.getName();
 
+		boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+
+		if( verbose )
+			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
 		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
-		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
-	    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
+		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null ) {
+			// try world-specific strategies first
+	    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+	    			+ "." + player.getWorld().getName() + "." + spawnInfo.spawnEventType);
+
+			if( verbose )
+				log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" world-specific strategies for world "+player.getWorld().getName());
+						
+	    	// if no world-specific strategy exists, fall back to default global strategy
+	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
+	    		spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+	    				+ "." + spawnInfo.spawnEventType);
+				if( verbose )
+					log.info(logPrefix + " No world-specific stratgies found, found "+spawnInfo.spawnStrategies.size()+" default strategies");
+	    	}
+		}
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -102,12 +123,16 @@ public class HomeSpawnUtils {
 					if( spawn != null )
 						l = spawn.getLocation();
 				}
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_NEW_PLAYER+", location = "+shortLocationString(l));
 				break;
 				
 			case HOME_THIS_WORLD_ONLY:
 				home = getHome(playerName, player.getWorld());
 				if( home != null )
 					l = home.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_THIS_WORLD_ONLY+", location = "+shortLocationString(l));
 				break;
 
 				// try home on this world first, if not, use home on default world
@@ -120,22 +145,30 @@ public class HomeSpawnUtils {
 					if( home != null )
 						l = home.getLocation();
 				}
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_MULTI_WORLD+", location = "+shortLocationString(l));
 				break;
 
 			case HOME_DEFAULT_WORLD:
 				home = getHome(playerName, getDefaultWorld());
 				if( home != null )
 					l = home.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_DEFAULT_WORLD+", location = "+shortLocationString(l));
 				break;
 				
 			case SPAWN_THIS_WORLD_ONLY:
 				spawn = getSpawn(player.getWorld().getName());
 				if( spawn != null )
 					l = spawn.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_THIS_WORLD_ONLY+", location = "+shortLocationString(l));
 				break;
 				
 			case SPAWN_DEFAULT_WORLD:
 				l = getDefaultSpawn().getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_DEFAULT_WORLD+", location = "+shortLocationString(l));
 				break;
 				
 			case SPAWN_GROUP:
@@ -147,6 +180,8 @@ public class HomeSpawnUtils {
 	    		
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_GROUP+", location = "+shortLocationString(l));
 	    		break;
 	    		
 			case SPAWN_SPECIFIC_WORLD:
@@ -156,6 +191,9 @@ public class HomeSpawnUtils {
 					l = spawn.getLocation();
 				else
 					log.info("No spawn found for world \""+worldName+"\" for \""+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+"\" strategy");
+				
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+", location = "+shortLocationString(l));
 				break;
 			
 			case SPAWN_NAMED_SPAWN:
@@ -164,7 +202,10 @@ public class HomeSpawnUtils {
 				if( spawn != null )
 					l = spawn.getLocation();
 				else
-					log.info("No spawn found for name \""+namedSpawn+"\" for \""+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+"\" strategy");				
+					log.info("No spawn found for name \""+namedSpawn+"\" for \""+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+"\" strategy");
+				
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+", location = "+shortLocationString(l));
 				break;
 				
 			case SPAWN_WG_REGION:
@@ -172,6 +213,8 @@ public class HomeSpawnUtils {
 					wgInterface = new WorldGuardInterface(plugin);
 				
 				l = wgInterface.getWorldGuardSpawnLocation(player);
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_WG_REGION+", location = "+shortLocationString(l));
 				break;
 				
 			case SPAWN_NEAREST_SPAWN:
@@ -195,14 +238,20 @@ public class HomeSpawnUtils {
 				
 				if( closestSpawn != null )
 					l = closestSpawn.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_NEAREST_SPAWN+", location = "+shortLocationString(l));
 				break;
 				
 			case DEFAULT:
 				defaultFlag = true;
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_DEFAULT+", evaluation chain aborted");
 				break;
 			}
 		}
 		
+		if( verbose )
+			log.info(logPrefix + " Evaluation chain complete, location = "+shortLocationString(l));
 		return l;
 	}
 	

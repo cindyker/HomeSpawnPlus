@@ -79,7 +79,7 @@ public class HSPPlayerListener extends PlayerListener {
         }
         
         // if permissions are enabled, they need to have permission too.
-        if( plugin.isUsePermissions() && !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
+        if( !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
 //        	log.info(logPrefix + " onPlayerInteract(): no permission");
         	return;
         }

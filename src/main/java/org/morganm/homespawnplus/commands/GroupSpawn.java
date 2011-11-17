@@ -3,9 +3,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.SpawnInfo;
+import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 
 
 /**
@@ -15,14 +19,38 @@ import org.morganm.homespawnplus.command.BaseCommand;
 public class GroupSpawn extends BaseCommand
 {
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
+	public boolean execute(final Player p, final Command command, final String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
-//		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to send player "+p.getName()+" to group spawn.");
-		
-		if( applyCost(p) )
-			util.sendToGroupSpawn(p);
+		SpawnInfo spawnInfo = new SpawnInfo();
+		spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
+		final Location l = util.getSpawnLocation(p, spawnInfo);
+
+		if( hasWarmup(p) ) {
+			doWarmup(p, new WarmupRunner() {
+				private boolean canceled = false;
+
+				public void run() {
+					if( !canceled ) {
+						util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to group spawn");
+						if( applyCost(p) )
+							p.teleport(l);
+					}
+				}
+
+				public void cancel() {
+					canceled = true;
+				}
+
+				public void setPlayerName(String playerName) {}
+				public void setWarmupId(int warmupId) {}
+			});
+		}
+		else {
+			if( applyCost(p) )
+				p.teleport(l);
+		}
 		
 		return true;
 	}

@@ -32,9 +32,12 @@ public interface ConfigOptions {
 	public static final String VALUE_JOIN_WORLD = "world";
 	
 	public static final String SETTING_EVENTS_BASE = "events";
+	public static final String SETTING_EVENTS_WORLDBASE = "world";
+	public static final String SETTING_EVENTS_PERMBASE = "permission";
 	public static final String SETTING_JOIN_BEHAVIOR = "onJoin";
 	public static final String SETTING_DEATH_BEHAVIOR = "onDeath";
 	public static final String SETTING_SPAWN_CMD_BEHAVIOR = "onSpawnCommand";
+	public static final String SETTING_GROUPSPAWN_CMD_BEHAVIOR = "onGroupSpawnCommand";
 	public static final String SETTING_HOME_CMD_BEHAVIOR = "onHomeCommand";
 
 	public static final String VALUE_DEFAULT = "default";
@@ -61,6 +64,7 @@ public interface ConfigOptions {
 	public static final String STRATEGY_SPAWN_SPECIFIC_WORLD = "spawnSpecificWorld";
 	public static final String STRATEGY_SPAWN_NAMED_SPAWN = "spawnNamedSpawn";
 	public static final String STRATEGY_SPAWN_GROUP = "spawnGroup";
+	public static final String STRATEGY_SPAWN_GROUP_SPECIFIC_WORLD = "spawnGroupSpecificWorld";
 	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearest";
 	public static final String STRATEGY_DEFAULT = "default";
 }

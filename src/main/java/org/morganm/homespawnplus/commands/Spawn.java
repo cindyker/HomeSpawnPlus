@@ -46,33 +46,26 @@ public class Spawn extends BaseCommand
     	// TODO: need to add group permission checks
     	
     	if( l != null ) {
-    		final Location finalL = l;
 			if( hasWarmup(p) ) {
-				if ( !isWarmupPending(p) ) {
-					warmupManager.startWarmup(p.getName(), getCommandName(), new WarmupRunner() {
-						private boolean canceled = false;
-						
-						public void run() {
-							if( !canceled ) {
-								util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to spawn");
-								if( applyCost(p) )
-									p.teleport(finalL);
-							}
-						}
+	    		final Location finalL = l;
+				doWarmup(p, new WarmupRunner() {
+					private boolean canceled = false;
 
-						public void cancel() {
-							canceled = true;
+					public void run() {
+						if( !canceled ) {
+							util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to spawn");
+							if( applyCost(p) )
+								p.teleport(finalL);
 						}
-						
-						public void setPlayerName(String playerName) {}
-						public void setWarmupId(int warmupId) {}
-					});
-					
-					util.sendMessage(p, "Warmup "+getCommandName()+" started, you must wait "+
-							warmupManager.getWarmupTime(getCommandName())+" seconds.");
-				}
-				else
-					util.sendMessage(p, "Warmup already pending for "+getCommandName());
+					}
+
+					public void cancel() {
+						canceled = true;
+					}
+
+					public void setPlayerName(String playerName) {}
+					public void setWarmupId(int warmupId) {}
+				});
 			}
 			else {
 				if( applyCost(p) )

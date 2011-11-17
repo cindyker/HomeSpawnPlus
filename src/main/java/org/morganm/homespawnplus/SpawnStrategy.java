@@ -19,6 +19,7 @@ public class SpawnStrategy {
 		SPAWN_NEW_PLAYER,
 		SPAWN_DEFAULT_WORLD,
 		SPAWN_GROUP,
+		SPAWN_GROUP_SPECIFIC_WORLD,
 		SPAWN_NEAREST_SPAWN,
 		SPAWN_SPECIFIC_WORLD,
 		SPAWN_NAMED_SPAWN,
@@ -59,6 +60,14 @@ public class SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_GROUP.equals(s) ) {
 			strategy.type = Type.SPAWN_GROUP;
+		}
+		else if( s.startsWith(ConfigOptions.STRATEGY_SPAWN_GROUP_SPECIFIC_WORLD) ) {
+			String[] strings = s.split(":");
+			if( strings.length < 2 )
+				throw new ConfigException("Invalid strategy: "+s);
+			
+			strategy.type = Type.SPAWN_GROUP_SPECIFIC_WORLD;
+			strategy.data = strings[1];
 		}
 		else if( s.startsWith(ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD) ) {
 			String[] strings = s.split(":");

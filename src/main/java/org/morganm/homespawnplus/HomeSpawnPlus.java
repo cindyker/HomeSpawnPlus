@@ -51,8 +51,6 @@ public class HomeSpawnPlus extends JavaPlugin {
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
     private PermissionHandler permissionHandler;
-    private boolean usePermissions = false;
-    private boolean usePerm3 = false;
     
     // singleton instance - not declared final as the plugin can be reloaded, and the instance
     // will change to the new plugin.  But this will always return the most recent plugin
@@ -122,16 +120,34 @@ public class HomeSpawnPlus extends JavaPlugin {
 	        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
 	        if( permissionsPlugin != null ) {
 	        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-	        	usePermissions = true;
 	        	
-	        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
-	        		usePerm3 = true;
+//	        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
+//	        		usePerm3 = true;
 	        }
-	        else
+	        else {
 		    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
+	        }
     	}
     	else {
 	    	log.info(logPrefix+" Vault plugin found, using Vault interface for Permissions");
+    	}
+    }
+    
+    /** Given a playerName, return the permissions group they are associated with (if any).
+     * 
+     * @param playerName
+     * @return the group or null if no group
+     */
+    @SuppressWarnings("deprecation")
+	public String getPlayerGroup(String world, String playerName) {
+    	if( vaultPermission != null ) {
+    		return vaultPermission.getPrimaryGroup(world, playerName);
+    	}
+    	else if( permissionHandler != null ) {
+    		return permissionHandler.getGroup(world, playerName);
+    	}
+    	else {
+    		return null;
     	}
     }
     
@@ -354,10 +370,17 @@ public class HomeSpawnPlus extends JavaPlugin {
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 
     		return permissionHandler.has(p, permissionNode);
-    	else {
+    	else
+    	{
+    		// try "superperms" - this covers DefaultPerms, bPerms, etc
+    		if( p.hasPermission(permissionNode) )
+    			return true;
+    		
+    		// no superperms?  if they are an op, always return true (maybe delete this and depend only on superperms in the future?) 
     		if( p.isOp() )
     			return true;
     		
+    		// last-ditch, no superperms, no op; see if this was enabled as a "defaultPerm" in the config file 
     		List<String> defaultPerms = config.getStringList(ConfigOptions.DEFAULT_PERMISSIONS, null);
     		if( defaultPerms.contains(permissionNode) )
     			return true;
@@ -366,24 +389,18 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     }
     
-    /** Return true if we found and are using Permissions system, false if not.
-     * 
-     * @return
-     */
-    public boolean isUsePermissions() { return usePermissions; }
-    
     /** Return true if we are using Permission system and it is specifically Permissions 3.x
      * 
      * @return
      */
-    public boolean isUsePerm3() { return usePermissions && usePerm3; }
+//    public boolean isUsePerm3() { return usePermissions && usePerm3; }
 
     @Override
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     
     public Storage getStorage() { return storage; }
     
-    public PermissionHandler getPermissionHandler() { return permissionHandler; }
+//    public PermissionHandler getPermissionHandler() { return permissionHandler; }
     
     public CooldownManager getCooldownManager() { return cooldownManager; }
     

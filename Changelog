@@ -1,6 +1,15 @@
 v0.9.1 - ???
 * added per-world event control capabilities, so that you can define an event
 strategy chain that takes place only on a specific world
+* fixed a bug that prevented groupspawn from working properly
+* added new "onGroupSpawn" event type so that admins can define custom
+strategy chains even for GroupSpawns (for example, you might want it to obey
+spawnWGregion, or perhaps not do any groupspawning on certain worlds, etc)
+* added 'spawnGroupSpecificWorld' strategy, since otherwise groupSpawn is
+always relative to the world the player is in (in part, b/c Perm systems
+allow perm/groups to be local to each world). This gives the admin the
+ability to allow /groupspawn to always point to "world", for example, or
+even just on certain worlds, it could point to another world.
 
 v0.9 - November 12, 2011
 * new feature: WorldGuard region-spawn support via "spawnWGregion" strategy

@@ -60,46 +60,6 @@ core:
 # doc reference:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #
-# The strategies are processed in the order listed, so if you list a
-# strategy first that is guaranteed to always return a location, such
-# as SPAWN_DEFAULT_WORLD, then none of the other strategies will ever
-# fire.
-#
-# Not all strategies make sense for all events, for example
-# "homeDefaultWorld" doesn't make a lot of sense for "onSpawnCommand";
-# you can use it if you want, but it'll probably just confuse your
-# players.
-#
-# In the event that no strategies return a location, DEFAULT is assumed
-# as the last strategy in the chain (you can explicitly add it if you
-# like).
-#
-# homeLocalWorld: find their primary home on whatever world they are on
-# homeDefaultWorld: find their primary home on the default world
-# homeMultiWorld: convenience strategy combining the above two,
-#   searches local world first then default world
-# homeNearest: NOT YET IMPLEMENTED (will search for nearest home on
-#   local world)
-#
-# spawnNewPlayer: this strategy only has an effect on the very first
-#   join of a new player, it will send them to the spawn set by
-#   "/setfirstspawn"
-# spawnLocalWorld: send the player to the spawn point defined for the
-#   local world (this does nothing if /setspawn has never been used in
-#   that world)
-# spawnDefaultWorld: send the player to default spawn in the default
-#   world. This strategy ALWAYS works, so if you use this, make sure it
-#   is at the end of your strategy list.
-# spawnGroup: send the player to the spawn defined by their Perm2-group,
-#   as defined by "/setgroupspawn" command
-# spawnNearest: NOT YET IMPLEMENTED (will search for nearest spawn in
-#   local world)
-#
-# default: this is the logical assumed end of every strategy chain, this
-#   will basically not do ANYTHING and let Bukkit do whatever is the
-#   default for the given action. bThis aborts any further strategy
-#   processing when it fires.
-#
 events:
   # strategies to use when player is joining the game
   onJoin:
@@ -115,6 +75,10 @@ events:
   onSpawnCommand:
     - spawnLocalWorld
     - spawnDefaultWorld
+
+  # strategies to use when player types "/groupspawn"
+  onGroupSpawnCommand:
+    - spawnGroup
 
   # CURRENTLY NOT USED, to be added in future version
   onHomeCommand:

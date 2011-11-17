@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.9
+version: 0.9.1
 author: morganm
 database: true
 softdepend: [Vault, WorldGuard]
@@ -50,6 +50,7 @@ permissions:
     hsp.*:
         description: Gives access to all HomeSpawnPlus permissions
         children:
+            hsp.admin: true
             hsp.home.bedsethome: true
             hsp.command.home.use: true
             hsp.command.home.others: true
@@ -57,6 +58,7 @@ permissions:
             hsp.command.sethome.others: true
             hsp.command.spawn.use: true
             hsp.command.setspawn.use: true
+            hsp.command.setdefaultspawn.use: true
             hsp.command.setgroupspawn.use: true
             hsp.command.groupspawn.use: true
             hsp.command.CooldownExempt.home: true
@@ -73,6 +75,9 @@ permissions:
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
+    hsp.admin:
+        description: Allows access to admin functions of HomeSpawnPlus
+        default: op
     hsp.command.*:
         description: Gives access to all HomeSpawnPlus commands
         children:
@@ -82,6 +87,7 @@ permissions:
             hsp.command.sethome.others: true
             hsp.command.spawn.use: true
             hsp.command.setspawn.use: true
+            hsp.command.setdefaultspawn.use: true
             hsp.command.setgroupspawn.use: true
             hsp.command.groupspawn.use: true
     hsp.command.home.use:
@@ -97,6 +103,9 @@ permissions:
         description: Allows use of the /sethome command to set others homes
         default: op
     hsp.command.spawn.use:
+        description: Allows use of the /spawn command
+        default: op
+    hsp.command.setdefaultspawn.use:
         description: Allows use of the /spawn command
         default: op
     hsp.command.setspawn.use:

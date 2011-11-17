@@ -4,7 +4,6 @@
 package org.morganm.homespawnplus;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -16,11 +15,6 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
-
-import com.nijiko.permissions.Entry;
-import com.nijiko.permissions.EntryType;
-import com.nijiko.permissions.Group;
-import com.nijiko.permissions.User;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 
@@ -93,14 +87,26 @@ public class HomeSpawnUtils {
 			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
 		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
 		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null ) {
-			// try world-specific strategies first
+			// try permission-specific strategies first
+			/* this needs more work, we must iterate through any permission-defined strategies and see
+			 * if this player has any of those permissions assigned
 	    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
-	    			+ "." + player.getWorld().getName() + "." + spawnInfo.spawnEventType);
-
+	    			+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+	    			+ player.getWorld().getName() + "." + spawnInfo.spawnEventType);
 			if( verbose )
-				log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" world-specific strategies for world "+player.getWorld().getName());
+				log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" permission-specific strategies for player "+player.getName());
+				*/
+	    	
+	    	// if no permission-specific strategy exists, fall back to default world strategy
+	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
+		    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+		    			+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+		    			+ player.getWorld().getName() + "." + spawnInfo.spawnEventType);
+				if( verbose )
+					log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" world-specific strategies for world "+player.getWorld().getName());
+	    	}
 						
-	    	// if no world-specific strategy exists, fall back to default global strategy
+	    	// if no more specific strategy exists, fall back to default global strategy
 	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
 	    		spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
 	    				+ "." + spawnInfo.spawnEventType);
@@ -116,6 +122,14 @@ public class HomeSpawnUtils {
 			
 			Home home = null;
 			Spawn spawn = null;
+			
+			/* Switch style comment: I think the braces are ugly, but they are used in some
+			 * cases below to scope variables that are local to each case to avoid duplicate
+			 * variable names from other cases that might happen to use the same variable
+			 * name (of course I could just define a bunch of local variables up top as I've
+			 * done with home/spawn, but that just gets even more messy eventually)
+			 * 
+			 */
 			switch(s.getType()) {
 			case SPAWN_NEW_PLAYER:
 				if( spawnInfo.isFirstLogin ) {
@@ -172,19 +186,35 @@ public class HomeSpawnUtils {
 				break;
 				
 			case SPAWN_GROUP:
-				// TODO: this should be refactored into it's own method when I get around to refactoring
-				// this whole class.
-				@SuppressWarnings("deprecation")
-				String group = plugin.getPermissionHandler().getGroup(player.getWorld().getName(), playerName);
-				spawn = getGroupSpawn(group, player.getWorld().getName());
+			{
+				String group = plugin.getPlayerGroup(player.getWorld().getName(), player.getName());
+	    		if( group != null )
+	    			spawn = getGroupSpawn(group, player.getWorld().getName());
 	    		
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
 				if( verbose )
 					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_GROUP+", location = "+shortLocationString(l));
+			}
 	    		break;
 	    		
+			case SPAWN_GROUP_SPECIFIC_WORLD:
+			{
+				String worldName = s.getData();
+				String group = plugin.getPlayerGroup(worldName, player.getName());
+	    		if( group != null )
+	    			spawn = getGroupSpawn(group, worldName);
+	    		
+//				log.info(logPrefix + "[DEBUG] SPAWN_GROUP_SPECIFIC_WORLD: worldName = "+worldName+", group = "+group);
+	    		if( spawn != null )
+	    			l = spawn.getLocation();
+				if( verbose )
+					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_GROUP+", location = "+shortLocationString(l));
+			}
+	    		break;
+
 			case SPAWN_SPECIFIC_WORLD:
+			{
 				String worldName = s.getData();
 				spawn = getSpawn(worldName);
 				if( spawn != null )
@@ -194,6 +224,7 @@ public class HomeSpawnUtils {
 				
 				if( verbose )
 					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+", location = "+shortLocationString(l));
+			}
 				break;
 			
 			case SPAWN_NAMED_SPAWN:
@@ -307,86 +338,6 @@ public class HomeSpawnUtils {
 		Location l = spawn.getLocation();
     	p.teleport(l);
     	return l;
-    }
-    
-    /** Find the group spawn (if any) for a player and send them there.  If no group spawn can
-     * be found, the player will be sent to the default spawn.
-     * 
-     * @param p
-     */
-    public Location sendToGroupSpawn(Player p) {
-    	// if group spawning is disabled, or this player doesn't have group spawn permissions
-    	// or if we aren't even using permissions at all, then just use the default spawn
-    	if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
-    			|| !plugin.isUsePermissions()
-    			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.groupspawn.use") ) {
-    		return sendToSpawn(p);
-    	}
-    	
-    	String world = p.getWorld().getName();
-    	String userName = p.getName();
-    	
-    	// In Permissions 3, a user can be a member of multiple groups.  So we loop through
-    	// all groups and check for a spawn in this world for any of them.
-    	if( plugin.isUsePerm3() ) {
-        	Set<String> spawnGroups = plugin.getStorage().getSpawnDefinedGroups();
-        	Group highestWeightedGroup = null;
-        	Spawn groupSpawn = null;
-
-        	// get all groups the user is a member of
-        	User user = plugin.getPermissionHandler().getUserObject(world, userName);
-        	LinkedHashSet<Entry> entries = user.getParents(world);
-        	
-        	for(Entry e : entries) {
-        		if( e.getType() != EntryType.GROUP )
-        			continue;
-        		
-        		Group group = (Group) e;
-        		
-        		// do we have a spawngroup defined for this group? (ie. does this group have any
-        		// spawns defined on any world at all?)
-        		if( spawnGroups.contains(group.getName()) )
-        		{
-        			// ok now see if we have a spawn defined on this world for this group
-        			Spawn spawn = plugin.getStorage().getSpawn(world, group.getName());
-        			
-        			// if we did find a spawn for this group on this world, compare it to any spawns
-        			// we've found so far for this player to see which group has the higher weight
-        			if( spawn != null ) {
-        				if( highestWeightedGroup == null ||
-        						group.getWeight() > highestWeightedGroup.getWeight() )
-        				{
-        					highestWeightedGroup = group;
-        					groupSpawn = spawn;
-        				}
-        			}
-        		}
-        	}
-        	
-        	if( groupSpawn != null ) {
-        		Location l = groupSpawn.getLocation();
-        		p.teleport(groupSpawn.getLocation());
-        		return l;
-        	}
-    		// if no spawn defined for any of the players groups, send them to default spawn
-    		else
-    			return sendToSpawn(p);
-    	}
-    	// Permissions 2 the player could only have a single group defined - just use that.
-    	else {
-    		@SuppressWarnings("deprecation")
-			String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), userName);
-    		Spawn spawn = plugin.getStorage().getSpawn(world, group);
-    		
-    		if( spawn != null ) {
-    			Location l = spawn.getLocation();
-    			p.teleport(l);
-    			return l;
-    		}
-    		// if no spawn defined for the players group, send them to default spawn
-    		else
-    			return sendToSpawn(p);
-    	}
     }
     
     public void setHome(String playerName, Location l, String updatedBy)

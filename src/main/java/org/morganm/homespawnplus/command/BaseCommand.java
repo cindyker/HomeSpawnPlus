@@ -11,6 +11,7 @@ import org.morganm.homespawnplus.CooldownManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.WarmupManager;
+import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.config.ConfigOptions;
 
 
@@ -85,6 +86,18 @@ public abstract class BaseCommand implements Command {
 		}
 		else
 			return true;	// no cost for this command
+	}
+	
+	protected void doWarmup(Player p, WarmupRunner wr) {
+		if ( !isWarmupPending(p) ) {
+			warmupManager.startWarmup(p.getName(), getCommandName(), wr);
+			
+			util.sendMessage(p, "Warmup "+getCommandName()+" started, you must wait "+
+					warmupManager.getWarmupTime(getCommandName())+" seconds.");
+		}
+		else
+			util.sendMessage(p, "Warmup already pending for "+getCommandName());
+		
 	}
 	
 	/** Most commands for this plugin check 3 things:

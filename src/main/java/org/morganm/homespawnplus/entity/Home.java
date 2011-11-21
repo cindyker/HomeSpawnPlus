@@ -43,6 +43,9 @@ public class Home {
     @Column(name="player_name")
     private String playerName;
     
+    @Length(max=32)
+	private String name;
+    
     @NotEmpty
     @Length(max=32)
     private String updatedBy;
@@ -61,6 +64,11 @@ public class Home {
     private float pitch;
 	private float yaw;
 	
+    @Column(name="bed_home")
+	private boolean bedHome;
+    @Column(name="default_home")
+	private boolean defaultHome;
+
 	@Version
 	private Timestamp lastModified;
 	
@@ -184,5 +192,29 @@ public class Home {
 	public void setYaw(float yaw) {
 		this.yaw = yaw;
 		location = null;
+	}
+
+	public boolean isBedHome() {
+		return bedHome;
+	}
+
+	public void setBedHome(boolean bedHome) {
+		this.bedHome = bedHome;
+	}
+
+	public boolean isDefaultHome() {
+		return defaultHome;
+	}
+
+	public void setDefaultHome(boolean defaultHome) {
+		this.defaultHome = defaultHome;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

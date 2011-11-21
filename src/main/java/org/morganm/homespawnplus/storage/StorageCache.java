@@ -85,6 +85,13 @@ public class StorageCache implements Storage
 		return home;
 	}
 
+	@Override
+	public Home getNamedHome(String homeName, String playerName) {
+		// TODO: lazy pass-through, since cache is currently broken. When I fix the
+		// cache, this method should be updated to use it as well.
+		return original.getNamedHome(homeName, playerName);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.Storage#getSpawn(java.lang.String)
 	 */

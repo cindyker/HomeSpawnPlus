@@ -3,11 +3,14 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 
 
 /**
@@ -21,6 +24,61 @@ public class Home extends BaseCommand
 	
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
+	{
+		if( !defaultCommandChecks(p) )
+			return true;
+
+		Location l = null;
+		if( args.length > 0 ) {
+			org.morganm.homespawnplus.entity.Home home = util.getHomeByName(p.getName(), args[0]);
+			if( home != null )
+				l = home.getLocation();
+			
+			if( l == null ) {
+				util.sendMessage(p,  "No home \""+args[0]+"\" found.");
+				return true;
+			}
+		}
+		else {
+			SpawnInfo spawnInfo = new SpawnInfo();
+			spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_CMD_BEHAVIOR;
+			l = util.getSpawnLocation(p, spawnInfo);
+		}
+		
+    	if( l != null ) {
+			if( hasWarmup(p) ) {
+	    		final Location finalL = l;
+				doWarmup(p, new WarmupRunner() {
+					private boolean canceled = false;
+
+					public void run() {
+						if( !canceled ) {
+							util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to home");
+							if( applyCost(p) )
+								p.teleport(finalL);
+						}
+					}
+
+					public void cancel() {
+						canceled = true;
+					}
+
+					public void setPlayerName(String playerName) {}
+					public void setWarmupId(int warmupId) {}
+				});
+			}
+			else {
+				if( applyCost(p) )
+					p.teleport(l);
+			}
+    	}
+    	else
+    		util.sendMessage(p, "No home found");
+    	
+		return true;
+	}
+	
+	protected boolean executeOld(final Player p, final org.bukkit.command.Command command, String[] args)
 	{
 		if( !isEnabled() )
 			return false;

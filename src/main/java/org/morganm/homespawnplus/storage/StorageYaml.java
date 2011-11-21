@@ -17,7 +17,10 @@ import org.morganm.homespawnplus.entity.Spawn;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-/**
+/** Not yet a complete implementation, this exists primarily for the purpose of
+ * facilitating backup/restore to a YAML file, so it only implements the required
+ * functions to enable that process.
+ * 
  * @author morganm
  *
  */
@@ -373,5 +376,10 @@ public class StorageYaml implements Storage {
 		storage = null;
 		file.delete();
 		initializeStorage();		
+	}
+
+	@Override
+	public Home getNamedHome(String homeName, String playerName) {
+		throw new NotImplementedException();
 	}
 }

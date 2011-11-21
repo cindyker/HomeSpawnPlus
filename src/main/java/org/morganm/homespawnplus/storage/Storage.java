@@ -18,7 +18,7 @@ import org.morganm.homespawnplus.entity.Spawn;
 public interface Storage {
 	public static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
 	
-	/* This method is called to intialize the storage system.  If using a DB back end, this
+	/* This method is called to initialize the storage system.  If using a DB back end, this
 	 * is the method that should create the tables if they don't exist.
 	 * 
 	 * It is possible that this method could be called multiple times, so it is this methods
@@ -35,6 +35,8 @@ public interface Storage {
 	public void writePlayer(Player player);
 	
 	public Home getHome(String world, String playerName);
+	public Home getNamedHome(String homeName, String playerName);
+	
 	public Spawn getSpawn(String world);
 	public Spawn getSpawn(String world, String group);
 	public Spawn getSpawnByName(String name);

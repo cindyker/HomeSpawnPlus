@@ -43,7 +43,6 @@ public class Spawn {
     @Length(max=32)
 	private String world;
     
-    // NOTUSED: TODO add spawn by name in the future
     @Length(max=32)
 	private String name;
     

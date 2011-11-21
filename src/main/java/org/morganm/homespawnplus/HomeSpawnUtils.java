@@ -354,6 +354,26 @@ public class HomeSpawnUtils {
     	else
     		home = new Home(playerName, l, updatedBy);
     	
+		home.setDefaultHome(true);
+    	plugin.getStorage().writeHome(home);
+    }
+    
+    public void setNamedHome(String playerName, Location l, String homeName, String updatedBy)
+    {
+    	Home home = plugin.getStorage().getNamedHome(homeName, playerName);
+    	
+		// if we get an object back, we already have a Home set for this player/homeName combo,
+		// so we just update the x/y/z location of it.
+    	if( home != null ) {
+    		home.setLocation(l);
+			home.setUpdatedBy(updatedBy);
+    	}
+    	// this is a new home for this player/world combo, create a new object
+    	else {
+    		home = new Home(playerName, l, updatedBy);
+    		home.setName(homeName);
+    	}
+    	
     	plugin.getStorage().writeHome(home);
     }
     
@@ -517,6 +537,10 @@ public class HomeSpawnUtils {
      */
     public Home getHome(String playerName, World world) {
     	return getHome(playerName, world.getName());
+    }
+    
+    public Home getHomeByName(String playerName, String homeName) {
+    	return plugin.getStorage().getNamedHome(homeName, playerName);
     }
     
     /** Look for a partial name match for a home on a given world

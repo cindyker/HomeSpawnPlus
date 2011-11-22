@@ -68,7 +68,7 @@ public class StorageCache implements Storage
 	 * @see org.morganm.homespawnplus.Storage#getHome(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public Home getHome(String world, String playerName) {
+	public Home getDefaultHome(String world, String playerName) {
 		HashMap<String, Home> worldHomes = homes.get(world);
 		if( worldHomes == null ) {
 			worldHomes = new HashMap<String, Home>();
@@ -78,7 +78,7 @@ public class StorageCache implements Storage
 		Home home = worldHomes.get(playerName);
 		// not cached, lets get it from backing store
 		if( home == null ) {
-			home = original.getHome(world, playerName);
+			home = original.getDefaultHome(world, playerName);
 			worldHomes.put(playerName, home);				// add it to cache
 		}
 		
@@ -333,5 +333,11 @@ public class StorageCache implements Storage
 	public void deleteAllData() {
 		purgeCache();
 		original.deleteAllData();
+	}
+
+	@Override
+	public Set<Home> getHomes(String world, String playerName) {
+		// TODO: refactor class and add caching here
+		return original.getHomes(world, playerName);
 	}
 }

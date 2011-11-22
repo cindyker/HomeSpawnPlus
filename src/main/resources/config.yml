@@ -25,9 +25,16 @@ core:
     - hsp.command.home.use 
     - hsp.command.sethome.use 
 
+  homeMode: SINGLE_MULTIWORLD
+
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'hsp.home.bedsethome' permission.
   bedsethome: true
+  # if this is true and bedsethome is true, sleeping in a bed will
+  # change the player "default" home. If you want players to be
+  # able to sleep in a bed to set their "bed" home but not have it
+  # change their "default" home when they do so, set this to false.
+  bedSetsDefault: true
  
   # The default world.  This world is used anywhere you see "global
   # spawn" referenced below and also in the event all else fails (no
@@ -55,6 +62,7 @@ core:
   # set to true to have a bit more verbose logging in your server.log
   # about what HomeSpawnPlus is doing
   verboseLogging: false
+  verboseStrategyLogging: false
 
 # The events below allow use of the strategies described here. Web
 # doc reference:

@@ -37,6 +37,12 @@ commands:
         Incorrect usage of command /<command>. Examples:
            /<command> - sets your home to your current location
            /<command> Bob - sets Bob's home to your current location            
+  listhomes:
+    description: Show your homes
+    usage: |
+           /<command> - show homes on current world
+           /<command> world - show homes on "world"
+           /<command> all - show homes on all worlds
   home:
     description: Respawns you at your home
     usage: /<command>

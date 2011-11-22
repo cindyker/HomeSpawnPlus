@@ -15,6 +15,13 @@ public class SpawnStrategy {
 		HOME_THIS_WORLD_ONLY,
 		HOME_MULTI_WORLD,
 		HOME_DEFAULT_WORLD,
+		HOME_NEAREST_HOME,
+		HOME_SPECIFIC_WORLD,
+		HOME_ANY_WORLD,
+		MODE_HOME_NORMAL,
+		MODE_HOME_BED_ONLY,
+		MODE_HOME_DEFAULT_ONLY,
+		MODE_HOME_ANY,
 		SPAWN_THIS_WORLD_ONLY,
 		SPAWN_NEW_PLAYER,
 		SPAWN_DEFAULT_WORLD,
@@ -24,15 +31,21 @@ public class SpawnStrategy {
 		SPAWN_SPECIFIC_WORLD,
 		SPAWN_NAMED_SPAWN,
 		SPAWN_WG_REGION,
-		HOME_NEAREST_HOME,
 		DEFAULT;		
 	};
 	
 	private Type type;
 	private String data;
 	
+	public SpawnStrategy() {}
+	public SpawnStrategy(Type type) { this.type = type; }
+	
 	public Type getType() { return type; }
 	public String getData() { return data; }
+	
+	public String toString() {
+		return type.toString();
+	}
 
 	public static SpawnStrategy mapStringToStrategy(String s) throws ConfigException {
 		SpawnStrategy strategy = new SpawnStrategy();
@@ -48,6 +61,29 @@ public class SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_HOME_NEAREST_HOME.equals(s) ) {
 			strategy.type = Type.HOME_NEAREST_HOME;
+		}
+		else if( ConfigOptions.STRATEGY_HOME_ANY_WORLD.equals(s) ) {
+			strategy.type = Type.HOME_ANY_WORLD;
+		}
+		else if( s.startsWith(ConfigOptions.STRATEGY_HOME_SPECIFIC_WORLD) ) {
+			String[] strings = s.split(":");
+			if( strings.length < 2 )
+				throw new ConfigException("Invalid strategy: "+s);
+			
+			strategy.type = Type.HOME_SPECIFIC_WORLD;
+			strategy.data = strings[1];
+		}
+		else if( ConfigOptions.STRATEGY_MODE_HOME_NORMAL.equals(s) ) {
+			strategy.type = Type.MODE_HOME_NORMAL;
+		}
+		else if( ConfigOptions.STRATEGY_MODE_HOME_BED_ONLY.equals(s) ) {
+			strategy.type = Type.MODE_HOME_BED_ONLY;
+		}
+		else if( ConfigOptions.STRATEGY_MODE_HOME_DEFAULT_ONLY.equals(s) ) {
+			strategy.type = Type.MODE_HOME_DEFAULT_ONLY;
+		}
+		else if( ConfigOptions.STRATEGY_MODE_HOME_ANY.equals(s) ) {
+			strategy.type = Type.MODE_HOME_ANY;
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_THIS_WORLD_ONLY.equals(s) ) {
 			strategy.type = Type.SPAWN_THIS_WORLD_ONLY;

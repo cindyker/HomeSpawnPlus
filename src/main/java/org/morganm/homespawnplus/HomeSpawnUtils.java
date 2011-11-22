@@ -11,7 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.SpawnStrategy.Type;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.convert.SpawnControl;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
@@ -67,6 +69,11 @@ public class HomeSpawnUtils {
 			return l.getWorld().getName()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
 	}
 	
+	private void logStrategyResult(final SpawnStrategy.Type type, final Location l, final boolean verbose) {
+		if( verbose )
+			log.info(logPrefix + " Evaluated "+type+", location = "+shortLocationString(l));
+	}
+	
 	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
 	 * is to follow the strategies given to find the preferred Location to send the player.
 	 * 
@@ -81,7 +88,7 @@ public class HomeSpawnUtils {
 		
 		String playerName = player.getName();
 
-		boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+		final boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
 
 		if( verbose )
 			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
@@ -115,6 +122,8 @@ public class HomeSpawnUtils {
 	    	}
 		}
 		
+		SpawnStrategy currentMode = new SpawnStrategy(SpawnStrategy.Type.MODE_HOME_NORMAL);
+		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
 			if( l != null || defaultFlag )
@@ -123,6 +132,7 @@ public class HomeSpawnUtils {
 			Home home = null;
 			Spawn spawn = null;
 			
+			SpawnStrategy.Type type = s.getType();
 			/* Switch style comment: I think the braces are ugly, but they are used in some
 			 * cases below to scope variables that are local to each case to avoid duplicate
 			 * variable names from other cases that might happen to use the same variable
@@ -130,59 +140,146 @@ public class HomeSpawnUtils {
 			 * done with home/spawn, but that just gets even more messy eventually)
 			 * 
 			 */
-			switch(s.getType()) {
+			switch(type) {
 			case SPAWN_NEW_PLAYER:
 				if( spawnInfo.isFirstLogin ) {
 					spawn = getSpawnByName(ConfigOptions.VALUE_NEW_PLAYER_SPAWN);
 					if( spawn != null )
 						l = spawn.getLocation();
 				}
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_NEW_PLAYER+", location = "+shortLocationString(l));
+				
+				logStrategyResult(type, l, verbose);
 				break;
 				
-			case HOME_THIS_WORLD_ONLY:
-				home = getHome(playerName, player.getWorld());
-				if( home != null )
-					l = home.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_THIS_WORLD_ONLY+", location = "+shortLocationString(l));
-				break;
-
-				// try home on this world first, if not, use home on default world
 			case HOME_MULTI_WORLD:
-				home = getHome(playerName, player.getWorld());
+			case HOME_THIS_WORLD_ONLY:
+				if( currentMode.getType() == Type.MODE_HOME_NORMAL
+						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY )
+					home = getDefaultHome(playerName, player.getWorld());
+				
+				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
+						currentMode.getType() == Type.MODE_HOME_BED_ONLY) )
+					home = getBedHome(playerName, player.getWorld().getName());
+				
+				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
+					Set<Home> homes = plugin.getStorage().getHomes(player.getWorld().getName(), playerName);
+					// just grab the first one we find
+					if( homes != null && homes.size() != 0 )
+						home = homes.iterator().next();
+				}
+
 				if( home != null )
 					l = home.getLocation();
-				else {
-					home = getHome(playerName, getDefaultWorld());
-					if( home != null )
-						l = home.getLocation();
-				}
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_MULTI_WORLD+", location = "+shortLocationString(l));
-				break;
+				
+				logStrategyResult(type, l, verbose);
+				// if it's HOME_MULTI_WORLD strategy, we fall through to HOME_DEFAULT_WORLD
+				if( s.getType() != SpawnStrategy.Type.HOME_MULTI_WORLD || l != null )
+					break;
 
 			case HOME_DEFAULT_WORLD:
-				home = getHome(playerName, getDefaultWorld());
+				if( currentMode.getType() == Type.MODE_HOME_NORMAL
+						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY )
+					home = getDefaultHome(playerName, getDefaultWorld());
+				
+				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
+						currentMode.getType() == Type.MODE_HOME_BED_ONLY) )
+					home = getBedHome(playerName, getDefaultWorld());
+				
+				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
+					Set<Home> homes = plugin.getStorage().getHomes(getDefaultWorld(), playerName);
+					// just grab the first one we find
+					if( homes != null && homes.size() != 0 )
+						home = homes.iterator().next();
+				}
+				
 				if( home != null )
 					l = home.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_HOME_DEFAULT_WORLD+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
+			
+			case HOME_ANY_WORLD:
+				// get the Set of homes for this player for ALL worlds
+				Set<Home> homes = plugin.getStorage().getHomes(null, playerName);
+				log.info(logPrefix + " [DEBUG] homes = "+homes);
+				if( homes != null && homes.size() > 0 ) {
+					for(Home h: homes) {
+						// in "normal" or "any" mode, we just grab the first home we find
+						if( currentMode.getType() == Type.MODE_HOME_NORMAL ||
+								currentMode.getType() == Type.MODE_HOME_ANY ) {
+							home = h;
+							break;
+						}
+						else if( currentMode.getType() == Type.MODE_HOME_BED_ONLY && h.isBedHome() ) {
+							home = h;
+							break;
+						}
+						else if( currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY && h.isDefaultHome() ) {
+							home = h;
+							break;
+						}
+					}
+				}
+				
+				if( home != null )
+					l = home.getLocation();
+				logStrategyResult(type, l, verbose);
+				break;
+				
+			case MODE_HOME_NORMAL:
+			case MODE_HOME_BED_ONLY:
+			case MODE_HOME_DEFAULT_ONLY:
+			case MODE_HOME_ANY:
+				currentMode = new SpawnStrategy(type);
+				if( verbose )
+					log.info(logPrefix + " Evaluated mode change strategy, new mode = "+currentMode.toString());
+				break;
+				
+			case HOME_SPECIFIC_WORLD:
+			{
+				String worldName = s.getData();
+				home = getDefaultHome(playerName, worldName);
+				if( home != null )
+					l = home.getLocation();
+				logStrategyResult(type, l, verbose);
+			}
+	    		break;
+	    		
+			case HOME_NEAREST_HOME:
+			{
+				// simple algorithm for now, it's not called that often and we assume the list
+				// of homes is relatively small (ie. not in the hundreds or thousands).
+				Set<Home> allHomes = plugin.getStorage().getHomes(player.getWorld().getName(), playerName);
+				Location playerLoc = player.getLocation();
+				
+				double shortestDistance = -1;
+				Home closestHome = null;
+				for(Home theHome : allHomes) {
+					Location theLocation = theHome.getLocation();
+					if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
+						double distance = theLocation.distance(playerLoc);
+						if( distance < shortestDistance || shortestDistance == -1 ) {
+							shortestDistance = distance;
+							closestHome = theHome;
+						}
+					}
+				}
+				
+				if( closestHome != null )
+					l = closestHome.getLocation();
+				logStrategyResult(type, l, verbose);
+				break;
+			}
 				
 			case SPAWN_THIS_WORLD_ONLY:
 				spawn = getSpawn(player.getWorld().getName());
 				if( spawn != null )
 					l = spawn.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_THIS_WORLD_ONLY+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
 				
 			case SPAWN_DEFAULT_WORLD:
 				l = getDefaultSpawn().getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_DEFAULT_WORLD+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
 				
 			case SPAWN_GROUP:
@@ -193,10 +290,9 @@ public class HomeSpawnUtils {
 	    		
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_GROUP+", location = "+shortLocationString(l));
-			}
+				logStrategyResult(type, l, verbose);
 	    		break;
+			}
 	    		
 			case SPAWN_GROUP_SPECIFIC_WORLD:
 			{
@@ -208,10 +304,9 @@ public class HomeSpawnUtils {
 //				log.info(logPrefix + "[DEBUG] SPAWN_GROUP_SPECIFIC_WORLD: worldName = "+worldName+", group = "+group);
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_GROUP+", location = "+shortLocationString(l));
-			}
+				logStrategyResult(type, l, verbose);
 	    		break;
+			}
 
 			case SPAWN_SPECIFIC_WORLD:
 			{
@@ -222,10 +317,9 @@ public class HomeSpawnUtils {
 				else
 					log.info("No spawn found for world \""+worldName+"\" for \""+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+"\" strategy");
 				
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_SPECIFIC_WORLD+", location = "+shortLocationString(l));
-			}
+				logStrategyResult(type, l, verbose);
 				break;
+			}
 			
 			case SPAWN_NAMED_SPAWN:
 				String namedSpawn = s.getData();
@@ -235,8 +329,7 @@ public class HomeSpawnUtils {
 				else
 					log.info("No spawn found for name \""+namedSpawn+"\" for \""+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+"\" strategy");
 				
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_NAMED_SPAWN+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
 				
 			case SPAWN_WG_REGION:
@@ -244,11 +337,11 @@ public class HomeSpawnUtils {
 					wgInterface = new WorldGuardInterface(plugin);
 				
 				l = wgInterface.getWorldGuardSpawnLocation(player);
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_SPAWN_WG_REGION+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
 				
 			case SPAWN_NEAREST_SPAWN:
+			{
 				// simple algorithm for now, it's not called that often and we assume the list
 				// of spawns is relatively small (ie. not in the hundreds or thousands).
 				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
@@ -269,9 +362,9 @@ public class HomeSpawnUtils {
 				
 				if( closestSpawn != null )
 					l = closestSpawn.getLocation();
-				if( verbose )
-					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_NEAREST_SPAWN+", location = "+shortLocationString(l));
+				logStrategyResult(type, l, verbose);
 				break;
+			}
 				
 			case DEFAULT:
 				defaultFlag = true;
@@ -290,7 +383,7 @@ public class HomeSpawnUtils {
 		if( p == null || world == null )
 			return null;
 		
-		Home home = getHome(p.getName(), world);
+		Home home = getDefaultHome(p.getName(), world);
 		
 		Location l = null;
 		if( home != null )
@@ -340,6 +433,38 @@ public class HomeSpawnUtils {
     	return l;
     }
     
+    public void setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
+    {
+    	Home home = plugin.getStorage().getDefaultHome(l.getWorld().getName(), playerName);
+    	
+		// if we get an object back, we already have a Home set for this player/world combo, so we
+		// just update the x/y/z location of it.
+    	if( home != null ) {
+    		home.setLocation(l);
+			home.setUpdatedBy(updatedBy);
+    	}
+    	// this is a new home for this player/world combo, create a new object
+    	else
+    		home = new Home(playerName, l, updatedBy);
+    	
+    	// we don't set the value directly b/c the way to turn "off" an existing defaultHome is to
+    	// just set another one.
+    	if( defaultHome )
+    		home.setDefaultHome(true);
+    	
+    	if( bedHome ) {
+    		home.setName(Storage.HSP_BED_RESERVED_NAME);
+    	}
+    	// we don't allow use of the reserved "bed" name unless the bed flag is true
+    	else if( Storage.HSP_BED_RESERVED_NAME.equals(home.getName()) ) {
+    		home.setName(null);
+    	}
+		home.setBedHome(bedHome);
+
+    	plugin.getStorage().writeHome(home);
+    }
+    
+    /*
     public void setHome(String playerName, Location l, String updatedBy)
     {
     	Home home = plugin.getStorage().getHome(l.getWorld().getName(), playerName);
@@ -357,6 +482,7 @@ public class HomeSpawnUtils {
 		home.setDefaultHome(true);
     	plugin.getStorage().writeHome(home);
     }
+    */
     
     public void setNamedHome(String playerName, Location l, String homeName, String updatedBy)
     {
@@ -525,18 +651,35 @@ public class HomeSpawnUtils {
      * @param worldName
      * @return the home location or null if no home is set
      */
-    public Home getHome(String playerName, String worldName)
+    public Home getDefaultHome(String playerName, String worldName)
     {
-    	return plugin.getStorage().getHome(worldName, playerName);
+    	return plugin.getStorage().getDefaultHome(worldName, playerName);
     }
+    
     /** Return the home location of the given player and world.
      * 
      * @param playerName
      * @param world
      * @return the home location or null if no home is set
      */
-    public Home getHome(String playerName, World world) {
-    	return getHome(playerName, world.getName());
+    public Home getDefaultHome(String playerName, World world) {
+    	return getDefaultHome(playerName, world.getName());
+    }
+    
+    public Home getBedHome(String playerName, String worldName) {
+    	Home bedHome = null;
+    	
+    	Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+    	if( homes != null && homes.size() != 0 ) {
+	    	for(Home home : homes) {
+	    		if( home.isBedHome() ) {
+	    			bedHome = home;
+	    			break;
+	    		}
+	    	}
+    	}
+    	
+    	return bedHome;
     }
     
     public Home getHomeByName(String playerName, String homeName) {

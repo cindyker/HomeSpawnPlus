@@ -10,6 +10,10 @@ always relative to the world the player is in (in part, b/c Perm systems
 allow perm/groups to be local to each world). This gives the admin the
 ability to allow /groupspawn to always point to "world", for example, or
 even just on certain worlds, it could point to another world.
+* added new strategies: homeAnyWorld, homeSpecificWorld and
+spawnGroupSpecificWorld. Read wiki strategy doc for more info on these.
+* added strategy "modes", which is a way to alter the way existing
+strategies work in order to get even more specific behaviors.
 
 v0.9 - November 12, 2011
 * new feature: WorldGuard region-spawn support via "spawnWGregion" strategy

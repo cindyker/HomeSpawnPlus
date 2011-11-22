@@ -29,10 +29,7 @@ import com.avaje.ebean.validation.NotNull;
  *
  */
 @Entity()
-@Table(name="hsp_home",
-		uniqueConstraints=
-			@UniqueConstraint(columnNames={"world", "player_name"})
-)
+@Table(name="hsp_home")
 public class Home {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -64,10 +61,12 @@ public class Home {
     private float pitch;
 	private float yaw;
 	
+	@NotNull
     @Column(name="bed_home")
-	private boolean bedHome;
+	private boolean bedHome = false;
+	@NotNull
     @Column(name="default_home")
-	private boolean defaultHome;
+	private boolean defaultHome = false;
 
 	@Version
 	private Timestamp lastModified;

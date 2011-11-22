@@ -69,6 +69,219 @@ public class StorageEBeans implements Storage {
         } catch(Exception e) { e.printStackTrace(); }
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getHome(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Set<Home> getHomes(String world, String playerName) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find home where playerName = :playerName and world like :world";
+		
+		if( world == null || "all".equals(world) )
+			world = "%";
+		
+		Query<Home> query = db.createQuery(Home.class, q);
+		query.setParameter("playerName", playerName);
+		query.setParameter("world", world);
+		
+		return query.findSet();
+	}
+
+	@Override
+	public Home getNamedHome(String homeName, String playerName) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find home where playerName = :playerName and name = :name";
+		
+		Query<Home> query = db.createQuery(Home.class, q);
+		query.setParameter("playerName", playerName);
+		query.setParameter("name", homeName);
+		
+		return query.findUnique();
+	}
+	
+	public Home getDefaultHome(String world, String playerName) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
+		
+		Query<Home> query = db.createQuery(Home.class, q);
+		query.setParameter("playerName", playerName);
+		query.setParameter("world", world);
+		
+		return query.findUnique();
+		
+	}
+
+	public Home getBedHome(String world, String playerName) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find home where playerName = :player_name and world = :world and bed_home = 1";
+		
+		Query<Home> query = db.createQuery(Home.class, q);
+		query.setParameter("playerName", playerName);
+		query.setParameter("world", world);
+		
+		return query.findUnique();
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getSpawn(java.lang.String)
+	 */
+	@Override
+	public Spawn getSpawn(String world) {
+		return getSpawn(world, Storage.HSP_WORLD_SPAWN_GROUP);
+		
+		/*
+		EbeanServer db = plugin.getDatabase();
+		String q = "find spawn where world = :world";
+		
+		Query<Spawn> query = db.createQuery(Spawn.class, q);
+		query.setParameter("world", world);
+		
+		return query.findUnique();
+		*/
+	}
+
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getSpawn(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Spawn getSpawn(String world, String group) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find spawn where world = :world and group_name = :group";
+		
+		Query<Spawn> query = db.createQuery(Spawn.class, q);
+		query.setParameter("world", world);
+		query.setParameter("group", group);
+		
+		return query.findUnique();
+	}
+
+	@Override
+	public Spawn getSpawnByName(String name) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find spawn where name = :name";
+		
+		Query<Spawn> query = db.createQuery(Spawn.class, q);
+		query.setParameter("name", name);
+		
+		return query.findUnique();
+	}
+
+	/* We make the assumption that there are relatively few spawns and group combinations,
+	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
+	 * them for the valid group list.
+	 * 
+	 * (non-Javadoc)
+	 * @see org.morganm.homespawnplus.Storage#getSpawnDefinedGroups()
+	 */
+	public Set<String> getSpawnDefinedGroups() {
+		Set<String> groups = new HashSet<String>();
+		Set<Spawn> spawns = getAllSpawns();
+		
+		for(Spawn spawn : spawns) {
+			String group = spawn.getGroup();
+			if( group != null )
+				groups.add(group);
+		}
+		
+		return groups;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getAllHomes
+	 */
+	public Set<Home> getAllHomes()	{
+		return plugin.getDatabase().find(Home.class).findSet();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getAllSpawns
+	 */
+	public Set<Spawn> getAllSpawns() {
+		return plugin.getDatabase().find(Spawn.class).findSet();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#getAllPlayers
+	 */
+	public Set<Player> getAllPlayers() {
+		return plugin.getDatabase().find(Player.class).findSet();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#writeHome(org.morganm.homespawnplus.Home)
+	 */
+	@Override
+	public void writeHome(Home home) {
+		// We should only have one "BedHome" per player per world. So if this update is setting
+		// BedHome to true, then we make sure to clear out all others for this player/world combo
+		if( home.isBedHome() ) {
+			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set bed_home=0"
+					+" where player_name = :playerName and world = :world");
+			update.setParameter("playerName", home.getPlayerName());
+			update.setParameter("world", home.getWorld());
+			update.execute();
+		}
+		
+		// We should only have one defaultHome per player per world. So if this update is setting
+		// defaultHome to true, then we make sure to clear out all others for this player/world combo
+		if( home.isDefaultHome() ) {
+			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set default_home=0"
+					+" where player_name = :playerName and world = :world");
+			update.setParameter("playerName", home.getPlayerName());
+			update.setParameter("world", home.getWorld());
+			update.execute();
+		}
+		
+        plugin.getDatabase().save(home);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.morganm.homespawnplus.IStorage#writeSpawn(org.morganm.homespawnplus.Spawn)
+	 */
+	@Override
+	public void writeSpawn(Spawn spawn) {
+        plugin.getDatabase().save(spawn);
+	}
+
+	@Override
+	public void purgeCache() {
+		// in theory we should pass this call through to the EBEAN server, but it doesn't
+		// offer any support for this functionality.  So we do nothing.
+	}
+
+	@Override
+	public Player getPlayer(String name) {
+		return plugin.getDatabase().find(Player.class).where().ieq("name", name).findUnique();
+	}
+
+	@Override
+	public void writePlayer(Player player) {
+        plugin.getDatabase().save(player);
+	}
+
+	@Override
+	public void removeHome(Home home) {
+		plugin.getDatabase().delete(home);
+	}
+	
+	@Override
+	public void deleteAllData() {
+		EbeanServer db = plugin.getDatabase();
+		db.beginTransaction();
+		
+		SqlUpdate update = db.createSqlUpdate("delete from hsp_spawn");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_home");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_player");
+		update.execute();
+		
+		db.commitTransaction();
+	}
+	
 	/** Return true if the backing Database is assumed to be SQLLite.
 	 * 
 	 * @return
@@ -194,11 +407,54 @@ public class StorageEBeans implements Storage {
 				try {
 					Connection conn = ebu.getConnection();
 					Statement stmt = conn.createStatement();
-					stmt.execute("ALTER TABLE `hsp_home` ADD `name` varchar(32)");
-					stmt.execute("ALTER TABLE `hsp_home` ADD `bed_home` integer(1)");
-					stmt.execute("ALTER TABLE `hsp_home` ADD `default_home` integer(1)");
+					stmt.execute("BEGIN TRANSACTION;");
+					stmt.execute("CREATE TEMPORARY TABLE hsphome_backup("
+							+"id integer primary key"
+							+",player_name varchar(32)"
+							+",updated_by varchar(32)"
+							+",world varchar(32)"
+							+",x double not null"
+							+",y double not null"
+							+",z double not null"
+							+",pitch float not null"
+							+",yaw float not null"
+							+",last_modified timestamp not null"
+							+",date_created timestamp not null);");
+					stmt.execute("INSERT INTO hsphome_backup SELECT"
+							+" id, player_name,updated_by,world"
+							+",x,y,z,pitch,yaw"
+							+",last_modified,date_created"
+							+" FROM hsp_home;");
+					stmt.execute("DROP TABLE hsp_home;");
+					stmt.execute("CREATE TABLE hsp_home("
+							+"id integer primary key"
+							+",player_name varchar(32)"
+							+",name varchar(32)"
+							+",updated_by varchar(32)"
+							+",world varchar(32)"
+							+",x double not null"
+							+",y double not null"
+							+",z double not null"
+							+",pitch float not null"
+							+",yaw float not null"
+							+",default_home intger(1) not null DEFAULT 0"
+							+",bed_home intger(1) not null DEFAULT 0"
+							+",last_modified timestamp not null"
+							+",date_created timestamp not null);");
+					stmt.execute("INSERT INTO hsp_home SELECT"
+							+" id, player_name,null,updated_by,world"
+							+",x,y,z,pitch,yaw,1,0"
+							+",last_modified,date_created"
+							+" FROM hsphome_backup;");
+					stmt.execute("DROP TABLE hsphome_backup;");
+					stmt.execute("COMMIT;");
+//					stmt.execute("ALTER TABLE `hsp_home` ADD `name` varchar(32)");
+//					stmt.execute("ALTER TABLE `hsp_home` ADD `bed_home` integer(1) not null");
+//					stmt.execute("ALTER TABLE `hsp_home` ADD `default_home` integer(1) not null");
+//					stmt.execute(sql);
 					stmt.close();
 					conn.close();
+					
 					success = true;
 				}
 				catch(SQLException e) {
@@ -208,16 +464,19 @@ public class StorageEBeans implements Storage {
 			}
 			else {
 				SqlUpdate update = db.createSqlUpdate("ALTER TABLE `hsp_home` ADD (`name` varchar(32)"
-						+ ",`bed_home` tinyint(1) DEFAULT '0'"
-						+ ",`default_home` tinyint(1) DEFAULT '0'"
+						+ ",`bed_home` tinyint(1) DEFAULT '0' NOT NULL"
+						+ ",`default_home` tinyint(1) DEFAULT '0' NOT NULL"
 						+ ");"
 				  );
+			    update.execute();
+			    
+			    update = db.createSqlUpdate("ALTER TABLE `hsp_home` DROP INDEX `uq_hsp_home_1`");
 			    update.execute();
 				success = true;
 			}
 			
 			if( success ) {
-				SqlUpdate update = db.createSqlUpdate("update hsp_home set default_home=1");
+				SqlUpdate update = db.createSqlUpdate("update hsp_home set default_home=1, bed_home=0");
 				update.execute();
 				
 				update = db.createSqlUpdate("update hsp_version set database_version=91");
@@ -225,215 +484,5 @@ public class StorageEBeans implements Storage {
 				log.info(logPrefix + " Upgrade from version 0.8 database to version 0.9.1 complete");
 			}
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getHome(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Home getHome(String world, String playerName) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :playerName and world = :world";
-		
-		Query<Home> query = db.createQuery(Home.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-	}
-
-	@Override
-	public Home getNamedHome(String homeName, String playerName) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :playerName and name = :name";
-		
-		Query<Home> query = db.createQuery(Home.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("name", homeName);
-		
-		return query.findUnique();
-	}
-	
-	public Home getDefaultHome(String world, String playerName) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :playerName and world = :world and defaultFlag = true";
-		
-		Query<Home> query = db.createQuery(Home.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-		
-	}
-
-	public Home getBedHome(String world, String playerName) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :playerName and world = :world and bedHome = true";
-		
-		Query<Home> query = db.createQuery(Home.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-		
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getSpawn(java.lang.String)
-	 */
-	@Override
-	public Spawn getSpawn(String world) {
-		return getSpawn(world, Storage.HSP_WORLD_SPAWN_GROUP);
-		
-		/*
-		EbeanServer db = plugin.getDatabase();
-		String q = "find spawn where world = :world";
-		
-		Query<Spawn> query = db.createQuery(Spawn.class, q);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-		*/
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getSpawn(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Spawn getSpawn(String world, String group) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find spawn where world = :world and group_name = :group";
-		
-		Query<Spawn> query = db.createQuery(Spawn.class, q);
-		query.setParameter("world", world);
-		query.setParameter("group", group);
-		
-		return query.findUnique();
-	}
-
-	@Override
-	public Spawn getSpawnByName(String name) {
-		EbeanServer db = plugin.getDatabase();
-		String q = "find spawn where name = :name";
-		
-		Query<Spawn> query = db.createQuery(Spawn.class, q);
-		query.setParameter("name", name);
-		
-		return query.findUnique();
-	}
-
-	/* We make the assumption that there are relatively few spawns and group combinations,
-	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
-	 * them for the valid group list.
-	 * 
-	 * (non-Javadoc)
-	 * @see org.morganm.homespawnplus.Storage#getSpawnDefinedGroups()
-	 */
-	public Set<String> getSpawnDefinedGroups() {
-		Set<String> groups = new HashSet<String>();
-		Set<Spawn> spawns = getAllSpawns();
-		
-		for(Spawn spawn : spawns) {
-			String group = spawn.getGroup();
-			if( group != null )
-				groups.add(group);
-		}
-		
-		return groups;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getAllHomes
-	 */
-	public Set<Home> getAllHomes()	{
-		return plugin.getDatabase().find(Home.class).findSet();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getAllSpawns
-	 */
-	public Set<Spawn> getAllSpawns() {
-		return plugin.getDatabase().find(Spawn.class).findSet();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#getAllPlayers
-	 */
-	public Set<Player> getAllPlayers() {
-		return plugin.getDatabase().find(Player.class).findSet();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#writeHome(org.morganm.homespawnplus.Home)
-	 */
-	@Override
-	public void writeHome(Home home) {
-		// We should only have one "BedHome" per player per world. So if this update is setting
-		// BedHome to true, then we make sure to clear out all others for this player/world combo
-		if( home.isBedHome() ) {
-			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set bed_home=false"
-					+" where player_name = :playerName and world = :world");
-			update.setParameter("playerName", home.getPlayerName());
-			update.setParameter("world", home.getWorld());
-			update.execute();
-		}
-		
-		// We should only have one defaultHome per player per world. So if this update is setting
-		// defaultHome to true, then we make sure to clear out all others for this player/world combo
-		if( home.isDefaultHome() ) {
-			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set default_home=false"
-					+" where player_name = :playerName and world = :world");
-			update.setParameter("playerName", home.getPlayerName());
-			update.setParameter("world", home.getWorld());
-			update.execute();
-		}
-		
-        plugin.getDatabase().save(home);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#writeSpawn(org.morganm.homespawnplus.Spawn)
-	 */
-	@Override
-	public void writeSpawn(Spawn spawn) {
-        plugin.getDatabase().save(spawn);
-	}
-
-	@Override
-	public void purgeCache() {
-		// in theory we should pass this call through to the EBEAN server, but it doesn't
-		// offer any support for this functionality.  So we do nothing.
-	}
-
-	@Override
-	public Player getPlayer(String name) {
-		return plugin.getDatabase().find(Player.class).where().ieq("name", name).findUnique();
-	}
-
-	@Override
-	public void writePlayer(Player player) {
-        plugin.getDatabase().save(player);
-	}
-
-	@Override
-	public void removeHome(Home home) {
-		plugin.getDatabase().delete(home);
-	}
-	
-	@Override
-	public void deleteAllData() {
-		EbeanServer db = plugin.getDatabase();
-		db.beginTransaction();
-		
-		SqlUpdate update = db.createSqlUpdate("delete from hsp_spawn");
-		update.execute();
-		
-		update = db.createSqlUpdate("delete from hsp_home");
-		update.execute();
-		
-		update = db.createSqlUpdate("delete from hsp_player");
-		update.execute();
-		
-		db.commitTransaction();
 	}
 }

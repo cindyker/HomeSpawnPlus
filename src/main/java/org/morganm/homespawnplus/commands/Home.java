@@ -161,7 +161,7 @@ public class Home extends BaseCommand
 				System.out.println("playerName = "+playerName+", world = "+world);
 			}
 			
-			home = util.getHome(playerName, world);
+			home = util.getDefaultHome(playerName, world);
 			
 			// didn't find an exact match and we have permission to use others homes?  try a best guess match
 			if( home == null && plugin.hasPermission(p, OTHER_HOME_PERMISSION) )

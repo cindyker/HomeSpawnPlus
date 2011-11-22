@@ -96,7 +96,7 @@ public class HSPPlayerListener extends PlayerListener {
         	// if there is an event in the cache, then this is their second click - save their home
         	if( ce != null ) {
         		if( b.getLocation().equals(ce.location) ) {
-        			util.setHome(player.getName(), player.getLocation(), player.getName());
+        			util.setHome(player.getName(), player.getLocation(), player.getName(), false, true);
         			
         			plugin.getUtil().sendMessage(player, "Your home has been set to this location.");
         			bedClicks.remove(player.getName());

@@ -155,7 +155,7 @@ public class StorageYaml implements Storage {
 	 * @see org.morganm.homespawnplus.storage.Storage#getHome(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public Home getHome(String world, String playerName) {
+	public Home getDefaultHome(String world, String playerName) {
 		throw new NotImplementedException();
 	}
 
@@ -380,6 +380,11 @@ public class StorageYaml implements Storage {
 
 	@Override
 	public Home getNamedHome(String homeName, String playerName) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Set<Home> getHomes(String world, String playerName) {
 		throw new NotImplementedException();
 	}
 }

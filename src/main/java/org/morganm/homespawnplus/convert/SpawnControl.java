@@ -61,7 +61,7 @@ public class SpawnControl implements Runnable {
             		
             		Location l = new Location(world, rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("r"), rs.getFloat("p"));
             		
-            		util.setHome(playerName, l, "[SpawnControl_Conversion]");
+            		util.setHome(playerName, l, "[SpawnControl_Conversion]", true, false);
             		convertedCount++;
             		
             		consecutiveErrors = 0;	// success! reset consecutiveErrors counter

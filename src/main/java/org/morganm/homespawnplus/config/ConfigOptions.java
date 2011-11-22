@@ -57,6 +57,14 @@ public interface ConfigOptions {
 	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";
 	public static final String STRATEGY_HOME_MULTI_WORLD = "homeMultiWorld";
 	public static final String STRATEGY_HOME_NEAREST_HOME = "homeNearest";
+	public static final String STRATEGY_HOME_SPECIFIC_WORLD = "homeSpecificWorld";
+	public static final String STRATEGY_HOME_ANY_WORLD = "homeAnyWorld";
+	
+	public static final String STRATEGY_MODE_HOME_NORMAL = "modeHomeNormal";
+	public static final String STRATEGY_MODE_HOME_BED_ONLY = "modeHomeBedOnly";
+	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
+	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
+	
 	public static final String STRATEGY_SPAWN_WG_REGION = "spawnWGregion";
 	public static final String STRATEGY_SPAWN_NEW_PLAYER = "spawnNewPlayer";
 	public static final String STRATEGY_SPAWN_THIS_WORLD_ONLY = "spawnLocalWorld";
@@ -66,5 +74,6 @@ public interface ConfigOptions {
 	public static final String STRATEGY_SPAWN_GROUP = "spawnGroup";
 	public static final String STRATEGY_SPAWN_GROUP_SPECIFIC_WORLD = "spawnGroupSpecificWorld";
 	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearest";
+	
 	public static final String STRATEGY_DEFAULT = "default";
 }

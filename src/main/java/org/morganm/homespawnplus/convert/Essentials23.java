@@ -67,7 +67,7 @@ public class Essentials23 implements Runnable {
 			
 			Location l = new Location(world, x.doubleValue(), y.doubleValue(),
 					z.doubleValue(), yaw.floatValue(), pitch.floatValue());
-			util.setHome(playerName, l, "[Essentials23_Conversion]");
+			util.setHome(playerName, l, "[Essentials23_Conversion]", true, false);
 			convertedCount++;
 			
 //			log.info("set home for player "+playerName);

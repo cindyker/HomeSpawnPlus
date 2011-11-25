@@ -10,6 +10,8 @@ package org.morganm.homespawnplus.config;
 public interface ConfigOptions {
 	public static final String VERBOSE_LOGGING = "core.verboseLogging";
 	public static final String STRATEGY_VERBOSE_LOGGING = "core.verboseStrategyLogging";
+	public static final String DEBUG = "core.debug";
+	public static final String DEV_DEBUG = "core.devDebug";
 	
 	public static final String STORAGE_TYPE = "core.storage";
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";

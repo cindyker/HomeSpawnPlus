@@ -36,7 +36,11 @@ public class CommandFileGenerator
 		if( classes != null )
 			for(Class clazz : classes) {
 //				System.out.println("Found class: "+clazz);
-				writer.write(clazz.getName() + "\n");
+				
+				String clazzName = clazz.getName();
+				// don't record private inner classes
+				if( !clazzName.contains("$") )
+					writer.write(clazz.getName() + "\n");
 				
 				/*
 				String className = clazz.getName();

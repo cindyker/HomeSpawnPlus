@@ -14,6 +14,10 @@ even just on certain worlds, it could point to another world.
 spawnGroupSpecificWorld. Read wiki strategy doc for more info on these.
 * added strategy "modes", which is a way to alter the way existing
 strategies work in order to get even more specific behaviors.
+* changed base command permission to no longer need ".use" suffix. For
+example it's just "hsp.command.home" now. I have maintained the check
+for ".use" to make upgrading easier, but the old ".use" permission syntax
+will be dropped in a future version.
 
 v0.9 - November 12, 2011
 * new feature: WorldGuard region-spawn support via "spawnWGregion" strategy

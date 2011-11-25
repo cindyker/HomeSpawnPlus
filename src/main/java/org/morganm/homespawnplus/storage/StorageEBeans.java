@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import org.morganm.homespawnplus.Debug;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Player;
@@ -335,7 +336,7 @@ public class StorageEBeans implements Storage {
 		else
 			knownVersion = versionObject.getDatabaseVersion();
 		
-		log.info(logPrefix + " knownVersion = "+knownVersion);
+		Debug.getInstance().debug(logPrefix + " knownVersion = "+knownVersion);
 
 		/*
 		try {

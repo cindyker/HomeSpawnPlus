@@ -10,7 +10,7 @@ commands:
     usage: /<command>
   setdefaultspawn:
     description: Sets the default spawn to a named spawn
-    usage: "/<command> [spawnname]"
+    usage: /<command> spawnName
   spawn:
     description: Respawns you at the world spawn
     usage: /<command>
@@ -36,16 +36,30 @@ commands:
     usage: |
         Incorrect usage of command /<command>. Examples:
            /<command> - sets your home to your current location
-           /<command> Bob - sets Bob's home to your current location            
+           /<command> name - sets a home named 'name' at your current location
   listhomes:
     description: Show your homes
     usage: |
            /<command> - show homes on current world
-           /<command> world - show homes on "world"
+           /<command> world - show homes on 'world'
            /<command> all - show homes on all worlds
   home:
     description: Respawns you at your home
     usage: /<command>
+  homedelete:
+    description: Delete's your default or a named home
+    usage: |
+           /<command>
+           /<command> homeName
+  homeother:
+    description: Go to someone else's home (named or specific world)
+    usage: |
+           /<command> playerName 
+           /<command> playerName homeName
+           /<command> playerName w:worldName
+  setdefaulthome:
+    description: Sets your defaulthome to a named home
+    usage: /<command> homeName
   hspconvert:
     description: Load and convert data from another data store
     usage: /<command>

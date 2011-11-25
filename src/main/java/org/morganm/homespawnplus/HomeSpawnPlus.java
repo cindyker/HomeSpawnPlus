@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
@@ -43,7 +44,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  * @author morganm, Timberjaw
  */
 public class HomeSpawnPlus extends JavaPlugin {
-    public static final Logger log = Logger.getLogger("HomeSpawnPlus");;
+    public static final Logger log = Logger.getLogger("HomeSpawnPlus");
     public static String logPrefix;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
@@ -116,6 +117,8 @@ public class HomeSpawnPlus extends JavaPlugin {
      * 
      */
     private void initPermissions() {
+    	Debug.getInstance().debug("Initializing Permission system");
+    	
     	if( !setupVaultPermissions() ) {
 	        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
 	        if( permissionsPlugin != null ) {
@@ -154,6 +157,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     public void loadConfig() throws ConfigException, IOException {
 		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
 		config.load();
+		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEV_DEBUG, false), Level.FINEST);
+		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEBUG, false));
     }
 
     private Boolean setupVaultPermissions()
@@ -260,6 +265,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
     	logPrefix = "[" + pluginName + "]";
+    	
+    	Debug.getInstance().init(log, logPrefix+"[DEBUG] ", false);
     	
     	org.morganm.homespawnplus.entity.Player.setServer(getServer());
     	

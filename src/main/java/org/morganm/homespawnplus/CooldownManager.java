@@ -40,8 +40,7 @@ public class CooldownManager {
     }
     
 	/** Utility method for making sure a cooldown is available before we execute a
-	 * command.  If the cooldown is available, this will update the cooldown to the current
-	 * time (thus starting the cooldown).
+	 * command.  
 	 * 
 	 * It also writes a message to the player letting them know they are still in cooldown.
 	 * 
@@ -60,7 +59,11 @@ public class CooldownManager {
 			return false;
 		}
 		
-		setCooldown(p, cooldownName);
+		// no longer update cooldown here, but require an explicit call to setCooldown() instead.
+		// this forces the interface to work around a bug where a cooldown gets applied
+		// at the start of a command even though the command aborts due to an error condition
+		// (such as player arguments being wrong, etc).
+//		setCooldown(p, cooldownName);
 		return true;
 	}
 	

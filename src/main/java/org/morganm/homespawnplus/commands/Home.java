@@ -54,7 +54,7 @@ public class Home extends BaseCommand
 					public void run() {
 						if( !canceled ) {
 							util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to home");
-							if( applyCost(p) )
+							if( applyCost(p, true) )
 								p.teleport(finalL);
 						}
 					}
@@ -68,7 +68,7 @@ public class Home extends BaseCommand
 				});
 			}
 			else {
-				if( applyCost(p) )
+				if( applyCost(p, true) )
 					p.teleport(l);
 			}
     	}

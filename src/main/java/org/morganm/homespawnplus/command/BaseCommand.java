@@ -8,6 +8,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.CooldownManager;
+import org.morganm.homespawnplus.Debug;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.WarmupManager;
@@ -22,13 +23,14 @@ import org.morganm.homespawnplus.config.ConfigOptions;
  *
  */
 public abstract class BaseCommand implements Command {
-
+	protected Debug debug;
 	protected HomeSpawnPlus plugin;
 	protected HomeSpawnUtils util;
 	protected CooldownManager cooldownManager;
 	protected WarmupManager warmupManager;
 	private boolean enabled;
 	private String permissionNode;
+	private String oldPermissionNode;
 	private String commandName;
 
 	/** Returns this object for easy initialization in a command hash.
@@ -37,6 +39,7 @@ public abstract class BaseCommand implements Command {
 	 * @return
 	 */
 	public Command setPlugin(HomeSpawnPlus plugin) {
+		this.debug = Debug.getInstance();
 		this.plugin = plugin;
 		this.util = plugin.getUtil();
 		this.cooldownManager = plugin.getCooldownManager();
@@ -61,31 +64,45 @@ public abstract class BaseCommand implements Command {
 	 * @param p
 	 * @return true on success, false if there was an error that should prevent the action from taking place
 	 */
-	protected boolean applyCost(Player p) {
+	protected boolean applyCost(Player p, boolean applyCooldown) {
+		boolean returnValue = false;
+		
 		Economy economy = plugin.getEconomy();
 		if( economy == null )
-			return true;
+			returnValue = true;
 		
-		if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
-			return true;
+		if( !returnValue && plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+			returnValue = true;
 
-		int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
-		if( price > 0 ) {
-			EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
-			
-			if( response.transactionSuccess() ) {
-				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
-					util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
+		if( !returnValue ) {
+			int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+			if( price > 0 ) {
+				EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
+				
+				if( response.transactionSuccess() ) {
+					if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
+						util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
+					}
+					
+					returnValue = true;
 				}
-				return true;
+				else {
+					util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
+					returnValue = false;
+				}
 			}
-			else {
-				util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
-				return false;
-			}
+			else
+				returnValue = true;	// no cost for this command
 		}
-		else
-			return true;	// no cost for this command
+		
+		// if applyCooldown flag is true and the returnValue is true, then apply the Cooldown now
+		if( applyCooldown && returnValue == true )
+			applyCooldown(p);
+		
+		return returnValue;
+	}
+	protected boolean applyCost(Player p) {
+		return applyCost(p, false);
 	}
 	
 	protected void doWarmup(Player p, WarmupRunner wr) {
@@ -114,15 +131,21 @@ public abstract class BaseCommand implements Command {
 	 * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
 	 */
 	protected boolean defaultCommandChecks(Player p) {
+		debug.devDebug("enabled =",enabled);
 		if( !enabled )
 			return false;
-		
-		if(!hasPermission(p))
+
+		final boolean hasP = hasPermission(p);
+		debug.devDebug("hasPermission =",hasP);
+		if( !hasP )
 			return false;
 
-		if( !cooldownCheck(p) )
+		final boolean cd = cooldownCheck(p);
+		debug.devDebug("cooldownCheck = ",cd);
+		if( !cd )
 			return false;
 		
+		debug.devDebug("all defaultCommandChecks return true");
 		return true;
 	}
 	
@@ -156,6 +179,10 @@ public abstract class BaseCommand implements Command {
 	protected boolean cooldownCheck(Player p) {
 		return cooldownManager.cooldownCheck(p, getCommandName());
 	}
+	
+	protected void applyCooldown(Player p) {
+		cooldownManager.setCooldown(p,  getCommandName());
+	}
 
 	/**
 	 * 
@@ -182,9 +209,11 @@ public abstract class BaseCommand implements Command {
 	 */
 	protected boolean hasPermission(Player p) {
 		if( permissionNode == null )
-			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName() + ".use";
+			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
+		if( oldPermissionNode == null )
+			oldPermissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName() + ".use";
 		
-		if( !plugin.hasPermission(p, permissionNode) ) {
+		if( !plugin.hasPermission(p, permissionNode) && !plugin.hasPermission(p, oldPermissionNode) ) {
 			p.sendMessage("You don't have permission to do that.");
 			return false;
 		}

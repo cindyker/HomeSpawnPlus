@@ -34,7 +34,7 @@ public class GroupSpawn extends BaseCommand
 				public void run() {
 					if( !canceled ) {
 						util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to group spawn");
-						if( applyCost(p) )
+						if( applyCost(p, true) )
 							p.teleport(l);
 					}
 				}
@@ -48,7 +48,7 @@ public class GroupSpawn extends BaseCommand
 			});
 		}
 		else {
-			if( applyCost(p) )
+			if( applyCost(p, true) )
 				p.teleport(l);
 		}
 		

@@ -18,8 +18,12 @@ import org.morganm.homespawnplus.config.ConfigOptions;
  */
 public class Spawn extends BaseCommand
 {
+	private static final String OTHER_SPAWN_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.spawn.other";
+	
+	/*
 	@Override
 	public String[] getCommandAliases() { return new String[] {"globalspawn"}; }
+	*/
 
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args) {
@@ -28,13 +32,18 @@ public class Spawn extends BaseCommand
 
 		Location l = null;
 		if( args.length > 0 ) {
-			org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
-			if( spawn != null )
-				l = spawn.getLocation();
-			
-			if( l == null ) {
-				util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
-				return true;
+			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
+				org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
+				if( spawn != null )
+					l = spawn.getLocation();
+				
+				if( l == null ) {
+					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
+					return true;
+				}
+			}
+			else {
+				util.sendMessage(p,  "No permission");
 			}
 		}
 		else {
@@ -54,7 +63,7 @@ public class Spawn extends BaseCommand
 					public void run() {
 						if( !canceled ) {
 							util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to spawn");
-							if( applyCost(p) )
+							if( applyCost(p, true) )
 								p.teleport(finalL);
 						}
 					}
@@ -68,7 +77,7 @@ public class Spawn extends BaseCommand
 				});
 			}
 			else {
-				if( applyCost(p) )
+				if( applyCost(p, true) )
 					p.teleport(l);
 			}
     	}

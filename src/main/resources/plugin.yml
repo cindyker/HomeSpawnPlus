@@ -26,6 +26,7 @@ commands:
     description: Sets the newPlayer spawn
     usage: /<command>
   groupspawn:
+    aliases: [gs]
     description: Returns you to the group spawn
     usage: |
            Incorrect usage of command /<command>. Examples:
@@ -38,6 +39,7 @@ commands:
            /<command> - sets your home to your current location
            /<command> name - sets a home named 'name' at your current location
   listhomes:
+    aliases: [homel, homelist]
     description: Show your homes
     usage: |
            /<command> - show homes on current world
@@ -47,16 +49,31 @@ commands:
     description: Respawns you at your home
     usage: /<command>
   homedelete:
-    description: Delete's your default or a named home
+    aliases: [homed]
+    description: Delete your default or a named home
     usage: |
            /<command>
            /<command> homeName
+  homedeleteother:
+    aliases: [hdo]
+    description: Delete another player's default or a named home
+    usage: |
+           /<command> player
+           /<command> player homeName
+           /<command> player w:worldName
   homeother:
+    aliases: [homeo]
     description: Go to someone else's home (named or specific world)
     usage: |
            /<command> playerName 
            /<command> playerName homeName
            /<command> playerName w:worldName
+  sethomeother:
+    aliases: [sethomeo,sho]
+    description: Set another player's home to current location
+    usage: |
+           /<command> playerName
+           /<command> playerName homeName
   setdefaulthome:
     description: Sets your defaulthome to a named home
     usage: /<command> homeName

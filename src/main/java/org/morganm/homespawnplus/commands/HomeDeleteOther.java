@@ -11,11 +11,10 @@ import org.morganm.homespawnplus.command.BaseCommand;
  * @author morganm
  *
  */
-public class HomeOther extends BaseCommand {
-//	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
+public class HomeDeleteOther extends BaseCommand {
 
 	@Override
-	public String[] getCommandAliases() { return new String[] {"homeo"}; }
+	public String[] getCommandAliases() { return new String[] {"hdo"}; }
 	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
@@ -23,13 +22,13 @@ public class HomeOther extends BaseCommand {
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
-			return true;
-		
+			return false;
+
 		if( args.length < 1 ) {
 			util.sendMessage(p, "Usage:");
-			util.sendMessage(p, "  /homeother player : go to \"player\"'s home on current world");
-			util.sendMessage(p, "  /homeother player w:world_name : go to \"player\"'s home on world \"world_name\"");
-			util.sendMessage(p, "  /homeother player home_name : go to \"player\"'s home named \"home_name\"");
+			util.sendMessage(p, "  /homedelete player : delete \"player\"'s home on current world");
+			util.sendMessage(p, "  /homedelete player <name> : delete \"player\"'s home named \"name\" on current world");
+			util.sendMessage(p, "  /homedelete player w:world_name : delete \"player\"'s default home on world \"world_name\"");
 			return true;
 		}
 		
@@ -61,17 +60,20 @@ public class HomeOther extends BaseCommand {
 			home = util.getDefaultHome(playerName, worldName);
 		}
 		
-		// didn't find an exact match?  try a best guess match
-		if( home == null )
-			home = util.getBestMatchHome(playerName, worldName);
-		
 		if( home != null ) {
-			util.sendMessage(p, "Teleporting to player home for "+home.getPlayerName()+" on world \""+home.getWorld()+"\"");
-			if( applyCost(p) )
-				p.teleport(home.getLocation());
+			plugin.getStorage().deleteHome(home);
+			String msg = null;
+			if( homeName != null )
+				msg = "Home named "+homeName+" for player "+playerName+" deleted.";
+			else
+				msg = "Default home for player "+playerName+" on world "+worldName+" deleted";
+			util.sendMessage(p, msg);
+		}
+		else if( homeName != null ) {
+			p.sendMessage("No home named "+homeName+" found for player "+playerName);
 		}
 		else
-			util.sendMessage(p, "No home found for player "+playerName+" on world "+worldName);
+			p.sendMessage("No home found for player "+playerName+" on world "+worldName);
 		
 		return true;
 	}

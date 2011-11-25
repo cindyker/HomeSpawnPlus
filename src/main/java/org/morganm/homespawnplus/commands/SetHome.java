@@ -21,6 +21,7 @@ public class SetHome extends BaseCommand
 	
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
+		debug.debug("sethome invoked. player=",p,"args=",args);
 		if( !defaultCommandChecks(p) )
 			return true;
 		

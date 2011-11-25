@@ -45,7 +45,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  */
 public class HomeSpawnPlus extends JavaPlugin {
     public static final Logger log = Logger.getLogger("HomeSpawnPlus");
-    public static String logPrefix;
+    public static String logPrefix = "[HomeSpawnPlus]";
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";

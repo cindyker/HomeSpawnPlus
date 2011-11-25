@@ -18,40 +18,41 @@ public class HomeDelete extends BaseCommand {
 	 */
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
-		if( !isEnabled() )
-			return false;
-
-		if( args.length < 1 ) {
-			util.sendMessage(p, "Usage:");
-			util.sendMessage(p, "  /homedelete player : delete \"player\"'s home on current world");
-			util.sendMessage(p, "  /homedelete player <name> : delete \"player\"'s home named \"name\" on current world");
-			util.sendMessage(p, "  /homedelete player w:world_name : delete \"player\"'s home on world \"world_name\"");
-			util.sendMessage(p, "  /homedelete player w:world_name <name>: delete \"player\"'s home named \"name\" on world \"world_name\"");
+		if( !defaultCommandChecks(p) )
 			return true;
-		}
 		
-		String worldName;
-		if( args.length > 1 ) {
-			worldName = args[1];
-		}
-		else {
-			worldName = p.getWorld().getName();
-		}
+		org.morganm.homespawnplus.entity.Home home = null;
+		String homeName = null;
 		
-		final String playerName = args[0];
-		org.morganm.homespawnplus.entity.Home home = util.getDefaultHome(playerName, worldName);
-		
-		// didn't find an exact match?  try a best guess match
-		if( home == null )
-			home = util.getBestMatchHome(playerName, worldName);
-		
-		if( home != null ) {
-			util.sendMessage(p, "Teleporting to player home for "+home.getPlayerName()+" on world \""+home.getWorld()+"\"");
-			if( applyCost(p) )
-				p.teleport(home.getLocation());
+		if( args.length > 0 ) {
+			homeName = args[0];
+			home = util.getHomeByName(p.getName(), homeName);
 		}
 		else
-			p.sendMessage("No home found for player "+playerName+" on world "+worldName);
+			home = util.getDefaultHome(p.getName(), p.getWorld().getName());
+
+		if( home != null ) {
+			// safety check to be sure we aren't deleting someone else's home with this command
+			// (this shouldn't be possible since all checks are keyed to this player's name, but
+			// let's be paranoid anyway)
+			if( !p.getName().equals(home.getPlayerName()) ) {
+				util.sendMessage(p, "ERROR: tried to delete another player's home; action not allowed.");
+				log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to delete home for player "+home.getPlayerName());
+			}
+			else {
+				plugin.getStorage().deleteHome(home);
+				String msg = null;
+				if( homeName != null )
+					msg = "Home named "+homeName+" for player "+p.getName()+" deleted.";
+				else
+					msg = "Default home for player "+p.getName()+" on world "+p.getWorld().getName()+" deleted";
+				util.sendMessage(p, msg);
+			}
+		}
+		else if( homeName != null )
+			util.sendMessage(p, "No home with name "+homeName+ " found to delete.");
+		else
+			util.sendMessage(p, "No home found to delete on world");
 		
 		return true;
 	}

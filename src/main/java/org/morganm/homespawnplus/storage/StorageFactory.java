@@ -23,7 +23,9 @@ public class StorageFactory {
 			return new StorageEBeans(plugin);
 		}
 		else if( storageType == STORAGE_TYPE_CACHED_EBEANS ) {
-			return new StorageCache(new StorageEBeans(plugin));
+			HomeSpawnPlus.log.warning(HomeSpawnPlus.logPrefix + " CACHED_EBEANS storage not currently supported, defaulting to regular EBEANS storage");
+			return new StorageEBeans(plugin);
+//			return new StorageCache(new StorageEBeans(plugin));
 		}
 		else {
 			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);

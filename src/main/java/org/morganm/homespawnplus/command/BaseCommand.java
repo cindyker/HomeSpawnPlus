@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.command;
 
+import java.util.logging.Logger;
+
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -28,6 +30,8 @@ public abstract class BaseCommand implements Command {
 	protected HomeSpawnUtils util;
 	protected CooldownManager cooldownManager;
 	protected WarmupManager warmupManager;
+	protected Logger log;
+	protected String logPrefix;
 	private boolean enabled;
 	private String permissionNode;
 	private String oldPermissionNode;
@@ -44,6 +48,8 @@ public abstract class BaseCommand implements Command {
 		this.util = plugin.getUtil();
 		this.cooldownManager = plugin.getCooldownManager();
 		this.warmupManager = plugin.getWarmupmanager();
+		this.log = HomeSpawnPlus.log;
+		this.logPrefix = HomeSpawnPlus.logPrefix;
 		enabled = !plugin.getHSPConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
 		return this;
 	}

@@ -19,6 +19,9 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 public class GroupSpawn extends BaseCommand
 {
 	@Override
+	public String[] getCommandAliases() { return new String[] {"gs"}; }
+	
+	@Override
 	public boolean execute(final Player p, final Command command, final String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;

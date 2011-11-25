@@ -52,6 +52,8 @@ public interface Storage {
 	public void writeHome(Home home);
 	public void writeSpawn(Spawn spawn);
 	
+	public void deleteHome(Home home);
+	
 	public void removeHome(Home home);
 
 	public void deleteAllData();

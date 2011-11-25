@@ -29,7 +29,11 @@ import com.avaje.ebean.validation.NotNull;
  *
  */
 @Entity()
-@Table(name="hsp_home")
+@Table(name="hsp_home",
+	uniqueConstraints={
+			@UniqueConstraint(columnNames={"player_name","name"})
+		}
+)
 public class Home {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -108,6 +112,21 @@ public class Home {
     	}
     	
     	return location;
+    }
+    
+    public String toString() {
+    	return "{id="+id
+    			+",name="+name
+    			+",playerName="+playerName
+    			+",world="+world
+    			+",x="+(int)x
+    			+",y="+(int)y
+    			+",z="+(int)z
+    			+",yaw="+(int)yaw
+    			+",pitch="+(int)pitch
+    			+",bedHome="+bedHome
+    			+",defaultHome="+defaultHome
+    			+"}";
     }
     
 	public int getId() {

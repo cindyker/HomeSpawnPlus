@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.entity.Home;
 
 
 /**
@@ -96,7 +97,15 @@ public class HSPPlayerListener extends PlayerListener {
         	// if there is an event in the cache, then this is their second click - save their home
         	if( ce != null ) {
         		if( b.getLocation().equals(ce.location) ) {
-        			util.setHome(player.getName(), player.getLocation(), player.getName(), false, true);
+        			boolean setDefaultHome = false;
+        			
+        			// we set the bed to be the default home only if there isn't another non-bed
+        			// default home that exists
+        			Home existingDefaultHome = util.getDefaultHome(player.getName(), player.getWorld().getName());
+        			if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
+        				setDefaultHome = true;
+        			
+        			util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true);
         			
         			plugin.getUtil().sendMessage(player, "Your home has been set to this location.");
         			bedClicks.remove(player.getName());

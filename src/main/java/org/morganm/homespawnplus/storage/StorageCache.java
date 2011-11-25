@@ -340,4 +340,9 @@ public class StorageCache implements Storage
 		// TODO: refactor class and add caching here
 		return original.getHomes(world, playerName);
 	}
+	
+	@Override
+	public void deleteHome(Home home) {
+		original.deleteHome(home);
+	}
 }

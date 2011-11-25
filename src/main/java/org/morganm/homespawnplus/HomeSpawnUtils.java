@@ -13,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.SpawnStrategy.Type;
 import org.morganm.homespawnplus.config.ConfigOptions;
-import org.morganm.homespawnplus.convert.SpawnControl;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
@@ -34,6 +33,7 @@ public class HomeSpawnUtils {
 	private final HomeSpawnPlus plugin;
     private final Server server;
     private WorldGuardInterface wgInterface;
+    private Debug debug;
 	
 	// set when we first find the defaultSpawnWorld, cached for future reference
     private String defaultSpawnWorld;
@@ -41,6 +41,7 @@ public class HomeSpawnUtils {
 	public HomeSpawnUtils(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.server = plugin.getServer();
+		this.debug = Debug.getInstance();
 	}
 	
     public boolean isVerboseLogging() {
@@ -437,6 +438,29 @@ public class HomeSpawnUtils {
     {
     	Home home = plugin.getStorage().getDefaultHome(l.getWorld().getName(), playerName);
     	
+    	debug.devDebug("setHome: (defaultHome) home=",home);
+    	
+    	// if bedHome arg is set and the defaultHome is NOT the bedHome, then try to find an
+    	// existing bedHome that we can overwrite (should only be one bedHome per world)
+    	if( bedHome && (home == null || !home.isBedHome()) ) {
+    		// first try the bed reserved name (generally should always work)
+    		home = plugin.getStorage().getNamedHome(Storage.HSP_BED_RESERVED_NAME, playerName);
+    		
+    		// if no bed home was found using existing bed name, check all other bed homes
+    		// for the bed flag
+    		if( home != null && !home.isBedHome() ) {
+    			Set<Home> homes = plugin.getStorage().getHomes(l.getWorld().getName(), playerName);
+    			if( homes != null ) {
+    				for(Home h : homes) {
+    					if( h.isBedHome() ) {
+    						home = h;
+    						break;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	
 		// if we get an object back, we already have a Home set for this player/world combo, so we
 		// just update the x/y/z location of it.
     	if( home != null ) {
@@ -460,6 +484,8 @@ public class HomeSpawnUtils {
     		home.setName(null);
     	}
 		home.setBedHome(bedHome);
+		
+		debug.devDebug("home=",home);
 
     	plugin.getStorage().writeHome(home);
     }

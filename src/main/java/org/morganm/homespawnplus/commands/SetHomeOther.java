@@ -14,6 +14,9 @@ import org.morganm.homespawnplus.command.BaseCommand;
  */
 public class SetHomeOther extends BaseCommand {
 
+	@Override
+	public String[] getCommandAliases() { return new String[] {"sethomeo", "sho"}; }
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */

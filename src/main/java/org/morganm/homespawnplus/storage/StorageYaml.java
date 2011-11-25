@@ -387,4 +387,9 @@ public class StorageYaml implements Storage {
 	public Set<Home> getHomes(String world, String playerName) {
 		throw new NotImplementedException();
 	}
+	
+	@Override
+	public void deleteHome(Home home) {
+		throw new NotImplementedException();
+	}
 }

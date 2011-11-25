@@ -214,13 +214,15 @@ public class StorageEBeans implements Storage {
 	 */
 	@Override
 	public void writeHome(Home home) {
+		plugin.getDatabase().beginTransaction();
 		// We should only have one "BedHome" per player per world. So if this update is setting
 		// BedHome to true, then we make sure to clear out all others for this player/world combo
 		if( home.isBedHome() ) {
 			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set bed_home=0"
-					+" where player_name = :playerName and world = :world");
+					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
+			update.setParameter("id", home.getId());
 			update.execute();
 		}
 		
@@ -228,13 +230,20 @@ public class StorageEBeans implements Storage {
 		// defaultHome to true, then we make sure to clear out all others for this player/world combo
 		if( home.isDefaultHome() ) {
 			SqlUpdate update = plugin.getDatabase().createSqlUpdate("update hsp_home set default_home=0"
-					+" where player_name = :playerName and world = :world");
+					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
+			update.setParameter("id", home.getId());
 			update.execute();
 		}
+		plugin.getDatabase().commitTransaction();
 		
         plugin.getDatabase().save(home);
+	}
+	
+	@Override
+	public void deleteHome(Home home) {
+		plugin.getDatabase().delete(home);
 	}
 	
 	/* (non-Javadoc)

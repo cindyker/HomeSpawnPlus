@@ -139,11 +139,9 @@ public class HomeSpawnUtils {
 				break;
 				
 			case SPAWN_GROUP:
-				// TODO: this should be refactored into it's own method when I get around to refactoring
-				// this whole class.
-				@SuppressWarnings("deprecation")
-				String group = plugin.getPermissionHandler().getGroup(player.getWorld().getName(), playerName);
-				spawn = getGroupSpawn(group, player.getWorld().getName());
+				String group = plugin.getPlayerGroup(player.getWorld().getName(), player.getName());
+	    		if( group != null )
+	    			spawn = getGroupSpawn(group, player.getWorld().getName());
 	    		
 	    		if( spawn != null )
 	    			l = spawn.getLocation();
@@ -269,7 +267,6 @@ public class HomeSpawnUtils {
     	// if group spawning is disabled, or this player doesn't have group spawn permissions
     	// or if we aren't even using permissions at all, then just use the default spawn
     	if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_GROUP_SPAWN, false) 
-    			|| !plugin.isUsePermissions()
     			|| !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.groupspawn.use") ) {
     		return sendToSpawn(p);
     	}
@@ -277,6 +274,19 @@ public class HomeSpawnUtils {
     	String world = p.getWorld().getName();
     	String userName = p.getName();
     	
+		String group = plugin.getPlayerGroup(world, userName);
+		Spawn groupSpawn = plugin.getStorage().getSpawn(world, group);
+		
+		System.out.println("group = "+group+", groupSpawn = "+groupSpawn);
+		
+		if( groupSpawn != null ) {
+    		p.teleport(groupSpawn.getLocation());
+			return groupSpawn.getLocation();
+		}
+		else
+			return null;
+		
+		/*
     	// In Permissions 3, a user can be a member of multiple groups.  So we loop through
     	// all groups and check for a spawn in this world for any of them.
     	if( plugin.isUsePerm3() ) {
@@ -327,6 +337,7 @@ public class HomeSpawnUtils {
     	else {
     		@SuppressWarnings("deprecation")
 			String group = plugin.getPermissionHandler().getGroup(p.getWorld().getName(), userName);
+    		System.out.println("group = "+group);
     		Spawn spawn = plugin.getStorage().getSpawn(world, group);
     		
     		if( spawn != null ) {
@@ -338,6 +349,7 @@ public class HomeSpawnUtils {
     		else
     			return sendToSpawn(p);
     	}
+    	*/
     }
     
     public void setHome(String playerName, Location l, String updatedBy)

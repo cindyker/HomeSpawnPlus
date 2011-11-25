@@ -135,6 +135,24 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     }
     
+    /** Given a playerName, return the permissions group they are associated with (if any).
+     * 
+     * @param playerName
+     * @return the group or null if no group
+     */
+    @SuppressWarnings("deprecation")
+	public String getPlayerGroup(String world, String playerName) {
+    	if( vaultPermission != null ) {
+    		return vaultPermission.getPrimaryGroup(world, playerName);
+    	}
+    	else if( permissionHandler != null ) {
+    		return permissionHandler.getGroup(world, playerName);
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
     public void loadConfig() throws ConfigException, IOException {
 		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
 		config.load();

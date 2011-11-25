@@ -277,7 +277,7 @@ public class HomeSpawnUtils {
 		String group = plugin.getPlayerGroup(world, userName);
 		Spawn groupSpawn = plugin.getStorage().getSpawn(world, group);
 		
-		System.out.println("group = "+group+", groupSpawn = "+groupSpawn);
+//		System.out.println("group = "+group+", groupSpawn = "+groupSpawn);
 		
 		if( groupSpawn != null ) {
     		p.teleport(groupSpawn.getLocation());

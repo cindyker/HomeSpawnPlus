@@ -1,3 +1,5 @@
+documentation: 'http://dev.bukkit.org/server-mods/homespawnplus/pages/config-params'
+
 # If you're having problems with other plugins that have registered commands
 # that you want to use with HSP (for example, CommandBook has /home, /spawn
 # and loads first alphabetically), you can uncomment the below lines and

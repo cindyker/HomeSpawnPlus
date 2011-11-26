@@ -4,7 +4,6 @@
 package org.morganm.homespawnplus.commands;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.SpawnInfo;
@@ -19,8 +18,9 @@ import org.morganm.homespawnplus.config.ConfigOptions;
  */
 public class Home extends BaseCommand
 {
-	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
-	private static final String DELETE_OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.delete.others";
+//	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
+//	private static final String DELETE_OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.delete.others";
+	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.otherworld";
 	
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
@@ -30,12 +30,24 @@ public class Home extends BaseCommand
 
 		Location l = null;
 		if( args.length > 0 ) {
-			org.morganm.homespawnplus.entity.Home home = util.getHomeByName(p.getName(), args[0]);
+			org.morganm.homespawnplus.entity.Home home = null;
+			
+			if( args[0].startsWith("w:") ) {
+				String worldName = args[0].substring(2);
+				home = util.getDefaultHome(p.getName(), worldName);
+				if( home == null ) {
+					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
+					return true;
+				}
+			}
+			else
+				home = util.getHomeByName(p.getName(), args[0]);
+				
 			if( home != null )
 				l = home.getLocation();
 			
 			if( l == null ) {
-				util.sendMessage(p,  "No home \""+args[0]+"\" found.");
+				util.sendMessage(p,  "No home named \""+args[0]+"\" found.");
 				return true;
 			}
 		}
@@ -46,6 +58,13 @@ public class Home extends BaseCommand
 		}
 		
     	if( l != null ) {
+    		// make sure it's on the same world, or if not, that we have cross-world home perms
+    		if( !p.getWorld().getName().equals(l.getWorld().getName()) &&
+    				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
+    			util.sendMessage(p, "No permission to go to homes in other worlds.");
+    			return true;
+    		}
+    		
 			if( hasWarmup(p) ) {
 	    		final Location finalL = l;
 				doWarmup(p, new WarmupRunner() {
@@ -78,6 +97,7 @@ public class Home extends BaseCommand
 		return true;
 	}
 	
+	/*
 	protected boolean executeOld(final Player p, final org.bukkit.command.Command command, String[] args)
 	{
 		if( !isEnabled() )
@@ -226,5 +246,6 @@ public class Home extends BaseCommand
 		
 		return true;
 	}
+	*/
 
 }

@@ -450,7 +450,8 @@ public class StorageEBeans implements Storage {
 							+",default_home intger(1) not null DEFAULT 0"
 							+",bed_home intger(1) not null DEFAULT 0"
 							+",last_modified timestamp not null"
-							+",date_created timestamp not null);");
+							+",date_created timestamp not null"
+							+",constraint uq_hsp_home_1 unique (player_name,name));");
 					stmt.execute("INSERT INTO hsp_home SELECT"
 							+" id, player_name,null,updated_by,world"
 							+",x,y,z,pitch,yaw,1,0"
@@ -481,6 +482,9 @@ public class StorageEBeans implements Storage {
 			    update.execute();
 			    
 			    update = db.createSqlUpdate("ALTER TABLE `hsp_home` DROP INDEX `uq_hsp_home_1`");
+			    update.execute();
+				
+				update = db.createSqlUpdate("ALTER TABLE `hsp_home` ADD UNIQUE KEY `uq_hsp_home_1` (`player_name`,`name`)");
 			    update.execute();
 				success = true;
 			}

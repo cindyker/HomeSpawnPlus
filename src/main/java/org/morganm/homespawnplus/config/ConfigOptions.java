@@ -18,7 +18,7 @@ public interface ConfigOptions {
 	public static final String DEFAULT_WORLD = "core.defaultWorld";
 	public static final String ENABLE_HOME_BEDS = "core.bedsethome";
 	public static final String ENABLE_RECORD_LAST_LOGOUT = "core.recordLastLogout";
-	public static final String ENABLE_GROUP_SPAWN = "core.groupSpawnEnabled";
+//	public static final String ENABLE_GROUP_SPAWN = "core.groupSpawnEnabled";
 	public static final String SETTING_WORLD_OVERRIDE = "core.override_world";
 	
 	public static final String USE_WARMUPS = "warmup.enabled";

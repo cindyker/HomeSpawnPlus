@@ -20,7 +20,7 @@ import org.morganm.homespawnplus.entity.Home;
 
 /**
  * Handle events for all Player related events
- * @author Timberjaw
+ * @author morganm, Timberjaw
  */
 public class HSPPlayerListener extends PlayerListener {
 	@SuppressWarnings("unused")
@@ -30,7 +30,6 @@ public class HSPPlayerListener extends PlayerListener {
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
-//    private final WarmupManager warmupManager;
     
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
@@ -42,12 +41,12 @@ public class HSPPlayerListener extends PlayerListener {
         plugin = instance;
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
-//        warmupManager = plugin.getWarmupmanager();
     }
 
     /** Return location player should be sent to.
      * 
-     * @param preferredBehavior
+     * @param p
+     * @param spawnInfo
      */
     private Location doSpawn(Player p, SpawnInfo spawnInfo) {
 //    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
@@ -107,7 +106,7 @@ public class HSPPlayerListener extends PlayerListener {
         			
         			util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true);
         			
-        			plugin.getUtil().sendMessage(player, "Your home has been set to this location.");
+        			util.sendMessage(player, "Your home has been set to this location.");
         			bedClicks.remove(player.getName());
 //            		event.setCancelled(true);
         		}
@@ -115,7 +114,7 @@ public class HSPPlayerListener extends PlayerListener {
         	// otherwise this is first click, tell them to click again to save their home
         	else {
         		bedClicks.put(player.getName(), new ClickedEvent(b.getLocation(), System.currentTimeMillis()));
-        		plugin.getUtil().sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
+        		util.sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
 //        		event.setCancelled(true);
         	}
         }

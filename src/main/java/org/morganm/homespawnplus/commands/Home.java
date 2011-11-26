@@ -119,6 +119,13 @@ public class Home extends BaseCommand
 						util.sendMessage(p, "You don't have permission to do that.");
 				}
 				else {
+		    		// make sure the home is owned by the player, or if not, that we have other-home perms
+		    		if( !p.getName().equals(home.getPlayerName()) &&
+		    				!plugin.hasPermission(p, OTHER_HOME_PERMISSION) ) {
+		    			util.sendMessage(p, "No permission to go to other players homes.");
+		    			return true;
+		    		}
+		    		
 					util.sendMessage(p, "Teleporting to player home for "+home.getPlayerName()+" on world \""+home.getWorld()+"\"");
 					if( applyCost(p) )
 						p.teleport(home.getLocation());

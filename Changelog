@@ -1,3 +1,8 @@
+v0.9.1 - November 26, 2011
+* fixed bug ticket #10: /groupspawn not working
+* fixed bug ticket #11: /spawn NPE (Vault-related)
+* fixed bug ticket #12: /home <player> unintentionally working for everyone
+
 v0.9 - November 12, 2011
 * new feature: WorldGuard region-spawn support via "spawnWGregion" strategy
 * new feature: Economy fees using optional Vault dependency

@@ -66,6 +66,15 @@ core:
   verboseLogging: false
   verboseStrategyLogging: false
 
+  # The basic assumption is that you want HSP to be the final say
+  # in your onjoin/respawn event chains - if you didn't want that
+  # you probably wouldn't be running HSP in the first place. But,
+  # in the name of giving you, the admin, ultimate control over
+  # what your plugins do, if you want to change HSP's priority
+  # to lower so some other plugin can have final say, you can
+  # do so here. Valid values: lowest, normal, high, highest
+  eventPriority: highest
+
 # The events below allow use of the strategies described here. Web
 # doc reference:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/

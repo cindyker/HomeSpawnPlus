@@ -301,8 +301,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     	entityListener = new HSPEntityListener(this);
         
     	// Register our events
-        pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Highest, this);
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, getEventPriority(), this);
+        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, getEventPriority(), this);
+        
         pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Priority.Monitor, this);
@@ -314,6 +315,28 @@ public class HomeSpawnPlus extends JavaPlugin {
     	unhookOtherCommands();
     	
         log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] loaded" );
+    }
+    
+    /** Lookup the event priority the admin has assigned in the config and return the
+     * Bukkit value for that priority.
+     * 
+     * @return
+     */
+    private Priority getEventPriority() {
+    	String strPriority = config.getString(ConfigOptions.EVENT_PRIORITY, "highest");
+    	
+    	if( strPriority.equalsIgnoreCase("highest") )
+    		return Priority.Highest;
+    	else if( strPriority.equalsIgnoreCase("high") )
+    		return Priority.High;
+    	else if( strPriority.equalsIgnoreCase("normal") )
+    		return Priority.Normal;
+    	else if( strPriority.equalsIgnoreCase("low") )
+    		return Priority.Low;
+    	else if( strPriority.equalsIgnoreCase("lowest") )
+    		return Priority.Lowest;
+    	else
+    		return Priority.Highest;	// default
     }
     
     public void onDisable() {

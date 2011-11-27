@@ -18,7 +18,7 @@ import org.morganm.homespawnplus.config.ConfigOptions;
  */
 public class Spawn extends BaseCommand
 {
-	private static final String OTHER_SPAWN_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.spawn.other";
+	private static final String OTHER_SPAWN_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.spawn.named";
 	
 	/*
 	@Override

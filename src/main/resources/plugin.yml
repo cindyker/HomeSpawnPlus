@@ -33,6 +33,7 @@ commands:
            /<command> - respawns you at your primary group spawn
            /<command> Admins - respawns you at the 'Admins' group spawn
   sethome:
+    aliases: [homeset]
     description: Sets your home
     usage: |
         Incorrect usage of command /<command>. Examples:
@@ -49,7 +50,7 @@ commands:
     description: Respawns you at your home
     usage: /<command>
   homedelete:
-    aliases: [homed,deletehome]
+    aliases: [homed,deletehome,rmhome]
     description: Delete your default or a named home
     usage: |
            /<command>
@@ -116,18 +117,42 @@ permissions:
     hsp.admin:
         description: Allows access to admin functions of HomeSpawnPlus
         default: op
+    hsp.basic:
+        description: Gives access to basic set of commands
+        children:
+            hsp.command.home: true
+            hsp.command.sethome: true
+            hsp.command.spawn: true
+    hsp.full:
+        description: Gives access to the full set of user commands
+        children:
+            hsp.command.home: true
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
+            hsp.command.setdefaulthome: true
+            hsp.command.homedelete: true
+            hsp.command.homelist: true
+            hsp.command.spawn: true
     hsp.command.*:
         description: Gives access to all HomeSpawnPlus commands
         children:
-            hsp.command.home: true
-            hsp.command.home.others: true
-            hsp.command.sethome: true
-            hsp.command.sethome.others: true
-            hsp.command.spawn: true
-            hsp.command.setspawn: true
-            hsp.command.setdefaultspawn: true
-            hsp.command.setgroupspawn: true
             hsp.command.groupspawn: true
+            hsp.command.home: true
+            hsp.command.homedelete: true
+            hsp.command.homedeleteother: true
+            hsp.command.homelist: true
+            hsp.command.homeother: true
+            hsp.command.hsp: true
+            hsp.command.hspconvert: true
+            hsp.command.setdefaulthome: true
+            hsp.command.setdefaultspawn: true
+            hsp.command.setfirstspawn: true
+            hsp.command.setgroupspawn: true
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
+            hsp.command.sethomeother: true
+            hsp.command.setspawn: true
+            hsp.command.spawn: true
     hsp.command.home:
         description: Allows use of the /home command
         default: op

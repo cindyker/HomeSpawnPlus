@@ -27,7 +27,7 @@ public class HomeList extends BaseCommand {
 			return true;
 		
 		Set<org.morganm.homespawnplus.entity.Home> homes;
-		String world = p.getWorld().getName();
+		String world = "all";
 		
 		if( args.length > 1 )
 			world = args[0];
@@ -44,7 +44,12 @@ public class HomeList extends BaseCommand {
 					"x","y","z",
 					"default"));
 					*/
-			util.sendMessage(p, "Home list on world \""+world+"\": ");
+
+			if( world.equals("all") || world.equals("*") )
+				util.sendMessage(p, "Home list for all worlds: ");
+			else
+				util.sendMessage(p, "Home list on world \""+world+"\": ");
+			
 			for(org.morganm.homespawnplus.entity.Home home : homes) {
 				String name = home.getName();
 				if( name == null )

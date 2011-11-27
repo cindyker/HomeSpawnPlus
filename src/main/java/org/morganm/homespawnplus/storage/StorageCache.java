@@ -345,4 +345,9 @@ public class StorageCache implements Storage
 	public void deleteHome(Home home) {
 		original.deleteHome(home);
 	}
+	
+	@Override
+	public Home getBedHome(String world, String playerName) {
+		return original.getBedHome(world, playerName);
+	}
 }

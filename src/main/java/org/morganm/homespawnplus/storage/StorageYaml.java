@@ -394,4 +394,9 @@ public class StorageYaml implements Storage {
 	public void deleteHome(Home home) {
 		throw new NotImplementedException();
 	}
+	
+	@Override
+	public Home getBedHome(String world, String playerName) {
+		throw new NotImplementedException();
+	}
 }

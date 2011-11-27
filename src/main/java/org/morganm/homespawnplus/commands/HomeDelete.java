@@ -16,7 +16,7 @@ import org.morganm.homespawnplus.command.BaseCommand;
 public class HomeDelete extends BaseCommand {
 
 	@Override
-	public String[] getCommandAliases() { return new String[] {"homed", "deletehome"}; }
+	public String[] getCommandAliases() { return new String[] {"homed", "deletehome", "rmhome"}; }
 	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])

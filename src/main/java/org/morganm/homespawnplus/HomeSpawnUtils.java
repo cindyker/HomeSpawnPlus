@@ -544,8 +544,7 @@ public class HomeSpawnUtils {
     	// if bedHome arg is set and the defaultHome is NOT the bedHome, then try to find an
     	// existing bedHome that we can overwrite (should only be one bedHome per world)
     	if( bedHome && (home == null || !home.isBedHome()) ) {
-    		// first try the bed reserved name (generally should always work)
-    		home = plugin.getStorage().getNamedHome(Storage.HSP_BED_RESERVED_NAME, playerName);
+    		home = plugin.getStorage().getBedHome(l.getWorld().getName(), playerName);
     		
     		// if no bed home was found using existing bed name, check all other bed homes
     		// for the bed flag
@@ -562,15 +561,23 @@ public class HomeSpawnUtils {
     		}
     	}
     	
+    	// could be null if we are working with an offline player
+    	Player p = plugin.getServer().getPlayer(playerName);
+		
 		// if we get an object back, we already have a Home set for this player/world combo, so we
 		// just update the x/y/z location of it.
     	if( home != null ) {
+    		// if the world changed, then we need to check world limits on the new world
+    		if( p != null && !l.getWorld().getName().equals(home.getWorld()) ) {
+        		if( !canPlayerAddHome(p, l.getWorld().getName(), true) )
+        			return false;
+    		}
+    		
     		home.setLocation(l);
 			home.setUpdatedBy(updatedBy);
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
-    		Player p = plugin.getServer().getPlayer(playerName);
     		// check if they are allowed to add another home
     		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) )
     			return false;
@@ -584,10 +591,10 @@ public class HomeSpawnUtils {
     		home.setDefaultHome(true);
     	
     	if( bedHome ) {
-    		home.setName(Storage.HSP_BED_RESERVED_NAME);
+    		home.setName(l.getWorld().getName() + "_" + Storage.HSP_BED_RESERVED_NAME);
     	}
-    	// we don't allow use of the reserved "bed" name unless the bed flag is true
-    	else if( Storage.HSP_BED_RESERVED_NAME.equals(home.getName()) ) {
+    	// we don't allow use of the reserved suffix "_bed" name unless the bed flag is true
+    	else if( home.getName() != null && home.getName().endsWith("_" + Storage.HSP_BED_RESERVED_NAME) ) {
     		home.setName(null);
     	}
 		home.setBedHome(bedHome);
@@ -610,15 +617,23 @@ public class HomeSpawnUtils {
     {
     	Home home = plugin.getStorage().getNamedHome(homeName, playerName);
     	
+    	// could be null if we are working with an offline player
+    	Player p = plugin.getServer().getPlayer(playerName);
+    	
 		// if we get an object back, we already have a Home set for this player/homeName combo,
 		// so we just update the x/y/z location of it.
     	if( home != null ) {
+    		// if the world changed, then we need to check world limits on the new world
+    		if( p != null && !l.getWorld().getName().equals(home.getWorld()) ) {
+        		if( !canPlayerAddHome(p, l.getWorld().getName(), true) )
+        			return false;
+    		}
+    		
     		home.setLocation(l);
 			home.setUpdatedBy(updatedBy);
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
-    		Player p = plugin.getServer().getPlayer(playerName);
     		// check if they are allowed to add another home
     		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) )
     			return false;

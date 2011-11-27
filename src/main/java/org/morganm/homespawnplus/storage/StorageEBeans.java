@@ -76,7 +76,7 @@ public class StorageEBeans implements Storage {
 	@Override
 	public Set<Home> getHomes(String world, String playerName) {
 		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :playerName and world like :world";
+		String q = "find home where playerName = :playerName and world like :world order by world";
 		
 		if( world == null || "all".equals(world) )
 			world = "%";
@@ -100,6 +100,7 @@ public class StorageEBeans implements Storage {
 		return query.findUnique();
 	}
 	
+	@Override
 	public Home getDefaultHome(String world, String playerName) {
 		EbeanServer db = plugin.getDatabase();
 		String q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
@@ -111,7 +112,8 @@ public class StorageEBeans implements Storage {
 		return query.findUnique();
 		
 	}
-
+	
+	@Override
 	public Home getBedHome(String world, String playerName) {
 		EbeanServer db = plugin.getDatabase();
 		String q = "find home where playerName = :player_name and world = :world and bed_home = 1";

@@ -36,6 +36,7 @@ public interface Storage {
 	public void writePlayer(Player player);
 	
 	public Home getDefaultHome(String world, String playerName);
+	public Home getBedHome(String world, String playerName);
 	public Home getNamedHome(String homeName, String playerName);
 	public Set<Home> getHomes(String world, String playerName);
 	

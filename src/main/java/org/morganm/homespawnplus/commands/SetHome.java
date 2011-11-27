@@ -18,6 +18,9 @@ public class SetHome extends BaseCommand
 //	private static final String OTHER_SETHOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + "command.sethome.others";
 	
 	@Override
+	public String[] getCommandAliases() { return new String[] {"homeset"}; }
+	
+	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		debug.debug("sethome invoked. player=",p,"args=",args);
 		if( !defaultCommandChecks(p) )
@@ -27,12 +30,12 @@ public class SetHome extends BaseCommand
 			return true;
 		
 		if( args.length > 0 ) {
-			if( !args[0].equals(Storage.HSP_BED_RESERVED_NAME) ) {
+			if( !args[0].equals(Storage.HSP_BED_RESERVED_NAME) && !args[0].endsWith("_" + Storage.HSP_BED_RESERVED_NAME )) {
 				if( util.setNamedHome(p.getName(), p.getLocation(), args[0], p.getName()) )
 					util.sendMessage(p, "Home \""+args[0]+"\" set successfully.");
 			}
 			else
-				util.sendMessage(p, "Cannot used reserved name "+Storage.HSP_BED_RESERVED_NAME);
+				util.sendMessage(p, "Cannot used reserved name "+args[0]);
 		}
 		else {
 			if( util.setHome(p.getName(), p.getLocation(), p.getName(), true, false) )

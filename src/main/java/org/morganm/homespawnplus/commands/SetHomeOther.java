@@ -38,12 +38,12 @@ public class SetHomeOther extends BaseCommand {
 		final Location l = p.getLocation();
 		
 		if( args.length > 1 ) {
-			util.setNamedHome(homeowner, l, args[1], setter);
-			util.sendMessage(p, "Home \""+args[1]+"\" set successfully for player "+homeowner);
+			if( util.setNamedHome(homeowner, l, args[1], setter) )
+				util.sendMessage(p, "Home \""+args[1]+"\" set successfully for player "+homeowner);
 		}
 		else {
-			util.setHome(homeowner, l, setter, true, false);
-			util.sendMessage(p, "Home set successfully for player "+homeowner);
+			if( util.setHome(homeowner, l, setter, true, false) )
+				util.sendMessage(p, "Home set successfully for player "+homeowner);
 		}
 		
 		return true;

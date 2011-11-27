@@ -406,6 +406,25 @@ public class HomeSpawnPlus extends JavaPlugin {
         return classList;
     }
     
+    public boolean hasPermission(String worldName, String playerName, String permissionNode) {
+    	if( playerName == null )
+    		return false;
+    	
+    	// use Vault for permissions, if it was found
+    	if( vaultPermission != null )
+    		return vaultPermission.has(worldName, playerName, permissionNode);
+    	
+//    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
+    	if( permissionHandler != null )
+    		return permissionHandler.has(worldName, playerName, permissionNode);
+    	else
+    	{
+    		// ordinarilly we would try superperms here, but superperms doesn't seem to have
+    		// any support for cross-world or offline player permission checks.  FAIL.
+    		return false;
+    	}
+    }
+    
    /** Return true if the given player has access to the given permission node.
      * If we aren't using a Permission system, then defaults to op check - ops have
      * full access to all permissions.

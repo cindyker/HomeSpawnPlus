@@ -30,6 +30,7 @@ public class HSPPlayerListener extends PlayerListener {
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
+    private final Debug debug;
     
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
@@ -41,6 +42,7 @@ public class HSPPlayerListener extends PlayerListener {
         plugin = instance;
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
+        debug = Debug.getInstance();
     }
 
     /** Return location player should be sent to.
@@ -72,15 +74,17 @@ public class HSPPlayerListener extends PlayerListener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.isCancelled())
             return;
         
+        final Player p = event.getPlayer();
+        
         // config option needs to be enabled in order to use this feature
         if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
-//        	log.info(logPrefix + " " + ConfigOptions.ENABLE_HOME_BEDS + " is disabled");
+        	debug.debug("onPlayerInteract(): player ",p," bed right-click: config option ",ConfigOptions.ENABLE_HOME_BEDS," is disabled");
         	return;
         }
         
         // if permissions are enabled, they need to have permission too.
         if( !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
-//        	log.info(logPrefix + " onPlayerInteract(): no permission");
+        	debug.debug("onPlayerInteract(): player ",p," has no permission");
         	return;
         }
         
@@ -104,9 +108,9 @@ public class HSPPlayerListener extends PlayerListener {
         			if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
         				setDefaultHome = true;
         			
-        			util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true);
-        			
-        			util.sendMessage(player, "Your home has been set to this location.");
+        			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) )
+        				util.sendMessage(player, "Your home has been set to this location.");
+
         			bedClicks.remove(player.getName());
 //            		event.setCancelled(true);
         		}

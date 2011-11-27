@@ -11,8 +11,10 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.SpawnStrategy.Type;
+import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -409,7 +411,131 @@ public class HomeSpawnUtils {
 		return l;
 	}
 	
-    public void setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
+	/**
+	 * 
+	 * @param playerName
+	 * @param world if world is null, the global value is used instead
+	 * @param perWorldLimit true if you want the perWorld limit, false if you want the global limit
+	 */
+	public int getHomeLimit(Player player, String worldName, boolean perWorldLimit) {
+		int limit = -2;
+		
+		String limitKey = null;
+		if( perWorldLimit )
+			limitKey = ConfigOptions.HOME_LIMITS_PER_WORLD;
+		else
+			limitKey = ConfigOptions.HOME_LIMITS_GLOBAL;
+		
+		debug.debug("getHomeLimit(), player = ",player,", worldName = ",worldName,", limitKey = ",limitKey);
+		
+		Config config = plugin.getHSPConfig();
+		
+		// check permissions section; we iterate through the permissions of each section
+		// and see if this player has that permission
+		ConfigurationSection section = config.getConfigurationSection(
+				ConfigOptions.HOME_LIMITS_BASE + "permission");
+		if( section != null ) {
+			Set<String> sections = section.getKeys(false);
+			if( sections != null ) {
+				for(String key : sections) {
+					debug.debug("found limit section ",key,", checking permissions for section");
+					List<String> perms = config.getStringList(ConfigOptions.HOME_LIMITS_BASE
+							+ "permission." + key + ".permissions", null);
+					if( perms != null ) {
+						for(String perm : perms) {
+							debug.debug("checking permission ",perm," for player ",player);
+							if( plugin.hasPermission(player, perm) ) {
+								limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE
+										+ "permission." + key + "." + limitKey, -2);
+
+								debug.debug(limitKey," limit for permission ",perm," = ",limit);
+
+								if( limit != -2 )
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// try specific world setting if we haven't found a limit yet
+		if( limit == -2 ) {
+			limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE + "world." + worldName + "." + limitKey, -2);
+			debug.debug(limitKey," limit for world ",worldName," = ",limit);
+		}
+		
+		if( limit == -2 ) {
+			limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE
+					+ ConfigOptions.HOME_LIMITS_DEFAULT + "." + limitKey, -2);
+			debug.debug(limitKey," default limit = ",limit);
+		}
+		
+		// if we get to here and still haven't found a value, we assume a sane default of 1
+		if( limit == -2 )
+			limit = 1;
+		
+		debug.debug("getHomeLimit() returning ",limitKey," limit ",limit," for player ",player);
+		
+		return limit;
+	}
+	
+	/** Get the home count for a given player/world combo. Passing null for the worldName
+	 * will return the global count. 
+	 * 
+	 * @param playerName
+	 * @param worldName
+	 * @return
+	 */
+	public int getHomeCount(String playerName, String worldName)
+	{
+		Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+		
+		if( homes != null )
+			return homes.size();
+		else
+			return 0;
+	}
+	
+	/** Return true if the player has at least one free home slot (perWorld and global).
+	 * 
+	 * @param player
+	 * @param worldName
+	 * @param printMessage if true and the player is over the limit, a message will be pritned
+	 * to the player to tell them they are over the limit
+	 * @return
+	 */
+	public boolean canPlayerAddHome(Player p, String worldName, boolean printMessage) {
+		int limit = getHomeLimit(p, worldName, true);
+		int currentCount = getHomeCount(p.getName(), worldName);
+		if( limit != -1 && currentCount + 1 > limit ) {
+			if( printMessage )
+				sendMessage(p, "You are at your limit of "+limit+" homes for world \""+worldName+"\"");
+			return false;
+		}
+		
+		// check global limit
+		limit = getHomeLimit(p, null, false);
+		currentCount = getHomeCount(p.getName(), null);
+		if( limit != -1 && currentCount + 1 > limit ) {
+			if( printMessage )
+				sendMessage(p, "You are at your global limit of "+limit+" homes");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/** Set a player's home.
+	 * 
+	 * @param playerName
+	 * @param l
+	 * @param updatedBy
+	 * @param defaultHome
+	 * @param bedHome
+	 * @return true if successful, false if not
+	 */
+    public boolean setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
     {
     	Home home = plugin.getStorage().getDefaultHome(l.getWorld().getName(), playerName);
     	
@@ -443,8 +569,14 @@ public class HomeSpawnUtils {
 			home.setUpdatedBy(updatedBy);
     	}
     	// this is a new home for this player/world combo, create a new object
-    	else
+    	else {
+    		Player p = plugin.getServer().getPlayer(playerName);
+    		// check if they are allowed to add another home
+    		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) )
+    			return false;
+    		
     		home = new Home(playerName, l, updatedBy);
+    	}
     	
     	// we don't set the value directly b/c the way to turn "off" an existing defaultHome is to
     	// just set another one.
@@ -463,9 +595,18 @@ public class HomeSpawnUtils {
 		debug.devDebug("home=",home);
 
     	plugin.getStorage().writeHome(home);
+		return true;
     }
     
-    public void setNamedHome(String playerName, Location l, String homeName, String updatedBy)
+    /** Set a named home for a player.
+     * 
+     * @param playerName
+     * @param l
+     * @param homeName
+     * @param updatedBy
+     * @return true if success, false if not
+     */
+    public boolean setNamedHome(String playerName, Location l, String homeName, String updatedBy)
     {
     	Home home = plugin.getStorage().getNamedHome(homeName, playerName);
     	
@@ -477,11 +618,17 @@ public class HomeSpawnUtils {
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
+    		Player p = plugin.getServer().getPlayer(playerName);
+    		// check if they are allowed to add another home
+    		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) )
+    			return false;
+    		
     		home = new Home(playerName, l, updatedBy);
     		home.setName(homeName);
     	}
     	
     	plugin.getStorage().writeHome(home);
+		return true;
     }
     
     public Spawn getSpawnByName(String spawnName) {

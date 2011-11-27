@@ -56,6 +56,10 @@ public interface ConfigOptions {
 	public static final String WARMUP_BASE = "warmup.";
 	public static final String COST_BASE = "cost.";
 	public static final String COST_VERBOSE = COST_BASE + "verbose";
+	public static final String HOME_LIMITS_BASE = "homeLimits.";
+	public static final String HOME_LIMITS_DEFAULT = "default";
+	public static final String HOME_LIMITS_PER_WORLD = "perWorld";
+	public static final String HOME_LIMITS_GLOBAL = "global";
 	
 	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
 	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";

@@ -1,4 +1,6 @@
 v1.0 - November 27, 2011
+* added ability for HSP to have multiple named homes per world (if you give your players access to /sethome)
+* added config options to limit the number of homes globally, per-world or per-permission group (defaults to 1 per world, which maintains the same behavior before this feature was added)
 * added per-world event control capabilities, so that you can define an event strategy chain that takes place only on a specific world
 * added per-permission event control capabilities
 * added new "onGroupSpawn" event type so that admins can define custom strategy chains even for /groupspawn

@@ -46,8 +46,6 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 			copyConfigFromJar("config.yml", file);
 		}
 		
-		loadDefaults();
-		
 		try {
 			super.load(file);
 		}
@@ -55,15 +53,29 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 			throw new ConfigException(e);
 		}
 		
+		if( getString("core.eventPriority") == null ) {
+			log.info(logPrefix + " WARNING: old-style config found, you should look at config_defaults.yml and copy the latest config settings into your config.yml.");
+		}
+
+		loadDefaults();
+			
+		/*
+		if( getString("core.eventPriority") == null ) {
+			log.info(logPrefix + " old-style config found, moving and replacing with new default");
+			file.renameTo(new File(file.toString() + ".old"));
+			copyConfigFromJar("config.yml", file);
+			
+			try {
+				super.load(file);
+			}
+			catch(Exception e) {
+				throw new ConfigException(e);
+			}
+		}
+		*/
+		
 //		loadConfiguration(file);
 //		super.load();
-
-//		if( getString("spawn.onjoin") != null ) {
-//			log.info(logPrefix + " old-style config found, moving and replacing with new default");
-//			file.renameTo(new File(file.toString() + ".old"));
-//			copyConfigFromJar("config.yml");
-//			super.load();
-//		}
     }
 
 	private void loadDefaults() {

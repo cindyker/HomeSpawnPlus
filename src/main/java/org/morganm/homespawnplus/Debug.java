@@ -39,7 +39,6 @@ public class Debug {
 	}
 	private Handler getConsoleHandler(Logger log) {
 		Handler[] handlers = log.getHandlers();
-		System.out.println("handlers.length = "+handlers.length);
 		for(int i=0; i < handlers.length; i++)
 			if( handlers[i] instanceof ConsoleHandler )
 				return handlers[i];

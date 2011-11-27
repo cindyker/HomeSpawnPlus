@@ -147,11 +147,23 @@ permissions:
             hsp.command.homedelete: true
             hsp.command.homelist: true
             hsp.command.spawn: true
+    hsp.command.home.*:
+        description: Gives full access to all /home command forms
+        children:
+            hsp.command.home: true
+            hsp.command.home.named: true
+            hsp.command.home.otherworld: true
+    hsp.command.sethome.*:
+        description: Gives full access to all /sethome command forms
+        children:
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
     hsp.command.*:
         description: Gives access to all HomeSpawnPlus commands
         children:
             hsp.command.groupspawn: true
             hsp.command.home: true
+            hsp.command.home.named: true
             hsp.command.home.otherworld: true
             hsp.command.homedelete: true
             hsp.command.homedeleteother: true
@@ -172,8 +184,11 @@ permissions:
     hsp.command.home:
         description: Allows use of the /home command
         default: op
+    hsp.command.home.named:
+        description: Allows use of the /home <name> command to teleport to named homes
+        default: op
     hsp.command.home.otherworld:
-        description: Allows use of the /home <name> command to teleport to homes on other worlds
+        description: "Allows use of the /home w:<world> command to teleport to homes on other worlds (also affects /home <name> if it would cross world boundaries)"
         default: op
     hsp.command.homedelete:
         description: Allows use of the /homedelete to delete homes

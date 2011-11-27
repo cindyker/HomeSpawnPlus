@@ -21,6 +21,7 @@ public class Home extends BaseCommand
 //	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
 //	private static final String DELETE_OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.delete.others";
 	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.otherworld";
+	private static final String NAMED_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.named";
 	
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
@@ -38,6 +39,11 @@ public class Home extends BaseCommand
 			org.morganm.homespawnplus.entity.Home home = null;
 			
 			if( args[0].startsWith("w:") ) {
+				if( !plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
+	    			util.sendMessage(p, "No permission to go to homes in other worlds.");
+	    			return true;
+				}
+				
 				String worldName = args[0].substring(2);
 				home = util.getDefaultHome(p.getName(), worldName);
 				if( home == null ) {
@@ -45,8 +51,13 @@ public class Home extends BaseCommand
 					return true;
 				}
 			}
-			else
+			else {
+				if( !plugin.hasPermission(p, NAMED_HOME_PERMISSION) ) {
+	    			util.sendMessage(p, "No permission to go to named homes");
+					return true;
+				}
 				home = util.getHomeByName(p.getName(), args[0]);
+			}
 				
 			if( home != null )
 				l = home.getLocation();

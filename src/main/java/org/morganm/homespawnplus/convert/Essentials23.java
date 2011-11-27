@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 
@@ -19,6 +19,7 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
  * @author morganm
  *
  */
+//@SuppressWarnings("deprecation")
 public class Essentials23 implements Runnable {
 	private static final Logger log = HomeSpawnPlus.log;
 	
@@ -49,9 +50,10 @@ public class Essentials23 implements Runnable {
 		int convertedCount = 0;
 		File[] files = essentialsUserData.listFiles();
 		for(File file : files) {
-			Configuration userData = new Configuration(file);
+			YamlConfiguration userData = YamlConfiguration.loadConfiguration(file);
+//			Configuration userData = new Configuration(file);
+//			userData.load();
 			
-			userData.load();
 			String worldName = userData.getString("home.worlds.world.world");
 			// if there's no world, this user doesn't have a home set.  Skip it.
 			if( worldName == null )

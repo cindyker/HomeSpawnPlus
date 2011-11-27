@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 0.9.1
+version: 1.0
 author: morganm
 database: true
 softdepend: [Vault, WorldGuard]
@@ -38,8 +38,8 @@ commands:
         Incorrect usage of command /<command>. Examples:
            /<command> - sets your home to your current location
            /<command> name - sets a home named 'name' at your current location
-  listhomes:
-    aliases: [homel, homelist]
+  homelist:
+    aliases: [homel, listhomes]
     description: Show your homes
     usage: |
            /<command> - show homes on current world
@@ -49,7 +49,7 @@ commands:
     description: Respawns you at your home
     usage: /<command>
   homedelete:
-    aliases: [homed]
+    aliases: [homed,deletehome]
     description: Delete your default or a named home
     usage: |
            /<command>
@@ -75,6 +75,7 @@ commands:
            /<command> playerName
            /<command> playerName homeName
   setdefaulthome:
+    aliases: [sdh]
     description: Sets your defaulthome to a named home
     usage: /<command> homeName
   hspconvert:
@@ -89,15 +90,15 @@ permissions:
         children:
             hsp.admin: true
             hsp.home.bedsethome: true
-            hsp.command.home.use: true
+            hsp.command.home: true
             hsp.command.home.others: true
-            hsp.command.sethome.use: true
+            hsp.command.sethome: true
             hsp.command.sethome.others: true
-            hsp.command.spawn.use: true
-            hsp.command.setspawn.use: true
-            hsp.command.setdefaultspawn.use: true
-            hsp.command.setgroupspawn.use: true
-            hsp.command.groupspawn.use: true
+            hsp.command.spawn: true
+            hsp.command.setspawn: true
+            hsp.command.setdefaultspawn: true
+            hsp.command.setgroupspawn: true
+            hsp.command.groupspawn: true
             hsp.command.CooldownExempt.home: true
             hsp.command.CooldownExempt.spawn: true
             hsp.command.CooldownExempt.groupspawn: true
@@ -108,7 +109,7 @@ permissions:
             hsp.command.CostExempt.spawn: true
             hsp.command.CostExempt.home: true
             hsp.command.CostExempt.sethome: true
-            hsp.command.setfirstspawn.use: true
+            hsp.command.setfirstspawn: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -118,43 +119,43 @@ permissions:
     hsp.command.*:
         description: Gives access to all HomeSpawnPlus commands
         children:
-            hsp.command.home.use: true
+            hsp.command.home: true
             hsp.command.home.others: true
-            hsp.command.sethome.use: true
+            hsp.command.sethome: true
             hsp.command.sethome.others: true
-            hsp.command.spawn.use: true
-            hsp.command.setspawn.use: true
-            hsp.command.setdefaultspawn.use: true
-            hsp.command.setgroupspawn.use: true
-            hsp.command.groupspawn.use: true
-    hsp.command.home.use:
+            hsp.command.spawn: true
+            hsp.command.setspawn: true
+            hsp.command.setdefaultspawn: true
+            hsp.command.setgroupspawn: true
+            hsp.command.groupspawn: true
+    hsp.command.home:
         description: Allows use of the /home command
         default: op
-    hsp.command.home.others:
-        description: Allows use of the /home command to teleport to other homes
+    hsp.command.homeother:
+        description: Allows use of the /homeother command to teleport to other homes
         default: op
-    hsp.command.sethome.use:
+    hsp.command.sethome:
         description: Allows use of the /sethome command
         default: op
     hsp.command.sethome.others:
         description: Allows use of the /sethome command to set others homes
         default: op
-    hsp.command.spawn.use:
+    hsp.command.spawn:
         description: Allows use of the /spawn command
         default: op
-    hsp.command.setdefaultspawn.use:
+    hsp.command.setdefaultspawn:
         description: Allows use of the /spawn command
         default: op
-    hsp.command.setspawn.use:
+    hsp.command.setspawn:
         description: Allows use of the /setspawn command
         default: op
-    hsp.command.setfirstspawn.use:
+    hsp.command.setfirstspawn:
         description: Allows use of the /setfirstspawn command
         default: op
-    hsp.command.setgroupspawn.use:
+    hsp.command.setgroupspawn:
         description: Allows use of the /setgroupspawn command
         default: op
-    hsp.command.groupspawn.use:
+    hsp.command.groupspawn:
         description: Allows use of the /groupspawn command
         default: op
     hsp.command.CooldownExempt.*:

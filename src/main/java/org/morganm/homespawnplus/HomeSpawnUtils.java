@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -94,16 +95,38 @@ public class HomeSpawnUtils {
 		if( verbose )
 			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
 		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
-		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null ) {
-			// try permission-specific strategies first
-			/* this needs more work, we must iterate through any permission-defined strategies and see
-			 * if this player has any of those permissions assigned
-	    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
-	    			+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-	    			+ player.getWorld().getName() + "." + spawnInfo.spawnEventType);
-			if( verbose )
-				log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" permission-specific strategies for player "+player.getName());
-				*/
+		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
+		{
+			// try permission-specific strategies first;
+			// get any permission nodes that are defined in the config and then loop through them
+			// to see if this user has any of them set.
+			Set<String> permStrategies = plugin.getHSPConfig().getPermStrategies();
+			for(String entry : permStrategies) {
+				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.SETTING_EVENTS_BASE
+							+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+							+ entry + ".permissions", null);
+				
+				for(String perm : perms) {
+					debug.debug("checking permission ",perm);
+					
+					if( plugin.hasPermission(player, perm) ) {
+						debug.debug("player ",player," does have perm ",perm,", looking up strategies");
+						spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+								+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+								+ entry + "." + spawnInfo.spawnEventType);
+
+						// stop checking permissions when we find one that has strategies to use
+						if( spawnInfo.spawnStrategies != null && !spawnInfo.spawnStrategies.isEmpty() )
+							break;
+					}
+				}
+			}
+			if( verbose ) {
+				int stratCount = 0;
+				if( spawnInfo != null && spawnInfo.spawnStrategies != null )
+					stratCount = spawnInfo.spawnStrategies.size();
+				log.info(logPrefix + " found "+stratCount+" permission-specific strategies for player "+player.getName());
+			}
 	    	
 	    	// if no permission-specific strategy exists, fall back to default world strategy
 	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
@@ -120,6 +143,12 @@ public class HomeSpawnUtils {
 	    				+ "." + spawnInfo.spawnEventType);
 				if( verbose )
 					log.info(logPrefix + " No world-specific stratgies found, found "+spawnInfo.spawnStrategies.size()+" default strategies");
+	    	}
+	    	
+	    	// if no default strategy exists, print a warning to the log and just return now
+	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
+	    		log.warning(logPrefix + " Warning: no event strategy defined for event "+spawnInfo.spawnEventType+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
+	    		return null;
 	    	}
 		}
 		
@@ -380,60 +409,6 @@ public class HomeSpawnUtils {
 		return l;
 	}
 	
-	public Location sendHome(Player p, String world) {
-		if( p == null || world == null )
-			return null;
-		
-		Home home = getDefaultHome(p.getName(), world);
-		
-		Location l = null;
-		if( home != null )
-			l = home.getLocation();
-		
-//		log.info(logPrefix + " sendHome got object "+home+" for player "+p.getName()+", location = "+l);
-		
-		if( l != null ) {
-	    	p.teleport(l);
-	    	return l;
-		}
-		else {
-			return sendToSpawn(p);					// if no home is set, send them to spawn
-		}
-	}
-	
-    public Location sendHome(Player p)
-    {
-    	return sendHome(p, p.getWorld().getName());
-    }
-    
-    public Location sendToGlobalSpawn(Player p)
-    {
-    	Location l = getDefaultSpawn().getLocation(); 
-    	p.teleport(l);
-    	return l;
-    }
-    
-    /** Send a player to the spawn for their given world, or if none is set for that world,
-     * to the global default spawn.
-     * 
-     * @param p
-     */
-    public Location sendToSpawn(Player p)
-    {
-    	Spawn spawn = getSpawn(p.getWorld().getName());
-    	if( spawn == null )
-    		spawn = getDefaultSpawn();
-    	
-		if( spawn == null ) {
-			log.severe(logPrefix+ " No valid spawn found for player "+p.getName()+"!");
-			return null;
-		}
-		
-		Location l = spawn.getLocation();
-    	p.teleport(l);
-    	return l;
-    }
-    
     public void setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
     {
     	Home home = plugin.getStorage().getDefaultHome(l.getWorld().getName(), playerName);
@@ -489,26 +464,6 @@ public class HomeSpawnUtils {
 
     	plugin.getStorage().writeHome(home);
     }
-    
-    /*
-    public void setHome(String playerName, Location l, String updatedBy)
-    {
-    	Home home = plugin.getStorage().getHome(l.getWorld().getName(), playerName);
-    	
-		// if we get an object back, we already have a Home set for this player/world combo, so we
-		// just update the x/y/z location of it.
-    	if( home != null ) {
-    		home.setLocation(l);
-			home.setUpdatedBy(updatedBy);
-    	}
-    	// this is a new home for this player/world combo, create a new object
-    	else
-    		home = new Home(playerName, l, updatedBy);
-    	
-		home.setDefaultHome(true);
-    	plugin.getStorage().writeHome(home);
-    }
-    */
     
     public void setNamedHome(String playerName, Location l, String homeName, String updatedBy)
     {
@@ -679,7 +634,18 @@ public class HomeSpawnUtils {
      */
     public Home getDefaultHome(String playerName, String worldName)
     {
-    	return plugin.getStorage().getDefaultHome(worldName, playerName);
+    	Home home = plugin.getStorage().getDefaultHome(worldName, playerName);
+    	
+    	// if there is no default home defined and the LAST_HOME_IS_DEFAULT flag is
+    	// set, check to see if there is a single home left on the world that we can
+    	// assume is the default.
+    	if( home == null && plugin.getHSPConfig().getBoolean(ConfigOptions.LAST_HOME_IS_DEFAULT, true) ) {
+    		Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+    		if( homes != null && homes.size() == 1 )
+    			home = homes.iterator().next();
+    	}
+    	
+    	return home;
     }
     
     /** Return the home location of the given player and world.

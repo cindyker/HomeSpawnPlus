@@ -4,13 +4,13 @@
 package org.morganm.homespawnplus.storage;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -27,7 +27,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class StorageYaml implements Storage {
 //	private HomeSpawnPlus plugin;
 	private final File file;
-	private Configuration storage;
+	private YamlConfiguration storage;
 	
 	public StorageYaml(final File file) {
 		this.file = file;
@@ -35,9 +35,9 @@ public class StorageYaml implements Storage {
 	
 	/** Not yet part of the interface, can only be called directly or internally.
 	 */
-	public void save() {
+	public void save() throws IOException {
 		if( storage != null )
-			storage.save();
+			storage.save(file);
 	}
 	
 	public void addHomes(Set<Home> homes) {
@@ -53,16 +53,16 @@ public class StorageYaml implements Storage {
 			
 			int id = home.getId();
 			String baseNode = "homes."+id;
-			storage.setProperty(baseNode+".player_name", home.getPlayerName());
-			storage.setProperty(baseNode+".updatedBy", home.getUpdatedBy());
-			storage.setProperty(baseNode+".world", home.getWorld());
-			storage.setProperty(baseNode+".x", home.getX());
-			storage.setProperty(baseNode+".y", home.getY());
-			storage.setProperty(baseNode+".z", home.getZ());
-			storage.setProperty(baseNode+".pitch", home.getPitch());
-			storage.setProperty(baseNode+".yaw", home.getYaw());
-			storage.setProperty(baseNode+".lastModified", new Long(home.getLastModified().getTime()).toString());
-			storage.setProperty(baseNode+".dateCreated", new Long(home.getDateCreated().getTime()).toString());
+			storage.set(baseNode+".player_name", home.getPlayerName());
+			storage.set(baseNode+".updatedBy", home.getUpdatedBy());
+			storage.set(baseNode+".world", home.getWorld());
+			storage.set(baseNode+".x", home.getX());
+			storage.set(baseNode+".y", home.getY());
+			storage.set(baseNode+".z", home.getZ());
+			storage.set(baseNode+".pitch", home.getPitch());
+			storage.set(baseNode+".yaw", home.getYaw());
+			storage.set(baseNode+".lastModified", new Long(home.getLastModified().getTime()).toString());
+			storage.set(baseNode+".dateCreated", new Long(home.getDateCreated().getTime()).toString());
 		}
 	}
 	
@@ -79,17 +79,17 @@ public class StorageYaml implements Storage {
 			
 			int id = spawn.getId();
 			String baseNode = "spawns."+id;
-			storage.setProperty(baseNode+".world", spawn.getWorld());
-			storage.setProperty(baseNode+".name", spawn.getName());
-			storage.setProperty(baseNode+".updatedBy", spawn.getUpdatedBy());
-			storage.setProperty(baseNode+".group_name", spawn.getGroup());
-			storage.setProperty(baseNode+".x", spawn.getX());
-			storage.setProperty(baseNode+".y", spawn.getY());
-			storage.setProperty(baseNode+".z", spawn.getZ());
-			storage.setProperty(baseNode+".pitch", spawn.getPitch());
-			storage.setProperty(baseNode+".yaw", spawn.getYaw());
-			storage.setProperty(baseNode+".lastModified", new Long(spawn.getLastModified().getTime()).toString());
-			storage.setProperty(baseNode+".dateCreated", new Long(spawn.getDateCreated().getTime()).toString());
+			storage.set(baseNode+".world", spawn.getWorld());
+			storage.set(baseNode+".name", spawn.getName());
+			storage.set(baseNode+".updatedBy", spawn.getUpdatedBy());
+			storage.set(baseNode+".group_name", spawn.getGroup());
+			storage.set(baseNode+".x", spawn.getX());
+			storage.set(baseNode+".y", spawn.getY());
+			storage.set(baseNode+".z", spawn.getZ());
+			storage.set(baseNode+".pitch", spawn.getPitch());
+			storage.set(baseNode+".yaw", spawn.getYaw());
+			storage.set(baseNode+".lastModified", new Long(spawn.getLastModified().getTime()).toString());
+			storage.set(baseNode+".dateCreated", new Long(spawn.getDateCreated().getTime()).toString());
 		}
 	}
 	
@@ -106,15 +106,15 @@ public class StorageYaml implements Storage {
 			
 			int id = player.getId();
 			String baseNode = "players."+id;
-			storage.setProperty(baseNode+".name", player.getName());
-			storage.setProperty(baseNode+".world", player.getWorld());
-			storage.setProperty(baseNode+".x", player.getX());
-			storage.setProperty(baseNode+".y", player.getY());
-			storage.setProperty(baseNode+".z", player.getZ());
-			storage.setProperty(baseNode+".pitch", player.getPitch());
-			storage.setProperty(baseNode+".yaw", player.getYaw());
-			storage.setProperty(baseNode+".lastModified", new Long(player.getLastModified().getTime()).toString());
-			storage.setProperty(baseNode+".dateCreated", new Long(player.getDateCreated().getTime()).toString());
+			storage.set(baseNode+".name", player.getName());
+			storage.set(baseNode+".world", player.getWorld());
+			storage.set(baseNode+".x", player.getX());
+			storage.set(baseNode+".y", player.getY());
+			storage.set(baseNode+".z", player.getZ());
+			storage.set(baseNode+".pitch", player.getPitch());
+			storage.set(baseNode+".yaw", player.getYaw());
+			storage.set(baseNode+".lastModified", new Long(player.getLastModified().getTime()).toString());
+			storage.set(baseNode+".dateCreated", new Long(player.getDateCreated().getTime()).toString());
 		}
 	}
 	
@@ -123,8 +123,7 @@ public class StorageYaml implements Storage {
 	 */
 	@Override
 	public void initializeStorage() {
-		storage = new Configuration(file);
-		storage.load();
+		storage = YamlConfiguration.loadConfiguration(file);
 	}
 
 	/* (non-Javadoc)
@@ -193,7 +192,7 @@ public class StorageYaml implements Storage {
 
 	public Home getHome(int id) {
 		final String baseNode = "homes."+id;
-		final ConfigurationNode node = storage.getNode(baseNode);
+		final Object node = storage.get(baseNode);
 		if( node == null )
 			return null;
 		
@@ -227,7 +226,7 @@ public class StorageYaml implements Storage {
 	
 	public Spawn getSpawn(int id) {
 		final String baseNode = "spawns."+id;
-		final ConfigurationNode node = storage.getNode(baseNode);
+		final Object node = storage.get(baseNode);
 		if( node == null )
 			return null;
 		
@@ -262,7 +261,7 @@ public class StorageYaml implements Storage {
 	
 	public Player getPlayer(int id) {
 		final String baseNode = "players."+id;
-		final ConfigurationNode node = storage.getNode(baseNode);
+		final Object node = storage.get(baseNode);
 		if( node == null )
 			return null;
 		
@@ -300,7 +299,8 @@ public class StorageYaml implements Storage {
 	public Set<Home> getAllHomes() {
 		HashSet<Home> homes = new HashSet<Home>();
 		
-		List<String> keys = storage.getKeys("homes");
+		ConfigurationSection section = storage.getConfigurationSection("homes");
+		Set<String> keys = section.getKeys(false);
 		if( keys != null ) {
 			for(String key : keys) {
 				int id = Integer.valueOf(key);
@@ -318,7 +318,8 @@ public class StorageYaml implements Storage {
 	public Set<Spawn> getAllSpawns() {
 		HashSet<Spawn> spawns = new HashSet<Spawn>();
 		
-		List<String> keys = storage.getKeys("spawns");
+		ConfigurationSection section = storage.getConfigurationSection("spawns");
+		Set<String> keys = section.getKeys(false);
 		if( keys != null ) {
 			for(String key : keys) {
 				int id = Integer.valueOf(key);
@@ -336,7 +337,8 @@ public class StorageYaml implements Storage {
 	public Set<Player> getAllPlayers() {
 		HashSet<Player> players = new HashSet<Player>();
 		
-		List<String> keys = storage.getKeys("players");
+		ConfigurationSection section = storage.getConfigurationSection("players");
+		Set<String> keys = section.getKeys(false);
 		if( keys != null ) {
 			for(String key : keys) {
 				int id = Integer.valueOf(key);

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -76,10 +77,18 @@ public class HSP extends BaseCommand {
 			backupStorage.addHomes(storage.getAllHomes());
 			backupStorage.addSpawns(storage.getAllSpawns());
 			backupStorage.addPlayers(storage.getAllPlayers());
-			backupStorage.save();
-
-			util.sendMessage(p, "Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
-			log.info(logPrefix+" Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+			
+			try {
+				backupStorage.save();
+	
+				util.sendMessage(p, "Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+				log.info(logPrefix+" Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+			}
+			catch(IOException e) {
+				log.warning(logPrefix+" Error saving backup file"+e.getMessage());
+				e.printStackTrace();
+				util.sendMessage(p, "There was an error writing the backup file, please check your server logs");
+			}
 		}
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || !"OVERWRITE".equals(args[1]) ) {

@@ -31,21 +31,21 @@ public class ConfigFactory {
 	 */
 	public static Config getInstance(Type storageType, HomeSpawnPlus plugin, Object arg1)
 	throws ConfigException, IOException
-{
-	if ( storageType == Type.YAML ) {
-		File file = null; 
-		if( arg1 instanceof File )
-			file = (File) arg1;
-		else if( arg1 instanceof String )
-			file = new File((String) arg1);
-		else
-			throw new ConfigException("Unable to create Config interface: invalid YAML config file argument");
-		
-		return new ConfigurationYAML(file, plugin);
-//		return new ConfigYAML(file);
+	{
+		if ( storageType == Type.YAML ) {
+			File file = null; 
+			if( arg1 instanceof File )
+				file = (File) arg1;
+			else if( arg1 instanceof String )
+				file = new File((String) arg1);
+			else
+				throw new ConfigException("Unable to create Config interface: invalid YAML config file argument");
+
+			return new ConfigurationYAML(file, plugin);
+			//		return new ConfigYAML(file);
+		}
+		else {
+			throw new ConfigException("Unable to create Config interface.");
+		}
 	}
-	else {
-		throw new ConfigException("Unable to create Config interface.");
-	}
-}
 }

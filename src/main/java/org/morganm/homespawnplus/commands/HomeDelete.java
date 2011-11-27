@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import java.util.Set;
+
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
@@ -13,6 +15,9 @@ import org.morganm.homespawnplus.command.BaseCommand;
  */
 public class HomeDelete extends BaseCommand {
 
+	@Override
+	public String[] getCommandAliases() { return new String[] {"homed", "deletehome"}; }
+	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
@@ -26,7 +31,20 @@ public class HomeDelete extends BaseCommand {
 		
 		if( args.length > 0 ) {
 			homeName = args[0];
-			home = util.getHomeByName(p.getName(), homeName);
+			
+			if( homeName.equals("<noname>") ) {
+				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage().getHomes(p.getWorld().getName(), p.getName());
+				if( homes != null ) {
+					for(org.morganm.homespawnplus.entity.Home h : homes) {
+						if( h.getName() == null ) {
+							home = h;
+							break;
+						}
+					}
+				}
+			}
+			else
+				home = util.getHomeByName(p.getName(), homeName);
 		}
 		else
 			home = util.getDefaultHome(p.getName(), p.getWorld().getName());

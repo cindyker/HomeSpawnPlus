@@ -21,6 +21,7 @@ public interface ConfigOptions {
 //	public static final String ENABLE_GROUP_SPAWN = "core.groupSpawnEnabled";
 	public static final String SETTING_WORLD_OVERRIDE = "core.override_world";
 	public static final String EVENT_PRIORITY = "core.eventPriority";
+	public static final String LAST_HOME_IS_DEFAULT = "core.lastHomeIsDefault";
 	
 	public static final String USE_WARMUPS = "warmup.enabled";
 	public static final String WARMUPS_ON_MOVE_CANCEL = "warmup.onMoveCancel";

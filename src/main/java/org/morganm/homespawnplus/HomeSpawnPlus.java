@@ -15,6 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -98,6 +99,16 @@ public class HomeSpawnPlus extends JavaPlugin {
     	return config;
     }
     
+    // since we provide our own Configuration interface (via getHSPConfig()), we override
+    // JavaPlugin's built-in one to be make it use ours (in the event that they are
+    // compatible) or none at all.
+    public FileConfiguration getConfig() {
+    	if( config instanceof FileConfiguration )
+    		return (FileConfiguration) config;
+    	else
+    		return null;
+	}
+    
     /** Load our data from the backing data store.
      * 
      * @throws IOException
@@ -154,8 +165,24 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     }
     
+    private void updateConfigDefaultFile() {
+		// make sure the config_defaults.yml file is always up-to-date. We do this by just 
+		// deleting it and then letting the Config initialization code just copy it out
+    	// of the JAR file on to disk.
+		try {
+			File configDefaultsFile = new File(YAML_CONFIG_ROOT_PATH+"config_defaults.yml");
+			configDefaultsFile.delete();
+			Debug.getInstance().devDebug("copying config_defaults.yml into place");
+			ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config_defaults.yml").load();
+		}
+		catch(Exception e) {
+			// we don't care if this fails, ignore any errors
+		}
+    }
+    
     public void loadConfig() throws ConfigException, IOException {
-		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
+    	if( config == null )
+    		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
 		config.load();
 		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEV_DEBUG, false), Level.FINEST);
 		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEBUG, false));
@@ -224,16 +251,18 @@ public class HomeSpawnPlus extends JavaPlugin {
     	UsurpCommandExecutor usurp = new UsurpCommandExecutor(this);
     	
     	List<String> commands = config.getStringList("usurpCommands", null);
-    	for(String command : commands) {
-        	PluginCommand cmd = getServer().getPluginCommand(command);
-        	if( cmd != null ) {
-        		log.info(logPrefix + " usurping command "+command+" as specified by usurpCommands config option");
-	        	// TODO: "being nice" might be best to keep track of the "old" executor
-	        	// and restore that if this plugin is unloaded. At this point, restoring
-	        	// the old executor requires turning off the usurp config option and
-	        	// restarting the server.
-	        	cmd.setExecutor(usurp);
-        	}
+    	if( commands != null ) {
+	    	for(String command : commands) {
+	        	PluginCommand cmd = getServer().getPluginCommand(command);
+	        	if( cmd != null ) {
+	        		log.info(logPrefix + " usurping command "+command+" as specified by usurpCommands config option");
+		        	// TODO: "being nice" might be best to keep track of the "old" executor
+		        	// and restore that if this plugin is unloaded. At this point, restoring
+		        	// the old executor requires turning off the usurp config option and
+		        	// restarting the server.
+		        	cmd.setExecutor(usurp);
+	        	}
+	    	}
     	}
     }
     
@@ -261,6 +290,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     public void onEnable() {
     	boolean loadError = false;
     	
+    	getConfig();
+    	
     	instance = this;
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
@@ -275,6 +306,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// load our configuration and database
     	try {
     		loadConfig();
+    		updateConfigDefaultFile();
             initializeDatabase();
     	}
     	catch(Exception e) {
@@ -340,6 +372,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     }
     
     public void onDisable() {
+    	/*
     	try {
     		config.save();
     	}
@@ -347,6 +380,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     		log.warning(logPrefix + " error saving configuration during onDisable");
     		e.printStackTrace();
     	}
+    	*/
     	
     	log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] unloaded" );
     }

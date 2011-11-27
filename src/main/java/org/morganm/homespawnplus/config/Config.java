@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.config;
 
 import java.util.List;
+import java.util.Set;
 
 import org.morganm.homespawnplus.SpawnStrategy;
 
@@ -26,7 +27,7 @@ public interface Config {
 	 * 
 	 * @throws ConfigException
 	 */
-	public boolean save() throws ConfigException;
+	public void save() throws ConfigException;
 	
     /**
      * Gets a boolean for a given node. This will either return an boolean
@@ -74,15 +75,6 @@ public interface Config {
     public int getInt(String path, int def);
     
     /**
-     * Set a given property path to a value.  Must call save() at some point to
-     * commit data to the backing store.
-     * 
-     * @param path
-     * @param value
-     */
-    public void setProperty(String path, Object value);
-    
-    /**
      * Gets a list of strings. Non-valid entries will not be in the list.
      * There will be no null slots. If the list is not defined, the
      * default will be returned. 'null' can be passed for the default
@@ -95,6 +87,12 @@ public interface Config {
      * @return list of strings
      */
     public List<String> getStringList(String path, List<String> def);
+    
+    /** Return the list of permissions that have strategies associated with them.
+     * 
+     * @return
+     */
+    public Set<String> getPermStrategies();
     
     public List<SpawnStrategy> getStrategies(String node);
 }

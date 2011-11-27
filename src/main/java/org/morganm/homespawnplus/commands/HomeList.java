@@ -13,10 +13,10 @@ import org.morganm.homespawnplus.command.BaseCommand;
  * @author morganm
  *
  */
-public class ListHomes extends BaseCommand {
+public class HomeList extends BaseCommand {
 
 	@Override
-	public String[] getCommandAliases() { return new String[] {"homel", "homelist"}; }
+	public String[] getCommandAliases() { return new String[] {"homel", "listhomes"}; }
 	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])

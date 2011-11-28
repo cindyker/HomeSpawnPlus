@@ -1,3 +1,6 @@
+v1.0.1 - November 27, 2011
+* fixed a new SQL-related bug related to setting bed homes
+
 v1.0 - November 27, 2011
 * added ability for HSP to have multiple named homes per world (if you give your players access to /sethome)
 * added config options to limit the number of homes globally, per-world or per-permission group (defaults to 1 per world, which maintains the same behavior before this feature was added)

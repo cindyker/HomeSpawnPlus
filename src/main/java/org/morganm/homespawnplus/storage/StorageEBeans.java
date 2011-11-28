@@ -116,7 +116,7 @@ public class StorageEBeans implements Storage {
 	@Override
 	public Home getBedHome(String world, String playerName) {
 		EbeanServer db = plugin.getDatabase();
-		String q = "find home where playerName = :player_name and world = :world and bed_home = 1";
+		String q = "find home where playerName = :playerName and world = :world and bedHome = 1";
 		
 		Query<Home> query = db.createQuery(Home.class, q);
 		query.setParameter("playerName", playerName);

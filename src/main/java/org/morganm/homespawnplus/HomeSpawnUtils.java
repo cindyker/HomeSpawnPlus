@@ -190,7 +190,8 @@ public class HomeSpawnUtils {
 					home = getDefaultHome(playerName, player.getWorld());
 				
 				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
-						currentMode.getType() == Type.MODE_HOME_BED_ONLY) )
+						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
+						currentMode.getType() != Type.MODE_HOME_NO_BED )
 					home = getBedHome(playerName, player.getWorld().getName());
 				
 				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
@@ -214,7 +215,8 @@ public class HomeSpawnUtils {
 					home = getDefaultHome(playerName, getDefaultWorld());
 				
 				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
-						currentMode.getType() == Type.MODE_HOME_BED_ONLY) )
+						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
+						currentMode.getType() != Type.MODE_HOME_NO_BED )
 					home = getBedHome(playerName, getDefaultWorld());
 				
 				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
@@ -259,6 +261,7 @@ public class HomeSpawnUtils {
 				
 			case MODE_HOME_NORMAL:
 			case MODE_HOME_BED_ONLY:
+			case MODE_HOME_NO_BED:
 			case MODE_HOME_DEFAULT_ONLY:
 			case MODE_HOME_ANY:
 				currentMode = new SpawnStrategy(type);

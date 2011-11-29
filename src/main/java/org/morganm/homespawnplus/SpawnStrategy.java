@@ -20,6 +20,7 @@ public class SpawnStrategy {
 		HOME_ANY_WORLD,
 		MODE_HOME_NORMAL,
 		MODE_HOME_BED_ONLY,
+		MODE_HOME_NO_BED,
 		MODE_HOME_DEFAULT_ONLY,
 		MODE_HOME_ANY,
 		SPAWN_THIS_WORLD_ONLY,
@@ -78,6 +79,9 @@ public class SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_MODE_HOME_BED_ONLY.equals(s) ) {
 			strategy.type = Type.MODE_HOME_BED_ONLY;
+		}
+		else if( ConfigOptions.STRATEGY_MODE_HOME_NO_BED.equals(s) ) {
+			strategy.type = Type.MODE_HOME_NO_BED;
 		}
 		else if( ConfigOptions.STRATEGY_MODE_HOME_DEFAULT_ONLY.equals(s) ) {
 			strategy.type = Type.MODE_HOME_DEFAULT_ONLY;

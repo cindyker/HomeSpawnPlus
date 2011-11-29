@@ -16,7 +16,7 @@ import org.morganm.homespawnplus.storage.Storage;
  */
 public class SetHome extends BaseCommand
 {
-	private static final String SETHOME_NAMED_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + "command.sethome.named";
+	private static final String SETHOME_NAMED_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.sethome.named";
 	
 	@Override
 	public String[] getCommandAliases() { return new String[] {"homeset"}; }

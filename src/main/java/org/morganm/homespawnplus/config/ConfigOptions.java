@@ -70,6 +70,7 @@ public interface ConfigOptions {
 	
 	public static final String STRATEGY_MODE_HOME_NORMAL = "modeHomeNormal";
 	public static final String STRATEGY_MODE_HOME_BED_ONLY = "modeHomeBedOnly";
+	public static final String STRATEGY_MODE_HOME_NO_BED = "modeHomeNoBed";
 	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
 	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
 	

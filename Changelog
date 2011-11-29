@@ -1,3 +1,7 @@
+v1.0.2 - November 29, 2011
+* fixed permission "hsp.command.sethome.named" to be correct
+* added modeHomeBedOnly mode strategy
+
 v1.0.1 - November 27, 2011
 * fixed a new SQL-related bug related to setting bed homes
 

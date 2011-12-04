@@ -326,9 +326,9 @@ public class WarmupManager {
 				// do movement checks to see if player has moved since the warmup started
 				if( config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
 					Location currentLoc = p.getLocation();
-					if( playerLocation.getX() != currentLoc.getX() ||
-						playerLocation.getY() != currentLoc.getY() ||
-						playerLocation.getZ() != currentLoc.getZ() ||
+					if( playerLocation.getBlockX() != currentLoc.getBlockX() ||
+						playerLocation.getBlockY() != currentLoc.getBlockY() ||
+						playerLocation.getBlockZ() != currentLoc.getBlockZ() ||
 						!playerLocation.getWorld().getName().equals(currentLoc.getWorld().getName()) )
 					{
 						p.sendMessage("You moved! Warmup "+warmupName+" cancelled.");

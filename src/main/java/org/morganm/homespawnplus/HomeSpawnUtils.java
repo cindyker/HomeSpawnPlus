@@ -596,6 +596,31 @@ public class HomeSpawnUtils {
 		return true;
 	}
 	
+	private Home enforceSingleGlobalHome(String playerName) {
+		Home home = null;
+		
+		debug.debug("singleGlobalHome config enabled, entered enforceSingleGlobalHome");
+		Set<Home> homes = plugin.getStorage().getHomes("*", playerName);
+		
+		if( homes != null ) {
+			// if we find a single home in the DB, move it to the new location
+			if( homes.size() == 1 ) {
+    			debug.debug("singleGlobalHome: found 1 home, updated it");
+				home = homes.iterator().next();
+			}
+			// otherwise, delete all homes and a new one will be created below
+			else {
+    			debug.debug("singleGlobalHome: found multiple homes, removing them");
+				for(Home h : homes) {
+					debug.debug("removing home ",h);
+					plugin.getStorage().deleteHome(h);
+				}
+			}
+		}
+		
+		return home;
+	}
+	
 	/** Set a player's home.
 	 * 
 	 * @param playerName
@@ -637,8 +662,17 @@ public class HomeSpawnUtils {
 		// if we get an object back, we already have a Home set for this player/world combo, so we
 		// just update the x/y/z location of it.
     	if( home != null ) {
+    		if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
+    				!plugin.hasPermission(l.getWorld().getName(), playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+    			home = enforceSingleGlobalHome(playerName);
+    			
+    			// it's possible enforceSingleGlobalHome() just wiped all of our homes
+    			if( home == null ) {
+    	    		home = new Home(playerName, l, updatedBy);
+    			}
+    		}
     		// if the world changed, then we need to check world limits on the new world
-    		if( p != null && !l.getWorld().getName().equals(home.getWorld()) ) {
+    		else if( p != null && !l.getWorld().getName().equals(home.getWorld()) ) {
         		if( !canPlayerAddHome(p, l.getWorld().getName(), true) )
         			return false;
     		}
@@ -648,12 +682,22 @@ public class HomeSpawnUtils {
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
+    		if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
+    				!plugin.hasPermission(l.getWorld().getName(), playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+    			home = enforceSingleGlobalHome(playerName);
+    			if( home != null ) {
+					home.setLocation(l);
+					home.setUpdatedBy(updatedBy);
+    			}
+    		}
     		// check if they are allowed to add another home
-    		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) ) {
+    		else if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) ) {
     			return false;
     		}
     		
-    		home = new Home(playerName, l, updatedBy);
+    		// it's possible singleGlobalHome code has found/created a home object for us now
+    		if( home == null )
+    			home = new Home(playerName, l, updatedBy);
     	}
     	
     	// we don't set the value directly b/c the way to turn "off" an existing defaultHome is to
@@ -670,7 +714,7 @@ public class HomeSpawnUtils {
     	}
 		home.setBedHome(bedHome);
 		
-		debug.devDebug("home=",home);
+		debug.devDebug("setHome() pre-commit, home=",home);
 
     	plugin.getStorage().writeHome(home);
 		return true;

@@ -1,9 +1,9 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.0.3
+version: 1.1
 author: morganm
 database: true
-softdepend: [Vault, WorldGuard]
+softdepend: [Vault, WorldEdit, WorldGuard]
 commands:
   groupspawn:
     aliases: [gs]
@@ -124,9 +124,13 @@ permissions:
             hsp.command.CostExempt.home: true
             hsp.command.CostExempt.sethome: true
             hsp.command.setfirstspawn: true
+            hsp.singleGlobalHomeExempt: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
+    hsp.singleGlobalHomeExempt:
+        description: Exempts a user from the single global home restriction (if set in the config)
+        default: op
     hsp.admin:
         description: Allows access to admin functions of HomeSpawnPlus
         default: op

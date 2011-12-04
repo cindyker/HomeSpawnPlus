@@ -78,7 +78,7 @@ public class StorageEBeans implements Storage {
 		EbeanServer db = plugin.getDatabase();
 		String q = "find home where playerName = :playerName and world like :world order by world";
 		
-		if( world == null || "all".equals(world) )
+		if( world == null || "all".equals(world) || "*".equals(world) )
 			world = "%";
 		
 		Query<Home> query = db.createQuery(Home.class, q);

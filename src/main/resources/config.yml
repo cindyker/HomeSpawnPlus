@@ -152,6 +152,14 @@ warmup:
 # players to have. Can be defined on a per-world or
 # per-permission basis. (-1 = unlimited)
 homeLimits:
+  # If singleGlobalHome is set, all other sections are ignored
+  # and a single global home is enforced. This means typing
+  # /sethome on any world will always work and it will always
+  # overwrite whatever other home you had set. This can be
+  # overridden by the permission "hsp.singleGlobalHomeExempt",
+  # in which case the limits defined below still apply.
+  singleGlobalHome: false
+
   default:
     perWorld: 1
     global: -1

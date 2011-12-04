@@ -60,7 +60,7 @@ public interface ConfigOptions {
 	public static final String HOME_LIMITS_DEFAULT = "default";
 	public static final String HOME_LIMITS_PER_WORLD = "perWorld";
 	public static final String HOME_LIMITS_GLOBAL = "global";
-	public static final String GLOBAL_LIMIT_REPLACES_OTHER_WORLD_HOME = "globalLimitReplacesOtherWorldHome";
+	public static final String SINGLE_GLOBAL_HOME = HOME_LIMITS_BASE + "singleGlobalHome";
 	
 	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
 	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";

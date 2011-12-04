@@ -1,11 +1,15 @@
-v1.0.3 - ?
+v1.1 - December 4, 2011
 * Ticket #15: fixed a bug with modeHomeNoBed strategy
 * Ticket #16: better firstLogin detection, check world/players/player.dat
 * Ticket #17: fixed an NPE bug with /groupspawn command if no groupspawn is defined
-* Fixed perm-world-global spawn strategies so they fall through. Before, if a
-perm.onHomeCommand strategy was defined, but no perm.onDeath and a player
+* Ticket #19: fixed issue with warmups being canceled due to movement detection being too sensitive
+* Ticket #13: new feature, config param "homeLimits.singleGlobalHome" to enforce a single global home that always changes when using /sethome (or a bed)
+* new permission "hsp.singleGlobalHomeExempt" to be exempt from "singleGlobalHome" restriction
+* added WorldEdit WEPIF support, which supports more permission systems for those who have WorldEdit (only used if Vault is not present)
+* Fixed permission->world->global spawn strategies so they fall through. Before, if a
+perm.onHomeCommand strategy was defined, but not perm.onDeath and a player
 died who matched the perm, they would not get the world-specific or global
-onDeath like you would think. This is fixed.
+onDeath like you would expect. This is fixed.
 
 v1.0.2 - November 29, 2011
 * fixed permission "hsp.command.sethome.named" to be correct

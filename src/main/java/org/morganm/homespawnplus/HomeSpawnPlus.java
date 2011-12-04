@@ -38,6 +38,8 @@ import org.morganm.homespawnplus.storage.StorageFactory;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import com.sk89q.bukkit.migration.PermissionsResolverManager;
+import com.sk89q.bukkit.migration.PermissionsResolverServerListener;
 
 /**
  * HomeSpawnPlus plugin for Bukkit
@@ -72,8 +74,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HSPEntityListener entityListener;
 
     // Vault interface variables
-    public static Permission vaultPermission = null;
-    public static Economy vaultEconomy = null;
+    public Permission vaultPermission = null;
+    public Economy vaultEconomy = null;
+    
+    public PermissionsResolverManager wepifPerms = null;
 
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
      * 
@@ -131,20 +135,40 @@ public class HomeSpawnPlus extends JavaPlugin {
     	Debug.getInstance().debug("Initializing Permission system");
     	
     	if( !setupVaultPermissions() ) {
-	        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
-	        if( permissionsPlugin != null ) {
-	        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-	        	
-//	        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
-//	        		usePerm3 = true;
-	        }
-	        else {
-		    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
-	        }
+    		if( !setupWEPIFPermissions() ) {
+		        Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
+		        if( permissionsPlugin != null ) {
+		        	permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+		        	
+	//	        	if( permissionsPlugin.getDescription().getVersion().startsWith("3") )
+	//	        		usePerm3 = true;
+		        }
+		        else {
+			    	log.warning(logPrefix+" Permissions system not enabled, using isOP instead.");
+		        }
+    		}
+    		else {
+    	    	log.info(logPrefix+" WorldEdit found, using WEPIF interface for Permissions");
+    		}
     	}
     	else {
 	    	log.info(logPrefix+" Vault plugin found, using Vault interface for Permissions");
     	}
+    }
+    
+    private boolean setupWEPIFPermissions() {
+    	try {
+	    	Plugin worldEdit = getServer().getPluginManager().getPlugin("WorldEdit");
+	    	if( worldEdit != null ) {
+		    	wepifPerms = new PermissionsResolverManager(this, "HomeSpawnPlus", log);
+		    	(new PermissionsResolverServerListener(wepifPerms, this)).register(this);
+	    	}
+    	}
+    	catch(Exception e) {
+    		log.info(logPrefix + " Unexpected error trying to setup WEPIF permissions hooks (this message can be ignored): "+e.getMessage());
+    	}
+    	
+    	return wepifPerms != null;
     }
     
     /** Given a playerName, return the permissions group they are associated with (if any).
@@ -419,6 +443,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     	if( vaultPermission != null )
     		return vaultPermission.has(worldName, playerName, permissionNode);
     	
+    	if( wepifPerms != null )
+    		return wepifPerms.hasPermission(worldName, playerName, permissionNode);
+    	
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null )
     		return permissionHandler.has(worldName, playerName, permissionNode);
@@ -454,6 +481,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// use Vault for permissions, if it was found
     	if( vaultPermission != null )
     		return vaultPermission.has(p, permissionNode);
+    	
+    	if( wepifPerms != null )
+    		return wepifPerms.hasPermission(p.getName(), permissionNode);
     	
 //    	log.info(logPrefix + " checking permission "+permissionNode+" for player "+p.getName());
     	if( permissionHandler != null ) 

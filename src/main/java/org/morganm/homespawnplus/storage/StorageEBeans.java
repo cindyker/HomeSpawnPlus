@@ -347,7 +347,7 @@ public class StorageEBeans implements Storage {
 		else
 			knownVersion = versionObject.getDatabaseVersion();
 		
-		Debug.getInstance().debug(logPrefix + " knownVersion = "+knownVersion);
+		Debug.getInstance().debug("knownVersion = ",knownVersion);
 
 		/*
 		try {

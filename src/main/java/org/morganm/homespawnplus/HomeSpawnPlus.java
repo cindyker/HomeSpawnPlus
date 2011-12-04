@@ -382,6 +382,11 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
     	*/
     	
+    	Player[] players = getServer().getOnlinePlayers();
+    	for(int i=0; i < players.length;i++) {
+    		spawnUtils.updateQuitLocation(players[i]);
+    	}
+    	
     	log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] unloaded" );
     }
     

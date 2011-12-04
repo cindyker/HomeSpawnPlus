@@ -70,7 +70,7 @@ public class Home extends BaseCommand
 		else {
 			SpawnInfo spawnInfo = new SpawnInfo();
 			spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_CMD_BEHAVIOR;
-			l = util.getSpawnLocation(p, spawnInfo);
+			l = util.getStrategyLocation(p, spawnInfo);
 			strategyDeterminedHome = true;
 		}
 		

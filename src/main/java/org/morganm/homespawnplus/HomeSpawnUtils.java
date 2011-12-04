@@ -79,83 +79,23 @@ public class HomeSpawnUtils {
 			log.info(logPrefix + " Evaluated "+type+", location = "+shortLocationString(l));
 	}
 	
-	/** This is called when a player is spawning (onJoin, onDeath or from a command) and its job
-	 * is to follow the strategies given to find the preferred Location to send the player.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public Location getSpawnLocation(Player player, SpawnInfo spawnInfo) {
+	private class SpawnStrategyResult {
+		public Location location = null;
+		public boolean explicitDefault = false;
+	}
+	
+	
+	private SpawnStrategyResult evaluateSpawnStrategies(Player player, SpawnInfo spawnInfo) {
+		final boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+
+		SpawnStrategyResult result = new SpawnStrategyResult();
 		Location l = null;
 		
 		// this is set to true if we encounter the default strategy in the list
 		boolean defaultFlag = false;
 		
 		String playerName = player.getName();
-
-		final boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
-
-		if( verbose )
-			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
-		// if spawnStrategies is empty, populate spawnStrategies based on spawnEventType 
-		if( spawnInfo.spawnStrategies == null && spawnInfo.spawnEventType != null )
-		{
-			// try permission-specific strategies first;
-			// get any permission nodes that are defined in the config and then loop through them
-			// to see if this user has any of them set.
-			Set<String> permStrategies = plugin.getHSPConfig().getPermStrategies();
-			for(String entry : permStrategies) {
-				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.SETTING_EVENTS_BASE
-							+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-							+ entry + ".permissions", null);
-				
-				for(String perm : perms) {
-					debug.debug("checking permission ",perm);
-					
-					if( plugin.hasPermission(player, perm) ) {
-						debug.debug("player ",player," does have perm ",perm,", looking up strategies");
-						spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
-								+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-								+ entry + "." + spawnInfo.spawnEventType);
-
-						// stop checking permissions when we find one that has strategies to use
-						if( spawnInfo.spawnStrategies != null && !spawnInfo.spawnStrategies.isEmpty() )
-							break;
-					}
-				}
-			}
-			if( verbose ) {
-				int stratCount = 0;
-				if( spawnInfo != null && spawnInfo.spawnStrategies != null )
-					stratCount = spawnInfo.spawnStrategies.size();
-				log.info(logPrefix + " found "+stratCount+" permission-specific strategies for player "+player.getName());
-			}
-	    	
-	    	// if no permission-specific strategy exists, fall back to default world strategy
-	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
-		    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
-		    			+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
-		    			+ player.getWorld().getName() + "." + spawnInfo.spawnEventType);
-				if( verbose )
-					log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" world-specific strategies for world "+player.getWorld().getName());
-	    	}
-						
-	    	// if no more specific strategy exists, fall back to default global strategy
-	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
-	    		spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
-	    				+ "." + spawnInfo.spawnEventType);
-				if( verbose )
-					log.info(logPrefix + " No world-specific stratgies found, found "+spawnInfo.spawnStrategies.size()+" default strategies");
-	    	}
-	    	
-	    	// if no default strategy exists, print a warning to the log and just return now
-	    	if( spawnInfo.spawnStrategies == null || spawnInfo.spawnStrategies.isEmpty() ) {
-	    		log.warning(logPrefix + " Warning: no event strategy defined for event "+spawnInfo.spawnEventType+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
-	    		return null;
-	    	}
-		}
-		
-		SpawnStrategy currentMode = new SpawnStrategy(SpawnStrategy.Type.MODE_HOME_NORMAL);
+		SpawnStrategy currentMode = new SpawnStrategy(Type.MODE_HOME_NORMAL);
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -411,6 +351,7 @@ public class HomeSpawnUtils {
 			}
 				
 			case DEFAULT:
+				result.explicitDefault = true;
 				defaultFlag = true;
 				if( verbose )
 					log.info(logPrefix + " Evaluated "+ConfigOptions.STRATEGY_DEFAULT+", evaluation chain aborted");
@@ -418,6 +359,123 @@ public class HomeSpawnUtils {
 			}
 		}
 		
+		result.location = l;
+		return result;
+	}
+	
+	/** This is called to determine the correct location to send a player by following
+	 * the defined strategies.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public Location getStrategyLocation(Player player, SpawnInfo spawnInfo) {
+		SpawnStrategyResult result = null;
+		boolean foundStrategy = false;
+		
+		final boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+
+		// if spawnStrategies were explicitly passed in, evaluate those and exit 
+		if( spawnInfo.spawnStrategies != null && spawnInfo.spawnEventType == null ) {
+			if( verbose )
+				log.info(logPrefix + " evaluating specific spawnStrategies that were passed in, count = "+spawnInfo.spawnStrategies.size());
+			result = evaluateSpawnStrategies(player, spawnInfo);
+			return result.location;
+		}
+		
+		if( verbose )
+			log.info(logPrefix + " evaluating strategies for player "+player.getName()+", eventType = "+spawnInfo.spawnEventType);
+		
+		// *** START permission-specific strategies  ***
+		
+		// try permission-specific strategies first;
+		// get any permission nodes that are defined in the config and then loop through them
+		// to see if this user has any of them set.
+		Set<String> permStrategies = plugin.getHSPConfig().getPermStrategies();
+		for(String entry : permStrategies) {
+			List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.SETTING_EVENTS_BASE
+					+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+					+ entry + ".permissions", null);
+
+			for(String perm : perms) {
+				debug.debug("checking permission ",perm);
+
+				if( plugin.hasPermission(player, perm) ) {
+					debug.debug("player ",player," does have perm ",perm,", looking up strategies");
+					spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+							+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+							+ entry + "." + spawnInfo.spawnEventType);
+
+					// stop checking permissions when we find one that has strategies to use
+					if( spawnInfo.spawnStrategies != null && !spawnInfo.spawnStrategies.isEmpty() )
+						break;
+				}
+			}
+		}
+
+		if( verbose ) {
+			int stratCount = 0;
+			if( spawnInfo.spawnStrategies != null )
+				stratCount = spawnInfo.spawnStrategies.size();
+			log.info(logPrefix + " found "+stratCount+" permission-specific strategies for player "+player.getName());
+		}
+
+		// if there are permission strategies to evaluate, do so now
+		if( spawnInfo.spawnStrategies != null && spawnInfo.spawnStrategies.size() > 0 ) {
+			foundStrategy = true;
+			if( verbose )
+				log.info(logPrefix + " evaluating permission strategies");
+
+			result = evaluateSpawnStrategies(player, spawnInfo);
+		}
+		// *** END permission-specific strategies  ***
+
+		// *** START world-specific strategies  ***
+		// if no permission-specific strategy returned a location, fall back to default world strategy
+		if( result == null || (result.location == null && !result.explicitDefault) ) {
+			spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+					+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+					+ player.getWorld().getName() + "." + spawnInfo.spawnEventType);
+			if( verbose )
+				log.info(logPrefix + " found "+spawnInfo.spawnStrategies.size()+" world-specific strategies for world "+player.getWorld().getName());
+
+			// if there are world-specific strategies to evaluate, do so now
+			if( spawnInfo.spawnStrategies.size() > 0 ) {
+				foundStrategy = true;
+				if( verbose )
+					log.info(logPrefix + " evaluating world strategies");
+				
+				result = evaluateSpawnStrategies(player, spawnInfo);
+			}
+		}
+		// *** END world-specific strategies  ***
+
+		// *** START default global strategies  ***
+		// if no more specific strategy exists, fall back to default global strategy
+		if( result == null || (result.location == null && !result.explicitDefault) ) {
+			spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(ConfigOptions.SETTING_EVENTS_BASE
+					+ "." + spawnInfo.spawnEventType);
+			if( verbose )
+				log.info(logPrefix + " Found "+spawnInfo.spawnStrategies.size()+" default global strategies");
+
+			// evaluate any global default strategies now
+			if( spawnInfo.spawnStrategies.size() > 0 ) {
+				foundStrategy = true;
+				if( verbose )
+					log.info(logPrefix + " evaluating default global strategies");
+				
+				result = evaluateSpawnStrategies(player, spawnInfo);
+			}
+		}
+		// *** END default global strategies  ***
+
+		// if no strategy exists at all for this event, print a warning to the log
+		if( !foundStrategy )
+			log.warning(logPrefix + " Warning: no event strategy defined for event "+spawnInfo.spawnEventType+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
+		
+		Location l = null;
+		if( result != null )
+			l = result.location;
 		if( verbose )
 			log.info(logPrefix + " Evaluation chain complete, location = "+shortLocationString(l));
 		return l;
@@ -591,8 +649,9 @@ public class HomeSpawnUtils {
     	// this is a new home for this player/world combo, create a new object
     	else {
     		// check if they are allowed to add another home
-    		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) )
+    		if( p != null && !canPlayerAddHome(p, l.getWorld().getName(), true) ) {
     			return false;
+    		}
     		
     		home = new Home(playerName, l, updatedBy);
     	}
@@ -908,6 +967,18 @@ public class HomeSpawnUtils {
     	return spawn;
     }
 
+    public void updateQuitLocation(Player p)
+    {
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
+    		debug.debug("updateQuitLocation: updating last logout location for player ",p.getName());
+    		
+	    	Location quitLocation = p.getLocation();
+	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
+	    	playerStorage.updateLastLogoutLocation(quitLocation);
+	    	plugin.getStorage().writePlayer(playerStorage);
+    	}
+    }
+    
     public boolean isNewPlayer(Player p) {
     	// if we already have a player record in our DB, we're obviously not a new player
     	if( plugin.getStorage().getPlayer(p.getName()) != null )

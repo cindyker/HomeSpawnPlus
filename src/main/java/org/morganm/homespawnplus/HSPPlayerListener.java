@@ -52,7 +52,7 @@ public class HSPPlayerListener extends PlayerListener {
      */
     private Location doSpawn(Player p, SpawnInfo spawnInfo) {
 //    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
-    	Location l = util.getSpawnLocation(p, spawnInfo);
+    	Location l = util.getStrategyLocation(p, spawnInfo);
     	
     	// default behavior is do nothing
     	if( l == null ) {
@@ -192,26 +192,16 @@ public class HSPPlayerListener extends PlayerListener {
     		util.delayedTeleport(p, l);
     }
     
-    private void updateQuitLocation(Player p)
-    {
-    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
-	    	Location quitLocation = p.getLocation();
-	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
-	    	playerStorage.updateLastLogoutLocation(quitLocation);
-	    	plugin.getStorage().writePlayer(playerStorage);
-    	}
-    }
-    
     @Override
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
     {
-    	updateQuitLocation(event.getPlayer());
+    	util.updateQuitLocation(event.getPlayer());
     }
     
     @Override
     public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
     {
-    	updateQuitLocation(event.getPlayer());
+    	util.updateQuitLocation(event.getPlayer());
     }
     
     public void onPlayerRespawn(PlayerRespawnEvent e)

@@ -28,7 +28,7 @@ public class GroupSpawn extends BaseCommand
 		
 		SpawnInfo spawnInfo = new SpawnInfo();
 		spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
-		final Location l = util.getSpawnLocation(p, spawnInfo);
+		final Location l = util.getStrategyLocation(p, spawnInfo);
 		
 		if( l == null ) {
 			util.sendMessage(p, "No groupSpawn found for your group: "+plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));

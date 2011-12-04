@@ -49,7 +49,7 @@ public class Spawn extends BaseCommand
 		else {
 			SpawnInfo spawnInfo = new SpawnInfo();
 			spawnInfo.spawnEventType = ConfigOptions.SETTING_SPAWN_CMD_BEHAVIOR;
-			l = util.getSpawnLocation(p, spawnInfo);
+			l = util.getStrategyLocation(p, spawnInfo);
 		}
     	
     	// TODO: need to add group permission checks

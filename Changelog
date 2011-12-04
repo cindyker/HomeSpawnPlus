@@ -1,3 +1,12 @@
+v1.0.3 - ?
+* Ticket #15: fixed a bug with modeHomeNoBed strategy
+* Ticket #16: better firstLogin detection, check world/players/player.dat
+* Ticket #17: fixed an NPE bug with /groupspawn command if no groupspawn is defined
+* Fixed perm-world-global spawn strategies so they fall through. Before, if a
+perm.onHomeCommand strategy was defined, but no perm.onDeath and a player
+died who matched the perm, they would not get the world-specific or global
+onDeath like you would think. This is fixed.
+
 v1.0.2 - November 29, 2011
 * fixed permission "hsp.command.sethome.named" to be correct
 * added modeHomeBedOnly mode strategy

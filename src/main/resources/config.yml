@@ -23,9 +23,9 @@ core:
   # this is ONLY used when a Permissions-compatible plugin isn't found.
   # In that case, any permissions listed here are given to everyone by
   # default (ops always have full permissions)
-  defaultPermissions:
-    - hsp.command.home.use 
-    - hsp.command.sethome.use 
+#  defaultPermissions:
+#    - hsp.command.home.use 
+#    - hsp.command.sethome.use 
 
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'hsp.home.bedsethome' permission.
@@ -97,26 +97,26 @@ events:
   onHomeCommand:
     - homeMultiWorld
 
-# example of world-specific strategy
-# world:
-#   myworld:
-#     onDeath:
-#       - homeLocalWorld
-#       - spawnLocalWorld
-#     onHomeCommand:
-#       - homeLocalWorld
+#  example of world-specific strategy
+#  world:
+#    myworld:
+#      onDeath:
+#        - homeLocalWorld
+#        - spawnLocalWorld
+#      onHomeCommand:
+#        - homeLocalWorld
 #
-# example of permission-specific strategy
-# permission:
-#   entry1:
-#     permissions:
-#       - my.special.permission
-#     onJoin:
-#       - homeSpecificWorld:specialworld
-#       - spawnSpecificWorld:specialworld
-#     onDeath:
-#       - homeMultiWorld
-#       - homeAnyWorld
+#  example of permission-specific strategy
+#  permission:
+#    entry1:
+#      permissions:
+#        - my.special.permission
+#      onJoin:
+#        - homeSpecificWorld:specialworld
+#        - spawnSpecificWorld:specialworld
+#      onDeath:
+#        - homeMultiWorld
+#        - homeAnyWorld
 
 # you can globally disable individual commands here, if needed
 disabledCommands:
@@ -131,7 +131,7 @@ disabledCommands:
 cooldown:
   home: 60
   spawn: 60
-  groupspawn: 0
+  groupspawn: 60
 
 warmup:
   # globally enable or disable warmups.
@@ -146,7 +146,7 @@ warmup:
   # individual command warmup timers
   home: 5
   spawn: 5
-  groupspawn: 0
+  groupspawn: 5
 
 # ability to raise or lower the limit of homes you allow
 # players to have. Can be defined on a per-world or

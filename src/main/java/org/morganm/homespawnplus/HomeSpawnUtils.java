@@ -186,8 +186,12 @@ public class HomeSpawnUtils {
 			case HOME_MULTI_WORLD:
 			case HOME_THIS_WORLD_ONLY:
 				if( currentMode.getType() == Type.MODE_HOME_NORMAL
-						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY )
+						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
+						|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
 					home = getDefaultHome(playerName, player.getWorld());
+					if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
+						home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
+				}
 				
 				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
 						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
@@ -211,8 +215,12 @@ public class HomeSpawnUtils {
 
 			case HOME_DEFAULT_WORLD:
 				if( currentMode.getType() == Type.MODE_HOME_NORMAL
-						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY )
+						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
+						|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
 					home = getDefaultHome(playerName, getDefaultWorld());
+					if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
+						home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
+				}
 				
 				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
 						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&

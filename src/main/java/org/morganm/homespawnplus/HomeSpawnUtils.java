@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -906,7 +907,27 @@ public class HomeSpawnUtils {
     	
     	return spawn;
     }
-    
+
+    public boolean isNewPlayer(Player p) {
+    	// if we already have a player record in our DB, we're obviously not a new player
+    	if( plugin.getStorage().getPlayer(p.getName()) != null )
+    		return false;
+    	
+    	// otherwise, fall back to checking for a player.dat file, this helps existing
+    	// servers get started with HSP without the existing population all being
+    	// mistaken as new simply b/c they are not in the HSP database.
+    	
+    	String playerDat = p.getName() + ".dat";
+    	
+    	// start with the easy, most likely check
+    	File file = new File("world/players/"+playerDat);
+    	if( file.exists() )
+    		return false;
+    	
+    	// if we didn't find any record of this player on any world, they must be new
+    	return true;
+    }
+
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
      * the server if you teleport them during certain events (such as onPlayerJoin).
      * 

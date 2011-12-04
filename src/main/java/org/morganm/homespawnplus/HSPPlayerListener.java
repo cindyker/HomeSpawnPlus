@@ -156,7 +156,7 @@ public class HSPPlayerListener extends PlayerListener {
     	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
     	
 		// Is this a new player?
-    	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
+    	if( util.isNewPlayer(p) ) {
     		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected, checking.");
     		

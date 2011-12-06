@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
@@ -28,9 +30,18 @@ public class HSP extends BaseCommand {
 		this.logPrefix = HomeSpawnPlus.logPrefix;
 		return super.setPlugin(plugin);
 	}
-	
+
+	@Override
+	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
+		return executePrivate(console, command, args);
+	}
+
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
+		return executePrivate(p, command, args);
+	}
+	
+	private boolean executePrivate(CommandSender p, Command command, String[] args) {
 		if( !isEnabled() || !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".admin") )
 			return false;
 		
@@ -134,7 +145,7 @@ public class HSP extends BaseCommand {
 		return true;
 	}
 	
-	private void printUsage(Player p) {
+	private void printUsage(CommandSender p) {
 		util.sendMessage(p, "Usage:");
 		util.sendMessage(p, "/"+getCommandName()+" reloadconfig - reload config files");
 		util.sendMessage(p, "/"+getCommandName()+" reloaddata - force reloading of plugin data from database");

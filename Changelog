@@ -1,3 +1,12 @@
+v1.1.1 - ?
+* added "onNamedHomeCommand" event type, called when player types "/home
+name". New strategy "homeNamedHome" was added to match. This doesn't change
+default functionality any, but it allows admins to influence the outcome of a
+player typing "/home name" using home modes - for example you could use
+"modeHomeNoBed" to disallow players using their bed homes on "/home name".
+* added ability for HSP to respond to console commands to "/hsp" (so you can
+"/hsp rc" to reload the config from the console, for example)
+
 v1.1 - December 4, 2011
 * Ticket #15: fixed a bug with modeHomeNoBed strategy
 * Ticket #16: better firstLogin detection, check world/players/player.dat

@@ -18,6 +18,7 @@ public class SpawnStrategy {
 		HOME_NEAREST_HOME,
 		HOME_SPECIFIC_WORLD,
 		HOME_ANY_WORLD,
+		HOME_NAMED_HOME,
 		MODE_HOME_NORMAL,
 		MODE_HOME_BED_ONLY,
 		MODE_HOME_NO_BED,
@@ -65,6 +66,9 @@ public class SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_HOME_ANY_WORLD.equals(s) ) {
 			strategy.type = Type.HOME_ANY_WORLD;
+		}
+		else if( ConfigOptions.STRATEGY_HOME_NAMED_HOME.equals(s) ) {
+			strategy.type = Type.HOME_NAMED_HOME;
 		}
 		else if( s.startsWith(ConfigOptions.STRATEGY_HOME_SPECIFIC_WORLD) ) {
 			String[] strings = s.split(":");

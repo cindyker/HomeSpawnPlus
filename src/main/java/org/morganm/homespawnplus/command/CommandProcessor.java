@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 
@@ -98,18 +99,25 @@ public class CommandProcessor
 	{
 		String commandName = bukkitCommand.getName().toLowerCase();
 		Player p = null;
+		ConsoleCommandSender console = null;
 
 		if(sender instanceof Player)
 			p = (Player) sender;
-		
-		// this would represent commands from the console. Right now we don't support any commands from the console.
-		if( p == null )
-			return false;
+		else if(sender instanceof ConsoleCommandSender)
+			console = (ConsoleCommandSender) sender;
 		
 		Command cmd = cmdHash.get(commandName);
 //		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " found cmd "+cmd);
-		if( cmd != null )
-			return cmd.execute(p, bukkitCommand, args);
+		if( cmd != null ) {
+			if( p != null )
+				return cmd.execute(p, bukkitCommand, args);
+			else if( console != null )
+				return cmd.execute(console, bukkitCommand, args);
+			else {	// of course, shouldn't ever happen
+				log.severe(logPrefix+" Unknown message source: command not from Console or Player: "+sender.getClass()+", "+sender);
+				return false;
+			}
+		}
 		else
 			return false;
 	}

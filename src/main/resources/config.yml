@@ -97,6 +97,10 @@ events:
   onHomeCommand:
     - homeMultiWorld
 
+  # strategies to use when player types "/home name"
+  onNamedHomeCommand:
+    - homeNamedHome
+
 #  example of world-specific strategy
 #  world:
 #    myworld:

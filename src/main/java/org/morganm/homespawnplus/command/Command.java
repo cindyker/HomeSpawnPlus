@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.command;
 
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 
@@ -13,6 +14,7 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  */
 public interface Command {
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args);
+	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args);
 
 	/** Return the name of the command.  Used in cooldown and permission checks as well as
 	 * for matching the command the player types in.

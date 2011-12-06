@@ -27,4 +27,6 @@ public class SpawnInfo {
 	/* True if the player spawning is their first login.
 	 */
 	public boolean isFirstLogin = false;
+	
+	public String argData;
 }

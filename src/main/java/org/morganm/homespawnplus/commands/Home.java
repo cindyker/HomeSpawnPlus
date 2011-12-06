@@ -29,13 +29,14 @@ public class Home extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-		// this flag is used to determine whether it was an admin strategy that determined
-		// the location or a player argument, so that we know whether the OTHER_WORLD_PERMISSION
-		// perm needs to be checked
-		boolean strategyDeterminedHome = false;
+		// this flag is used to determine whether the player influenced the outcome of /home
+		// with an arg or whether it was purely determined by the default home strategy, so
+		// that we know whether the OTHER_WORLD_PERMISSION perm needs to be checked
+		boolean playerDirectedArg = false;
 		
 		Location l = null;
 		if( args.length > 0 ) {
+			playerDirectedArg = true;
 			org.morganm.homespawnplus.entity.Home home = null;
 			
 			if( args[0].startsWith("w:") ) {
@@ -56,7 +57,12 @@ public class Home extends BaseCommand
 	    			util.sendMessage(p, "No permission to go to named homes");
 					return true;
 				}
-				home = util.getHomeByName(p.getName(), args[0]);
+				
+				SpawnInfo spawnInfo = new SpawnInfo();
+				spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_NAMED_CMD_BEHAVIOR;
+				spawnInfo.argData = args[0];
+				l = util.getStrategyLocation(p, spawnInfo);
+//				home = util.getHomeByName(p.getName(), args[0]);
 			}
 				
 			if( home != null )
@@ -71,14 +77,13 @@ public class Home extends BaseCommand
 			SpawnInfo spawnInfo = new SpawnInfo();
 			spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_CMD_BEHAVIOR;
 			l = util.getStrategyLocation(p, spawnInfo);
-			strategyDeterminedHome = true;
 		}
 		
     	if( l != null ) {
     		// make sure it's on the same world, or if not, that we have cross-world home perms
     		// we only evaluate this check if the player gave input for another world; admin-directed
     		// strategies always allow cross-world locations regardless of permissions.
-    		if( !strategyDeterminedHome && !p.getWorld().getName().equals(l.getWorld().getName()) &&
+    		if( playerDirectedArg && !p.getWorld().getName().equals(l.getWorld().getName()) &&
     				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
     			util.sendMessage(p, "No permission to go to homes in other worlds.");
     			return true;

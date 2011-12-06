@@ -38,11 +38,13 @@ public interface ConfigOptions {
 	public static final String SETTING_EVENTS_BASE = "events";
 	public static final String SETTING_EVENTS_WORLDBASE = "world";
 	public static final String SETTING_EVENTS_PERMBASE = "permission";
+	
 	public static final String SETTING_JOIN_BEHAVIOR = "onJoin";
 	public static final String SETTING_DEATH_BEHAVIOR = "onDeath";
 	public static final String SETTING_SPAWN_CMD_BEHAVIOR = "onSpawnCommand";
 	public static final String SETTING_GROUPSPAWN_CMD_BEHAVIOR = "onGroupSpawnCommand";
 	public static final String SETTING_HOME_CMD_BEHAVIOR = "onHomeCommand";
+	public static final String SETTING_HOME_NAMED_CMD_BEHAVIOR = "onNamedHomeCommand";
 
 	public static final String VALUE_DEFAULT = "default";
 	public static final String VALUE_HOME = "home";
@@ -66,6 +68,7 @@ public interface ConfigOptions {
 	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";
 	public static final String STRATEGY_HOME_MULTI_WORLD = "homeMultiWorld";
 	public static final String STRATEGY_HOME_NEAREST_HOME = "homeNearest";
+	public static final String STRATEGY_HOME_NAMED_HOME = "homeNamedHome";
 	public static final String STRATEGY_HOME_SPECIFIC_WORLD = "homeSpecificWorld";
 	public static final String STRATEGY_HOME_ANY_WORLD = "homeAnyWorld";
 	

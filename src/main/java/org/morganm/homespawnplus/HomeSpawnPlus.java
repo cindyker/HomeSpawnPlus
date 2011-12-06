@@ -471,7 +471,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// console always has access
     	if( sender instanceof ConsoleCommandSender )
     		return true;
-    	if( sender instanceof Player )
+    	else if( sender instanceof Player )
     		p = (Player) sender;
     	
     	// shouldn't happen, but if it does, something weird going on: deny access

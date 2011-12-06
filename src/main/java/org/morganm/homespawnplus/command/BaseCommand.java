@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.CooldownManager;
 import org.morganm.homespawnplus.Debug;
@@ -37,6 +38,15 @@ public abstract class BaseCommand implements Command {
 	private String oldPermissionNode;
 	private String commandName;
 
+	/** By default, commands do not respond to console input. They can override this if they wish
+	 * to do so.
+	 * 
+	 */
+	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args)
+	{
+		return false;
+	}
+	
 	/** Returns this object for easy initialization in a command hash.
 	 * 
 	 * @param plugin

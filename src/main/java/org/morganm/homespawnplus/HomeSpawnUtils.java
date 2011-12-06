@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.SpawnStrategy.Type;
@@ -57,8 +58,8 @@ public class HomeSpawnUtils {
 	 * @param p
 	 * @param message
 	 */
-	public void sendMessage(Player p, String message) {
-		p.sendMessage(Yellow + message);
+	public void sendMessage(CommandSender sender, String message) {
+		sender.sendMessage(Yellow + message);
 	}
 	
 	/** Given a location, return a short string format of the form:
@@ -208,6 +209,20 @@ public class HomeSpawnUtils {
 				logStrategyResult(type, l, verbose);
 				break;
 				
+			case HOME_NAMED_HOME:
+				home = getHomeByName(player.getName(), spawnInfo.argData);
+				if( currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY && !home.isDefaultHome() )
+					home = null;
+				if( currentMode.getType() == Type.MODE_HOME_BED_ONLY && !home.isBedHome() )
+					home = null;
+				if( currentMode.getType() == Type.MODE_HOME_NO_BED && home.isBedHome() )
+					home = null;
+				
+				if( home != null )
+					l = home.getLocation();
+				logStrategyResult(type, l, verbose);
+				break;
+
 			case MODE_HOME_NORMAL:
 			case MODE_HOME_BED_ONLY:
 			case MODE_HOME_NO_BED:

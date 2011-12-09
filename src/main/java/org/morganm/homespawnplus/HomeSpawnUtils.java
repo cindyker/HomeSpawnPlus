@@ -71,8 +71,28 @@ public class HomeSpawnUtils {
 	public String shortLocationString(Location l) {
 		if( l == null )
 			return "null";
-		else
-			return l.getWorld().getName()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+		else {
+			World w = l.getWorld();
+			String worldName = null;
+			if( w != null )
+				worldName = w.getName();
+			else
+				worldName = "(world deleted)";
+			return worldName+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+		}
+	}
+	
+	public String shortLocationString(Home h) {
+		if( h == null )
+			return "null";
+		else {
+			Location l = h.getLocation();
+			if( l.getWorld() != null )
+				return shortLocationString(l);
+			else {
+				return h.getWorld()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+			}
+		}
 	}
 	
 	private void logStrategyResult(final SpawnStrategy.Type type, final Location l, final boolean verbose) {

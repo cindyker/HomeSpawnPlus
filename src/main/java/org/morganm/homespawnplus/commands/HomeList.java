@@ -29,7 +29,7 @@ public class HomeList extends BaseCommand {
 		Set<org.morganm.homespawnplus.entity.Home> homes;
 		String world = "all";
 		
-		if( args.length > 1 )
+		if( args.length > 0 )
 			world = args[0];
 		
 		homes = plugin.getStorage().getHomes(world, p.getName());
@@ -54,7 +54,7 @@ public class HomeList extends BaseCommand {
 				String name = home.getName();
 				if( name == null )
 					name = "<noname>";
-				util.sendMessage(p, name+": "+ util.shortLocationString(home.getLocation())
+				util.sendMessage(p, name+": "+ util.shortLocationString(home)
 						+ (home.isDefaultHome() ? " (default)" : ""));
 				/*
 				util.sendMessage(p, String.format("%-16s %12s/%6d/%6d/%6d %-8s",

@@ -1,4 +1,6 @@
-v1.1.1 - ?
+v1.1.1 - December 8, 2011
+* fix for HSP throwing NPE when a world has been deleted
+* fix for "/homelist <world>" not working properly
 * added "onNamedHomeCommand" event type, called when player types "/home
 name". New strategy "homeNamedHome" was added to match. This doesn't change
 default functionality any, but it allows admins to influence the outcome of a

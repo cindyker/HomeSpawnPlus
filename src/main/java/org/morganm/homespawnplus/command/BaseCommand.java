@@ -11,12 +11,12 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.CooldownManager;
-import org.morganm.homespawnplus.Debug;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.WarmupManager;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.util.Debug;
 
 
 /** Abstract class that takes care of some routine tasks for commands, to keep those

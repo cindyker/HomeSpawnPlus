@@ -1,3 +1,6 @@
+# If you use Superperms (bPerm, DefaultPerms) exclusively, you can
+# use this file, which includes per-command permissions per the
+# Superperms spec.
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 1.1.2
@@ -8,22 +11,26 @@ commands:
   groupspawn:
     aliases: [gs]
     description: Returns you to the group spawn
+    permission: hsp.command.groupspawn
     usage: |
            Incorrect usage of command /<command>. Examples:
            /<command> - respawns you at your primary group spawn
            /<command> Admins - respawns you at the 'Admins' group spawn
   home:
     description: Respawns you at your home
+    permission: hsp.command.home
     usage: /<command>
   homedelete:
     aliases: [homed,deletehome,rmhome]
     description: Delete your default or a named home
+    permission: hsp.command.homedelete
     usage: |
            /<command>
            /<command> homeName
   homedeleteother:
     aliases: [hdo]
     description: Delete another player's default or a named home
+    permission: hsp.command.homedeleteother
     usage: |
            /<command> player
            /<command> player homeName
@@ -31,6 +38,7 @@ commands:
   homelist:
     aliases: [homel, listhomes]
     description: Show your homes
+    permission: hsp.command.homelist
     usage: |
            /<command> - show homes on current world
            /<command> world - show homes on 'world'
@@ -38,34 +46,42 @@ commands:
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)
+    permission: hsp.command.homeother
     usage: |
            /<command> playerName 
            /<command> playerName homeName
            /<command> playerName w:worldName
   hsp:
     description: Load and convert data from another data store
+    permission: hsp.admin
     usage: /<command> [reloadconfig|reloaddata]
   hspconvert:
     description: Load and convert data from another data store
+    permission: hsp.admin
     usage: /<command>
   setdefaulthome:
     aliases: [sdh]
     description: Sets your defaulthome to a named home
+    permission: hsp.command.setdefaulthome
     usage: /<command> homeName
   setdefaultspawn:
     description: Sets the default spawn to a named spawn
+    permission: hsp.command.setdefaultspawn
     usage: /<command> spawnName
   setfirstspawn:
     description: Sets the newPlayer spawn
+    permission: hsp.command.setfirstspawn
     usage: /<command>
   setgroupspawn:
     description: Sets the group spawn
+    permission: hsp.command.setgroupspawn
     usage: |
         Incorrect usage of command /<command>. Examples:
            /<command> Admins - sets the group spawn for the 'Admins' group
   sethome:
     aliases: [homeset]
     description: Sets your home
+    permission: hsp.command.sethome
     usage: |
         Incorrect usage of command /<command>. Examples:
            /<command> - sets your home to your current location
@@ -73,14 +89,17 @@ commands:
   sethomeother:
     aliases: [sethomeo,sho]
     description: Set another player's home to current location
+    permission: hsp.command.sethomeother
     usage: |
            /<command> playerName
            /<command> playerName homeName
   setspawn:
     description: Sets the spawn for this world
+    permission: hsp.command.setspawn
     usage: /<command>
   spawn:
     description: Respawns you at the world spawn
+    permission: hsp.command.spawn
     usage: /<command>
 permissions:
     hsp.*:

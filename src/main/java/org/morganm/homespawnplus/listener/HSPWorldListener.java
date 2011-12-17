@@ -1,9 +1,11 @@
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.listener;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
 

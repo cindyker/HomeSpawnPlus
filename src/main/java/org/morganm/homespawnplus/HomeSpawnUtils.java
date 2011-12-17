@@ -21,6 +21,8 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.WorldGuardInterface;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 

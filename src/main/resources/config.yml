@@ -14,13 +14,29 @@
 #  - spawn
 #  - setspawn
 
+# This defines which permission system HSP uses. Vault and WEPIF
+# (WEPIF is built into WorldEdit) are preferred, they both provide
+# a nice interface to all other permission systems. If you don't have
+# or don't want to use either of those, there is some native support
+# for a few other permission systems that you can use. These are
+# checked in the order they are listed for existence, and the
+# first one to match is used.
+permissions:
+  - vault
+  - wepif
+  - pex
+  - perm2-compat
+  - superperms
+  - ops
+
 core:
   # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined
   #     by bukkit.yml)
   # 1 - Cached Ebeans - currently disabled, don't use
   storage: 0
 
-  # this is ONLY used when a Permissions-compatible plugin isn't found.
+  # this is ONLY used when "ops" is used in the "permissions" section
+  # above.
   # In that case, any permissions listed here are given to everyone by
   # default (ops always have full permissions)
 #  defaultPermissions:

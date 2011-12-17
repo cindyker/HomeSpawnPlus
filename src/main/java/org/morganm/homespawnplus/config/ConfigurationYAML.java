@@ -4,14 +4,11 @@
 package org.morganm.homespawnplus.config;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +21,6 @@ import org.morganm.homespawnplus.SpawnStrategy;
  * @author morganm
  *
  */
-@SuppressWarnings("unchecked")
 public class ConfigurationYAML extends YamlConfiguration implements Config {
 	private static final Logger log = HomeSpawnPlus.log;
 	private final String logPrefix; 
@@ -108,24 +104,7 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 	 * @return
 	 */
     private void copyConfigFromJar(String fileName, File outfile) {
-//        File file = new File(plugin.getDataFolder(), fileName);
-        
-        if (!outfile.canRead()) {
-            try {
-            	JarFile jar = new JarFile(plugin.getJarFile());
-            	
-                file.getParentFile().mkdirs();
-                JarEntry entry = jar.getJarEntry(fileName);
-                InputStream is = jar.getInputStream(entry);
-                FileOutputStream os = new FileOutputStream(outfile);
-                byte[] buf = new byte[(int) entry.getSize()];
-                is.read(buf, 0, (int) entry.getSize());
-                os.write(buf);
-                os.close();
-            } catch (Exception e) {
-                log.warning(logPrefix + " Could not copy config file "+fileName+" to default location");
-            }
-        }
+    	plugin.getJarUtils().copyConfigFromJar(fileName, outfile);
     }
     
     public List<String> getStringList(String path, List<String> def)

@@ -1,3 +1,11 @@
+v1.1.2 - December 17, 2011
+* Ticket #27: fix permissions for perm systems not supporting superperms
+* some code cleanup/refactoring
+* The above changes come with a new config option "permissions" which allow
+you to select which permission system you want to use. By default it will go
+through the list and use the first available, but now you can change it if you
+want (for example, maybe you prefer to use WEPIF instead of Vault).
+
 v1.1.1 - December 8, 2011
 * fix for HSP throwing NPE when a world has been deleted
 * fix for "/homelist <world>" not working properly

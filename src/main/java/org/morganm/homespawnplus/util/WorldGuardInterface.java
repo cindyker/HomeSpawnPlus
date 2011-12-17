@@ -1,13 +1,14 @@
 /**
  * 
  */
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.util;
 
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;

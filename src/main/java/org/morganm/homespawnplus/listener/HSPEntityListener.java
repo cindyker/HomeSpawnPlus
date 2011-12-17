@@ -1,10 +1,12 @@
 /**
  * 
  */
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.listener;
 
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.WarmupManager;
 
 /**
  * @author morganm

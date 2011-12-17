@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
-import org.morganm.homespawnplus.Debug;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
+import org.morganm.homespawnplus.util.Debug;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;

@@ -13,10 +13,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
@@ -34,8 +33,6 @@ import com.avaje.ebean.validation.NotNull;
 		}
 )
 public class Player {
-	private static transient Server server;
-	
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -59,10 +56,6 @@ public class Player {
 	@CreatedTimestamp
 	private Timestamp dateCreated;
 	
-	public static void setServer(Server server) {
-		Player.server = server;
-	}
-	
     public Player() {}
     public Player(org.bukkit.entity.Player player) {
     	this.name = player.getName();
@@ -82,13 +75,10 @@ public class Player {
     }
     
     public Location getLastLogoutLocation() {
-    	if( server == null )
-    		server = HomeSpawnPlus.getInstance().getServer();
-    	
     	if( getWorld() == null )
     		return null;
     	
-    	World w = server.getWorld(getWorld());
+    	World w = Bukkit.getWorld(getWorld());
     	return new Location(w, getX(), getY(), getZ(), getYaw(), getPitch());
     }
     

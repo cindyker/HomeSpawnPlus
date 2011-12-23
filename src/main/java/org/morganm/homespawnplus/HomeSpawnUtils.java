@@ -6,6 +6,7 @@ package org.morganm.homespawnplus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -40,6 +41,7 @@ public class HomeSpawnUtils {
 	private final HomeSpawnPlus plugin;
     private final Server server;
     private WorldGuardInterface wgInterface;
+	private Random random = new Random(System.currentTimeMillis());
     private Debug debug;
 	
 	// set when we first find the defaultSpawnWorld, cached for future reference
@@ -107,7 +109,15 @@ public class HomeSpawnUtils {
 		public boolean explicitDefault = false;
 	}
 	
-	
+	/** This method is the heart of spawn strategies. A strategy chain is passed into it via
+	 * the (now poorly named) SpawnInfo class and it will evaluate those strategies and try to
+	 * return a location. If no location can be found from the given strategies, the
+	 * SpawnStrategyresult.location returned will be null.
+	 * 
+	 * @param player
+	 * @param spawnInfo
+	 * @return
+	 */
 	private SpawnStrategyResult evaluateSpawnStrategies(Player player, SpawnInfo spawnInfo) {
 		final boolean verbose = plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
 
@@ -297,6 +307,23 @@ public class HomeSpawnUtils {
 					l = spawn.getLocation();
 				logStrategyResult(type, l, verbose);
 				break;
+				
+			case SPAWN_LOCAL_WORLD_RANDOM:
+			{
+				String playerLocalWorld = player.getWorld().getName();
+				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
+				ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
+				for(Spawn theSpawn : allSpawns) {
+					if( playerLocalWorld.equals(theSpawn.getWorld()) ) {
+						spawnChoices.add(theSpawn);
+					}
+				}
+				if( spawnChoices.size() > 0 ) {
+					int randomChoice = random.nextInt(spawnChoices.size());
+					l = spawnChoices.get(randomChoice).getLocation();
+				}
+				break;
+			}
 				
 			case SPAWN_DEFAULT_WORLD:
 				l = getDefaultSpawn().getLocation();

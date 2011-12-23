@@ -75,6 +75,47 @@ public abstract class BaseCommand implements Command {
 		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
 	}
 	
+	/** Check to see if player has sufficient money to pay for this command.
+	 * 
+	 * @param p
+	 * @return
+	 */
+	protected boolean costCheck(Player p) {
+		boolean returnValue = false;
+		
+		Economy economy = plugin.getEconomy();
+		if( economy == null )
+			returnValue = true;
+		
+		if( !returnValue && plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+			returnValue = true;
+
+		if( !returnValue ) {
+			int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+			if( price > 0 ) {
+				double balance = economy.getBalance(p.getName());
+				if( balance >= price )
+					returnValue = true;
+			}
+			else
+				returnValue = true;	// no cost for this command
+		}
+		
+		return returnValue;
+	}
+	
+	protected int getPrice() {
+		return plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+	}
+	
+	protected void printInsufficientFundsMessage(Player p) {
+		Economy economy = plugin.getEconomy();
+		if( economy != null )
+			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice())
+					+ " (you only have "+economy.format(economy.getBalance(p.getName()))+")"
+				);
+	}
+	
 	/**
 	 * 
 	 * @param p
@@ -90,8 +131,12 @@ public abstract class BaseCommand implements Command {
 		if( !returnValue && plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
 			returnValue = true;
 
-		if( !returnValue ) {
-			int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+		if( !costCheck(p) ) {
+			printInsufficientFundsMessage(p);
+			returnValue = false;
+		}
+		else if( !returnValue ) {
+			int price = getPrice();
 			if( price > 0 ) {
 				EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
 				

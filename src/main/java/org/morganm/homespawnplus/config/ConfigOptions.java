@@ -78,6 +78,7 @@ public interface ConfigOptions {
 	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
 	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
 	
+	public static final String STRATEGY_SPAWN_LOCAL_RANDOM = "spawnLocalRandom";
 	public static final String STRATEGY_SPAWN_WG_REGION = "spawnWGregion";
 	public static final String STRATEGY_SPAWN_NEW_PLAYER = "spawnNewPlayer";
 	public static final String STRATEGY_SPAWN_THIS_WORLD_ONLY = "spawnLocalWorld";

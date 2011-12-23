@@ -26,6 +26,7 @@ public class SpawnStrategy {
 		MODE_HOME_ANY,
 		SPAWN_THIS_WORLD_ONLY,
 		SPAWN_NEW_PLAYER,
+		SPAWN_LOCAL_WORLD_RANDOM,
 		SPAWN_DEFAULT_WORLD,
 		SPAWN_GROUP,
 		SPAWN_GROUP_SPECIFIC_WORLD,
@@ -98,6 +99,9 @@ public class SpawnStrategy {
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_NEW_PLAYER.equals(s) ) {
 			strategy.type = Type.SPAWN_NEW_PLAYER;
+		}
+		else if( ConfigOptions.STRATEGY_SPAWN_LOCAL_RANDOM.equals(s) ) {
+			strategy.type = Type.SPAWN_LOCAL_WORLD_RANDOM;
 		}
 		else if( ConfigOptions.STRATEGY_SPAWN_DEFAULT_WORLD.equals(s) ) {
 			strategy.type = Type.SPAWN_DEFAULT_WORLD;

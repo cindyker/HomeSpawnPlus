@@ -59,10 +59,11 @@ public class Spawn extends BaseCommand
 	    		final Location finalL = l;
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
+					private String wuName = getCommandName();
 
 					public void run() {
 						if( !canceled ) {
-							util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to spawn");
+							util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to spawn");
 							if( applyCost(p, true) )
 								p.teleport(finalL);
 						}
@@ -74,6 +75,8 @@ public class Spawn extends BaseCommand
 
 					public void setPlayerName(String playerName) {}
 					public void setWarmupId(int warmupId) {}
+					public WarmupRunner setWarmupName(String warmupName) { wuName = warmupName; return this; }
+					public String getWarmupName() { return wuName; }
 				});
 			}
 			else {

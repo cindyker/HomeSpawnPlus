@@ -153,6 +153,12 @@ cooldown:
   # so typing "/home home1" will start home1's cooldown,
   # and "/home home2" is on a separate cooldown.
   cooldownPerHome: false
+ 
+  # if set, this becomes the cooldown "per-home". otherwise
+  # the cooldown used is the normal one (per-permission,
+  # per-world or global, depending on your config below)
+  cooldownPerHomeOverride: 0
+
   home: 60
   spawn: 60
   groupspawn: 60
@@ -160,12 +166,16 @@ cooldown:
 #  example of world-specific cooldowns
 #  world:
 #    myworld:
+#      # whether this world should have its own cooldowns
+#      cooldownPerWorld: false
 #      home: 120
 #      spawn: 120
 #
 #  example of permission-specific cooldowns
 #  permission:
 #    entry1:
+#      # whether these permission should have their own cooldowns
+#      cooldownPerPermission: false
 #      permissions:
 #        - my.special.permission
 #      home: 30
@@ -185,6 +195,24 @@ warmup:
   home: 5
   spawn: 5
   groupspawn: 5
+ 
+#  example of world-specific warmups
+#  world:
+#    myworld:
+#      # whether this world should have its own warmups
+#      warmupPerWorld: false
+#      home: 10
+#      spawn: 10
+#
+#  example of permission-specific warmups
+#  permission:
+#    entry1:
+#      # whether these permission should have their own warmups
+#      warmupPerPermission: false
+#      permissions:
+#        - my.special.permission
+#      home: 15
+#      spawn: 15
 
 # ability to raise or lower the limit of homes you allow
 # players to have. Can be defined on a per-world or

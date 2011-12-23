@@ -121,7 +121,7 @@ public abstract class BaseCommand implements Command {
 	 * @param p
 	 * @return true on success, false if there was an error that should prevent the action from taking place
 	 */
-	protected boolean applyCost(Player p, boolean applyCooldown) {
+	protected boolean applyCost(Player p, boolean applyCooldown, String cooldownName) {
 		boolean returnValue = false;
 		
 		Economy economy = plugin.getEconomy();
@@ -158,23 +158,26 @@ public abstract class BaseCommand implements Command {
 		
 		// if applyCooldown flag is true and the returnValue is true, then apply the Cooldown now
 		if( applyCooldown && returnValue == true )
-			applyCooldown(p);
+			applyCooldown(p, cooldownName);
 		
 		return returnValue;
+	}
+	protected boolean applyCost(Player p, boolean applyCooldown) {
+		return applyCost(p, applyCooldown, null);
 	}
 	protected boolean applyCost(Player p) {
 		return applyCost(p, false);
 	}
 	
 	protected void doWarmup(Player p, WarmupRunner wr) {
-		if ( !isWarmupPending(p) ) {
-			warmupManager.startWarmup(p.getName(), getCommandName(), wr);
+		if ( !isWarmupPending(p, wr.getWarmupName()) ) {
+			warmupManager.startWarmup(p.getName(), wr);
 			
-			util.sendMessage(p, "Warmup "+getCommandName()+" started, you must wait "+
-					warmupManager.getWarmupTime(getCommandName())+" seconds.");
+			util.sendMessage(p, "Warmup "+wr.getWarmupName()+" started, you must wait "+
+					warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime+" seconds.");
 		}
 		else
-			util.sendMessage(p, "Warmup already pending for "+getCommandName());
+			util.sendMessage(p, "Warmup already pending for "+wr.getWarmupName());
 		
 	}
 	
@@ -186,7 +189,6 @@ public abstract class BaseCommand implements Command {
 	 *   
 	 * This method just implements all 3 checks.
 	 * 
-	 * @param enabledConfigParam the config param to check to see if this command is enabled. Can be null to skip this check.
 	 * @param p the player object that is running the command
 	 * 
 	 * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
@@ -237,20 +239,33 @@ public abstract class BaseCommand implements Command {
 	 * @param p
 	 * @return true if cooldown is available, false if currently in cooldown period
 	 */
+	protected boolean cooldownCheck(Player p, String cooldownName) {
+		if( cooldownName == null )
+			cooldownName = getCommandName();
+		return cooldownManager.cooldownCheck(p, cooldownName);
+	}
 	protected boolean cooldownCheck(Player p) {
-		return cooldownManager.cooldownCheck(p, getCommandName());
+		return cooldownCheck(p, getCommandName());
 	}
 	
+	protected void applyCooldown(Player p, String cooldownName) {
+		if( cooldownName == null )
+			cooldownName = getCommandName();
+		cooldownManager.setCooldown(p,  cooldownName);
+	}
 	protected void applyCooldown(Player p) {
-		cooldownManager.setCooldown(p,  getCommandName());
+		applyCooldown(p,  getCommandName());
 	}
 
 	/**
 	 * 
 	 * @return true if this command & player has a warmup associated with it
 	 */
+	protected boolean hasWarmup(Player p, String warmupName) {
+		return warmupManager.hasWarmup(p, warmupName);
+	}
 	protected boolean hasWarmup(Player p) {
-		return warmupManager.hasWarmup(p, getCommandName());
+		return hasWarmup(p, getCommandName());
 	}
 	
 	/** check if a warmup is already pending for this command
@@ -258,8 +273,11 @@ public abstract class BaseCommand implements Command {
 	 * @param p
 	 * @return true if warmup is already pending, false if not
 	 */
+	protected boolean isWarmupPending(Player p, String warmupName) {
+		return warmupManager.isWarmupPending(p.getName(), warmupName);
+	}
 	protected boolean isWarmupPending(Player p) {
-		return warmupManager.isWarmupPending(p.getName(), getCommandName());
+		return isWarmupPending(p, getCommandName());
 	}
 	
 	/** Return true if the player has permission to run this command.  If they

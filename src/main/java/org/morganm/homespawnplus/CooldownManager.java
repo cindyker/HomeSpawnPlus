@@ -62,7 +62,7 @@ public class CooldownManager {
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
 		if(cooldownTimeLeft > 0)
 		{
-			plugin.getUtil().sendMessage(p, "Cooldown is in effect. You must wait " + cooldownTimeLeft + " seconds.");
+			plugin.getUtil().sendMessage(p, "Cooldown \""+cooldownName+"\" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
 			return false;
 		}
 		
@@ -130,7 +130,7 @@ public class CooldownManager {
     	String cooldownBase = null;
     	int index = cooldown.indexOf('.');
     	if( index != -1 )
-    		cooldownBase = cooldown.substring(0, index-1);
+    		cooldownBase = cooldown.substring(0, index);
     	else
     		cooldownBase = cooldown;
     	
@@ -152,40 +152,53 @@ public class CooldownManager {
     	cdt.cooldownName = cooldown;	// default to existing cooldown name
     	
     	final String cooldownBase = getCooldownBasename(cooldown);
+    	debug.debug("getCooldownTime(): cooldown=",cooldown,", cooldownBase=",cooldownBase);
     	
-    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COOLDOWN_BASE
-    			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
-    	if( cs != null ) {
-    		Set<String> keys = cs.getKeys(false);
-    		if( keys != null ) 
-    			for(String entry : keys) {
-    				// stop looping once we find a non-zero cooldownTime
-    				if( cdt.cooldownTime != 0 )
-    					break;
-    				
-    				int entryCooldown = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
-    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + cooldownBase, 0);
-    				
-    				if( entryCooldown > 0 ) {
-	    				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COOLDOWN_BASE
-	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-	    						+ entry + ".permissions", null);
-	
-	    				for(String perm : perms) {
-	    					debug.debug("getCooldownTime(): checking permission ",perm," for entry ",entry);
-	
-	    					if( plugin.hasPermission(player, perm) ) {
-	    						cdt.cooldownTime = entryCooldown;
-	    	    				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
-	    	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-	    	    						+ entry + ".cooldownPerPermission", false) )
-	    	    					cdt.cooldownName = cooldown + "." + perm;
-	    						break;
-	    					}
-	    				}
-    				}
-    				
-    			}
+    	// check if a per-entity cooldown is being used, such as "home.myhome1". If so,
+    	// we need to check the cooldownPerHomeOverride flag in case the admin wants
+    	// these handled differently.
+    	if( !cooldownBase.equals(cooldown) ) {
+    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_PER_HOME_OVERRIDE, 0);
+        	debug.debug("getCooldownTime(): per-home override cooldown=",cdt.cooldownTime);
+    	}
+    	
+    	if( cdt.cooldownTime == 0 ) {
+	    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COOLDOWN_BASE
+	    			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
+	    	if( cs != null ) {
+	    		Set<String> keys = cs.getKeys(false);
+	    		if( keys != null ) 
+	    			for(String entry : keys) {
+						debug.debug("getCooldownTime(): checking entry ",entry);
+	    				// stop looping once we find a non-zero cooldownTime
+	    				if( cdt.cooldownTime != 0 )
+	    					break;
+	    				
+	    				int entryCooldown = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
+	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + cooldownBase, 0);
+	    				
+	    				if( entryCooldown > 0 ) {
+		    				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COOLDOWN_BASE
+		    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+		    						+ entry + ".permissions", null);
+		
+		    				for(String perm : perms) {
+		    					debug.debug("getCooldownTime(): checking permission ",perm," for entry ",entry);
+		
+		    					if( plugin.hasPermission(player, perm) ) {
+		    						cdt.cooldownTime = entryCooldown;
+		    	    				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
+		    	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+		    	    						+ entry + ".cooldownPerPermission", false) )
+		    	    					cdt.cooldownName = cooldown + "." + perm;
+		    						break;
+		    					}
+		    				}
+	    				}// end if( entryCooldown > 0 )
+	    			}// end for(String entry : keys)
+	    	}// end if( cs != null )
+	    	
+        	debug.debug("getCooldownTime(): post-permission cooldown=",cdt.cooldownTime,", name=",cdt.cooldownName);
     	}
     	
     	// if cooldownTime is still 0, then check for world-specific cooldown
@@ -198,11 +211,14 @@ public class CooldownManager {
 					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
 					+ worldName + ".cooldownPerWorld", false) )
 				cdt.cooldownName = cooldown + "." + worldName;
+			
+	    	debug.debug("getCooldownTime(): post-world world=",worldName,", cooldown=",cdt.cooldownTime,", name=",cdt.cooldownName);
     	}
     	
     	// if cooldownTime is still 0, then check global cooldown setting
     	if( cdt.cooldownTime == 0 ) {
     		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldownBase, 0);
+        	debug.debug("getCooldownTime(): post-global cooldown=",cdt.cooldownTime,", name=",cdt.cooldownName);
     	}
     	
     	return cdt;

@@ -67,6 +67,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
     private JarUtils jarUtils;
+	private int buildNumber = -1;
     private PluginDescriptionFile pluginDescription;
     private String pluginName;
     private Storage storage;
@@ -100,6 +101,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	Debug.getInstance().init(log, logPrefix+"[DEBUG] ", false);
     	jarUtils = new JarUtils(this, getFile(), log, logPrefix);
+		buildNumber = jarUtils.getBuildNumber();
     	
     	// load our configuration and database
     	try {
@@ -144,7 +146,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	new CommandUsurper(this, log, logPrefix).usurpCommands();
     	
-        log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] loaded" );
+		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     }
     
     @Override
@@ -165,7 +167,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
 
     	getServer().getScheduler().cancelTasks(this);
-    	log.info( logPrefix + " version [" + pluginDescription.getVersion() + "] unloaded" );
+		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is disabled");
     }
     
     @Override

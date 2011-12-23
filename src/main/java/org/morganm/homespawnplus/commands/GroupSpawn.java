@@ -38,10 +38,11 @@ public class GroupSpawn extends BaseCommand
 		if( hasWarmup(p) ) {
 			doWarmup(p, new WarmupRunner() {
 				private boolean canceled = false;
+				private String wuName = getCommandName();
 
 				public void run() {
 					if( !canceled ) {
-						util.sendMessage(p, "Warmup \""+getCommandName()+"\" finished, teleporting to group spawn");
+						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
 						if( applyCost(p, true) )
 							p.teleport(l);
 					}
@@ -53,6 +54,8 @@ public class GroupSpawn extends BaseCommand
 
 				public void setPlayerName(String playerName) {}
 				public void setWarmupId(int warmupId) {}
+				public WarmupRunner setWarmupName(String warmupName) { wuName = warmupName; return this; }
+				public String getWarmupName() { return wuName; }
 			});
 		}
 		else {

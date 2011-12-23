@@ -56,6 +56,7 @@ public interface ConfigOptions {
 	
 	public static final String COOLDOWN_BASE = "cooldown.";
 	public static final String COOLDOWN_PER_HOME = COOLDOWN_BASE + "cooldownPerHome";
+	public static final String COOLDOWN_PER_HOME_OVERRIDE = COOLDOWN_BASE + "cooldownPerHomeOverride";
 	public static final String WARMUP_BASE = "warmup.";
 	public static final String COST_BASE = "cost.";
 	public static final String COST_VERBOSE = COST_BASE + "verbose";

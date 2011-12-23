@@ -55,6 +55,7 @@ public interface ConfigOptions {
 	public static final String VALUE_NEW_PLAYER_SPAWN = "newPlayerSpawn";
 	
 	public static final String COOLDOWN_BASE = "cooldown.";
+	public static final String COOLDOWN_PER_HOME = COOLDOWN_BASE + "cooldownPerHome";
 	public static final String WARMUP_BASE = "warmup.";
 	public static final String COST_BASE = "cost.";
 	public static final String COST_VERBOSE = COST_BASE + "verbose";

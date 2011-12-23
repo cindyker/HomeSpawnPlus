@@ -149,9 +149,27 @@ disabledCommands:
 
 # cooldowns for various commands can be defined here
 cooldown:
+  # if set to true, each home will have a unique cooldown.
+  # so typing "/home home1" will start home1's cooldown,
+  # and "/home home2" is on a separate cooldown.
+  cooldownPerHome: false
   home: 60
   spawn: 60
   groupspawn: 60
+
+#  example of world-specific cooldowns
+#  world:
+#    myworld:
+#      home: 120
+#      spawn: 120
+#
+#  example of permission-specific cooldowns
+#  permission:
+#    entry1:
+#      permissions:
+#        - my.special.permission
+#      home: 30
+#      spawn: 30
 
 warmup:
   # globally enable or disable warmups.

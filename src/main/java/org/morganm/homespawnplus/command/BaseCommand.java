@@ -91,7 +91,7 @@ public abstract class BaseCommand implements Command {
 			returnValue = true;
 
 		if( !returnValue ) {
-			int price = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+			int price = getPrice(p);
 			if( price > 0 ) {
 				double balance = economy.getBalance(p.getName());
 				if( balance >= price )
@@ -104,14 +104,14 @@ public abstract class BaseCommand implements Command {
 		return returnValue;
 	}
 	
-	protected int getPrice() {
-		return plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + getCommandName(), 0);
+	protected int getPrice(Player p) {
+		return util.getCommandCost(p, getCommandName());
 	}
 	
 	protected void printInsufficientFundsMessage(Player p) {
 		Economy economy = plugin.getEconomy();
 		if( economy != null )
-			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice())
+			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice(p))
 					+ " (you only have "+economy.format(economy.getBalance(p.getName()))+")"
 				);
 	}
@@ -136,7 +136,7 @@ public abstract class BaseCommand implements Command {
 			returnValue = false;
 		}
 		else if( !returnValue ) {
-			int price = getPrice();
+			int price = getPrice(p);
 			if( price > 0 ) {
 				EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
 				

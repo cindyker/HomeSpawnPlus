@@ -1,6 +1,9 @@
 v1.1.4 - December 22, 2011
 * added "spawnLocalRandom" strategy for spawning at a random spawn point on
 the local world
+* Ticket #24/#25/#30: cooldowns per-permission, per-world and per-home
+* Ticket #24: warmups per-permission and per-world
+* Ticket #24: cost per-permisson and per-world
 
 v1.1.3 - December 19, 2011
 * Ticket #31: bugfix for /sethome taking money when player is at home limit

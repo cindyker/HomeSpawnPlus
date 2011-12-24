@@ -35,8 +35,8 @@ public class Home extends BaseCommand
 		// with an arg or whether it was purely determined by the default home strategy, so
 		// that we know whether the OTHER_WORLD_PERMISSION perm needs to be checked
 		boolean playerDirectedArg = false;
+		final String warmupName = getWarmupName(null);
 		String cooldownName = null;
-		String warmupName = null;
 		
 		Location l = null;
 		if( args.length > 0 ) {
@@ -78,7 +78,6 @@ public class Home extends BaseCommand
 				homeName = args[0];
 			
 			cooldownName = getCooldownName(homeName);
-			warmupName = getWarmupName(homeName);
 			
 			if( l == null ) {
 				util.sendMessage(p,  "No home named \""+homeName+"\" found.");
@@ -90,9 +89,6 @@ public class Home extends BaseCommand
 			spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_CMD_BEHAVIOR;
 			l = util.getStrategyLocation(p, spawnInfo);
 		}
-		
-		if( warmupName == null )
-			warmupName = getWarmupName(null);
 		
 		debug.debug("home command running cooldown check, cooldownName=",cooldownName);
 		if( !cooldownCheck(p, cooldownName) )
@@ -147,7 +143,7 @@ public class Home extends BaseCommand
 	
 	private String getWarmupName(String homeName) {
 		return getCommandName();
-		
+
 		/* warmup per home doesn't even make sense. Silly.
 		 * 
 		if( homeName != null && plugin.getHSPConfig().getBoolean(ConfigOptions.WARMUP_PER_HOME, false) )

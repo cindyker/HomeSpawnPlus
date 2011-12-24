@@ -3,7 +3,6 @@
  */
 package org.morganm.homespawnplus;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -1074,6 +1073,69 @@ public class HomeSpawnUtils {
     	
     	return spawn;
     }
+    
+    /** Return the cost for a given command by a given player. This takes into account
+     * any permissions they have and the world they are on for any specific overrides
+     * other than the default options.
+     * 
+     * @param p
+     * @param commandName
+     * @return
+     */
+    public int getCommandCost(Player player, String commandName) {
+    	int cost = 0;
+    	
+    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COST_BASE
+    			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
+    	if( cs != null ) {
+    		Set<String> keys = cs.getKeys(false);
+    		if( keys != null ) 
+    			for(String entry : keys) {
+    				debug.debug("getCommandCost(): checking entry ",entry);
+    				// stop looping once we find a non-zero cost
+    				if( cost != 0 )
+    					break;
+
+    				int entryCost  = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE
+    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + commandName, 0);
+
+    				if( entryCost > 0 ) {
+    					List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COST_BASE
+    							+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+    							+ entry + ".permissions", null);
+
+    					for(String perm : perms) {
+    						debug.debug("getCommandCost(): checking permission ",perm," for entry ",entry);
+
+    						if( plugin.hasPermission(player, perm) ) {
+    							cost = entryCost;
+    							break;
+    						}
+    					}
+    				}// end if( entryCost > 0 )
+    			}// end for(String entry : keys)
+    	}// end if( cs != null )
+
+    	debug.debug("getCommandCost(): post-permission cost=",cost);
+    	
+    	// if cost is still 0, then check for world-specific cost
+    	if( cost == 0 ) {
+    		final String worldName = player.getWorld().getName();
+    		cost = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE
+					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+					+ worldName + "." + commandName, 0);
+			
+	    	debug.debug("getCommandCost(): post-world world=",worldName,", cost=",cost);
+    	}
+    	
+    	// if cost is still 0, then check global cost setting
+    	if( cost == 0 ) {
+    		cost = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + commandName, 0);
+        	debug.debug("getCommandCost(): post-global cost=",cost);
+    	}
+    	
+    	return cost;
+    }
 
     public void updateQuitLocation(Player p)
     {
@@ -1088,6 +1150,9 @@ public class HomeSpawnUtils {
     }
     
     public boolean isNewPlayer(Player p) {
+    	return !p.hasPlayedBefore();	// yay for Bukkit finally having an API call for this!
+    	
+    	/*
     	// if we already have a player record in our DB, we're obviously not a new player
     	if( plugin.getStorage().getPlayer(p.getName()) != null )
     		return false;
@@ -1105,6 +1170,7 @@ public class HomeSpawnUtils {
     	
     	// if we didn't find any record of this player on any world, they must be new
     	return true;
+    	*/
     }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash

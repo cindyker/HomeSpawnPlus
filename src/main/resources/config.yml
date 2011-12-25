@@ -148,21 +148,31 @@ disabledCommands:
   setgroupspawn: false
 
 # cooldowns for various commands can be defined here
+# A cooldown of 0 is no cooldown at all.
 cooldown:
-  # if set to true, each home will have a unique cooldown.
-  # so typing "/home home1" will start home1's cooldown,
-  # and "/home home2" is on a separate cooldown.
-  cooldownPerHome: false
- 
-  # if set, this becomes the cooldown "per-home". otherwise
-  # the cooldown used is the normal one (per-permission,
-  # per-world or global, depending on your config below)
-  cooldownPerHomeOverride: 0
-
   home: 60
-  spawn: 60
-  groupspawn: 60
+  # if set, overrides "home" cooldown for named homes
+  home-named: 0
+ 
+  sethome: 0
+  # if set, overrides "sethome" cooldown for named homes
+  sethome-named: 0
 
+  spawn: 60
+  # if set, overrides "spawn" cooldown for named spawns
+  spawn-named: 0
+ 
+  groupspawn: 60
+ 
+  # any cooldowns listed here will be on separate timers per
+  # command argument. for example if "home-named" is listed,
+  # then typing "/home home1" would start home1's cooldown,
+  # and "/home home2" will be on a separate cooldown.
+#  cooldownSeparation: 
+#  - home-named
+#  - spawn-named
+#  - sethome-named
+  
 #  example of world-specific cooldowns
 #  world:
 #    myworld:

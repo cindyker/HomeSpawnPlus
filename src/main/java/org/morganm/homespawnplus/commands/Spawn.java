@@ -27,13 +27,16 @@ public class Spawn extends BaseCommand
 
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
+		if( !isEnabled() || !hasPermission(p) )
 			return true;
 
+		String cooldownName = "spawn";
+		
 		Location l = null;
 		if( args.length > 0 ) {
 			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
 				org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
+				cooldownName = getCooldownName("spawn-named", args[0]);
 				if( spawn != null )
 					l = spawn.getLocation();
 				
@@ -52,7 +55,8 @@ public class Spawn extends BaseCommand
 			l = util.getStrategyLocation(p, spawnInfo);
 		}
     	
-    	// TODO: need to add group permission checks
+		if( !cooldownCheck(p, cooldownName) )
+			return true;
     	
     	if( l != null ) {
 			if( hasWarmup(p) ) {

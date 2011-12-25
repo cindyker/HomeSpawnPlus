@@ -280,6 +280,16 @@ public abstract class BaseCommand implements Command {
 		return isWarmupPending(p, getCommandName());
 	}
 	
+	protected String getCooldownName(String baseName, String homeName) {
+		if( baseName == null )
+			baseName = getCommandName();
+		
+		if( homeName != null && cooldownManager.isCooldownSeparationEnabled(baseName) )
+			return baseName + "." + homeName;
+		else
+			return baseName;
+	}
+
 	/** Return true if the player has permission to run this command.  If they
 	 * don't have permission, print them a message saying so and return false.
 	 * 

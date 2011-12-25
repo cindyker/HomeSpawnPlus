@@ -39,8 +39,8 @@ public class CooldownManager {
     }
     
     private boolean isExemptFromCooldown(Player p, String cooldown) {
-    	final String cooldownBase = getCooldownBasename(cooldown);
-    	if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".CooldownExempt."+cooldownBase) )
+    	final CooldownNames cn = parseCooldownNames(cooldown);
+    	if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".CooldownExempt."+cn.baseName) )
     		return true;
     	else
     		return false;
@@ -62,7 +62,7 @@ public class CooldownManager {
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
 		if(cooldownTimeLeft > 0)
 		{
-			plugin.getUtil().sendMessage(p, "Cooldown \""+cooldownName+"\" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
+			plugin.getUtil().sendMessage(p, "Cooldown "+cooldownName+" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
 			return false;
 		}
 		
@@ -74,13 +74,11 @@ public class CooldownManager {
 		return true;
 	}
 	
-    public void setCooldown(Player p, String cooldown)
+    public void setCooldown(final Player p, final String cooldown)
     {
     	CooldownTime cdt = getCooldownTime(p, cooldown);
-    	int cooldownAmount = cdt.cooldownTime;
-    	cooldown = cdt.cooldownName;
     	
-    	if(cooldownAmount > 0) {
+    	if(cdt.cooldownTime > 0) {
 //    		log.info(logPrefix + " saving cooldown "+p.getName()+"."+cooldown+", cooldownAmount = "+cooldownAmount);
     		cooldowns.put(p.getName()+"."+cdt.cooldownName, new Long(System.currentTimeMillis()));
     	}
@@ -92,18 +90,17 @@ public class CooldownManager {
      * @param cooldown
      * @return
      */
-    public long getCooldownRemaining(final Player p, String cooldown)
+    public long getCooldownRemaining(final Player p, final String cooldown)
     {
     	long cooldownRemaining = 0;
-//    	log.info(logPrefix + " checking cooldown for "+cooldown+", player "+p.getName());
+    	debug.debug("getCooldownRemaining: p=",p," cooldown=",cooldown);
 
     	CooldownTime cdt = getCooldownTime(p, cooldown);
     	int cooldownAmount = cdt.cooldownTime;
-    	cooldown = cdt.cooldownName;
     	if( cooldownAmount == 0 )
     		return 0;
     	
-    	String key = p.getName()+"."+cooldown;
+    	String key = p.getName()+"."+cdt.cooldownName;
     	Long cooldownStartTime = cooldowns.get(key);
     	if( cooldownStartTime != null )
     	{
@@ -117,27 +114,56 @@ public class CooldownManager {
     		else
     			cooldownRemaining = cooldownAmount-timeElapsed;
     	}
-    	
-//    	log.info(logPrefix + " cooldown remaining for key "+key+" = "+cooldownRemaining);
+
+    	debug.debug("getCooldownRemaining: cooldown remaining for key ",key," is ",cooldownRemaining);
     	return cooldownRemaining;
     }
     
-	/** cooldowns can be named per home, such as: "home.myhome1" - this separates
-	 * out the two parts and returns just "home", so that other routines can
-     * lookup any cooldowns for "home" in the config.
+	/** cooldowns can can be as generic as just "home" or as specific as
+	 * "home-named.home1". This breaks down whatever input name is passed in and
+	 * breaks it down to it's component parts.
      */
-    private String getCooldownBasename(final String cooldown) {
-    	String cooldownBase = null;
+    private CooldownNames parseCooldownNames(final String cooldown) {
+    	CooldownNames cn = new CooldownNames();
+
+    	cn.fullName = cooldown;					// "home-named.home1"
+
     	int index = cooldown.indexOf('.');
     	if( index != -1 )
-    		cooldownBase = cooldown.substring(0, index);
+    		cn.extendedName = cooldown.substring(0, index);		// "home-named";
     	else
-    		cooldownBase = cooldown;
+    		cn.extendedName = cooldown;
+		
+		index = cn.extendedName.indexOf('-');
+		if( index != -1 )
+			cn.baseName = cn.extendedName.substring(0, index);		// "home"
+		else
+			cn.baseName = cn.extendedName;
+
+    	// up until this point, if just "home" was passed in, it will be in all
+		// 3 variables. These checks will reduce it down to just the baseName.
+    	if( cn.fullName.equals(cn.baseName) )
+    		cn.fullName = null;
+    	if( cn.fullName != null && cn.fullName.equals(cn.extendedName) )
+    		cn.fullName = null;
+    	if( cn.extendedName != null && cn.extendedName.equals(cn.baseName) )
+    		cn.extendedName = null;
     	
-    	return cooldownBase;
-    	
+    	if( cn.fullName != null && cn.extendedName != null )
+    		cn.allNames = new String[] {cn.fullName, cn.extendedName, cn.baseName};
+    	else if( cn.extendedName != null )
+    		cn.allNames = new String[] {cn.extendedName, cn.baseName};
+    	else
+    		cn.allNames = new String[] {cn.baseName};
+
+    	return cn;
     }
-    
+
+    public boolean isCooldownSeparationEnabled(final String cooldown) {
+    	List<String> separateCooldowns = plugin.getHSPConfig().getStringList(ConfigOptions.COOLDOWN_SEPARATION, null);
+    	return separateCooldowns.contains(cooldown);
+    }
+
     /** Return the time for the cooldown for the given player. This takes world and
      * permission-specific cooldowns into account. This also returns the cooldown
      * name, which can change if the admin wants the cooldown to be specific to
@@ -151,16 +177,18 @@ public class CooldownManager {
     	final CooldownTime cdt = new CooldownTime();
     	cdt.cooldownName = cooldown;	// default to existing cooldown name
     	
-    	final String cooldownBase = getCooldownBasename(cooldown);
-    	debug.debug("getCooldownTime(): cooldown=",cooldown,", cooldownBase=",cooldownBase);
+    	final CooldownNames cn = parseCooldownNames(cooldown);
+    	debug.debug("getCooldownTime(): cn.baseName=",cn.baseName,", cn.extendedName=",cn.extendedName,
+    			", cn.fullName=",cn.fullName);
     	
     	// check if a per-entity cooldown is being used, such as "home.myhome1". If so,
     	// we need to check the cooldownPerHomeOverride flag in case the admin wants
     	// these handled differently.
-    	if( !cooldownBase.equals(cooldown) ) {
-    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_PER_HOME_OVERRIDE, 0);
-        	debug.debug("getCooldownTime(): per-home override cooldown=",cdt.cooldownTime);
-    	}
+    	// no longer necessary with the addition of the "home-named" cooldown
+//    	if( cn.fullName != null ) {
+//    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_PER_HOME_OVERRIDE, 0);
+//        	debug.debug("getCooldownTime(): per-home override cooldown=",cdt.cooldownTime);
+//    	}
     	
     	if( cdt.cooldownTime == 0 ) {
 	    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COOLDOWN_BASE
@@ -174,27 +202,32 @@ public class CooldownManager {
 	    				if( cdt.cooldownTime != 0 )
 	    					break;
 	    				
-	    				int entryCooldown = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
-	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + cooldownBase, 0);
-	    				
-	    				if( entryCooldown > 0 ) {
-		    				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COOLDOWN_BASE
-		    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-		    						+ entry + ".permissions", null);
-		
-		    				for(String perm : perms) {
-		    					debug.debug("getCooldownTime(): checking permission ",perm," for entry ",entry);
-		
-		    					if( plugin.hasPermission(player, perm) ) {
-		    						cdt.cooldownTime = entryCooldown;
-		    	    				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
-		    	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-		    	    						+ entry + ".cooldownPerPermission", false) )
-		    	    					cdt.cooldownName = cooldown + "." + perm;
-		    						break;
-		    					}
-		    				}
-	    				}// end if( entryCooldown > 0 )
+	    				String permMatch = null;
+						List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COOLDOWN_BASE
+								+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+								+ entry + ".permissions", null);
+						for(String perm : perms) {
+							debug.debug("getCooldownTime(): checking permission ",perm," for entry ",entry);
+
+							if( plugin.hasPermission(player, perm) ) {
+								permMatch = perm;
+								break;
+							}
+						}
+
+						if( permMatch != null ) {
+		    				for(String name : cn.allNames) {
+		    					cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
+		    							+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + name, 0);
+	
+	    						if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
+	    								+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+	    								+ entry + ".cooldownPerPermission", false) )
+	    							cdt.cooldownName = cooldown + "." + permMatch;
+	    			    		if( cdt.cooldownTime != 0 )
+	    			    			break;
+		    				}// end for(String name : cn.allNames)
+						}//end if( isPermMatch )
 	    			}// end for(String entry : keys)
 	    	}// end if( cs != null )
 	    	
@@ -204,20 +237,29 @@ public class CooldownManager {
     	// if cooldownTime is still 0, then check for world-specific cooldown
     	if( cdt.cooldownTime == 0 ) {
     		final String worldName = player.getWorld().getName();
-    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
-					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
-					+ worldName + "." + cooldownBase, 0);
-			if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
-					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
-					+ worldName + ".cooldownPerWorld", false) )
-				cdt.cooldownName = cooldown + "." + worldName;
+			for(String name : cn.allNames) {
+	    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE
+						+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+						+ worldName + "." + name, 0);
+				if( plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_BASE
+						+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+						+ worldName + ".cooldownPerWorld", false) )
+					cdt.cooldownName = cooldown + "." + worldName;
+	    		if( cdt.cooldownTime != 0 )
+	    			break;
+			}
 			
 	    	debug.debug("getCooldownTime(): post-world world=",worldName,", cooldown=",cdt.cooldownTime,", name=",cdt.cooldownName);
     	}
     	
     	// if cooldownTime is still 0, then check global cooldown setting
     	if( cdt.cooldownTime == 0 ) {
-    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE + cooldownBase, 0);
+			for(String name : cn.allNames) {
+	        	debug.debug("getCooldownTime(): check global cooldown config ",ConfigOptions.COOLDOWN_BASE,name);
+	    		cdt.cooldownTime = plugin.getHSPConfig().getInt(ConfigOptions.COOLDOWN_BASE + name, 0);
+	    		if( cdt.cooldownTime != 0 )
+	    			break;
+			}
         	debug.debug("getCooldownTime(): post-global cooldown=",cdt.cooldownTime,", name=",cdt.cooldownName);
     	}
     	
@@ -227,5 +269,19 @@ public class CooldownManager {
     class CooldownTime {
     	int cooldownTime = 0;
     	String cooldownName;
+    }
+    
+    /** When a cooldown name is passed in, it can be of the full form "sethome-named.home1".
+     * It will be broken down into it's component parts and put into the members of this
+     * class for processing by the cooldown algorithms.
+     * 
+     * @author morganm
+     *
+     */
+    class CooldownNames {
+    	String baseName = null;			// "home"
+    	String extendedName = null;		// "home-named"
+    	String fullName = null;			// "home-named.home1" or just "home.home1"
+    	String allNames[];
     }
 }

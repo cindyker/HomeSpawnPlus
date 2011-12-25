@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.storage.Storage;
 
 
@@ -30,50 +29,47 @@ public class SetHome extends BaseCommand
 //		if( !defaultCommandChecks(p) )
 //			return true;
 		
-		if( !costCheck(p) ) {
-			printInsufficientFundsMessage(p);
-			return true;
-		}
-
 		String cooldownName = null;
 		String homeName = null;
 
 		if( args.length > 0 ) {
 			if( plugin.hasPermission(p, SETHOME_NAMED_PERMISSION) ) {
 				if( !args[0].equals(Storage.HSP_BED_RESERVED_NAME) && !args[0].endsWith("_" + Storage.HSP_BED_RESERVED_NAME )) {
-					if( !cooldownCheck(p, cooldownName) )
-						return true;
-					
 					homeName = args[0];
+					cooldownName = getCooldownName("sethome-named", homeName);
 				}
-				else
+				else {
 					util.sendMessage(p, "Cannot used reserved name "+args[0]);
+					return true;
+				}
 			}
-			else
+			else {
 				util.sendMessage(p, "You do not have permission to set named homes");
+				return true;
+			}
 		}
 		
+		if( !cooldownCheck(p, cooldownName) )
+			return true;
+		
+		if( !costCheck(p) ) {
+			printInsufficientFundsMessage(p);
+			return true;
+		}
+
 		if( homeName != null ) {
 			if( util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName()) ) {
-				if( applyCost(p, true, getCooldownName(homeName)) )
+				if( applyCost(p, true, cooldownName) )
 					util.sendMessage(p, "Home \""+args[0]+"\" set successfully.");
 			}
 		}
 		else {
 			if( util.setHome(p.getName(), p.getLocation(), p.getName(), true, false) ) {
-				if( applyCost(p, true, getCooldownName(null)) )
+				if( applyCost(p, true, cooldownName) )
 					util.sendMessage(p, "Default home set successfully.");
 			}
 		}
 
 		return true;
 	}
-
-	private String getCooldownName(String homeName) {
-		if( homeName != null && plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_PER_HOME, false) )
-			return getCommandName() + "." + homeName;
-		else
-			return getCommandName();
-	}
-
 }

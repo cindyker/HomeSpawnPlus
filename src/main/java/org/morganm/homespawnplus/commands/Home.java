@@ -77,7 +77,7 @@ public class Home extends BaseCommand
 			else
 				homeName = args[0];
 			
-			cooldownName = getCooldownName(homeName);
+			cooldownName = getCooldownName("home-named", homeName);
 			
 			if( l == null ) {
 				util.sendMessage(p,  "No home named \""+homeName+"\" found.");
@@ -151,12 +151,5 @@ public class Home extends BaseCommand
 		else
 			return getCommandName();
 			*/
-	}
-	
-	private String getCooldownName(String homeName) {
-		if( homeName != null && plugin.getHSPConfig().getBoolean(ConfigOptions.COOLDOWN_PER_HOME, false) )
-			return getCommandName() + "." + homeName;
-		else
-			return getCommandName();
 	}
 }

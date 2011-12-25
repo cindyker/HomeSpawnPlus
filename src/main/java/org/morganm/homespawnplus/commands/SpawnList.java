@@ -24,17 +24,15 @@ public class SpawnList extends BaseCommand {
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
+	public boolean execute(final Player p, final Command command, final String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
-		Set<org.morganm.homespawnplus.entity.Spawn> spawns;
 		String world = "all";
-		
 		if( args.length > 0 )
 			world = args[0];
 		
-		spawns = plugin.getStorage().getAllSpawns();
+		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = plugin.getStorage().getAllSpawns();
 		
 		boolean displayedSpawn = false;
 		if( spawns != null && spawns.size() > 0 ) {
@@ -50,9 +48,15 @@ public class SpawnList extends BaseCommand {
 					continue;
 					
 				displayedSpawn = true;
+				
+				String group = spawn.getGroup();
+				if( Storage.HSP_WORLD_SPAWN_GROUP.equals(group) )
+					group = null;
 				String name = spawn.getName();
+				
 				p.sendMessage(ChatColor.YELLOW + "id: " + ChatColor.RED + spawn.getId() + " " + ChatColor.YELLOW
 						+ (name != null ? "[name: " + ChatColor.RED + name + ChatColor.YELLOW + "] " : "")
+						+ (group != null ? "[group: " + ChatColor.RED + group + ChatColor.YELLOW + "] " : "")
 						+ util.shortLocationString(spawn)
 						+ (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup()) ? ChatColor.GREEN + " (world default)" : ""));
 			}

@@ -264,3 +264,14 @@ cost:
   sethome: 0
   spawn: 0
   groupspawn: 0
+
+#  world:
+#    myworld:
+#      home: 100
+#  permission:
+#    limit1:
+#      permissions:
+#        - my.custom.perm
+#        - group.mygroup
+#      home: 250
+#      sethome: 500

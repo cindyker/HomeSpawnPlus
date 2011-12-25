@@ -139,6 +139,12 @@ public class StorageCache implements Storage
 		// TODO: too lazy to cache this right now, just pass through
 		return original.getSpawnByName(name);
 	}
+
+	@Override
+	public Spawn getSpawnById(int id) {
+		// TODO: too lazy to cache this right now, just pass through
+		return original.getSpawnById(id);
+	}	
 	
 	// update a Home in the in-memory cache
 	private void updateHome(Home home) {
@@ -316,7 +322,7 @@ public class StorageCache implements Storage
 	}
 
 	@Override
-	public void removeHome(Home home) {
+	public void deleteHome(Home home) {
 		String world = home.getWorld();
 		String playerName = home.getPlayerName();
 		
@@ -326,7 +332,13 @@ public class StorageCache implements Storage
 		if( allHomes != null )
 			allHomes.remove(home);
 		
-		original.removeHome(home);
+		original.deleteHome(home);
+	}
+
+	@Override
+	public void deleteSpawn(Spawn spawn) {
+		// TODO: if I ever decide to fix this class, need to implement cache cleaning here
+		original.deleteSpawn(spawn);
 	}
 
 	@Override
@@ -339,11 +351,6 @@ public class StorageCache implements Storage
 	public Set<Home> getHomes(String world, String playerName) {
 		// TODO: refactor class and add caching here
 		return original.getHomes(world, playerName);
-	}
-	
-	@Override
-	public void deleteHome(Home home) {
-		original.deleteHome(home);
 	}
 	
 	@Override

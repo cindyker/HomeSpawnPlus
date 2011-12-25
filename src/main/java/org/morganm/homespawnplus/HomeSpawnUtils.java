@@ -98,6 +98,19 @@ public class HomeSpawnUtils {
 		}
 	}
 	
+	public String shortLocationString(Spawn s) {
+		if( s == null )
+			return "null";
+		else {
+			Location l = s.getLocation();
+			if( l.getWorld() != null )
+				return shortLocationString(l);
+			else {
+				return s.getWorld()+","+l.getBlockX()+","+l.getBlockY()+","+l.getBlockZ();
+			}
+		}
+	}
+
 	private void logStrategyResult(final SpawnStrategy.Type type, final Location l, final boolean verbose) {
 		if( verbose )
 			log.info(logPrefix + " Evaluated "+type+", location = "+shortLocationString(l));

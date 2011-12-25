@@ -181,6 +181,11 @@ public class StorageYaml implements Storage {
 	public Spawn getSpawnByName(String name) {
 		throw new NotImplementedException();
 	}
+	
+	@Override
+	public Spawn getSpawnById(int id) {
+		throw new NotImplementedException();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getSpawnDefinedGroups()
@@ -365,14 +370,6 @@ public class StorageYaml implements Storage {
 		throw new NotImplementedException();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#removeHome(org.morganm.homespawnplus.entity.Home)
-	 */
-	@Override
-	public void removeHome(Home home) {
-		throw new NotImplementedException();
-	}
-	
 	@Override
 	public void deleteAllData() {
 		storage = null;
@@ -395,6 +392,11 @@ public class StorageYaml implements Storage {
 		throw new NotImplementedException();
 	}
 	
+	@Override
+	public void deleteSpawn(Spawn spawn) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public Home getBedHome(String world, String playerName) {
 		throw new NotImplementedException();

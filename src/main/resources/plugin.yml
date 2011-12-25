@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.1.4-dev
+version: 1.2
 author: morganm
 database: true
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]
@@ -32,9 +32,8 @@ commands:
     aliases: [homel, listhomes]
     description: Show your homes
     usage: |
-           /<command> - show homes on current world
+           /<command> - show homes on all worlds
            /<command> world - show homes on 'world'
-           /<command> all - show homes on all worlds
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)
@@ -82,6 +81,17 @@ commands:
   spawn:
     description: Respawns you at the world spawn
     usage: /<command>
+  spawnlist:
+    aliases: [spawnl, listspawns]
+    description: List spawns
+    usage: |
+           /<command> - show spawns on all worlds
+           /<command> world - show spawns on 'world'
+  spawndelete:
+    aliases: [spawnd,deletespawn,rmspawn]
+    description: Delete a named spawn
+    usage: |
+           /<command> spawnName
 permissions:
     hsp.*:
         description: Gives access to all HomeSpawnPlus permissions
@@ -93,6 +103,8 @@ permissions:
             hsp.command.sethome: true
             hsp.command.sethome.others: true
             hsp.command.spawn: true
+            hsp.command.spawnlist: true
+            hsp.command.spawndelete: true
             hsp.command.setspawn: true
             hsp.command.setdefaultspawn: true
             hsp.command.setgroupspawn: true
@@ -169,6 +181,8 @@ permissions:
             hsp.command.setspawn: true
             hsp.command.spawn: true
             hsp.command.spawn.named: true
+            hsp.command.spawndelete: true
+            hsp.command.spawnlist: true
     hsp.command.groupspawn:
         description: Allows use of the /groupspawn command
         default: op
@@ -219,6 +233,12 @@ permissions:
         default: op
     hsp.command.spawn.named:
         description: Allows use of the /spawn <name> command
+        default: op
+    hsp.command.spawndelete:
+        description: Allows use of the /spawndelete command
+        default: op
+    hsp.command.spawnlist:
+        description: Allows use of the /spawnlist command
         default: op
     hsp.command.CooldownExempt.*:
         description: Exempt from all cooldowns

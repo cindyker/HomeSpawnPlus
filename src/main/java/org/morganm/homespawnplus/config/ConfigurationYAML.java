@@ -38,9 +38,10 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 	@Override
     public void load() throws ConfigException {
 		// if no config exists, copy the default one out of the JAR file
-		if( !file.exists() ) {
+		if( !file.exists() )
+			copyConfigFromJar("config-basic.yml", file);
+		if( !file.exists() )
 			copyConfigFromJar("config.yml", file);
-		}
 		
 		try {
 			super.load(file);

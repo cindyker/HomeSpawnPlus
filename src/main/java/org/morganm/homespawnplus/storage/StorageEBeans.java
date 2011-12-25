@@ -170,6 +170,17 @@ public class StorageEBeans implements Storage {
 		return query.findUnique();
 	}
 
+	@Override
+	public Spawn getSpawnById(int id) {
+		EbeanServer db = plugin.getDatabase();
+		String q = "find spawn where id = :id";
+		
+		Query<Spawn> query = db.createQuery(Spawn.class, q);
+		query.setParameter("id", id);
+		
+		return query.findUnique();
+	}
+	
 	/* We make the assumption that there are relatively few spawns and group combinations,
 	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
 	 * them for the valid group list.
@@ -248,6 +259,11 @@ public class StorageEBeans implements Storage {
 		plugin.getDatabase().delete(home);
 	}
 	
+	@Override
+	public void deleteSpawn(Spawn spawn) {
+		plugin.getDatabase().delete(spawn);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#writeSpawn(org.morganm.homespawnplus.Spawn)
 	 */
@@ -272,11 +288,6 @@ public class StorageEBeans implements Storage {
         plugin.getDatabase().save(player);
 	}
 
-	@Override
-	public void removeHome(Home home) {
-		plugin.getDatabase().delete(home);
-	}
-	
 	@Override
 	public void deleteAllData() {
 		EbeanServer db = plugin.getDatabase();

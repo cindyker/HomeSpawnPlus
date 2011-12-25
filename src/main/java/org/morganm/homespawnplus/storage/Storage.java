@@ -43,6 +43,7 @@ public interface Storage {
 	public Spawn getSpawn(String world);
 	public Spawn getSpawn(String world, String group);
 	public Spawn getSpawnByName(String name);
+	public Spawn getSpawnById(int id);
 	
 	public Set<String> getSpawnDefinedGroups();
 	
@@ -54,8 +55,7 @@ public interface Storage {
 	public void writeSpawn(Spawn spawn);
 	
 	public void deleteHome(Home home);
+	public void deleteSpawn(Spawn spawn);
 	
-	public void removeHome(Home home);
-
 	public void deleteAllData();
 }

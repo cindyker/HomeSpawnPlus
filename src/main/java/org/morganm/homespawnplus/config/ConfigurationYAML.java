@@ -27,6 +27,7 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 	
 	private File file;
 	private HomeSpawnPlus plugin;
+	private boolean useExtendedFileAsDefault = false;
 	
 	public ConfigurationYAML(File file, HomeSpawnPlus plugin) {
 		this.file = file;
@@ -34,11 +35,13 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 		
 		this.logPrefix = HomeSpawnPlus.logPrefix;
 	}
+	
+	public void setExtendedFile(boolean state) { useExtendedFileAsDefault = state; }
 
 	@Override
     public void load() throws ConfigException {
 		// if no config exists, copy the default one out of the JAR file
-		if( !file.exists() )
+		if( !file.exists() && !useExtendedFileAsDefault )
 			copyConfigFromJar("config-basic.yml", file);
 		if( !file.exists() )
 			copyConfigFromJar("config.yml", file);

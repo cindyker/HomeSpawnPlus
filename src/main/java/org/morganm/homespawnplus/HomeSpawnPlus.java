@@ -222,7 +222,7 @@ public class HomeSpawnPlus extends JavaPlugin {
 			File configDefaultsFile = new File(YAML_CONFIG_ROOT_PATH+"config_defaults.yml");
 			configDefaultsFile.delete();
 			Debug.getInstance().devDebug("copying config_defaults.yml into place");
-			ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config_defaults.yml").load();
+			ConfigFactory.getInstance(ConfigFactory.Type.YAML_EXTENDED_DEFAULT_FILE, this, YAML_CONFIG_ROOT_PATH+"config_defaults.yml").load();
 		}
 		catch(Exception e) {
 			// we don't care if this fails, ignore any errors

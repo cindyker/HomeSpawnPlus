@@ -1,3 +1,12 @@
+v1.2.2 - December 29, 2011
+* Ticket #37/#38/#40: first spawn not working properly
+* Ticket #36: SQL CONSTRAINT error due to new player check not working
+* Ticket #43: "basic" config being copied into config_defaults.yml
+* Ticket #39: NoClassDefError for WEPIF: now prints warning if using old
+version of WorldEdit instead
+* Ticket #32: implement "group.XYZ" groups for Superperms (code borrowed
+from WEPIF)
+
 v1.2.1 - December 25, 2011
 * Ticket #33: fixed a bug in some situations with new player checks on
 PLAYER_JOIN

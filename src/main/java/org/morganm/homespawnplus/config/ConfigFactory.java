@@ -17,7 +17,8 @@ import org.morganm.homespawnplus.storage.StorageException;
 public class ConfigFactory {
 	public static enum Type
 	{
-		YAML
+		YAML,
+		YAML_EXTENDED_DEFAULT_FILE
 	}
 
 	/** Get a Config instance of the specified type.
@@ -32,7 +33,7 @@ public class ConfigFactory {
 	public static Config getInstance(Type storageType, HomeSpawnPlus plugin, Object arg1)
 	throws ConfigException, IOException
 	{
-		if ( storageType == Type.YAML ) {
+		if ( storageType == Type.YAML || storageType == Type.YAML_EXTENDED_DEFAULT_FILE ) {
 			File file = null; 
 			if( arg1 instanceof File )
 				file = (File) arg1;
@@ -41,8 +42,11 @@ public class ConfigFactory {
 			else
 				throw new ConfigException("Unable to create Config interface: invalid YAML config file argument");
 
-			return new ConfigurationYAML(file, plugin);
-			//		return new ConfigYAML(file);
+			ConfigurationYAML config = new ConfigurationYAML(file, plugin);
+			if( storageType == Type.YAML_EXTENDED_DEFAULT_FILE )
+				config.setExtendedFile(true);
+
+			return config;
 		}
 		else {
 			throw new ConfigException("Unable to create Config interface.");

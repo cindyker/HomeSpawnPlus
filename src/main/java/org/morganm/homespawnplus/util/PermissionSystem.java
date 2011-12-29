@@ -348,11 +348,11 @@ public class PermissionSystem {
 	    	}
 	    	catch(Exception e) {}	// catch any NumberFormatException or anything else
 	    	
-	    	if( versionNumber < 680 ) {
-	    		log.info(logPrefix + "You are currently running version "+version+" of WorldEdit. sk89q changed WEPIF in 5.1, please update to latest WorldEdit. (skipping WEPIF for permissions)");
+	    	if( versionNumber < 606 ) {
+	    		log.info(logPrefix + "You are currently running version "+version+" of WorldEdit. WEPIF was changed in #606, please update to latest WorldEdit. (skipping WEPIF for permissions)");
 	    		return false;
 	    	}
-	    	
+
 	    	if( worldEdit != null ) {
 	    		wepifPerms = PermissionsResolverManager.getInstance();
 //	    		wepifPerms.initialize(plugin);

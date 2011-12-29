@@ -162,12 +162,9 @@ public class HSPPlayerListener extends PlayerListener {
 		// Is this a new player?
     	if( util.isNewPlayer(p) ) {
     		if( util.isVerboseLogging() )
-    			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected, checking.");
+    			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected.");
     		
     		spawnInfo.isFirstLogin = true;
-    		
-    		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
-    		plugin.getStorage().writePlayer(storagePlayer);
     		
     		/*
 
@@ -186,6 +183,12 @@ public class HSPPlayerListener extends PlayerListener {
 	    		return;
     		}
     		*/
+    	}
+    	
+		// if they don't have a player record yet, create one.
+    	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
+    		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
+    		plugin.getStorage().writePlayer(storagePlayer);
     	}
     	
     	if( util.isVerboseLogging() )

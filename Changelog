@@ -1,4 +1,8 @@
-v1.1.4 - December 25, 2011
+v1.2.1 - December 25, 2011
+* Ticket #33: fixed a bug in some situations with new player checks on
+PLAYER_JOIN
+
+v1.2 - December 25, 2011
 * Ticket #24/#25/#30: cooldowns per-permission, per-world and per-home
 * Ticket #24: warmups per-permission and per-world
 * Ticket #24: cost per-permisson and per-world

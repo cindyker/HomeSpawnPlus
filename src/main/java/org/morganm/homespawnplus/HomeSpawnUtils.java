@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -121,6 +122,41 @@ public class HomeSpawnUtils {
 		public boolean explicitDefault = false;
 	}
 	
+	/** Taking mode into account, find the default home on a given world. This may
+	 * return just a bed home, or not a bed at all or even any home, all depending on the
+	 * home mode that is set.
+	 * 
+	 * @param currentMode
+	 * @param playerName
+	 * @param worldName
+	 * @return the home matching the current mode on the given world, or null
+	 */
+	private Home getModeHome(SpawnStrategy currentMode, String playerName, String worldName) {
+		Home home = null;
+		
+		if( currentMode.getType() == Type.MODE_HOME_NORMAL
+				|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
+				|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
+			home = getDefaultHome(playerName, worldName);
+			if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
+				home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
+		}
+		
+		if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
+				currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
+				currentMode.getType() != Type.MODE_HOME_NO_BED )
+			home = getBedHome(playerName, worldName);
+		
+		if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
+			Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+			// just grab the first one we find
+			if( homes != null && homes.size() != 0 )
+				home = homes.iterator().next();
+		}
+		
+		return home;
+	}
+	
 	/** This method is the heart of spawn strategies. A strategy chain is passed into it via
 	 * the (now poorly named) SpawnInfo class and it will evaluate those strategies and try to
 	 * return a location. If no location can be found from the given strategies, the
@@ -171,25 +207,7 @@ public class HomeSpawnUtils {
 				
 			case HOME_MULTI_WORLD:
 			case HOME_THIS_WORLD_ONLY:
-				if( currentMode.getType() == Type.MODE_HOME_NORMAL
-						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
-						|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
-					home = getDefaultHome(playerName, player.getWorld());
-					if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
-						home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
-				}
-				
-				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
-						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
-						currentMode.getType() != Type.MODE_HOME_NO_BED )
-					home = getBedHome(playerName, player.getWorld().getName());
-				
-				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
-					Set<Home> homes = plugin.getStorage().getHomes(player.getWorld().getName(), playerName);
-					// just grab the first one we find
-					if( homes != null && homes.size() != 0 )
-						home = homes.iterator().next();
-				}
+				home = getModeHome(currentMode, playerName, player.getWorld().getName());
 
 				if( home != null )
 					l = home.getLocation();
@@ -200,25 +218,7 @@ public class HomeSpawnUtils {
 					break;
 
 			case HOME_DEFAULT_WORLD:
-				if( currentMode.getType() == Type.MODE_HOME_NORMAL
-						|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
-						|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
-					home = getDefaultHome(playerName, getDefaultWorld());
-					if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
-						home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
-				}
-				
-				if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
-						currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
-						currentMode.getType() != Type.MODE_HOME_NO_BED )
-					home = getBedHome(playerName, getDefaultWorld());
-				
-				if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
-					Set<Home> homes = plugin.getStorage().getHomes(getDefaultWorld(), playerName);
-					// just grab the first one we find
-					if( homes != null && homes.size() != 0 )
-						home = homes.iterator().next();
-				}
+				home = getModeHome(currentMode, playerName, getDefaultWorld());
 				
 				if( home != null )
 					l = home.getLocation();
@@ -279,13 +279,14 @@ public class HomeSpawnUtils {
 				
 			case HOME_SPECIFIC_WORLD:
 			{
-				String worldName = s.getData();
-				home = getDefaultHome(playerName, worldName);
+				final String worldName = s.getData();
+				home = getModeHome(currentMode, playerName, worldName);
+				
 				if( home != null )
 					l = home.getLocation();
 				logStrategyResult(type, l, verbose);
-			}
 	    		break;
+			}
 	    		
 			case HOME_NEAREST_HOME:
 			{
@@ -297,6 +298,9 @@ public class HomeSpawnUtils {
 				double shortestDistance = -1;
 				Home closestHome = null;
 				for(Home theHome : allHomes) {
+					if( currentMode.getType() == Type.MODE_HOME_NO_BED && theHome.isBedHome() )
+						continue;
+					
 					Location theLocation = theHome.getLocation();
 					if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
 						double distance = theLocation.distance(playerLoc);
@@ -1157,19 +1161,20 @@ public class HomeSpawnUtils {
     		
 	    	Location quitLocation = p.getLocation();
 	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
+	    	if( playerStorage == null )
+	    		playerStorage = new org.morganm.homespawnplus.entity.Player(p);
 	    	playerStorage.updateLastLogoutLocation(quitLocation);
 	    	plugin.getStorage().writePlayer(playerStorage);
     	}
     }
     
     public boolean isNewPlayer(Player p) {
-    	return !p.hasPlayedBefore();	// yay for Bukkit finally having an API call for this!
-    	
-    	/*
     	// if we already have a player record in our DB, we're obviously not a new player
     	if( plugin.getStorage().getPlayer(p.getName()) != null )
     		return false;
     	
+//    	return !p.hasPlayedBefore();	// yay for Bukkit finally having an API call for this!
+
     	// otherwise, fall back to checking for a player.dat file, this helps existing
     	// servers get started with HSP without the existing population all being
     	// mistaken as new simply b/c they are not in the HSP database.
@@ -1183,7 +1188,6 @@ public class HomeSpawnUtils {
     	
     	// if we didn't find any record of this player on any world, they must be new
     	return true;
-    	*/
     }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
@@ -1193,7 +1197,7 @@ public class HomeSpawnUtils {
      * @param l
      */
     public void delayedTeleport(Player p, Location l) {
-    	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DelayedTeleport(p, l));
+    	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DelayedTeleport(p, l), 2);
     }
     
     private class DelayedTeleport implements Runnable {
@@ -1206,7 +1210,7 @@ public class HomeSpawnUtils {
     	}
     	
     	public void run() {
-//    		log.info(logPrefix+" delayed teleporting "+p+" to "+l);
+    		debug.debug(logPrefix+" delayed teleporting "+p+" to "+l);
     		p.teleport(l);
     	}
     }

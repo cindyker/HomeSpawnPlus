@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 
 
@@ -39,12 +40,14 @@ public class SetHome extends BaseCommand
 					cooldownName = getCooldownName("sethome-named", homeName);
 				}
 				else {
-					util.sendMessage(p, "Cannot used reserved name "+args[0]);
+					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]);
+//					util.sendMessage(p, "Cannot used reserved name "+args[0]);
 					return true;
 				}
 			}
 			else {
-				util.sendMessage(p, "You do not have permission to set named homes");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION);
+//				util.sendMessage(p, "You do not have permission to set named homes");
 				return true;
 			}
 		}
@@ -60,13 +63,15 @@ public class SetHome extends BaseCommand
 		if( homeName != null ) {
 			if( util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName()) ) {
 				if( applyCost(p, true, cooldownName) )
-					util.sendMessage(p, "Home \""+args[0]+"\" set successfully.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName);
+//					util.sendMessage(p, "Home \""+homeName+"\" set successfully.");
 			}
 		}
 		else {
 			if( util.setHome(p.getName(), p.getLocation(), p.getName(), true, false) ) {
 				if( applyCost(p, true, cooldownName) )
-					util.sendMessage(p, "Default home set successfully.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET);
+//					util.sendMessage(p, "Default home set successfully.");
 			}
 		}
 

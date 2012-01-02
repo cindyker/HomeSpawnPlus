@@ -28,6 +28,7 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
+import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.Locale;
 import org.morganm.homespawnplus.i18n.LocaleConfig;
 import org.morganm.homespawnplus.i18n.LocaleFactory;
@@ -112,11 +113,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     		loadConfig();
     		updateConfigDefaultFile();
             initializeDatabase();
-            
-    		LocaleConfig localeConfig = new LocaleConfig(
-    				config.getString("locale", "en"), this, "hsp", getFile(),
-    				log, logPrefix);
-    		locale = LocaleFactory.getLocale(localeConfig);
     	}
     	catch(Exception e) {
     		loadError = true;
@@ -251,6 +247,13 @@ public class HomeSpawnPlus extends JavaPlugin {
 		config.load();
 		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEV_DEBUG, false), Level.FINEST);
 		Debug.getInstance().setDebug(config.getBoolean(ConfigOptions.DEBUG, false));
+
+		// also load/reload Locale
+		LocaleConfig localeConfig = new LocaleConfig(
+				config.getString("core.locale", "en"), this, "hsp", getFile(),
+				log, logPrefix);
+		locale = LocaleFactory.getLocale(localeConfig);
+		Colors.setDefaultColor(config.getString("core.defaultMessageColor", "%yellow%"));
     }
 
     private Boolean setupVaultEconomy()

@@ -45,6 +45,11 @@
                                 <include name="build.number"/>
                         </fileset>
 		</copy>
+		<copy todir="${lang.target}">
+                        <fileset dir="${lang.source}" >
+                                <include name="*.properties"/>
+                        </fileset>
+                </copy>
 
 		<jar jarfile="${jarfile}" >
 			<fileset dir="${build.home}" />

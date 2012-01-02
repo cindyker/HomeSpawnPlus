@@ -74,6 +74,14 @@ public class Colors {
         localeColors.put("%lightpurple%", "\u00A7d");
         localeColors.put("%yellow%", "\u00A7e");
         localeColors.put("%white%", "\u00A7f");
+        
+    	localeColors.put("%default_color%", Yellow);
     }
 
+    public static void setDefaultColor(final String defaultColor) {
+    	String color = localeColors.get(defaultColor);
+    	if( color != null )
+    		localeColors.put("%default_color%", color);
+    }
+    public static String getDefaultColor() { return localeColors.get("%default_color%"); }
 }

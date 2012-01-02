@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -62,7 +63,8 @@ public class CooldownManager {
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
 		if(cooldownTimeLeft > 0)
 		{
-			plugin.getUtil().sendMessage(p, "Cooldown "+cooldownName+" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
+			plugin.getUtil().sendLocalizedMessage(p, HSPMessages.COOLDOWN_IN_EFFECT, "name", cooldownName, "seconds", cooldownTimeLeft);
+//			plugin.getUtil().sendMessage(p, "Cooldown "+cooldownName+" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
 			return false;
 		}
 		

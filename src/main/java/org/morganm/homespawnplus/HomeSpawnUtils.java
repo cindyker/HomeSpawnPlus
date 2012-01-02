@@ -21,6 +21,8 @@ import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.i18n.Colors;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.WorldGuardInterface;
@@ -32,10 +34,6 @@ import org.morganm.homespawnplus.util.WorldGuardInterface;
  */
 public class HomeSpawnUtils {
 	private static final Logger log = HomeSpawnPlus.log;
-	
-//    private static final String LightPurple = "\u00A7d";
-    private static final String Yellow = "\u00A7e";
-	
 	private final String logPrefix = HomeSpawnPlus.logPrefix;
 
 	private final HomeSpawnPlus plugin;
@@ -56,14 +54,21 @@ public class HomeSpawnUtils {
     public boolean isVerboseLogging() {
     	return plugin.getHSPConfig().getBoolean(ConfigOptions.VERBOSE_LOGGING, false);
     }
+    
+    public String getDefaultColor() {
+    	return Colors.getDefaultColor();
+    }
 
-	/** Send a message to a player in our default mod color.
+	/** Send a message to a player using the default color. sendLocalizedMessage should
+	 * be preferred to this method to allow for localization of the messages being
+	 * sent, but this can be used in cases where no localization is needed (such as
+	 * when printing out a list of results with no localizable strings).
 	 * 
 	 * @param p
 	 * @param message
 	 */
 	public void sendMessage(final CommandSender sender, final String message) {
-		sender.sendMessage(Yellow + message);
+		sender.sendMessage(getDefaultColor() + message);
 	}
 	/** Send a message to a player using the localized string.
 	 * 
@@ -71,8 +76,8 @@ public class HomeSpawnUtils {
 	 * @param msgKey
 	 * @param args
 	 */
-	public void sendLocalizedMessage(final CommandSender target, final String msgKey, final Object...args) {
-		target.sendMessage(plugin.getLocale().getMessage(msgKey, args));
+	public void sendLocalizedMessage(final CommandSender target, final HSPMessages msgKey, final Object...args) {
+		target.sendMessage(plugin.getLocale().getMessage(msgKey.toString(), args));
 	}
 	
 	/** Given a location, return a short string format of the form:

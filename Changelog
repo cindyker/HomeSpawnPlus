@@ -1,7 +1,11 @@
-v1.2.3 - 
+v1.3 - January 1, 2012
 * enhancement, Ticket #22: /homedelete to accept w:world argument
 * enhancement, Ticket #29: stuck in chunk hole when teleporting
-* enhancement, Ticket #23: i18n (internationalization) support
+* enhancement, Ticket #23: i18n (internationalization) support (config option: core.lang)
+* added "core.defaultMessageColor" option for changing default message color
+* message localization is NOT complete! There are a LOT more strings to be added, I've just gotten the work started (maybe ~25% done).
+* will need volunteers for additional langauges. English ("en") is the only one provided at this time.
+* BIG BIG thanks to Hidendra (LWC) for letting me adapt his localizaton code for HSP's use
 
 v1.2.2 - December 29, 2011
 * Ticket #37/#38/#40: first spawn not working properly

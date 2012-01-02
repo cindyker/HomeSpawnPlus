@@ -16,6 +16,7 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.WarmupManager;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -111,9 +112,12 @@ public abstract class BaseCommand implements Command {
 	protected void printInsufficientFundsMessage(Player p) {
 		Economy economy = plugin.getEconomy();
 		if( economy != null )
-			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice(p))
-					+ " (you only have "+economy.format(economy.getBalance(p.getName()))+")"
-				);
+			util.sendLocalizedMessage(p, HSPMessages.COST_INSUFFICIENT_FUNDS,
+					"price", economy.format(getPrice(p)),
+					"balance", economy.format(economy.getBalance(p.getName())));
+//			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice(p))
+//					+ " (you only have "+economy.format(economy.getBalance(p.getName()))+")"
+//				);
 	}
 	
 	/**
@@ -142,13 +146,19 @@ public abstract class BaseCommand implements Command {
 				
 				if( response.transactionSuccess() ) {
 					if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
-						util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
+						util.sendLocalizedMessage(p, HSPMessages.COST_CHARGED,
+								"price", economy.format(price),
+								"command", getCommandName());
+//						util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
 					}
 					
 					returnValue = true;
 				}
 				else {
-					util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
+					util.sendLocalizedMessage(p, HSPMessages.COST_ERROR,
+							"price", economy.format(price),
+							"errorMessage", response.errorMessage);
+//					util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
 					returnValue = false;
 				}
 			}
@@ -173,11 +183,15 @@ public abstract class BaseCommand implements Command {
 		if ( !isWarmupPending(p, wr.getWarmupName()) ) {
 			warmupManager.startWarmup(p.getName(), wr);
 			
-			util.sendMessage(p, "Warmup "+wr.getWarmupName()+" started, you must wait "+
-					warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime+" seconds.");
+			util.sendLocalizedMessage(p, HSPMessages.WARMUP_STARTED,
+					"name", wr.getWarmupName(),
+					"seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime);
+//			util.sendMessage(p, "Warmup "+wr.getWarmupName()+" started, you must wait "+
+//					warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime+" seconds.");
 		}
 		else
-			util.sendMessage(p, "Warmup already pending for "+wr.getWarmupName());
+			util.sendLocalizedMessage(p, HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName());
+//			util.sendMessage(p, "Warmup already pending for "+wr.getWarmupName());
 		
 	}
 	
@@ -303,7 +317,8 @@ public abstract class BaseCommand implements Command {
 			oldPermissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName() + ".use";
 		
 		if( !plugin.hasPermission(p, permissionNode) && !plugin.hasPermission(p, oldPermissionNode) ) {
-			p.sendMessage("You don't have permission to do that.");
+			util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+//			p.sendMessage("You don't have permission to do that.");
 			return false;
 		}
 		else

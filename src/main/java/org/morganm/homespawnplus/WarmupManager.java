@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
 
 /**
@@ -272,7 +273,9 @@ public class WarmupManager {
 					i.remove();
 					
 					warmup.cancel();
-					p.sendMessage("You took damage! Warmup "+warmup.warmupName+" cancelled.");
+					
+					plugin.getUtil().sendLocalizedMessage(p, HSPMessages.WARMUP_CANCELLED_DAMAGE, "name", warmup.warmupName);
+//					p.sendMessage("You took damage! Warmup "+warmup.warmupName+" cancelled.");
 				}
 			}
 		}
@@ -333,7 +336,8 @@ public class WarmupManager {
 						playerLocation.getBlockZ() != currentLoc.getBlockZ() ||
 						!playerLocation.getWorld().getName().equals(currentLoc.getWorld().getName()) )
 					{
-						p.sendMessage("You moved! Warmup "+warmupName+" cancelled.");
+						plugin.getUtil().sendLocalizedMessage(p, HSPMessages.WARMUP_CANCELLED_YOU_MOVED, "name", warmupName);
+//						p.sendMessage("You moved! Warmup "+warmupName+" cancelled.");
 						cleanup();
 						scheduleNext = false;
 					}

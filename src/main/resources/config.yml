@@ -91,6 +91,20 @@ core:
   # flag has no effect if BananaChunk is already installed.
   reloadChunkOnTeleport: true
 
+  # localization. "en" for english, "fr" for french, etc. Will
+  # use given localization if it exists, otherwise will fall
+  # back to English as the default.
+  locale: en
+
+  # default color of messages. ie. %yellow%, %red%, ..
+  defaultMessageColor: "%yellow%"
+
+  # set to true if Bukkit should be forced to reload the target
+  # chunk when a player teleports. This fixes "world hole" problems
+  # on teleport (exactly the same as BananaChunk plugin does).
+  # This option does nothing if BananaChunk is already installed.
+  reloadChunkOnTeleport: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

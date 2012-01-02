@@ -10,6 +10,7 @@ import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 
 /**
@@ -46,20 +47,23 @@ public class Home extends BaseCommand
 			
 			if( args[0].startsWith("w:") ) {
 				if( !plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
-	    			util.sendMessage(p, "No permission to go to homes in other worlds.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
+//	    			util.sendMessage(p, "No permission to go to homes in other worlds.");
 	    			return true;
 				}
 				
 				String worldName = args[0].substring(2);
 				home = util.getDefaultHome(p.getName(), worldName);
 				if( home == null ) {
-					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
+//					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
 					return true;
 				}
 			}
 			else {
 				if( !plugin.hasPermission(p, NAMED_HOME_PERMISSION) ) {
-	    			util.sendMessage(p, "No permission to go to named homes");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_PERMISSION);
+//	    			util.sendMessage(p, "No permission to go to named homes");
 					return true;
 				}
 				
@@ -80,7 +84,8 @@ public class Home extends BaseCommand
 			cooldownName = getCooldownName("home-named", homeName);
 			
 			if( l == null ) {
-				util.sendMessage(p,  "No home named \""+homeName+"\" found.");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND, "name", homeName);
+//				util.sendMessage(p,  "No home named \""+homeName+"\" found.");
 				return true;
 			}
 		}
@@ -100,7 +105,8 @@ public class Home extends BaseCommand
     		// strategies always allow cross-world locations regardless of permissions.
     		if( playerDirectedArg && !p.getWorld().getName().equals(l.getWorld().getName()) &&
     				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
-    			util.sendMessage(p, "No permission to go to homes in other worlds.");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
+//    			util.sendMessage(p, "No permission to go to homes in other worlds.");
     			return true;
     		}
     		
@@ -113,7 +119,8 @@ public class Home extends BaseCommand
 					
 					public void run() {
 						if( !canceled ) {
-							util.sendMessage(p, "Warmup \""+wuName+"\" finished, teleporting to home");
+							util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_WARMUP_FINISHED, "name", wuName);
+//							util.sendMessage(p, "Warmup \""+wuName+"\" finished, teleporting to home");
 							if( applyCost(p, true, cdName) )
 								p.teleport(finalL);
 						}
@@ -136,7 +143,8 @@ public class Home extends BaseCommand
 			}
     	}
     	else
-    		util.sendMessage(p, "No home found");
+			util.sendLocalizedMessage(p, HSPMessages.NO_HOME_FOUND);
+//    		util.sendMessage(p, "No home found");
     	
 		return true;
 	}

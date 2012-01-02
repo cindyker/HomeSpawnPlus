@@ -32,20 +32,24 @@ public class LocaleStringReplacerImpl implements Locale {
         Map<String, Object> bind = parseBinds(args);
         String value = msgLib.getResourceBundle().getString(key);
 
-        // apply colors
-        for (String colorKey : Colors.localeColors.keySet()) {
-            String color = Colors.localeColors.get(colorKey);
-
-            if (value.contains(colorKey)) {
-                value = value.replaceAll(colorKey, color);
-            }
-        }
-
-        // apply binds
-        for (String bindKey : bind.keySet()) {
-            Object object = bind.get(bindKey);
-
-            value = value.replaceAll("%" + bindKey + "%", object.toString());
+        // simple optimization: if no % symbol is present at all in the value
+        // string, then we can skip color/arg replacement entirely. -morganm
+        if( value.indexOf('%') != -1 ) {
+	        // apply colors
+	        for (String colorKey : Colors.localeColors.keySet()) {
+	            String color = Colors.localeColors.get(colorKey);
+	
+	            if (value.contains(colorKey)) {
+	                value = value.replaceAll(colorKey, color);
+	            }
+	        }
+	
+	        // apply binds
+	        for (String bindKey : bind.keySet()) {
+	            Object object = bind.get(bindKey);
+	
+	            value = value.replaceAll("%" + bindKey + "%", object.toString());
+	        }
         }
 
         return value;

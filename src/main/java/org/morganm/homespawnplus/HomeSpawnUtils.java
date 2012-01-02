@@ -77,7 +77,7 @@ public class HomeSpawnUtils {
 	 * @param args
 	 */
 	public void sendLocalizedMessage(final CommandSender target, final HSPMessages msgKey, final Object...args) {
-		target.sendMessage(plugin.getLocale().getMessage(msgKey.toString(), args));
+		target.sendMessage(getDefaultColor() + plugin.getLocale().getMessage(msgKey.toString(), args));
 	}
 	
 	/** Given a location, return a short string format of the form:

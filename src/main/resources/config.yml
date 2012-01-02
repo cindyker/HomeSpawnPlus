@@ -86,11 +86,6 @@ core:
   # the default.
   lastHomeIsDefault: true
 
-  # If true, HSP will force a chunk reload when the player
-  # teleports; this solves the "world hole on TP" issue. This
-  # flag has no effect if BananaChunk is already installed.
-  reloadChunkOnTeleport: true
-
   # localization. "en" for english, "fr" for french, etc. Will
   # use given localization if it exists, otherwise will fall
   # back to English as the default.

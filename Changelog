@@ -1,3 +1,8 @@
+v1.2.3 - 
+* enhancement, Ticket #22: /homedelete to accept w:world argument
+* enhancement, Ticket #29: stuck in chunk hole when teleporting
+* enhancement, Ticket #23: i18n (internationalization) support
+
 v1.2.2 - December 29, 2011
 * Ticket #37/#38/#40: first spawn not working properly
 * Ticket #36: SQL CONSTRAINT error due to new player check not working

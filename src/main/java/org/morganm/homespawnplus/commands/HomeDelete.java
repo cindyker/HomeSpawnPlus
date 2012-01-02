@@ -32,7 +32,15 @@ public class HomeDelete extends BaseCommand {
 		if( args.length > 0 ) {
 			homeName = args[0];
 			
-			if( homeName.equals("<noname>") ) {
+			if( args[0].startsWith("w:") ) {
+				String worldName = args[0].substring(2);
+				home = util.getDefaultHome(p.getName(), worldName);
+				if( home == null ) {
+					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
+					return true;
+				}
+			}
+			else if( homeName.equals("<noname>") ) {
 				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage().getHomes(p.getWorld().getName(), p.getName());
 				if( homes != null ) {
 					for(org.morganm.homespawnplus.entity.Home h : homes) {

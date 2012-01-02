@@ -86,6 +86,11 @@ core:
   # the default.
   lastHomeIsDefault: true
 
+  # If true, HSP will force a chunk reload when the player
+  # teleports; this solves the "world hole on TP" issue. This
+  # flag has no effect if BananaChunk is already installed.
+  reloadChunkOnTeleport: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

@@ -6,7 +6,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -14,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.SpawnInfo;
@@ -215,15 +218,32 @@ public class HSPPlayerListener extends PlayerListener {
     {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
-    	
+
     	SpawnInfo spawnInfo = new SpawnInfo();
     	spawnInfo.spawnEventType = ConfigOptions.SETTING_DEATH_BEHAVIOR;
     	Location l = doSpawn(e.getPlayer(), spawnInfo);
-    	
+
     	if( l != null )
     		e.setRespawnLocation(l);
-   }
- 
+    }
+
+    /** Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
+     * to refresh the chunk the player is teleporting into.
+     */
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    	if( event.isCancelled() )
+    		return;
+
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, true) ) {
+	    	Player player = event.getPlayer();
+	    	World world = player.getWorld();
+	    	Chunk chunk = world.getChunkAt(event.getTo());
+	    	int chunkx = chunk.getX();
+	    	int chunkz = chunk.getZ();
+	    	world.refreshChunk(chunkx, chunkz);
+    	}
+    }
+
     private class ClickedEvent {
     	public Location location;
     	public long timestamp;

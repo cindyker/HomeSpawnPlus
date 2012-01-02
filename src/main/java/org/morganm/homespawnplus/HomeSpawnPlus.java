@@ -28,6 +28,9 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
+import org.morganm.homespawnplus.i18n.Locale;
+import org.morganm.homespawnplus.i18n.LocaleConfig;
+import org.morganm.homespawnplus.i18n.LocaleFactory;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
@@ -71,6 +74,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private PluginDescriptionFile pluginDescription;
     private String pluginName;
     private Storage storage;
+    private Locale locale;
 
     public Economy vaultEconomy = null;
     
@@ -108,6 +112,11 @@ public class HomeSpawnPlus extends JavaPlugin {
     		loadConfig();
     		updateConfigDefaultFile();
             initializeDatabase();
+            
+    		LocaleConfig localeConfig = new LocaleConfig(
+    				config.getString("locale", "en"), this, "hsp", getFile(),
+    				log, logPrefix);
+    		locale = LocaleFactory.getLocale(localeConfig);
     	}
     	catch(Exception e) {
     		loadError = true;
@@ -135,6 +144,11 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// Register our events
         pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, getEventPriority(), this);
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, getEventPriority(), this);
+        
+        if( pm.getPlugin("BananaChunk") == null )
+        	pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Low, this);
+        else
+        	log.info(logPrefix + " BananaChunk found, disabling internal teleport chunk refresh.");
         
         pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
@@ -184,6 +198,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	return config;
     }
     
+    public Locale getLocale() { return locale; }
+
     // since we provide our own Configuration interface (via getHSPConfig()), we override
     // JavaPlugin's built-in one to be make it use ours (in the event that they are
     // compatible) or none at all.

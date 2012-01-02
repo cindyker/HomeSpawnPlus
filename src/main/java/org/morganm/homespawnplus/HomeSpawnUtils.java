@@ -62,8 +62,17 @@ public class HomeSpawnUtils {
 	 * @param p
 	 * @param message
 	 */
-	public void sendMessage(CommandSender sender, String message) {
+	public void sendMessage(final CommandSender sender, final String message) {
 		sender.sendMessage(Yellow + message);
+	}
+	/** Send a message to a player using the localized string.
+	 * 
+	 * @param target
+	 * @param msgKey
+	 * @param args
+	 */
+	public void sendLocalizedMessage(final CommandSender target, final String msgKey, final Object...args) {
+		target.sendMessage(plugin.getLocale().getMessage(msgKey, args));
 	}
 	
 	/** Given a location, return a short string format of the form:

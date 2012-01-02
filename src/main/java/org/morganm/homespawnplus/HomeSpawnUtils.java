@@ -59,11 +59,15 @@ public class HomeSpawnUtils {
     	return Colors.getDefaultColor();
     }
 
+    public String getLocalizedMessage(final HSPMessages msgKey, final Object...args) {
+    	return plugin.getLocale().getMessage(msgKey.toString(), args);
+    }
+    
 	/** Send a message to a player using the default color. sendLocalizedMessage should
 	 * be preferred to this method to allow for localization of the messages being
 	 * sent, but this can be used in cases where no localization is needed (such as
 	 * when printing out a list of results with no localizable strings).
-	 * 
+	 *
 	 * @param p
 	 * @param message
 	 */
@@ -77,7 +81,7 @@ public class HomeSpawnUtils {
 	 * @param args
 	 */
 	public void sendLocalizedMessage(final CommandSender target, final HSPMessages msgKey, final Object...args) {
-		target.sendMessage(getDefaultColor() + plugin.getLocale().getMessage(msgKey.toString(), args));
+		target.sendMessage(getDefaultColor() + getLocalizedMessage(msgKey, args));
 	}
 	
 	/** Given a location, return a short string format of the form:

@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 
 /**
@@ -38,10 +39,13 @@ public class SpawnList extends BaseCommand {
 		if( spawns != null && spawns.size() > 0 ) {
 			if( world.equals("all") || world.equals("*") ) {
 				world = "all";
-				util.sendMessage(p, "Spawn list for all worlds: ");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_ALL_WORLDS);
+//				util.sendMessage(p, "Spawn list for all worlds: ");
 			}
 			else
-				util.sendMessage(p, "Spawn list on world \""+world+"\": ");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_FOR_WORLD,
+						"world", world);
+//				util.sendMessage(p, "Spawn list on world \""+world+"\": ");
 			
 			for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
 				if( !world.equals("all") && !world.equals(spawn.getWorld()) )
@@ -54,16 +58,20 @@ public class SpawnList extends BaseCommand {
 					group = null;
 				String name = spawn.getName();
 				
-				p.sendMessage(ChatColor.YELLOW + "id: " + ChatColor.RED + spawn.getId() + " " + ChatColor.YELLOW
-						+ (name != null ? "[name: " + ChatColor.RED + name + ChatColor.YELLOW + "] " : "")
-						+ (group != null ? "[group: " + ChatColor.RED + group + ChatColor.YELLOW + "] " : "")
+				p.sendMessage(util.getDefaultColor() + "id: " + ChatColor.RED + spawn.getId() + " " + util.getDefaultColor()
+						+ (name != null ? "["+util.getLocalizedMessage(HSPMessages.GENERIC_NAME)+": " + ChatColor.RED + name + util.getDefaultColor() + "] " : "")
+						+ (group != null ? "["+util.getLocalizedMessage(HSPMessages.GENERIC_GROUP)+": " + ChatColor.RED + group + util.getDefaultColor() + "] " : "")
 						+ util.shortLocationString(spawn)
-						+ (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup()) ? ChatColor.GREEN + " (world default)" : ""));
+						+ (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup())
+								? ChatColor.GREEN + " ("+util.getLocalizedMessage(HSPMessages.GENERIC_WORLD_DEFAULT)+")"
+								: ""));
 			}
 		}
 		
 		if( !displayedSpawn )
-			util.sendMessage(p, "No spawns found for world \""+world+"\"");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_NO_SPAWNS_FOUND,
+					"world", world);
+//			util.sendMessage(p, "No spawns found for world \""+world+"\"");
 
 		return true;
 	}

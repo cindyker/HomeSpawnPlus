@@ -119,7 +119,8 @@ public class Home extends BaseCommand
 					
 					public void run() {
 						if( !canceled ) {
-							util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_WARMUP_FINISHED, "name", wuName);
+							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+									"name", getWarmupName(), "place", "home");
 //							util.sendMessage(p, "Warmup \""+wuName+"\" finished, teleporting to home");
 							if( applyCost(p, true, cdName) )
 								p.teleport(finalL);

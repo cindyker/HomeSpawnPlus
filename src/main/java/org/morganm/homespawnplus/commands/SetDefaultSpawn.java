@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -22,7 +23,8 @@ public class SetDefaultSpawn extends BaseCommand {
 //		boolean localOnlyFlag = false;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, "You must specify the spawnName to set as default.");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
+//			util.sendMessage(p, "You must specify the spawnName to set as default.");
 		}
 		else {
 			String spawnName = args[0];
@@ -46,7 +48,10 @@ public class SetDefaultSpawn extends BaseCommand {
 			if( spawn != null ) {
 				Location l = spawn.getLocation();
 				util.setSpawn(l, p.getName());
-				util.sendMessage(p, "Default spawn changed to "+spawn.getName()+" at location ["+util.shortLocationString(l)+"]");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
+						"name", spawn.getName(), "location", util.shortLocationString(l));
+				
+//				util.sendMessage(p, "Default spawn changed to "+spawn.getName()+" at location ["+util.shortLocationString(l)+"]");
 				
 				/*
 				if( localOnlyFlag )

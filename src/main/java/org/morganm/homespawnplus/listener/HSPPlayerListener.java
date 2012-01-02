@@ -22,6 +22,7 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -116,7 +117,8 @@ public class HSPPlayerListener extends PlayerListener {
         				setDefaultHome = true;
         			
         			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) )
-        				util.sendMessage(player, "Your home has been set to this location.");
+    					util.sendLocalizedMessage(p, HSPMessages.HOME_BED_SET);
+//        				util.sendMessage(player, "Your home has been set to this location.");
 
         			bedClicks.remove(player.getName());
 //            		event.setCancelled(true);
@@ -125,7 +127,8 @@ public class HSPPlayerListener extends PlayerListener {
         	// otherwise this is first click, tell them to click again to save their home
         	else {
         		bedClicks.put(player.getName(), new ClickedEvent(b.getLocation(), System.currentTimeMillis()));
-        		util.sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
+				util.sendLocalizedMessage(p, HSPMessages.HOME_BED_ONE_MORE_CLICK);
+//        		util.sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
 //        		event.setCancelled(true);
         	}
         }

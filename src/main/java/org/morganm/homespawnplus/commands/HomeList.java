@@ -8,6 +8,7 @@ import java.util.Set;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -46,16 +47,21 @@ public class HomeList extends BaseCommand {
 					*/
 
 			if( world.equals("all") || world.equals("*") )
-				util.sendMessage(p, "Home list for all worlds: ");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_ALL_WORLDS);
+//				util.sendMessage(p, "Home list for all worlds: ");
 			else
-				util.sendMessage(p, "Home list on world \""+world+"\": ");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_FOR_WORLD,
+						"world", world);
+//				util.sendMessage(p, "Home list on world \""+world+"\": ");
 			
 			for(org.morganm.homespawnplus.entity.Home home : homes) {
 				String name = home.getName();
 				if( name == null )
 					name = "<noname>";
 				util.sendMessage(p, name+": "+ util.shortLocationString(home)
-						+ (home.isDefaultHome() ? " (default)" : ""));
+						+ (home.isDefaultHome()
+								? " ("+util.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
+								: ""));
 				/*
 				util.sendMessage(p, String.format("%-16s %12s/%6d/%6d/%6d %-8s",
 						home.getName(),
@@ -67,7 +73,9 @@ public class HomeList extends BaseCommand {
 			}
 		}
 		else
-			util.sendMessage(p, "No homes found for world \""+world+"\"");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
+					"world", world);
+//			util.sendMessage(p, "No homes found for world \""+world+"\"");
 
 		return true;
 	}

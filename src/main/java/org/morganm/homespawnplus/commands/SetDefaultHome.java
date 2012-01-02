@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -25,7 +26,8 @@ public class SetDefaultHome extends BaseCommand {
 			return true;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, "You must specify your home name to set as default");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_SPECIFY_HOMENAME);
+//			util.sendMessage(p, "You must specify your home name to set as default");
 		}
 		else {
 			String homeName = args[0];
@@ -35,7 +37,9 @@ public class SetDefaultHome extends BaseCommand {
 			if( home != null ) {
 				home.setDefaultHome(true);
 				plugin.getStorage().writeHome(home);
-				util.sendMessage(p, "Your default home on world "+home.getWorld()+" has been changed to your home named "+home.getName());
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_HOME_CHANGED,
+						"world", home.getWorld(), "home", home.getName());
+//				util.sendMessage(p, "Your default home on world "+home.getWorld()+" has been changed to your home named "+home.getName());
 			}
 		}
 		

@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -43,12 +44,16 @@ public class SpawnDelete extends BaseCommand {
 			spawn = plugin.getStorage().getSpawnByName(args[0]);
 		
 		if( spawn == null ) {
-			util.sendMessage(p, "No spawn found for name or id: "+args[0]);
+			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
+					"name", args[0]);
+//			util.sendMessage(p, "No spawn found for name or id: "+args[0]);
 			return true;
 		}
 		
 		plugin.getStorage().deleteSpawn(spawn);
-		util.sendMessage(p, "Spawn "+args[0]+" deleted.");
+		util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
+				"name", args[0]);
+//		util.sendMessage(p, "Spawn "+args[0]+" deleted.");
 		return true;
 	}
 

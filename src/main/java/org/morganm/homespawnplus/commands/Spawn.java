@@ -10,6 +10,7 @@ import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 
 /**
@@ -41,12 +42,14 @@ public class Spawn extends BaseCommand
 					l = spawn.getLocation();
 				
 				if( l == null ) {
-					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
+//					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
 					return true;
 				}
 			}
 			else {
-				util.sendMessage(p,  "No permission");
+				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+//				util.sendMessage(p,  "No permission");
 			}
 		}
 		else {
@@ -67,7 +70,9 @@ public class Spawn extends BaseCommand
 
 					public void run() {
 						if( !canceled ) {
-							util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to spawn");
+							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+									"name", getWarmupName(), "place", "spawn");
+//							util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to spawn");
 							if( applyCost(p, true) )
 								p.teleport(finalL);
 						}

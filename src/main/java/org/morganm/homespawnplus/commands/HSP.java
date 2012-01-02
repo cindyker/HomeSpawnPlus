@@ -14,6 +14,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageYaml;
 
@@ -46,7 +47,7 @@ public class HSP extends BaseCommand {
 			return false;
 		
 		if( args.length < 1 ) {
-			printUsage(p);
+			printUsage(p, command);
 		}
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
@@ -60,11 +61,13 @@ public class HSP extends BaseCommand {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				util.sendMessage(p, "Error loading config data, not successful.  Check your server logs.");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_ERROR_RELOADING);
+//				util.sendMessage(p, "Error loading config data, not successful.  Check your server logs.");
 			}
 			
 			if( success )
-				util.sendMessage(p, "Config data reloaded.");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_CONFIG_RELOADED);
+//				util.sendMessage(p, "Config data reloaded.");
 		}
 		else if( args[0].startsWith("reloadd") || args[0].equals("rd") ) {
 			// purge the existing cache
@@ -73,7 +76,8 @@ public class HSP extends BaseCommand {
 			plugin.getStorage().getAllHomes();
 			plugin.getStorage().getAllSpawns();
 
-			util.sendMessage(p, "Data cache purged and reloaded");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
+//			util.sendMessage(p, "Data cache purged and reloaded");
 		}
 		else if( args[0].startsWith("backup") ) {
 			Storage storage = plugin.getStorage();
@@ -92,19 +96,22 @@ public class HSP extends BaseCommand {
 			try {
 				backupStorage.save();
 	
-				util.sendMessage(p, "Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+//				util.sendMessage(p, "Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 				log.info(logPrefix+" Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 			}
 			catch(IOException e) {
 				log.warning(logPrefix+" Error saving backup file"+e.getMessage());
 				e.printStackTrace();
-				util.sendMessage(p, "There was an error writing the backup file, please check your server logs");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
+//				util.sendMessage(p, "There was an error writing the backup file, please check your server logs");
 			}
 		}
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || !"OVERWRITE".equals(args[1]) ) {
-				util.sendMessage(p, "In order to start restore you must send the command \"/hsp restore OVERWRITE\"");
-				util.sendMessage(p, "THIS WILL OVERWRITE EXISTING DATA and restore data from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+//				util.sendMessage(p, "In order to start restore you must send the command \"/hsp restore OVERWRITE\"");
+//				util.sendMessage(p, "THIS WILL OVERWRITE EXISTING DATA and restore data from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 			}
 			else {
 				File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
@@ -131,26 +138,30 @@ public class HSP extends BaseCommand {
 						storage.writePlayer(player);
 					}
 					
-					util.sendMessage(p, "Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+//					util.sendMessage(p, "Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 					log.info(logPrefix+" Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 				}
 				else
-					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+//					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
 			}
 		}
 		else {
-			printUsage(p);
+			printUsage(p, command);
 		}
 
 		return true;
 	}
 	
-	private void printUsage(CommandSender p) {
-		util.sendMessage(p, "Usage:");
-		util.sendMessage(p, "/"+getCommandName()+" reloadconfig - reload config files");
-		util.sendMessage(p, "/"+getCommandName()+" reloaddata - force reloading of plugin data from database");
-		util.sendMessage(p, "/"+getCommandName()+" backup - backup database to a file");
-		util.sendMessage(p, "/"+getCommandName()+" restore - restore database from a file");
+	private void printUsage(CommandSender p, Command command) {
+		util.sendMessage(p, command.getUsage());
+		
+//		util.sendMessage(p, "Usage:");
+//		util.sendMessage(p, "/"+getCommandName()+" reloadconfig - reload config files");
+//		util.sendMessage(p, "/"+getCommandName()+" reloaddata - force reloading of plugin data from database");
+//		util.sendMessage(p, "/"+getCommandName()+" backup - backup database to a file");
+//		util.sendMessage(p, "/"+getCommandName()+" restore - restore database from a file");
 	}
 
 }

@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -26,9 +27,10 @@ public class SetHomeOther extends BaseCommand {
 			return true;
 		
 		if(args.length < 1) {
-			util.sendMessage(p, "Usage:");
-			util.sendMessage(p, "  /sethomeother <player> : set <player>'s default home to the current location");
-			util.sendMessage(p, "  /sethomeother <player> <name> : set <player>'s home named <name> to the current location");
+			util.sendMessage(p, command.getUsage());
+//			util.sendMessage(p, "Usage:");
+//			util.sendMessage(p, "  /sethomeother <player> : set <player>'s default home to the current location");
+//			util.sendMessage(p, "  /sethomeother <player> <name> : set <player>'s home named <name> to the current location");
 			
 			return true;
 		}
@@ -39,11 +41,15 @@ public class SetHomeOther extends BaseCommand {
 		
 		if( args.length > 1 ) {
 			if( util.setNamedHome(homeowner, l, args[1], setter) )
-				util.sendMessage(p, "Home \""+args[1]+"\" set successfully for player "+homeowner);
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
+						"name", args[1], "player", homeowner);
+//				util.sendMessage(p, "Home \""+args[1]+"\" set successfully for player "+homeowner);
 		}
 		else {
 			if( util.setHome(homeowner, l, setter, true, false) )
-				util.sendMessage(p, "Home set successfully for player "+homeowner);
+				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
+						"player", homeowner);
+//				util.sendMessage(p, "Home set successfully for player "+homeowner);
 		}
 		
 		return true;

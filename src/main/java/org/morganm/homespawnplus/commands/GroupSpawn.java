@@ -10,6 +10,7 @@ import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 
 /**
@@ -31,7 +32,10 @@ public class GroupSpawn extends BaseCommand
 		final Location l = util.getStrategyLocation(p, spawnInfo);
 		
 		if( l == null ) {
-			util.sendMessage(p, "No groupSpawn found for your group: "+plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
+			util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
+					"group", plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
+			
+//			util.sendMessage(p, "No groupSpawn found for your group: "+plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
 			return true;
 		}
 
@@ -42,7 +46,9 @@ public class GroupSpawn extends BaseCommand
 
 				public void run() {
 					if( !canceled ) {
-						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
+						util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+								"name", getWarmupName(), "place", "group spawn");
+//						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
 						if( applyCost(p, true) )
 							p.teleport(l);
 					}

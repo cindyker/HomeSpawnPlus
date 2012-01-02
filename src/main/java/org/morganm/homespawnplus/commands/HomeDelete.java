@@ -8,6 +8,7 @@ import java.util.Set;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -36,7 +37,8 @@ public class HomeDelete extends BaseCommand {
 				String worldName = args[0].substring(2);
 				home = util.getDefaultHome(p.getName(), worldName);
 				if( home == null ) {
-					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
+//					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
 					return true;
 				}
 			}
@@ -62,23 +64,31 @@ public class HomeDelete extends BaseCommand {
 			// (this shouldn't be possible since all checks are keyed to this player's name, but
 			// let's be paranoid anyway)
 			if( !p.getName().equals(home.getPlayerName()) ) {
-				util.sendMessage(p, "ERROR: tried to delete another player's home; action not allowed.");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME);
+//				util.sendMessage(p, "ERROR: tried to delete another player's home; action not allowed.");
 				log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to delete home for player "+home.getPlayerName());
 			}
 			else {
 				plugin.getStorage().deleteHome(home);
-				String msg = null;
 				if( homeName != null )
-					msg = "Home named "+homeName+" for player "+p.getName()+" deleted.";
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName);
 				else
-					msg = "Default home for player "+p.getName()+" on world "+p.getWorld().getName()+" deleted";
-				util.sendMessage(p, msg);
+					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED);
+				
+//				String msg = null;
+//				if( homeName != null )
+//					msg = "Home named "+homeName+" for player "+p.getName()+" deleted.";
+//				else
+//					msg = "Default home for player "+p.getName()+" on world "+p.getWorld().getName()+" deleted";
+//				util.sendMessage(p, msg);
 			}
 		}
 		else if( homeName != null )
-			util.sendMessage(p, "No home with name "+homeName+ " found to delete.");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_NO_HOME_FOUND, "name", homeName);
+//			util.sendMessage(p, "No home with name "+homeName+ " found to delete.");
 		else
-			util.sendMessage(p, "No home found to delete on world");
+			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_NO_DEFAULT_HOME_FOUND);
+//			util.sendMessage(p, "No default home found to delete on current world");
 		
 		return true;
 	}

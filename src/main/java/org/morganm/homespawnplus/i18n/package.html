@@ -12,7 +12,7 @@ In your plugin onEnable method, you would instantiate a Locale object like so:
   public void onEnable() {
 	LocaleConfig localeConfig = new LocaleConfig(
 		config.getString("locale", "en"), this, "hsp", getFile(),
-		new File(YAML_CONFIG_ROOT_PATH), log, logPrefix);
+		log, logPrefix);
 	locale = LocaleFactory.getLocale(localeConfig);
   }
 

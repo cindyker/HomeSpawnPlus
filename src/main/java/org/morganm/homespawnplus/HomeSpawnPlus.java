@@ -104,7 +104,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
     	
-    	Debug.getInstance().init(log, logPrefix+"[DEBUG] ", false);
+    	Debug.getInstance().init(log, logPrefix, "plugins/HomeSpawnPlus/debug.log", false);
     	jarUtils = new JarUtils(this, getFile(), log, logPrefix);
 		buildNumber = jarUtils.getBuildNumber();
     	

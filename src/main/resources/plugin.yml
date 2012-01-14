@@ -1,6 +1,6 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.3
+version: 1.3.1
 author: morganm
 database: true
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]
@@ -13,6 +13,7 @@ commands:
            /<command> - respawns you at your primary group spawn
            /<command> Admins - respawns you at the 'Admins' group spawn
   home:
+    aliases: [hsphome]
     description: Respawns you at your home
     usage: /<command>
   homedelete:
@@ -67,7 +68,7 @@ commands:
         Incorrect usage of command /<command>. Examples:
            /<command> Admins - sets the group spawn for the 'Admins' group
   sethome:
-    aliases: [homeset]
+    aliases: [homeset,hspsethome]
     description: Sets your home
     usage: |
         Incorrect usage of command /<command>. Examples:
@@ -80,9 +81,11 @@ commands:
            /<command> player - set player's default home to the current location
            /<command> player homeName - set player's home named "homeName" to the current location
   setspawn:
+    aliases: [hspsetspawn]
     description: Sets the spawn for this world
     usage: /<command>
   spawn:
+    aliases: [hspspawn]
     description: Respawns you at the world spawn
     usage: /<command>
   spawnlist:

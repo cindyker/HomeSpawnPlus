@@ -30,7 +30,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *
  */
 public class PermissionSystem {
-	// class version: 6
+	// class version: 7
 	public static final int SUPERPERMS = 0x00;		// default
 	public static final int VAULT = 0x01;
 	public static final int WEPIF = 0x02;
@@ -129,10 +129,12 @@ public class PermissionSystem {
 			else if( "superperms".equalsIgnoreCase(system) ) {
 				systemInUse = SUPERPERMS;
 	        	log.info(logPrefix+"using Superperms permissions");
+	        	break;
 			}
 			else if( "ops".equalsIgnoreCase(system) ) {
 				systemInUse = OPS;
 	        	log.info(logPrefix+"using basic Op check for permissions");
+	        	break;
 			}
 		}
 	}
@@ -253,6 +255,7 @@ public class PermissionSystem {
     	{
     		Player player = plugin.getServer().getPlayer(playerName);
     		group = getSuperpermsGroup(player);
+    		break;
     	}
             
         // OPS has no group support

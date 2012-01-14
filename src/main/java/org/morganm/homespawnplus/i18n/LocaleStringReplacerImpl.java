@@ -31,6 +31,9 @@ public class LocaleStringReplacerImpl implements Locale {
 
         Map<String, Object> bind = parseBinds(args);
         String value = msgLib.getResourceBundle().getString(key);
+        
+        if( value == null )
+        	throw new NullPointerException("localized string for key "+key+" is null");
 
         // simple optimization: if no % symbol is present at all in the value
         // string, then we can skip color/arg replacement entirely. -morganm
@@ -46,9 +49,13 @@ public class LocaleStringReplacerImpl implements Locale {
 	
 	        // apply binds
 	        for (String bindKey : bind.keySet()) {
+	        	if( bindKey == null )
+	        		throw new NullPointerException("bindKey for localized string "+key+" is null, localized string = "+value);
+	        	
 	            Object object = bind.get(bindKey);
+	            String bindVal = (object != null ? object.toString() : "null");
 	
-	            value = value.replaceAll("%" + bindKey + "%", object.toString());
+	            value = value.replaceAll("%" + bindKey + "%", bindVal);
 	        }
         }
 

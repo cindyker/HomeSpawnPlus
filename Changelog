@@ -1,3 +1,11 @@
+v1.3.1 - January 14, 2012
+* finished off localization of strings, HSP strings are now fully localized. Now it just needs translations other than just English!
+* fixed a bug with limit cascading (unreported)
+* Ticket #47: permission system "op" taking precedence over "superperms"
+* Ticket #50: WEPIF not being used when using WorldEdit release 5.0
+* Ticket #54: NPE related to HSP localization in /home command
+* Ticket #48: Support for /groupspawn group arguments (permission: hsp.command.groupspawn.named)
+
 v1.3 - January 1, 2012
 * enhancement, Ticket #22: /homedelete to accept w:world argument
 * enhancement, Ticket #29: stuck in chunk hole when teleporting

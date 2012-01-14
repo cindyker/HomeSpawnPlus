@@ -623,6 +623,11 @@ public class HomeSpawnUtils {
 							}
 						}
 					}
+					
+					if( limit != -2 ) {
+						debug.debug("Limit value of ",limit," found as a result of section ",key,"; stopping limit search");
+						break;
+					}
 				}
 			}
 		}

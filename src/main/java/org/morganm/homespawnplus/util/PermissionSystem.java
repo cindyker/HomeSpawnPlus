@@ -30,7 +30,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *
  */
 public class PermissionSystem {
-	// class version: 7
+	// class version: 8
 	public static final int SUPERPERMS = 0x00;		// default
 	public static final int VAULT = 0x01;
 	public static final int WEPIF = 0x02;
@@ -346,13 +346,22 @@ public class PermissionSystem {
 	    	
 	    	try {
 		    	version = worldEdit.getDescription().getVersion();
-		    	int index = version.indexOf('-');
-		    	versionNumber = Integer.parseInt(version.substring(0, index));
+
+		    	// version "4.7" is equivalent to build #379
+		    	if( "4.7".equals(version) )
+		    		versionNumber = 379;
+		    	// version "5.0" is equivalent to build #670
+		    	else if( "5.0".equals(version) )
+		    		versionNumber = 670;
+		    	else {
+			    	int index = version.indexOf('-');
+			    	versionNumber = Integer.parseInt(version.substring(0, index));
+		    	}
 	    	}
 	    	catch(Exception e) {}	// catch any NumberFormatException or anything else
 	    	
-	    	if( versionNumber < 606 ) {
-	    		log.info(logPrefix + "You are currently running version "+version+" of WorldEdit. WEPIF was changed in #606, please update to latest WorldEdit. (skipping WEPIF for permissions)");
+	    	if( versionNumber < 660 ) {
+	    		log.info(logPrefix + "You are currently running version "+version+" of WorldEdit. WEPIF was changed in #660, please update to latest WorldEdit. (skipping WEPIF for permissions)");
 	    		return false;
 	    	}
 

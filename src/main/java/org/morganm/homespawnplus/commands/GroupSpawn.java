@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
@@ -19,18 +20,47 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
  */
 public class GroupSpawn extends BaseCommand
 {
+	private static final String OTHER_GROUPSPAWN_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.groupspawn.named";
+	
 	@Override
 	public String[] getCommandAliases() { return new String[] {"gs"}; }
 	
 	@Override
 	public boolean execute(final Player p, final Command command, final String[] args) {
-		if( !defaultCommandChecks(p) )
+		if( !isEnabled() || !hasPermission(p) )
 			return true;
+
+		String cooldownName = "groupspawn";
 		
-		SpawnInfo spawnInfo = new SpawnInfo();
-		spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
-		final Location l = util.getStrategyLocation(p, spawnInfo);
-		
+		Location l = null;
+		if( args.length > 0 ) {
+			if( plugin.hasPermission(p, OTHER_GROUPSPAWN_PERMISSION) ) {
+				org.morganm.homespawnplus.entity.Spawn spawn = util.getGroupSpawn(args[0], p.getWorld().getName());
+				cooldownName = getCooldownName("groupspawn-named", args[0]);
+				if( spawn != null )
+					l = spawn.getLocation();
+				
+				if( l == null ) {
+					util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
+							"group", args[0]);
+//					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
+					return true;
+				}
+			}
+			else {
+				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+//				util.sendMessage(p,  "No permission");
+			}
+		}
+		else {
+			SpawnInfo spawnInfo = new SpawnInfo();
+			spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
+			l = util.getStrategyLocation(p, spawnInfo);
+		}
+
+		if( !cooldownCheck(p, cooldownName) )
+			return true;
+    	
 		if( l == null ) {
 			util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
 					"group", plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
@@ -40,6 +70,7 @@ public class GroupSpawn extends BaseCommand
 		}
 
 		if( hasWarmup(p) ) {
+    		final Location finalL = l;
 			doWarmup(p, new WarmupRunner() {
 				private boolean canceled = false;
 				private String wuName = getCommandName();
@@ -50,7 +81,7 @@ public class GroupSpawn extends BaseCommand
 								"name", getWarmupName(), "place", "group spawn");
 //						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
 						if( applyCost(p, true) )
-							p.teleport(l);
+							p.teleport(finalL);
 					}
 				}
 

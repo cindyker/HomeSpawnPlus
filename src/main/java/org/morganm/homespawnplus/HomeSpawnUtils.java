@@ -349,10 +349,14 @@ public class HomeSpawnUtils {
 			switch(type) {
 			case SPAWN_NEW_PLAYER:
 				if( spawnInfo.isFirstLogin ) {
+					if( verbose )
+						log.info(logPrefix+" strategy "+type+", player is detemined to be a new player");
 					spawn = getSpawnByName(ConfigOptions.VALUE_NEW_PLAYER_SPAWN);
 					if( spawn != null )
 						l = spawn.getLocation();
 				}
+				else if( verbose )
+					log.info(logPrefix+" strategy "+type+", player is detemined to NOT be a new player");
 				
 				logStrategyResult(type, l, verbose);
 				break;
@@ -1351,12 +1355,17 @@ public class HomeSpawnUtils {
     	String strategy = plugin.getConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.BUKKIT.toString());
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.BUKKIT.toString()) ) {
-        	return !p.hasPlayedBefore();
+    		boolean result = p.hasPlayedBefore(); 
+    		debug.debug("isNewPlayer: using BUKKIT strategy, result=",result);
+        	return result;
     	}
 
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.ORIGINAL.toString()) ) {
-        	if( plugin.getStorage().getPlayer(p.getName()) != null )
+        	if( plugin.getStorage().getPlayer(p.getName()) != null ) {
+        		debug.debug("isNewPlayer: using ORIGINAL strategy, player has DB record, player is NOT new");
         		return false;
+        	}
+    		debug.debug("isNewPlayer: using ORIGINAL strategy, player is NOT in the database");
     	}
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString()) || 
@@ -1366,10 +1375,15 @@ public class HomeSpawnUtils {
         	final String playerDat = p.getName() + ".dat";
         	
         	File file = new File(worldName+"/players/"+playerDat);
-        	if( file.exists() )
+        	if( file.exists() ) {
+        		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," exists, player is NOT new");
         		return false;
+        	}
+
+    		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," does not exist");
     	}
     	
+		debug.debug("isNewPlayer: using ",strategy," strategy, player is determined to be NEW player");
     	// if we didn't find any record of this player, they must be new
     	return true;
     }

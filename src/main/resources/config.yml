@@ -109,7 +109,7 @@ core:
   #     DB lookup instead of a file access, but it also means that
   #     you can't test "new player" strategies simply by removing
   #     the player.dat file.
-  newPlayerStrategy: BUKKIT
+  newPlayerStrategy: PLAYER_DAT
 
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/

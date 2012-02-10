@@ -100,6 +100,17 @@ core:
   # This option does nothing if BananaChunk is already installed.
   reloadChunkOnTeleport: true
 
+  # Define the strategy HSP uses to determine if a player is new.
+  #   BUKKIT: use Bukkit Player.hasPlayedBefore() method
+  #   PLAYER_DAT: check for "player.dat" in the default world
+  #   ORIGINAL: use HSP's original algorithm, which first checks
+  #     HSP's database for any record, then falls back to a
+  #     PLAYER_DAT check. This can be faster since it's a cached
+  #     DB lookup instead of a file access, but it also means that
+  #     you can't test "new player" strategies simply by removing
+  #     the player.dat file.
+  newPlayerStrategy: BUKKIT
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

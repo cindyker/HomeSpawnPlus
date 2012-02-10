@@ -23,6 +23,7 @@ public interface ConfigOptions {
 	public static final String EVENT_PRIORITY = "core.eventPriority";
 	public static final String LAST_HOME_IS_DEFAULT = "core.lastHomeIsDefault";
 	public static final String RELOAD_CHUNK_ON_TELEPORT = "core.reloadChunkOnTeleport";
+	public static final String NEW_PLAYER_STRATEGY = "core.newPlayerStrategy";
 	
 	public static final String USE_WARMUPS = "warmup.enabled";
 	public static final String WARMUPS_ON_MOVE_CANCEL = "warmup.onMoveCancel";
@@ -81,6 +82,7 @@ public interface ConfigOptions {
 	public static final String STRATEGY_MODE_HOME_NO_BED = "modeHomeNoBed";
 	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
 	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
+	public static final String STRATEGY_MODE_HOME_REQUIRES_BED = "modeRequiresBed";
 	
 	public static final String STRATEGY_SPAWN_LOCAL_RANDOM = "spawnLocalRandom";
 	public static final String STRATEGY_SPAWN_WG_REGION = "spawnWGregion";
@@ -94,4 +96,10 @@ public interface ConfigOptions {
 	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearest";
 	
 	public static final String STRATEGY_DEFAULT = "default";
+	
+	public enum NewPlayerStrategy {
+		ORIGINAL,
+		BUKKIT,
+		PLAYER_DAT
+	}
 }

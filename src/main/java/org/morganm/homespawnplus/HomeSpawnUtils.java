@@ -5,14 +5,18 @@ package org.morganm.homespawnplus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -140,6 +144,113 @@ public class HomeSpawnUtils {
 		public boolean explicitDefault = false;
 	}
 	
+	private static final BlockFace[] cardinalFaces = new BlockFace[] {BlockFace.NORTH,
+		BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+	private static final BlockFace[] adjacentFaces = new BlockFace[] {BlockFace.NORTH,
+			BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+			BlockFace.UP, BlockFace.DOWN
+	};
+	/** Find a bed starting at a given Block, up to maxDepth blocks away.
+	 * 
+	 * @param l
+	 * @param currentLevel
+	 * @param maxDepth
+	 * @return
+	 */
+	private Location findBed(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
+		debug.devDebug("findBed: b=",b," currentLevel=",currentLevel);
+		if( b.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+			debug.devDebug("findBed: Block ",b," is bed block");
+			for(BlockFace bf : cardinalFaces) {
+				Block nextBlock = b.getRelative(bf);
+				if( nextBlock.getTypeId() == 26 ) {
+					debug.devDebug("findBed: Block ",nextBlock," is second bed block");
+					return b.getLocation();
+				}
+			}
+		}
+		
+		// first we check for a bed in all the adjacent blocks, before recursing to move out a level
+		for(BlockFace bf : adjacentFaces) {
+			Block nextBlock = b.getRelative(bf);
+			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't check the same block twice
+				continue;
+			
+			if( nextBlock.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+				debug.devDebug("findBed: Block ",nextBlock," is bed block");
+				for(BlockFace cardinal : cardinalFaces) {
+					Block possibleBedBlock = nextBlock.getRelative(cardinal);
+					if( possibleBedBlock.getTypeId() == 26 ) {
+						debug.devDebug("findBed: Block ",possibleBedBlock," is second bed block");
+						return nextBlock.getLocation();
+					}
+				}
+			}
+		}
+		
+		// don't recurse beyond the maxDepth
+		if( currentLevel+1 > maxDepth )
+			return null;
+		
+		// if we get here, there were no beds in the adjacent blocks, so now we recurse out one
+		// level of blocks to check at the next depth.
+		Location l = null;
+		for(BlockFace bf : adjacentFaces) {
+			Block nextBlock = b.getRelative(bf);
+			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't recurse to the same block twice
+				continue;
+			checkedLocs.add(nextBlock.getLocation());
+			
+			l = findBed(nextBlock, checkedLocs, currentLevel+1, maxDepth);
+			if( l != null )
+				break;
+		}
+		
+		return l;
+	}
+	
+	/** Look for a nearby bed to the given home.
+	 * 
+	 * @param home
+	 * @return true if a bed is nearby, false if not
+	 */
+	public boolean isBedNearby(final Home home) {
+		if( home == null )
+			return false;
+		
+		Location l = home.getLocation();
+		if( l == null )
+			return false;
+		
+		HashSet<Location> checkedLocs = new HashSet<Location>(50);
+		Location bedLoc = findBed(l.getBlock(), checkedLocs, 0, 5);
+		
+		return bedLoc != null;
+	}
+	
+	/** Loop through all existing modes that have been set to see if a given mode
+	 * has been enabled.
+	 * 
+	 * @param modes
+	 * @param mode
+	 * @return
+	 */
+	private boolean isModeEnabled(final List<SpawnStrategy> modes, final Type mode) {
+		if( modes == null || modes.size() == 0 ) {
+			if( mode == Type.MODE_HOME_NORMAL )		// default mode is assumed true
+				return true;
+			else
+				return false;
+		}
+		
+		for(SpawnStrategy currentMode : modes) {
+			if( currentMode.getType() == mode )
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/** Taking mode into account, find the default home on a given world. This may
 	 * return just a bed home, or not a bed at all or even any home, all depending on the
 	 * home mode that is set.
@@ -149,27 +260,48 @@ public class HomeSpawnUtils {
 	 * @param worldName
 	 * @return the home matching the current mode on the given world, or null
 	 */
-	private Home getModeHome(SpawnStrategy currentMode, String playerName, String worldName) {
+//	private Home getModeHome(SpawnStrategy currentMode, String playerName, String worldName) {
+	private Home getModeHome(List<SpawnStrategy> modes, String playerName, String worldName) {
 		Home home = null;
 		
-		if( currentMode.getType() == Type.MODE_HOME_NORMAL
-				|| currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY
-				|| currentMode.getType() == Type.MODE_HOME_NO_BED ) {
+		if( isModeEnabled(modes, Type.MODE_HOME_NORMAL)
+				|| isModeEnabled(modes, Type.MODE_HOME_DEFAULT_ONLY)
+				|| isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
 			home = getDefaultHome(playerName, worldName);
-			if( home != null && home.isBedHome() && currentMode.getType() == Type.MODE_HOME_NO_BED )
+			if( home != null && home.isBedHome() && isModeEnabled(modes, Type.MODE_HOME_NO_BED) )
 				home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
+			
+			if( isModeEnabled(modes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
+				if( plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false) )
+					log.info(logPrefix + " Home "+home+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+				home = null;
+			}
 		}
 		
-		if( home == null && (currentMode.getType() == Type.MODE_HOME_NORMAL ||
-				currentMode.getType() == Type.MODE_HOME_BED_ONLY) &&
-				currentMode.getType() != Type.MODE_HOME_NO_BED )
+		if( home == null && (isModeEnabled(modes, Type.MODE_HOME_NORMAL) ||
+				isModeEnabled(modes, Type.MODE_HOME_BED_ONLY)) &&
+				isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
 			home = getBedHome(playerName, worldName);
+			
+			if( isModeEnabled(modes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
+				if( plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false) )
+					log.info(logPrefix + " Home "+home+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+				home = null;
+			}
+		}
 		
-		if( home == null && currentMode.getType() == Type.MODE_HOME_ANY ) {
+		if( home == null && isModeEnabled(modes, Type.MODE_HOME_ANY) ) {
 			Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
 			// just grab the first one we find
-			if( homes != null && homes.size() != 0 )
+			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();
+				
+				if( isModeEnabled(modes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
+					if( plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false) )
+						log.info(logPrefix + " Home "+home+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+					home = null;
+				}
+			}
 		}
 		
 		return home;
@@ -189,12 +321,14 @@ public class HomeSpawnUtils {
 
 		SpawnStrategyResult result = new SpawnStrategyResult();
 		Location l = null;
+		final String playerName = player.getName();
 		
 		// this is set to true if we encounter the default strategy in the list
 		boolean defaultFlag = false;
 		
-		String playerName = player.getName();
-		SpawnStrategy currentMode = new SpawnStrategy(Type.MODE_HOME_NORMAL);
+//		SpawnStrategy currentMode = new SpawnStrategy(Type.MODE_HOME_NORMAL);
+		final List<SpawnStrategy> currentModes = new ArrayList<SpawnStrategy>(3);
+		currentModes.add(new SpawnStrategy(Type.MODE_HOME_NORMAL));
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -225,7 +359,7 @@ public class HomeSpawnUtils {
 				
 			case HOME_MULTI_WORLD:
 			case HOME_THIS_WORLD_ONLY:
-				home = getModeHome(currentMode, playerName, player.getWorld().getName());
+				home = getModeHome(currentModes, playerName, player.getWorld().getName());
 
 				if( home != null )
 					l = home.getLocation();
@@ -236,7 +370,7 @@ public class HomeSpawnUtils {
 					break;
 
 			case HOME_DEFAULT_WORLD:
-				home = getModeHome(currentMode, playerName, getDefaultWorld());
+				home = getModeHome(currentModes, playerName, getDefaultWorld());
 				
 				if( home != null )
 					l = home.getLocation();
@@ -249,17 +383,24 @@ public class HomeSpawnUtils {
 				log.info(logPrefix + " [DEBUG] homes = "+homes);
 				if( homes != null && homes.size() > 0 ) {
 					for(Home h: homes) {
+						// skip this home if MODE_HOME_REQUIRES_BED is set and no bed is nearby
+						if( isModeEnabled(currentModes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(h) ) {
+							if( verbose )
+								log.info(logPrefix + " Home "+h+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+							continue;
+						}
+						
 						// in "normal" or "any" mode, we just grab the first home we find
-						if( currentMode.getType() == Type.MODE_HOME_NORMAL ||
-								currentMode.getType() == Type.MODE_HOME_ANY ) {
+						if( isModeEnabled(currentModes, Type.MODE_HOME_NORMAL) ||
+								isModeEnabled(currentModes, Type.MODE_HOME_ANY) ) {
 							home = h;
 							break;
 						}
-						else if( currentMode.getType() == Type.MODE_HOME_BED_ONLY && h.isBedHome() ) {
+						else if( isModeEnabled(currentModes, Type.MODE_HOME_BED_ONLY) && h.isBedHome() ) {
 							home = h;
 							break;
 						}
-						else if( currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY && h.isDefaultHome() ) {
+						else if( isModeEnabled(currentModes, Type.MODE_HOME_DEFAULT_ONLY) && h.isDefaultHome() ) {
 							home = h;
 							break;
 						}
@@ -273,12 +414,17 @@ public class HomeSpawnUtils {
 				
 			case HOME_NAMED_HOME:
 				home = getHomeByName(player.getName(), spawnInfo.argData);
-				if( currentMode.getType() == Type.MODE_HOME_DEFAULT_ONLY && !home.isDefaultHome() )
+				if( isModeEnabled(currentModes, Type.MODE_HOME_DEFAULT_ONLY) && !home.isDefaultHome() )
 					home = null;
-				if( currentMode.getType() == Type.MODE_HOME_BED_ONLY && !home.isBedHome() )
+				if( isModeEnabled(currentModes, Type.MODE_HOME_BED_ONLY) && !home.isBedHome() )
 					home = null;
-				if( currentMode.getType() == Type.MODE_HOME_NO_BED && home.isBedHome() )
+				if( isModeEnabled(currentModes, Type.MODE_HOME_NO_BED) && home.isBedHome() )
 					home = null;
+				if( isModeEnabled(currentModes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
+					if( verbose )
+						log.info(logPrefix + " Home "+home+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+					home = null;
+				}
 				
 				if( home != null )
 					l = home.getLocation();
@@ -290,15 +436,19 @@ public class HomeSpawnUtils {
 			case MODE_HOME_NO_BED:
 			case MODE_HOME_DEFAULT_ONLY:
 			case MODE_HOME_ANY:
-				currentMode = new SpawnStrategy(type);
+				currentModes.clear();
+				
+			case MODE_HOME_REQUIRES_BED:		// additive with other modes, does not .clear() first
+				currentModes.add(new SpawnStrategy(type));
+//				currentMode = new SpawnStrategy(type);
 				if( verbose )
-					log.info(logPrefix + " Evaluated mode change strategy, new mode = "+currentMode.toString());
+					log.info(logPrefix + " Evaluated mode change strategy, new mode = "+currentModes.toString());
 				break;
 				
 			case HOME_SPECIFIC_WORLD:
 			{
 				final String worldName = s.getData();
-				home = getModeHome(currentMode, playerName, worldName);
+				home = getModeHome(currentModes, playerName, worldName);
 				
 				if( home != null )
 					l = home.getLocation();
@@ -316,8 +466,14 @@ public class HomeSpawnUtils {
 				double shortestDistance = -1;
 				Home closestHome = null;
 				for(Home theHome : allHomes) {
-					if( currentMode.getType() == Type.MODE_HOME_NO_BED && theHome.isBedHome() )
+					if( isModeEnabled(currentModes, Type.MODE_HOME_NO_BED) && theHome.isBedHome() )
 						continue;
+					
+					if( isModeEnabled(currentModes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(theHome) ) {
+						if( verbose )
+							log.info(logPrefix + " Home "+theHome+" skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+						continue;
+					}
 					
 					Location theLocation = theHome.getLocation();
 					if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
@@ -1192,24 +1348,29 @@ public class HomeSpawnUtils {
     }
     
     public boolean isNewPlayer(Player p) {
-    	// if we already have a player record in our DB, we're obviously not a new player
-    	if( plugin.getStorage().getPlayer(p.getName()) != null )
-    		return false;
+    	String strategy = plugin.getConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.BUKKIT.toString());
     	
-//    	return !p.hasPlayedBefore();	// yay for Bukkit finally having an API call for this!
+    	if( strategy.equals(ConfigOptions.NewPlayerStrategy.BUKKIT.toString()) ) {
+        	return !p.hasPlayedBefore();
+    	}
 
-    	// otherwise, fall back to checking for a player.dat file, this helps existing
-    	// servers get started with HSP without the existing population all being
-    	// mistaken as new simply b/c they are not in the HSP database.
+    	if( strategy.equals(ConfigOptions.NewPlayerStrategy.ORIGINAL.toString()) ) {
+        	if( plugin.getStorage().getPlayer(p.getName()) != null )
+        		return false;
+    	}
     	
-    	String playerDat = p.getName() + ".dat";
+    	if( strategy.equals(ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString()) || 
+    			strategy.equals(ConfigOptions.NewPlayerStrategy.ORIGINAL.toString()) ) {
+    		final List<World> worlds = Bukkit.getWorlds();
+    		final String worldName = worlds.get(0).getName();
+        	final String playerDat = p.getName() + ".dat";
+        	
+        	File file = new File(worldName+"/players/"+playerDat);
+        	if( file.exists() )
+        		return false;
+    	}
     	
-    	// start with the easy, most likely check
-    	File file = new File("world/players/"+playerDat);
-    	if( file.exists() )
-    		return false;
-    	
-    	// if we didn't find any record of this player on any world, they must be new
+    	// if we didn't find any record of this player, they must be new
     	return true;
     }
 

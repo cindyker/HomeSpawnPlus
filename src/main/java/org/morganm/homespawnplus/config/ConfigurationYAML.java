@@ -53,7 +53,7 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 			throw new ConfigException(e);
 		}
 		
-		if( getString("core.eventPriority") == null ) {
+		if( getString("events.onGroupSpawnCommand") == null ) {
 			log.info(logPrefix + " WARNING: old-style config found, you should look at config_defaults.yml and copy the latest config settings into your config.yml.");
 		}
 

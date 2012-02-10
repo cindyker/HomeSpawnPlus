@@ -1,3 +1,16 @@
+v1.4 - February 10, 2012
+* added German locale (de) - thanks Jobsti!
+* added Russian locale (ru) - thanks MSTrus!
+* "core.newPlayerStrategy" option added and default is changed to BUKKIT which
+uses Bukkits Player.hasPlayedBefore() API call. If you have issues with
+newPlayer detection not working like you expect you can change this back to
+"ORIGINAL", although I suspect most people will prefer the BUKKIT method since
+that will depend exclusively on the "player.dat" file, which is how most
+people expect new player detection to work.
+* Ticket #18: added "modeRequiresBed" to require existence of a bed for other
+home strategies in a given strategy chain
+* Ticket #64: "price%" showing up when charging players using default english localization
+
 v1.3.1 - January 14, 2012
 * finished off localization of strings, HSP strings are now fully localized. Now it just needs translations other than just English!
 * fixed a bug with limit cascading (unreported)

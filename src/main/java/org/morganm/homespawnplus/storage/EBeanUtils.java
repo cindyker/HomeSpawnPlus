@@ -41,6 +41,28 @@ public class EBeanUtils {
 		
 		return instance;
 	}
+	
+	public String getDriver() {
+		return configuration.getString("database.driver");
+	}
+	public String getUrl() {
+		return configuration.getString("database.url");
+	}
+	public String getUsername() {
+		return configuration.getString("database.username");
+	}
+	public String getPassword() {
+		return configuration.getString("database.password");
+	}
+	public String getIsolation() {
+		return configuration.getString("database.isolation");
+	}
+	public Boolean getLogging() {
+		return configuration.getBoolean("database.logging", false);
+	}
+	public Boolean getRebuild() {
+		return configuration.getBoolean("database.rebuild", false);
+	}
 
 	public boolean isSqlLite() {
 		return configuration.getString("database.driver").contains("sqlite");

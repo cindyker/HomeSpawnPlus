@@ -36,6 +36,7 @@ import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.StorageEBeans;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
 import org.morganm.homespawnplus.util.CommandUsurper;
@@ -336,6 +337,17 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(org.morganm.homespawnplus.entity.Player.class);
         classList.add(Version.class);
         return classList;
+    }
+    
+    @Override
+    public com.avaje.ebean.EbeanServer getDatabase() {
+    	// override method to use new Bukkit Persistance reimplemented ebean server
+    	if( storage instanceof StorageEBeans ) {
+    		StorageEBeans storageEbeans = (StorageEBeans) storage;
+    		return storageEbeans.getDatabase().getDatabase();
+    	}
+    	else
+    		return super.getDatabase();
     }
     
     public boolean hasPermission(String worldName, String playerName, String permissionNode) {

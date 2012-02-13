@@ -1,3 +1,11 @@
+v1.4.1 - February ?, 2012
+* fixed a bug related to bed homes when using MODE_HOME_BED_ONLY, which
+resulted in the bed homes not being used at all
+* converted persistence engine to "Bukkit Persistance Reimplemented"
+http://goo.gl/c9WjB - the main effect here is that HSP is now friendly to live
+reloading using plugins such as PluginReloader, thus it can be live-reloaded
+for upgrades or plugin testing (mostly helps me as the developer)
+
 v1.4 - February 10, 2012
 * added German locale (de) - thanks Jobsti!
 * added Russian locale (ru) - thanks MSTrus!

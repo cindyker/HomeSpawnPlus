@@ -1,8 +1,8 @@
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.4
+version: 1.4.1
 author: morganm
-database: true
+database: false
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]
 commands:
   groupspawn:

@@ -268,8 +268,11 @@ public class HomeSpawnUtils {
 				|| isModeEnabled(modes, Type.MODE_HOME_DEFAULT_ONLY)
 				|| isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
 			home = getDefaultHome(playerName, worldName);
-			if( home != null && home.isBedHome() && isModeEnabled(modes, Type.MODE_HOME_NO_BED) )
+			if( home != null && home.isBedHome() && isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
+				if( plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false) )
+					log.info(logPrefix + " Home "+home+" skipped because MODE_HOME_NO_BED is true and home was set by bed");
 				home = null;	// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
+			}
 			
 			if( isModeEnabled(modes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
 				if( plugin.getHSPConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false) )
@@ -280,7 +283,7 @@ public class HomeSpawnUtils {
 		
 		if( home == null && (isModeEnabled(modes, Type.MODE_HOME_NORMAL) ||
 				isModeEnabled(modes, Type.MODE_HOME_BED_ONLY)) &&
-				isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
+				!isModeEnabled(modes, Type.MODE_HOME_NO_BED) ) {
 			home = getBedHome(playerName, worldName);
 			
 			if( isModeEnabled(modes, Type.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
@@ -1352,7 +1355,7 @@ public class HomeSpawnUtils {
     }
     
     public boolean isNewPlayer(Player p) {
-    	String strategy = plugin.getConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.BUKKIT.toString());
+    	String strategy = plugin.getHSPConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.BUKKIT.toString());
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.BUKKIT.toString()) ) {
     		boolean result = p.hasPlayedBefore(); 

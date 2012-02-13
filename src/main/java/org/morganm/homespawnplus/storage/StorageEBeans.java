@@ -18,6 +18,7 @@ import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.MyDatabase;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
@@ -36,6 +37,7 @@ public class StorageEBeans implements Storage {
 
 	private final HomeSpawnPlus plugin;
 	private final String logPrefix;
+	private MyDatabase database;
 	
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -44,11 +46,29 @@ public class StorageEBeans implements Storage {
 		initializeStorage();
 	}
 	
+	public MyDatabase getDatabase() {
+		return database;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#initializeStorage
 	 */
 	public void initializeStorage() {
-        EbeanServer db = plugin.getDatabase();
+//        EbeanServer db = plugin.getDatabase();
+		
+        database = new MyDatabase(plugin) {
+        	protected java.util.List<Class<?>> getDatabaseClasses() {
+        		return plugin.getDatabaseClasses();
+            };        	
+        };
+        
+        EBeanUtils utils = EBeanUtils.getInstance();
+        database.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
+        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
+
+        /* Bukkit persistance reimplemented takes care of first-time DDL/table creation in
+         * the above initializeDatabase() call
+         * 
         if( db == null )
         	throw new NullPointerException("plugin.getDatabase() returned null EbeanServer!");
         
@@ -64,6 +84,7 @@ public class StorageEBeans implements Storage {
 			SqlUpdate update = db.createSqlUpdate("insert into hsp_version VALUES(1, 91)");
 			update.execute();
         }
+        */
         
         try {
         	upgradeDatabase();
@@ -334,7 +355,8 @@ public class StorageEBeans implements Storage {
 	private void upgradeDatabase() {
 		int knownVersion = 80;		// assume current version to start
 		
-		EbeanServer db = plugin.getDatabase();
+//		EbeanServer db = plugin.getDatabase();
+		EbeanServer db = database.getDatabase();
 
 		Version versionObject = null;
 		try {

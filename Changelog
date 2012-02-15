@@ -5,6 +5,7 @@ resulted in the bed homes not being used at all
 http://goo.gl/c9WjB - the main effect here is that HSP is now friendly to live
 reloading using plugins such as PluginReloader, thus it can be live-reloaded
 for upgrades or plugin testing (mostly helps me as the developer)
+* Ticket #70: first spawn not working correctly
 
 v1.4 - February 10, 2012
 * added German locale (de) - thanks Jobsti!

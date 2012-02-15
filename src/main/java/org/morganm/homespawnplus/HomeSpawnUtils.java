@@ -1355,7 +1355,7 @@ public class HomeSpawnUtils {
     }
     
     public boolean isNewPlayer(Player p) {
-    	String strategy = plugin.getHSPConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.BUKKIT.toString());
+    	String strategy = plugin.getHSPConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString());
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.BUKKIT.toString()) ) {
     		boolean result = p.hasPlayedBefore(); 

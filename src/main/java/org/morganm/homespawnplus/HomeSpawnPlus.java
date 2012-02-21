@@ -13,8 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -135,23 +134,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     	spawnUtils = new HomeSpawnUtils(this);
     	
         PluginManager pm = getServer().getPluginManager();
-    	playerListener = new HSPPlayerListener(this);
-    	entityListener = new HSPEntityListener(this);
-        
-    	// Register our events
-        pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, getEventPriority(), this);
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, getEventPriority(), this);
-        
-        if( pm.getPlugin("BananaChunk") == null )
-        	pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Low, this);
-        else
-        	log.info(logPrefix + " BananaChunk found, disabling internal teleport chunk refresh.");
-        
-        pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.WORLD_LOAD, new HSPWorldListener(this), Priority.Monitor, this);
 
+    	playerListener = new HSPPlayerListener(this);
+    	pm.registerEvents(playerListener, this);		// bukkit annotation events
+    	playerListener.registerEvents();				// runtime priority events
+    	
+    	pm.registerEvents(new HSPWorldListener(this), this);
+
+    	entityListener = new HSPEntityListener(this);
         hookWarmups();
         
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
@@ -282,21 +272,21 @@ public class HomeSpawnPlus extends JavaPlugin {
      * 
      * @return
      */
-    private Priority getEventPriority() {
+    public EventPriority getEventPriority() {
     	String strPriority = config.getString(ConfigOptions.EVENT_PRIORITY, "highest");
     	
     	if( strPriority.equalsIgnoreCase("highest") )
-    		return Priority.Highest;
+    		return EventPriority.HIGHEST;
     	else if( strPriority.equalsIgnoreCase("high") )
-    		return Priority.High;
+    		return EventPriority.HIGH;
     	else if( strPriority.equalsIgnoreCase("normal") )
-    		return Priority.Normal;
+    		return EventPriority.NORMAL;
     	else if( strPriority.equalsIgnoreCase("low") )
-    		return Priority.Low;
+    		return EventPriority.LOW;
     	else if( strPriority.equalsIgnoreCase("lowest") )
-    		return Priority.Lowest;
+    		return EventPriority.LOWEST;
     	else
-    		return Priority.Highest;	// default
+    		return EventPriority.HIGHEST;	// default
     }
     
     //    private boolean hasHookedOnMoveWarmups = false;
@@ -318,7 +308,7 @@ public class HomeSpawnPlus extends JavaPlugin {
             
         	if( !hasHookedOnDamageWarmups && config.getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) ) {
             	hasHookedOnDamageWarmups = true;
-        		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Monitor, this);
+            	pm.registerEvents(entityListener, this);
         	}
         }
     }

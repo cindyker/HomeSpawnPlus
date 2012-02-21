@@ -11,12 +11,18 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.PluginManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.SpawnInfo;
@@ -30,11 +36,9 @@ import org.morganm.homespawnplus.util.Debug;
  * Handle events for all Player related events
  * @author morganm, Timberjaw
  */
-public class HSPPlayerListener extends PlayerListener {
-	@SuppressWarnings("unused")
+public class HSPPlayerListener implements Listener {
 	private static final Logger log = HomeSpawnPlus.log;
 	
-    @SuppressWarnings("unused")
 	private final String logPrefix; 
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
@@ -77,7 +81,7 @@ public class HSPPlayerListener extends PlayerListener {
     	return l;
     }
     
-    @Override
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.isCancelled())
             return;
@@ -157,7 +161,6 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     }
     
-    @Override
     public void onPlayerJoin(PlayerJoinEvent e)
     {
     	Player p = e.getPlayer();
@@ -205,13 +208,13 @@ public class HSPPlayerListener extends PlayerListener {
     		util.delayedTeleport(p, l);
     }
     
-    @Override
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
     {
     	util.updateQuitLocation(event.getPlayer());
     }
     
-    @Override
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
     {
     	util.updateQuitLocation(event.getPlayer());
@@ -257,18 +260,60 @@ public class HSPPlayerListener extends PlayerListener {
     	}
     }
     
-    /*
-    @Override
-    public void onPlayerMove(PlayerMoveEvent event) {
-		warmupManager.processPlayerMove(event);
-    }
-    @Override
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-		warmupManager.processPlayerTeleport(event);
-    }
-    @Override
-    public void onPlayerPortal(PlayerPortalEvent event) {
-		warmupManager.processPlayerPortal(event);
-    }
-    */
+    /** New-style Bukkit events don't have any nice mechanism for allowing runtime
+     * priority (it's all set design-time via annotations). Since HSP allows the admin
+     * to change the event priority if they want, we need to setup event priorities
+     * dynamically. This is *really* ugly with the new event system, so I moved it 
+     * into it's own method to keep the main plugin onEnable() nice and clean.
+     */
+    public void registerEvents() {
+    	PluginManager pm = plugin.getServer().getPluginManager();
+
+        pm.registerEvent(PlayerRespawnEvent.class,
+        		this,
+        		plugin.getEventPriority(),
+        		new EventExecutor() {
+        			public void execute(Listener listener, Event event) throws EventException {
+        				try {
+        					onPlayerRespawn((PlayerRespawnEvent) event);
+        				} catch (Throwable t) {
+        					throw new EventException(t);
+        				}
+        			}
+		        },
+		        plugin);
+    	
+        pm.registerEvent(PlayerJoinEvent.class,
+        		this,
+        		plugin.getEventPriority(),
+        		new EventExecutor() {
+        			public void execute(Listener listener, Event event) throws EventException {
+        				try {
+        					onPlayerJoin((PlayerJoinEvent) event);
+        				} catch (Throwable t) {
+        					throw new EventException(t);
+        				}
+        			}
+		        },
+		        plugin);
+
+        // optional event registration
+        if( pm.getPlugin("BananaChunk") == null ) {
+            pm.registerEvent(PlayerTeleportEvent.class,
+            		this,
+            		EventPriority.LOW,
+            		new EventExecutor() {
+            			public void execute(Listener listener, Event event) throws EventException {
+            				try {
+            					onPlayerTeleport((PlayerTeleportEvent) event);
+            				} catch (Throwable t) {
+            					throw new EventException(t);
+            				}
+            			}
+    		        },
+    		        plugin);
+        }
+        else
+        	log.info(logPrefix + " BananaChunk found, disabling internal teleport chunk refresh.");
+   }
 }

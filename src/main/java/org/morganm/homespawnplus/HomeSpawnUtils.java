@@ -945,6 +945,8 @@ public class HomeSpawnUtils {
     		
     		home.setLocation(l);
 			home.setUpdatedBy(updatedBy);
+			if( home.isBedHome() )
+				p.setBedSpawnLocation(l);
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
@@ -973,6 +975,7 @@ public class HomeSpawnUtils {
     	
     	if( bedHome ) {
     		home.setName(l.getWorld().getName() + "_" + Storage.HSP_BED_RESERVED_NAME);
+			p.setBedSpawnLocation(l);
     	}
     	// we don't allow use of the reserved suffix "_bed" name unless the bed flag is true
     	else if( home.getName() != null && home.getName().endsWith("_" + Storage.HSP_BED_RESERVED_NAME) ) {

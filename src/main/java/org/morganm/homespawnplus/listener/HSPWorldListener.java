@@ -2,7 +2,9 @@ package org.morganm.homespawnplus.listener;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.event.world.WorldListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
@@ -14,7 +16,7 @@ import org.morganm.homespawnplus.entity.Spawn;
  * Handle events for all World related events
  * @author morganm, Timberjaw
  */
-public class HSPWorldListener extends WorldListener {
+public class HSPWorldListener implements Listener {
     private final HomeSpawnPlus plugin;
     private final HomeSpawnUtils util;
     
@@ -23,6 +25,7 @@ public class HSPWorldListener extends WorldListener {
         util = plugin.getUtil();
     }
     
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onWorldLoad(WorldLoadEvent event)
     {
     	World w = event.getWorld();

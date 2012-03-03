@@ -94,18 +94,18 @@ public class HSPPlayerListener implements Listener {
         	return;
         }
         
-        // if permissions are enabled, they need to have permission too.
-        if( !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
-        	debug.debug("onPlayerInteract(): player ",p," has no permission");
-        	return;
-        }
-        
         Block b = event.getClickedBlock();
         if( b.getTypeId() == 26 ) {			// did they click on a bed?
 //        	log.info(logPrefix + " clicked on bed");
         	// someone clicked on a bed, good time to keep the hash clean
         	cleanupBedClicks();
 
+            // if permissions are enabled, they need to have permission too.
+            if( !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
+            	debug.debug("onPlayerInteract(): player ",p," has no permission");
+            	return;
+            }
+            
         	Player player = event.getPlayer();
         	ClickedEvent ce = bedClicks.get(player.getName());
         	

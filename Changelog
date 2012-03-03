@@ -1,3 +1,7 @@
+v1.4.2 - March ?, 2012
+* saved an extra permission check on block place when using 'bedsethome'.
+Thanks to @Chrisjon for reporting the issue.
+
 v1.4.1 - February 15, 2012
 * fixed a bug related to bed homes when using MODE_HOME_BED_ONLY, which
 resulted in the bed homes not being used at all

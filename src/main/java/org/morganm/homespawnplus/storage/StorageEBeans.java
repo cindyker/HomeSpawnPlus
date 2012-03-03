@@ -369,7 +369,7 @@ public class StorageEBeans implements Storage {
 		
 		if( versionObject == null ) {
 			try {
-				SqlUpdate update = db.createSqlUpdate("insert into hsp_version VALUES(1, 80)");
+				SqlUpdate update = db.createSqlUpdate("insert into hsp_version VALUES(1, 91)");
 				update.execute();
 			}
 			// if the insert fails, then we know we are on version 63 (or earlier) of the db schema

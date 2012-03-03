@@ -592,9 +592,17 @@ public class HomeSpawnUtils {
 				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
 				Location playerLoc = player.getLocation();
 				
+				final String playerWorld = playerLoc.getWorld().getName();
 				double shortestDistance = -1;
 				Spawn closestSpawn = null;
 				for(Spawn theSpawn : allSpawns) {
+					// this fixes a bug in R5+ where non-loaded worlds apparently won't even
+					// return valid location or world objects anymore. So we check the String
+					// world values before we do anything else and skip worlds that the
+					// player is not on.
+					if( !playerWorld.equals(theSpawn.getWorld()) )
+						continue;
+					
 					Location theLocation = theSpawn.getLocation();
 					if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
 						double distance = theLocation.distance(playerLoc);

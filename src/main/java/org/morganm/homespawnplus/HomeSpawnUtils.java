@@ -1384,11 +1384,13 @@ public class HomeSpawnUtils {
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString()) || 
     			strategy.equals(ConfigOptions.NewPlayerStrategy.ORIGINAL.toString()) ) {
+    		File worldContainer = Bukkit.getWorldContainer();
+    		
     		final List<World> worlds = Bukkit.getWorlds();
     		final String worldName = worlds.get(0).getName();
         	final String playerDat = p.getName() + ".dat";
         	
-        	File file = new File(worldName+"/players/"+playerDat);
+        	File file = new File(worldContainer, worldName+"/players/"+playerDat);
         	if( file.exists() ) {
         		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," exists, player is NOT new");
         		return false;

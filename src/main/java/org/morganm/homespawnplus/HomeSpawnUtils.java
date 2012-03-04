@@ -1369,7 +1369,7 @@ public class HomeSpawnUtils {
     	String strategy = plugin.getHSPConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString());
     	
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.BUKKIT.toString()) ) {
-    		boolean result = p.hasPlayedBefore(); 
+    		boolean result = !p.hasPlayedBefore(); 
     		debug.debug("isNewPlayer: using BUKKIT strategy, result=",result);
         	return result;
     	}

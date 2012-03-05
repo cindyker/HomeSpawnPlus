@@ -28,12 +28,18 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *   WorldEdit 5.x: http://build.sk89q.com/
  *   PermissionsEx: http://goo.gl/jthCz
  *   Permissions 2.7 or 3.x: http://goo.gl/liHFt (2.7) or http://goo.gl/rn4LP (3.x) 
+ *   
+ * Author's note: The "ideal" design would be to setup an interface class and let each permission
+ *   type implement that interface and use polymorphism. In fact, that's how Vault and WEPIF work.
+ *   However, the design goal for this class is to have a single class I can use between projects
+ *   that implements permissions abstraction, thus the less-than-great C-style integer values,
+ *   switch statements and if/else ladders.
  * 
  * @author morganm
  *
  */
 public class PermissionSystem {
-	// class version: 10
+	// class version: 11
 	public static final int SUPERPERMS = 0x00;		// default
 	public static final int VAULT = 0x01;
 	public static final int WEPIF = 0x02;

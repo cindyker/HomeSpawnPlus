@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.util;
 
+import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
+
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -18,8 +20,6 @@ import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
-import com.sk89q.worldguard.protection.flags.RegionGroupFlag.RegionGroup;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 /** This class exists to wrap WorldGuard functionality so that our plugin can
@@ -40,10 +40,11 @@ public class WorldGuardInterface {
 	public WorldGuardInterface(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.logPrefix = HomeSpawnPlus.logPrefix;
+//		this.SPAWN_PERM = new RegionGroupFlag("spawn-group", RegionGroupFlag.RegionGroup.MEMBERS);
 	}
 	
 	/** This code adapted from WorldGuard class
-	 *  com.sk89q.worldguard.bukkit.WorldGuardPlayerList, method
+	 *  com.sk89q.worldguard.bukkit.WorldGuardPlayerListener, method
 	 *  onPlayerRespawn().
 	 *  
 	 *  This is because there is no API provided by WorldGuard to determine this externally
@@ -53,7 +54,9 @@ public class WorldGuardInterface {
 	 *  
 	 *  So I've had to duplicate/adapt the WorldGuard method directly into HSP in order to
 	 *  accurately check whether or not WorldGuard would respond to the current location with
-	 *  a region spawn. Code is current as of WorldGuard build #309, built Oct 29, 2011.
+	 *  a region spawn.
+	 *  
+	 *  Code is current as of WorldGuard build #579 (WorldGuard 5.5.2), built Mar 12, 2012.
 	 * 
 	 * @param player
 	 * @return
@@ -70,6 +73,20 @@ public class WorldGuardInterface {
 				ConfigurationManager cfg = worldGuard.getGlobalStateManager();
 				WorldConfiguration wcfg = cfg.get(player.getWorld());
 	
+		        if (wcfg.useRegions) {
+		            Vector pt = toVector(location);
+		            RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
+		            ApplicableRegionSet set = mgr.getApplicableRegions(pt);
+
+		            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
+		            Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC, localPlayer);
+
+		            if (spawn != null) {
+		                loc = BukkitUtil.toLocation(player.getWorld(), spawn);
+		            }
+		        }
+		        
+		        /* old code for pre-5.5 Worldguard
 				if (wcfg.useRegions) {
 					Vector pt = com.sk89q.worldguard.bukkit.BukkitUtil.toVector(location);
 					RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
@@ -92,6 +109,7 @@ public class WorldGuardInterface {
 						}
 					}
 				}
+				*/
 			}
 		}
 		catch(Exception e) {

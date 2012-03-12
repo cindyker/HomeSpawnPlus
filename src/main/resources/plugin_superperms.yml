@@ -3,7 +3,7 @@
 # Superperms spec.
 name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.4.3
+version: 1.4.4
 author: morganm
 database: false
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]

@@ -1,3 +1,6 @@
+v1.4.4 - ?
+* fixed WorldGuard compatibility to work with newest WorldGuard 5.5 changes
+
 v1.4.3 - March 4, 2012
 * fixed a reported bug with new installations throwing DB version upgrade errors
 * saved an extra permission check on block place when using 'bedsethome'.

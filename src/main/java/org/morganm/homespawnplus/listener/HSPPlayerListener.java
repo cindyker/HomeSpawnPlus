@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Chunk;
@@ -29,6 +30,7 @@ import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -72,7 +74,7 @@ public class HSPPlayerListener implements Listener {
     		// our last logout location and return that
     		if( ConfigOptions.SETTING_JOIN_BEHAVIOR.equals(spawnInfo.spawnEventType) &&
     				plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
-    			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayer(p.getName());
+    			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName());
     			if( storagePlayer != null )
     				l = storagePlayer.getLastLogoutLocation();
     		}
@@ -161,9 +163,9 @@ public class HSPPlayerListener implements Listener {
     	}
     }
     
-    public void onPlayerJoin(PlayerJoinEvent e)
+    public void onPlayerJoin(PlayerJoinEvent event)
     {
-    	Player p = e.getPlayer();
+    	Player p = event.getPlayer();
     	
     	SpawnInfo spawnInfo = new SpawnInfo();
     	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
@@ -195,9 +197,14 @@ public class HSPPlayerListener implements Listener {
     	}
     	
 		// if they don't have a player record yet, create one.
-    	if( plugin.getStorage().getPlayer(p.getName()) == null ) {
+    	if( plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName()) == null ) {
     		org.morganm.homespawnplus.entity.Player storagePlayer = new org.morganm.homespawnplus.entity.Player(p);
-    		plugin.getStorage().writePlayer(storagePlayer);
+    		try {
+    			plugin.getStorage().getPlayerDAO().savePlayer(storagePlayer);
+    		}
+    		catch(StorageException e) {
+				log.log(Level.WARNING, "Caught exception "+e.getMessage(), e);
+    		}
     	}
     	
     	if( util.isVerboseLogging() )

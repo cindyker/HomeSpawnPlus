@@ -33,7 +33,7 @@ public class HomeList extends BaseCommand {
 		if( args.length > 0 )
 			world = args[0];
 		
-		homes = plugin.getStorage().getHomes(world, p.getName());
+		homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(world, p.getName());
 		
 		if( homes != null && homes.size() > 0 ) {
 			/*

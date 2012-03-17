@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.storage;
+package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @author morganm
  *
  */
-public class StorageYaml implements Storage {
+public class StorageYaml { //implements Storage {
 //	private HomeSpawnPlus plugin;
 	private final File file;
 	private YamlConfiguration storage;
@@ -121,7 +121,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#initializeStorage()
 	 */
-	@Override
+	
 	public void initializeStorage() {
 		storage = YamlConfiguration.loadConfiguration(file);
 	}
@@ -129,7 +129,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#purgeCache()
 	 */
-	@Override
+	
 	public void purgeCache() {
 		throw new NotImplementedException();
 	}
@@ -137,7 +137,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getPlayer(java.lang.String)
 	 */
-	@Override
+	
 	public Player getPlayer(String name) {
 		throw new NotImplementedException();
 	}
@@ -145,7 +145,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#writePlayer(org.morganm.homespawnplus.entity.Player)
 	 */
-	@Override
+	
 	public void writePlayer(Player player) {
 		throw new NotImplementedException();
 	}
@@ -153,7 +153,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getHome(java.lang.String, java.lang.String)
 	 */
-	@Override
+	
 	public Home getDefaultHome(String world, String playerName) {
 		throw new NotImplementedException();
 	}
@@ -161,7 +161,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getSpawn(java.lang.String)
 	 */
-	@Override
+	
 	public Spawn getSpawn(String world) {
 		throw new NotImplementedException();
 	}
@@ -169,7 +169,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getSpawn(java.lang.String, java.lang.String)
 	 */
-	@Override
+	
 	public Spawn getSpawn(String world, String group) {
 		throw new NotImplementedException();
 	}
@@ -177,12 +177,12 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getSpawnByName(java.lang.String)
 	 */
-	@Override
+	
 	public Spawn getSpawnByName(String name) {
 		throw new NotImplementedException();
 	}
 	
-	@Override
+	
 	public Spawn getSpawnById(int id) {
 		throw new NotImplementedException();
 	}
@@ -190,7 +190,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getSpawnDefinedGroups()
 	 */
-	@Override
+	
 	public Set<String> getSpawnDefinedGroups() {
 		throw new NotImplementedException();
 	}
@@ -300,7 +300,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getAllHomes()
 	 */
-	@Override
+	
 	public Set<Home> getAllHomes() {
 		HashSet<Home> homes = new HashSet<Home>();
 		
@@ -319,7 +319,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getAllSpawns()
 	 */
-	@Override
+	
 	public Set<Spawn> getAllSpawns() {
 		HashSet<Spawn> spawns = new HashSet<Spawn>();
 		
@@ -338,7 +338,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#getAllPlayers()
 	 */
-	@Override
+	
 	public Set<Player> getAllPlayers() {
 		HashSet<Player> players = new HashSet<Player>();
 		
@@ -357,7 +357,7 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#writeHome(org.morganm.homespawnplus.entity.Home)
 	 */
-	@Override
+	
 	public void writeHome(Home home) {
 		throw new NotImplementedException();
 	}
@@ -365,39 +365,39 @@ public class StorageYaml implements Storage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.Storage#writeSpawn(org.morganm.homespawnplus.entity.Spawn)
 	 */
-	@Override
+	
 	public void writeSpawn(Spawn spawn) {
 		throw new NotImplementedException();
 	}
 
-	@Override
+	
 	public void deleteAllData() {
 		storage = null;
 		file.delete();
 		initializeStorage();		
 	}
 
-	@Override
+	
 	public Home getNamedHome(String homeName, String playerName) {
 		throw new NotImplementedException();
 	}
 
-	@Override
+	
 	public Set<Home> getHomes(String world, String playerName) {
 		throw new NotImplementedException();
 	}
 	
-	@Override
+	
 	public void deleteHome(Home home) {
 		throw new NotImplementedException();
 	}
 	
-	@Override
+	
 	public void deleteSpawn(Spawn spawn) {
 		throw new NotImplementedException();
 	}
 
-	@Override
+	
 	public Home getBedHome(String world, String playerName) {
 		throw new NotImplementedException();
 	}

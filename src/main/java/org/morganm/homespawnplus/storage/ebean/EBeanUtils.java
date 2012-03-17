@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.storage;
+package org.morganm.homespawnplus.storage.ebean;
 
 import java.io.File;
 import java.sql.Connection;

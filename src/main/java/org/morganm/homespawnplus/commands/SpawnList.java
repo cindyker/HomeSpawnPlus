@@ -33,7 +33,7 @@ public class SpawnList extends BaseCommand {
 		if( args.length > 0 )
 			world = args[0];
 		
-		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = plugin.getStorage().getAllSpawns();
+		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
 		
 		boolean displayedSpawn = false;
 		if( spawns != null && spawns.size() > 0 ) {

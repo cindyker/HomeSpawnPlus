@@ -3,10 +3,14 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import java.util.logging.Level;
+
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 
 /**
  * @author morganm
@@ -32,16 +36,18 @@ public class SpawnDelete extends BaseCommand {
 			return true;
 		}
 		
+		SpawnDAO dao = plugin.getStorage().getSpawnDAO();
+		
 		int id = -1;
 		try {
 			id = Integer.parseInt(args[0]);
 		}
 		catch(NumberFormatException e) {}
 		if( id != -1 )
-			spawn = plugin.getStorage().getSpawnById(id);
+			spawn = dao.findSpawnById(id);
 		
 		if( spawn == null )
-			spawn = plugin.getStorage().getSpawnByName(args[0]);
+			spawn = dao.findSpawnByName(args[0]);
 		
 		if( spawn == null ) {
 			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
@@ -50,10 +56,15 @@ public class SpawnDelete extends BaseCommand {
 			return true;
 		}
 		
-		plugin.getStorage().deleteSpawn(spawn);
-		util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
-				"name", args[0]);
-//		util.sendMessage(p, "Spawn "+args[0]+" deleted.");
+		try {
+			dao.deleteSpawn(spawn);
+			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
+					"name", args[0]);
+		}
+		catch(StorageException e) {
+			util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+			log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+		}
 		return true;
 	}
 

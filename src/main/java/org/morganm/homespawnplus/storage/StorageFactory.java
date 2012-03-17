@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.storage;
 import java.io.IOException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 
 
 /**

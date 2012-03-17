@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
@@ -16,7 +17,8 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
-import org.morganm.homespawnplus.storage.StorageYaml;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
 /**
  * @author morganm
@@ -73,8 +75,8 @@ public class HSP extends BaseCommand {
 			// purge the existing cache
 			plugin.getStorage().purgeCache();
 			// now reload it by grabbing all of the objects
-			plugin.getStorage().getAllHomes();
-			plugin.getStorage().getAllSpawns();
+			plugin.getStorage().getHomeDAO().findAllHomes();
+			plugin.getStorage().getSpawnDAO().findAllSpawns();
 
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
 //			util.sendMessage(p, "Data cache purged and reloaded");
@@ -89,9 +91,9 @@ public class HSP extends BaseCommand {
 			StorageYaml backupStorage = new StorageYaml(backupFile);
 			backupStorage.initializeStorage();
 			
-			backupStorage.addHomes(storage.getAllHomes());
-			backupStorage.addSpawns(storage.getAllSpawns());
-			backupStorage.addPlayers(storage.getAllPlayers());
+			backupStorage.addHomes(storage.getHomeDAO().findAllHomes());
+			backupStorage.addSpawns(storage.getSpawnDAO().findAllSpawns());
+			backupStorage.addPlayers(storage.getPlayerDAO().findAllPlayers());
 			
 			try {
 				backupStorage.save();
@@ -122,20 +124,26 @@ public class HSP extends BaseCommand {
 					Storage storage = plugin.getStorage();
 					storage.deleteAllData();
 					
-					Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getAllHomes();
-					for(org.morganm.homespawnplus.entity.Home home : homes) {
-						home.setLastModified(null);
-						storage.writeHome(home);
+					try {
+						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getAllHomes();
+						for(org.morganm.homespawnplus.entity.Home home : homes) {
+							home.setLastModified(null);
+							storage.getHomeDAO().saveHome(home);
+						}
+						Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getAllSpawns();
+						for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
+							spawn.setLastModified(null);
+							storage.getSpawnDAO().saveSpawn(spawn);
+						}
+						Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getAllPlayers();
+						for(org.morganm.homespawnplus.entity.Player player : players) {
+							player.setLastModified(null);
+							storage.getPlayerDAO().savePlayer(player);
+						}
 					}
-					Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getAllSpawns();
-					for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
-						spawn.setLastModified(null);
-						storage.writeSpawn(spawn);
-					}
-					Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getAllPlayers();
-					for(org.morganm.homespawnplus.entity.Player player : players) {
-						player.setLastModified(null);
-						storage.writePlayer(player);
+					catch(StorageException e) {
+						util.sendMessage(p, "Caught exception: "+e.getMessage());
+						log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
 					}
 					
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);

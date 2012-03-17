@@ -10,6 +10,7 @@ package org.morganm.homespawnplus.i18n;
  *
  */
 public enum HSPMessages {
+	// v1.3.1
 	HOME_BED_SET,
 	HOME_BED_ONE_MORE_CLICK,
 	
@@ -95,4 +96,7 @@ public enum HSPMessages {
 	GENERIC_GROUP,
 	GENERIC_DEFAULT,
 	GENERIC_WORLD_DEFAULT,
+	
+	// v1.5
+	GENERIC_ERROR,
 }

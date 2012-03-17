@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -28,6 +29,9 @@ import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.WorldGuardInterface;
 
@@ -294,7 +298,7 @@ public class HomeSpawnUtils {
 		}
 		
 		if( home == null && isModeEnabled(modes, Type.MODE_HOME_ANY) ) {
-			Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+			Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
 			// just grab the first one we find
 			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();
@@ -332,6 +336,9 @@ public class HomeSpawnUtils {
 //		SpawnStrategy currentMode = new SpawnStrategy(Type.MODE_HOME_NORMAL);
 		final List<SpawnStrategy> currentModes = new ArrayList<SpawnStrategy>(3);
 		currentModes.add(new SpawnStrategy(Type.MODE_HOME_NORMAL));
+		
+		final HomeDAO homeDAO = plugin.getStorage().getHomeDAO();
+		final SpawnDAO spawnDAO = plugin.getStorage().getSpawnDAO();
 		
 		for(SpawnStrategy s : spawnInfo.spawnStrategies) {
 			// we stop as soon as we have a valid location to return
@@ -386,7 +393,7 @@ public class HomeSpawnUtils {
 			
 			case HOME_ANY_WORLD:
 				// get the Set of homes for this player for ALL worlds
-				Set<Home> homes = plugin.getStorage().getHomes(null, playerName);
+				Set<Home> homes = homeDAO.findHomesByPlayer(playerName);
 				log.info(logPrefix + " [DEBUG] homes = "+homes);
 				if( homes != null && homes.size() > 0 ) {
 					for(Home h: homes) {
@@ -467,7 +474,7 @@ public class HomeSpawnUtils {
 			{
 				// simple algorithm for now, it's not called that often and we assume the list
 				// of homes is relatively small (ie. not in the hundreds or thousands).
-				Set<Home> allHomes = plugin.getStorage().getHomes(player.getWorld().getName(), playerName);
+				Set<Home> allHomes = homeDAO.findHomesByWorldAndPlayer(player.getWorld().getName(), playerName);
 				Location playerLoc = player.getLocation();
 				
 				double shortestDistance = -1;
@@ -508,7 +515,7 @@ public class HomeSpawnUtils {
 			case SPAWN_LOCAL_WORLD_RANDOM:
 			{
 				String playerLocalWorld = player.getWorld().getName();
-				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
+				Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
 				ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
 				for(Spawn theSpawn : allSpawns) {
 					if( playerLocalWorld.equals(theSpawn.getWorld()) ) {
@@ -589,7 +596,7 @@ public class HomeSpawnUtils {
 			{
 				// simple algorithm for now, it's not called that often and we assume the list
 				// of spawns is relatively small (ie. not in the hundreds or thousands).
-				Set<Spawn> allSpawns = plugin.getStorage().getAllSpawns();
+				Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
 				Location playerLoc = player.getLocation();
 				
 				final String playerWorld = playerLoc.getWorld().getName();
@@ -833,7 +840,7 @@ public class HomeSpawnUtils {
 	 */
 	public int getHomeCount(String playerName, String worldName)
 	{
-		Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
 		
 		if( homes != null )
 			return homes.size();
@@ -874,7 +881,7 @@ public class HomeSpawnUtils {
 		Home home = null;
 		
 		debug.debug("singleGlobalHome config enabled, entered enforceSingleGlobalHome");
-		Set<Home> homes = plugin.getStorage().getHomes("*", playerName);
+		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(playerName);
 		
 		if( homes != null ) {
 			// if we find a single home in the DB, move it to the new location
@@ -887,7 +894,12 @@ public class HomeSpawnUtils {
     			debug.debug("singleGlobalHome: found multiple homes, removing them");
 				for(Home h : homes) {
 					debug.debug("removing home ",h);
-					plugin.getStorage().deleteHome(h);
+					try {
+						plugin.getStorage().getHomeDAO().deleteHome(h);
+					}
+					catch(StorageException e) {
+						log.log(Level.WARNING, "Error caught in enforceSingleGlobalHome: "+e.getMessage(), e);
+					}
 				}
 			}
 		}
@@ -906,19 +918,20 @@ public class HomeSpawnUtils {
 	 */
     public boolean setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
     {
-    	Home home = plugin.getStorage().getDefaultHome(l.getWorld().getName(), playerName);
+    	final HomeDAO homeDAO = plugin.getStorage().getHomeDAO();
+    	Home home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
     	
     	debug.devDebug("setHome: (defaultHome) home=",home);
     	
     	// if bedHome arg is set and the defaultHome is NOT the bedHome, then try to find an
     	// existing bedHome that we can overwrite (should only be one bedHome per world)
     	if( bedHome && (home == null || !home.isBedHome()) ) {
-    		home = plugin.getStorage().getBedHome(l.getWorld().getName(), playerName);
+    		home = homeDAO.findBedHome(l.getWorld().getName(), playerName);
     		
     		// if no bed home was found using existing bed name, check all other bed homes
     		// for the bed flag
     		if( home != null && !home.isBedHome() ) {
-    			Set<Home> homes = plugin.getStorage().getHomes(l.getWorld().getName(), playerName);
+    			Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
     			if( homes != null ) {
     				for(Home h : homes) {
     					if( h.isBedHome() ) {
@@ -993,8 +1006,15 @@ public class HomeSpawnUtils {
 		
 		debug.devDebug("setHome() pre-commit, home=",home);
 
-    	plugin.getStorage().writeHome(home);
-		return true;
+		try {
+			homeDAO.saveHome(home);
+			return true;
+		}
+		catch(StorageException e) {
+			log.log(Level.WARNING, "Error saving home: "+e.getMessage(), e);
+		}
+		
+		return false;
     }
     
     /** Set a named home for a player.
@@ -1007,7 +1027,7 @@ public class HomeSpawnUtils {
      */
     public boolean setNamedHome(String playerName, Location l, String homeName, String updatedBy)
     {
-    	Home home = plugin.getStorage().getNamedHome(homeName, playerName);
+    	Home home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
     	
     	// could be null if we are working with an offline player
     	Player p = plugin.getServer().getPlayer(playerName);
@@ -1034,15 +1054,21 @@ public class HomeSpawnUtils {
     		home.setName(homeName);
     	}
     	
-    	plugin.getStorage().writeHome(home);
-		return true;
+    	try {
+    		plugin.getStorage().getHomeDAO().saveHome(home);
+    		return true;
+    	}
+    	catch(StorageException e) {
+			log.log(Level.WARNING, "Error saving home: "+e.getMessage(), e);
+    	}
+		return false;
     }
     
     public Spawn getSpawnByName(String spawnName) {
     	Spawn spawn = null;
     	
     	if( spawnName != null )
-    		spawn = plugin.getStorage().getSpawnByName(spawnName);
+    		spawn = plugin.getStorage().getSpawnDAO().findSpawnByName(spawnName);
     	
     	if( spawn == null && isVerboseLogging() )
         	log.warning(logPrefix + " Could not find or load spawnByName for '"+spawnName+"'!");
@@ -1052,7 +1078,7 @@ public class HomeSpawnUtils {
    
     public void setSpawn(String spawnName, Location l, String updatedBy)
     {
-    	Spawn spawn = plugin.getStorage().getSpawnByName(spawnName);
+    	Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnByName(spawnName);
     	
 		// if we get an object back, we already have a Spawn set for this spawnName, so we
 		// just update the x/y/z location of it.
@@ -1066,7 +1092,12 @@ public class HomeSpawnUtils {
     		spawn.setName(spawnName);
     	}
     	
-    	plugin.getStorage().writeSpawn(spawn);    	
+    	try {
+    		plugin.getStorage().getSpawnDAO().saveSpawn(spawn);
+    	}
+    	catch(StorageException e) {
+			log.log(Level.WARNING, "Error saving home: "+e.getMessage(), e);
+    	}
     }
     
     /** Set the default spawn for a given world.
@@ -1087,7 +1118,7 @@ public class HomeSpawnUtils {
      */
     public void setGroupSpawn(String group, Location l, String updatedBy)
     {
-    	Spawn spawn = plugin.getStorage().getSpawn(l.getWorld().getName(), group);
+    	Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorldAndGroup(l.getWorld().getName(), group);
 //    	log.info(logPrefix + " setGroupSpawn(), spawn lookup = "+spawn);
     	
 		// if we get an object back, we already have a Spawn set for this world/group combo, so we
@@ -1102,7 +1133,12 @@ public class HomeSpawnUtils {
     		spawn.setGroup(group);
     	}
     	
-    	plugin.getStorage().writeSpawn(spawn);
+    	try {
+        	plugin.getStorage().getSpawnDAO().saveSpawn(spawn);
+    	}
+    	catch(StorageException e) {
+			log.log(Level.WARNING, "Caught exception "+e.getMessage(), e);
+    	}
     }
 
     public Spawn getSpawn(String worldName)
@@ -1188,13 +1224,13 @@ public class HomeSpawnUtils {
      */
     public Home getDefaultHome(String playerName, String worldName)
     {
-    	Home home = plugin.getStorage().getDefaultHome(worldName, playerName);
+    	Home home = plugin.getStorage().getHomeDAO().findDefaultHome(worldName, playerName);
     	
     	// if there is no default home defined and the LAST_HOME_IS_DEFAULT flag is
     	// set, check to see if there is a single home left on the world that we can
     	// assume is the default.
     	if( home == null && plugin.getHSPConfig().getBoolean(ConfigOptions.LAST_HOME_IS_DEFAULT, true) ) {
-    		Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+    		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
     		if( homes != null && homes.size() == 1 )
     			home = homes.iterator().next();
     	}
@@ -1215,7 +1251,7 @@ public class HomeSpawnUtils {
     public Home getBedHome(String playerName, String worldName) {
     	Home bedHome = null;
     	
-    	Set<Home> homes = plugin.getStorage().getHomes(worldName, playerName);
+		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
     	if( homes != null && homes.size() != 0 ) {
 	    	for(Home home : homes) {
 	    		if( home.isBedHome() ) {
@@ -1229,7 +1265,7 @@ public class HomeSpawnUtils {
     }
     
     public Home getHomeByName(String playerName, String homeName) {
-    	return plugin.getStorage().getNamedHome(homeName, playerName);
+		return plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
     }
     
     /** Look for a partial name match for a home on a given world
@@ -1239,7 +1275,7 @@ public class HomeSpawnUtils {
      * @return the Home object or null if none found
      */
     public Home getBestMatchHome(String playerName, String worldName) {
-    	Set<Home> homes = plugin.getStorage().getAllHomes();
+    	Set<Home> homes = plugin.getStorage().getHomeDAO().findAllHomes();
     	
     	// first find any possible homes based on the input
     	ArrayList<Home> possibles = new ArrayList<Home>();
@@ -1278,9 +1314,9 @@ public class HomeSpawnUtils {
     	Spawn spawn = null;
     	
     	if( group == null )
-    		spawn = plugin.getStorage().getSpawn(worldName);
+    		spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorld(worldName);
     	else
-    		spawn = plugin.getStorage().getSpawn(worldName, group);
+    		spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorldAndGroup(worldName, group);
     	
     	if( spawn == null && isVerboseLogging() )
         	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"' on world "+worldName+"!");
@@ -1357,11 +1393,16 @@ public class HomeSpawnUtils {
     		debug.debug("updateQuitLocation: updating last logout location for player ",p.getName());
     		
 	    	Location quitLocation = p.getLocation();
-	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayer(p.getName());
+	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName());
 	    	if( playerStorage == null )
 	    		playerStorage = new org.morganm.homespawnplus.entity.Player(p);
 	    	playerStorage.updateLastLogoutLocation(quitLocation);
-	    	plugin.getStorage().writePlayer(playerStorage);
+	    	try {
+	    		plugin.getStorage().getPlayerDAO().savePlayer(playerStorage);
+	    	}
+	    	catch(StorageException e) {
+				log.log(Level.WARNING, "Caught exception "+e.getMessage(), e);
+	    	}
     	}
     }
     
@@ -1375,7 +1416,7 @@ public class HomeSpawnUtils {
     	}
 
     	if( strategy.equals(ConfigOptions.NewPlayerStrategy.ORIGINAL.toString()) ) {
-        	if( plugin.getStorage().getPlayer(p.getName()) != null ) {
+        	if( plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName()) != null ) {
         		debug.debug("isNewPlayer: using ORIGINAL strategy, player has DB record, player is NOT new");
         		return false;
         	}

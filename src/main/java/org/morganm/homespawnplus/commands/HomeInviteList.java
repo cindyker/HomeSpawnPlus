@@ -18,6 +18,9 @@ import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 public class HomeInviteList extends BaseCommand {
 
 	@Override
+	public String[] getCommandAliases() { return new String[] {"hil"}; }
+	
+	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		HomeInviteDAO dao = plugin.getStorage().getHomeInviteDAO();
 		

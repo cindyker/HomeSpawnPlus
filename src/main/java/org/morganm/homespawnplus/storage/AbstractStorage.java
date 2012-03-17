@@ -1,9 +1,13 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.storage.dao;
+package org.morganm.homespawnplus.storage;
 
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
+import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
+import org.morganm.homespawnplus.storage.dao.PlayerDAO;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
+import org.morganm.homespawnplus.storage.dao.VersionDAO;
 
 /**
  * @author morganm

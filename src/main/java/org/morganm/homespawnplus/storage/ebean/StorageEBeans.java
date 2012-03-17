@@ -12,7 +12,7 @@ import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Version;
-import org.morganm.homespawnplus.storage.dao.AbstractStorage;
+import org.morganm.homespawnplus.storage.AbstractStorage;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.MyDatabase;
 

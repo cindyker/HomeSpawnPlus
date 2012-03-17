@@ -6,8 +6,8 @@ package org.morganm.homespawnplus.storage.yaml;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,7 +47,8 @@ public class HomeDAOYaml implements HomeDAO {
 	}
 	
 	public void load() throws IOException, InvalidConfigurationException {
-		yaml.load(file);
+		if( file.exists() )
+			yaml.load(file);
 	}
 	public void save() throws IOException {
 		yaml.save(file);
@@ -311,7 +312,7 @@ public class HomeDAOYaml implements HomeDAO {
 
 		@Override
 		public Map<String, Object> serialize() {
-			Map<String, Object> map = new HashMap<String, Object>(15);
+			Map<String, Object> map = new LinkedHashMap<String, Object>(15);
 			map.put(ATTR_ID, home.getId());
 			map.put(ATTR_NAME, home.getName());
 			map.put(ATTR_UPDATED_BY, home.getUpdatedBy());

@@ -38,30 +38,5 @@ public interface Storage {
 	 */
 	public void purgeCache();
 	
-//	public Player getPlayer(String name);
-//	public void writePlayer(Player player);
-	
-//	public Home getDefaultHome(String world, String playerName);
-//	public Home getBedHome(String world, String playerName);
-//	public Home getNamedHome(String homeName, String playerName);
-//	public Set<Home> getHomes(String world, String playerName);
-	
-//	public Spawn getSpawn(String world);
-//	public Spawn getSpawn(String world, String group);
-//	public Spawn getSpawnByName(String name);
-//	public Spawn getSpawnById(int id);
-	
-//	public Set<String> getSpawnDefinedGroups();
-	
-//	public Set<Home> getAllHomes();
-//	public Set<Spawn> getAllSpawns();
-//	public Set<Player> getAllPlayers();
-	
-//	public void writeHome(Home home);
-//	public void writeSpawn(Spawn spawn);
-	
-//	public void deleteHome(Home home);
-//	public void deleteSpawn(Spawn spawn);
-	
 	public void deleteAllData();
 }

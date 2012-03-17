@@ -12,12 +12,14 @@ import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.yaml.HomeDAOYaml;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
 /**
@@ -107,6 +109,22 @@ public class HSP extends BaseCommand {
 				e.printStackTrace();
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
 //				util.sendMessage(p, "There was an error writing the backup file, please check your server logs");
+			}
+		}
+		else if( args[0].startsWith("test") ) {
+			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
+			p.sendMessage("Found home with id "+home.getId());
+			try {
+				HomeDAOYaml dao = new HomeDAOYaml(new YamlConfiguration(), new File("plugins/HomeSpawnPlus/homes.yml"));
+				home.setYaw(5);
+				dao.saveHome(home);
+				
+				home = dao.findDefaultHome("world", "morganm");
+				p.sendMessage("YML: Found home with yaw "+home.getYaw());
+			}
+			catch(Exception e) {
+				p.sendMessage("Caught exception: "+e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		else if( args[0].startsWith("restore") ) {

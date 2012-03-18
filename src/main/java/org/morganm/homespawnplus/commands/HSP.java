@@ -163,12 +163,13 @@ public class HSP extends BaseCommand {
 			else {
 				File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
 				if( backupFile.exists() ) {
+					final Storage storage = plugin.getStorage();
 					try {
 						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
 						backupStorage.initializeStorage();
 						
-						Storage storage = plugin.getStorage();
 						storage.deleteAllData();
+						storage.setDeferredWrites(true);
 						
 						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
 						for(org.morganm.homespawnplus.entity.Home home : homes) {
@@ -194,10 +195,15 @@ public class HSP extends BaseCommand {
 							homeInvite.setLastModified(null);
 							storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
 						}
+						
+						storage.flushAll();
 					}
 					catch(StorageException e) {
 						util.sendMessage(p, "Caught exception: "+e.getMessage());
 						log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+					}
+					finally {
+						storage.setDeferredWrites(false);
 					}
 					
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);

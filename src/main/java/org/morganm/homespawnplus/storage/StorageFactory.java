@@ -18,8 +18,8 @@ import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 public class StorageFactory {
 	public static final int STORAGE_TYPE_EBEANS = 0;
 	public static final int STORAGE_TYPE_CACHED_EBEANS = 1;
-	public static final int STORAGE_TYPE_YAML_SINGLE_FILE = 2;
-	public static final int STORAGE_TYPE_YAML_MULTI_FILE = 3;
+	public static final int STORAGE_TYPE_YAML_MULTI_FILE = 2;
+	public static final int STORAGE_TYPE_YAML_SINGLE_FILE = 3;
 	
 	public static Storage getInstance(int storageType, HomeSpawnPlus plugin)
 		throws StorageException, IOException

@@ -1,3 +1,8 @@
+v1.5 - ?
+* refactored storage subsystem in preparation for home invite feature
+* coded full YAML backend on new storage subsystem; storage id 2 for individual YAML files per object (home/spawn/player) or 3 for a large single data file
+* Ticket #28: home invite feature enhancement
+
 v1.4.4 - ?
 * fixed WorldGuard compatibility to work with newest WorldGuard 5.5 changes
 * added Dutch translation; locale nl (thanks @Dunncann!)

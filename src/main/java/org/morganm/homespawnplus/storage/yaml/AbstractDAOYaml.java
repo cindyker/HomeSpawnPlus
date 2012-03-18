@@ -153,7 +153,8 @@ implements YamlDAOInterface
 	
 	public void invalidateCache() {
 		cacheInvalid = true;
-		allObjects.clear();
+		if( allObjects != null )
+			allObjects.clear();
 	}
 	
 	public void setDeferredWrite(boolean deferred) {
@@ -169,7 +170,7 @@ implements YamlDAOInterface
 	}
 	public void deleteAllData() throws StorageException {
 		invalidateCache();
-		yaml = null;
+		yaml.set(configBase, null);
 		if( file != null && file.exists() )
 			file.delete();
 	}

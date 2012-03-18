@@ -35,6 +35,12 @@ commands:
     usage: |
            /<command> - show homes on all worlds
            /<command> world - show homes on 'world'
+  homelistother:
+    aliases: [hlo]
+    description: Show your homes
+    usage: |
+           /<command> - show homes on all worlds
+           /<command> world - show homes on 'world'
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)

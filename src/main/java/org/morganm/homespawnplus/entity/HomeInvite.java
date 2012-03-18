@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
+import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -25,7 +29,7 @@ import com.avaje.ebean.validation.NotEmpty;
 			@UniqueConstraint(columnNames={"home", "invited_player"})
 		}
 )
-public class HomeInvite {
+public class HomeInvite implements BasicEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -38,6 +42,12 @@ public class HomeInvite {
     @Length(max=32)
     @Column(name="invited_player")
     private String invitedPlayer;
+
+	@Version
+	private Timestamp lastModified;
+	
+	@CreatedTimestamp
+	private Timestamp dateCreated;
 
 	public int getId() {
 		return id;
@@ -61,5 +71,21 @@ public class HomeInvite {
 
 	public void setInvitedPlayer(String invitedPlayer) {
 		this.invitedPlayer = invitedPlayer;
+	}
+
+	public Timestamp getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Timestamp lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	public Timestamp getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Timestamp dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 }

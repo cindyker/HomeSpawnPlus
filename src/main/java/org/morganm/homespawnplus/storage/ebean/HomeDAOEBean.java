@@ -27,6 +27,16 @@ public class HomeDAOEBean implements HomeDAO {
 		this.ebean = ebean;
 	}
 
+	@Override
+	public Home findHomeById(int id) {
+		String q = "find home where id = :id";
+		
+		Query<Home> query = ebean.createQuery(Home.class, q);
+		query.setParameter("id", id);
+		
+		return query.findUnique();
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
 	 */

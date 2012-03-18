@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -20,7 +21,8 @@ public class Version {
     private int id;
     
     @NotNull
-    private int databaseVersion;
+    @Column(name="database_version")
+    private int version;
 
 	public Version() {}
     
@@ -32,11 +34,11 @@ public class Version {
 		this.id = id;
 	}
 
-	public int getDatabaseVersion() {
-		return databaseVersion;
+	public int getVersion() {
+		return version;
 	}
 
-	public void setDatabaseVersion(int databaseVersion) {
-		this.databaseVersion = databaseVersion;
+	public void setVersion(int version) {
+		this.version = version;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 
 import com.avaje.ebean.EbeanServer;
@@ -84,5 +85,14 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
         ebean.save(homeInvite);
 	}
 
+	@Override
+	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
+		ebean.delete(homeInvite);
+	}
+
+	@Override
+	public Set<HomeInvite> findAllHomeInvites() {
+		return ebean.find(HomeInvite.class).findSet();
+	}
 
 }

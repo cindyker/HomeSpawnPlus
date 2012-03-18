@@ -4,7 +4,7 @@
 package org.morganm.homespawnplus.commands;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
@@ -20,6 +19,7 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.HomeDAOYaml;
+import org.morganm.homespawnplus.storage.yaml.SpawnDAOYaml;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
 /**
@@ -90,37 +90,57 @@ public class HSP extends BaseCommand {
 			if( backupFile.exists() )
 				backupFile.delete();
 			
-			StorageYaml backupStorage = new StorageYaml(backupFile);
-			backupStorage.initializeStorage();
-			
-			backupStorage.addHomes(storage.getHomeDAO().findAllHomes());
-			backupStorage.addSpawns(storage.getSpawnDAO().findAllSpawns());
-			backupStorage.addPlayers(storage.getPlayerDAO().findAllPlayers());
-			
 			try {
-				backupStorage.save();
+				StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
+				backupStorage.initializeStorage();
+
+				backupStorage.setDeferredWrites(true);
+				for(org.morganm.homespawnplus.entity.Home o : storage.getHomeDAO().findAllHomes()) {
+					backupStorage.getHomeDAO().saveHome(o);
+				}
+				for(org.morganm.homespawnplus.entity.Spawn o : storage.getSpawnDAO().findAllSpawns()) {
+					backupStorage.getSpawnDAO().saveSpawn(o);
+				}
+				for(org.morganm.homespawnplus.entity.Player o : storage.getPlayerDAO().findAllPlayers()) {
+					backupStorage.getPlayerDAO().savePlayer(o);
+				}
+				for(org.morganm.homespawnplus.entity.HomeInvite o : storage.getHomeInviteDAO().findAllHomeInvites()) {
+					backupStorage.getHomeInviteDAO().saveHomeInvite(o);
+				}
+
+				backupStorage.flushAll();
 	
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-//				util.sendMessage(p, "Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 				log.info(logPrefix+" Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 			}
-			catch(IOException e) {
+			catch(StorageException e) {
 				log.warning(logPrefix+" Error saving backup file"+e.getMessage());
 				e.printStackTrace();
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
-//				util.sendMessage(p, "There was an error writing the backup file, please check your server logs");
 			}
 		}
 		else if( args[0].startsWith("test") ) {
 			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
 			p.sendMessage("Found home with id "+home.getId());
+			org.morganm.homespawnplus.entity.Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnById(1);
+			p.sendMessage("Found spawn with id "+spawn.getId());
 			try {
-				HomeDAOYaml dao = new HomeDAOYaml(new YamlConfiguration(), new File("plugins/HomeSpawnPlus/homes.yml"));
-				home.setYaw(5);
-				dao.saveHome(home);
+				Float yaw = Float.valueOf(new Random(System.currentTimeMillis()).nextInt(360));
+				File file = new File("plugins/HomeSpawnPlus/data.yml");
 				
-				home = dao.findDefaultHome("world", "morganm");
+				HomeDAOYaml homeDAO = new HomeDAOYaml(file);
+				home.setYaw(yaw);
+				homeDAO.saveHome(home);
+				
+				home = homeDAO.findDefaultHome("world", "morganm");
 				p.sendMessage("YML: Found home with yaw "+home.getYaw());
+
+				SpawnDAOYaml spawnDAO = new SpawnDAOYaml(file);
+				spawn.setYaw(yaw);
+				spawnDAO.saveSpawn(spawn);
+				
+				spawn = spawnDAO.findSpawnById(1);
+				p.sendMessage("YML: Found spawn with yaw "+spawn.getYaw());
 			}
 			catch(Exception e) {
 				p.sendMessage("Caught exception: "+e.getMessage());
@@ -136,27 +156,32 @@ public class HSP extends BaseCommand {
 			else {
 				File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
 				if( backupFile.exists() ) {
-					StorageYaml backupStorage = new StorageYaml(backupFile);
-					backupStorage.initializeStorage();
-					
-					Storage storage = plugin.getStorage();
-					storage.deleteAllData();
-					
 					try {
-						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getAllHomes();
+						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
+						backupStorage.initializeStorage();
+						
+						Storage storage = plugin.getStorage();
+						storage.deleteAllData();
+						
+						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
 						for(org.morganm.homespawnplus.entity.Home home : homes) {
 							home.setLastModified(null);
 							storage.getHomeDAO().saveHome(home);
 						}
-						Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getAllSpawns();
+						Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getSpawnDAO().findAllSpawns();
 						for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
 							spawn.setLastModified(null);
 							storage.getSpawnDAO().saveSpawn(spawn);
 						}
-						Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getAllPlayers();
+						Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getPlayerDAO().findAllPlayers();
 						for(org.morganm.homespawnplus.entity.Player player : players) {
 							player.setLastModified(null);
 							storage.getPlayerDAO().savePlayer(player);
+						}
+						Set<org.morganm.homespawnplus.entity.HomeInvite> homeInvites = backupStorage.getHomeInviteDAO().findAllHomeInvites();
+						for(org.morganm.homespawnplus.entity.HomeInvite homeInvite : homeInvites) {
+							homeInvite.setLastModified(null);
+							storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
 						}
 					}
 					catch(StorageException e) {

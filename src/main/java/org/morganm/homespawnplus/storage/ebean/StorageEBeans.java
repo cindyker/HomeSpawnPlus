@@ -12,7 +12,8 @@ import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Version;
-import org.morganm.homespawnplus.storage.AbstractStorage;
+import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.MyDatabase;
 
@@ -27,19 +28,23 @@ import com.avaje.ebean.SqlUpdate;
  * @author morganm
  *
  */
-public class StorageEBeans extends AbstractStorage {
-	private static final int CURRENT_VERSION = 91;
+public class StorageEBeans implements Storage {
+	private static final int CURRENT_VERSION = 150;
     private static final Logger log = HomeSpawnPlus.log;
 
 	private final HomeSpawnPlus plugin;
 	private final String logPrefix;
 	private MyDatabase database;
 	
+	private HomeDAOEBean homeDAO;
+	private HomeInviteDAOEBean homeInviteDAO;
+	private SpawnDAOEBean spawnDAO;
+	private PlayerDAOEBean playerDAO;
+	private VersionDAOEBean versionDAO;
+
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.logPrefix = HomeSpawnPlus.logPrefix;
-		
-		initializeStorage();
 	}
 	
 	public MyDatabase getDatabase() {
@@ -49,7 +54,7 @@ public class StorageEBeans extends AbstractStorage {
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#initializeStorage
 	 */
-	public void initializeStorage() {
+	public void initializeStorage() throws StorageException {
         database = new MyDatabase(plugin) {
         	protected java.util.List<Class<?>> getDatabaseClasses() {
         		return plugin.getDatabaseClasses();
@@ -60,16 +65,27 @@ public class StorageEBeans extends AbstractStorage {
         database.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
         		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
 
-        setHomeDAO(new HomeDAOEBean(database.getDatabase()));
-        setHomeInviteDAO(new HomeInviteDAOEBean(database.getDatabase(), plugin));
-        setSpawnDAO(new SpawnDAOEBean(database.getDatabase()));
-        setPlayerDAO(new PlayerDAOEBean(database.getDatabase()));
-        setVersionDAO(new VersionDAOEBean(database.getDatabase()));
+        homeDAO = new HomeDAOEBean(database.getDatabase());
+        homeInviteDAO = new HomeInviteDAOEBean(database.getDatabase(), plugin);
+        spawnDAO = new SpawnDAOEBean(database.getDatabase());
+        playerDAO = new PlayerDAOEBean(database.getDatabase());
+        versionDAO = new VersionDAOEBean(database.getDatabase());
         
         try {
         	upgradeDatabase();
         } catch(Exception e) { e.printStackTrace(); }
 	}
+	
+	@Override
+	public org.morganm.homespawnplus.storage.dao.HomeDAO getHomeDAO() { return homeDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.HomeInviteDAO getHomeInviteDAO() { return homeInviteDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerDAO getPlayerDAO() { return playerDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.SpawnDAO getSpawnDAO() { return spawnDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.VersionDAO getVersionDAO() { return versionDAO; }
 	
 	@Override
 	public void purgeCache() {
@@ -118,7 +134,7 @@ public class StorageEBeans extends AbstractStorage {
 			}
 		}
 		else
-			knownVersion = versionObject.getDatabaseVersion();
+			knownVersion = versionObject.getVersion();
 		
 		Debug.getInstance().debug("knownVersion = ",knownVersion);
 
@@ -139,6 +155,9 @@ public class StorageEBeans extends AbstractStorage {
 		
 		if( knownVersion < 91 )
 			updateToVersion91(db);
+		
+		if( knownVersion < 150 )
+			updateToVersion150(db);
 	}
 	
 	private void updateToVersion63(final EbeanServer db) {
@@ -265,4 +284,14 @@ public class StorageEBeans extends AbstractStorage {
 			log.info(logPrefix + " Upgrade from version 0.8 database to version 0.9.1 complete");
 		}
 	}
+	
+	private void updateToVersion150(final EbeanServer db) {
+		
+	}
+
+	// Ebeans does nothing with these methods
+	@Override
+	public void setDeferredWrites(boolean deferred) {}
+	@Override
+	public void flushAll() throws StorageException {}
 }

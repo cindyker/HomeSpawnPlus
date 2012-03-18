@@ -34,7 +34,7 @@ import com.avaje.ebean.validation.NotNull;
 			@UniqueConstraint(columnNames={"world", "group_name"})
 		}
 )
-public class Spawn {
+public class Spawn implements EntityWithLocation {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -57,14 +57,14 @@ public class Spawn {
 	private String group;
     
     @NotNull
-    private double x;
+    private Double x;
     @NotNull
-    private double y;
+    private Double y;
     @NotNull
-    private double z;
+    private Double z;
     
-    private float pitch;
-	private float yaw;
+    private Float pitch;
+	private Float yaw;
 	
 	@Version
 	private Timestamp lastModified;
@@ -122,24 +122,24 @@ public class Spawn {
 		this.world = world;
 		location = null;
 	}
-	public double getX() {
+	public Double getX() {
 		return x;
 	}
-	public void setX(double x) {
+	public void setX(Double x) {
 		this.x = x;
 		location = null;
 	}
-	public double getY() {
+	public Double getY() {
 		return y;
 	}
-	public void setY(double y) {
+	public void setY(Double y) {
 		this.y = y;
 		location = null;
 	}
-	public double getZ() {
+	public Double getZ() {
 		return z;
 	}
-	public void setZ(double z) {
+	public void setZ(Double z) {
 		this.z = z;
 		location = null;
 	}
@@ -164,20 +164,20 @@ public class Spawn {
 		this.updatedBy = updatedBy;
 	}
 	
-    public float getPitch() {
+    public Float getPitch() {
 		return pitch;
 	}
 
-	public void setPitch(float pitch) {
+	public void setPitch(Float pitch) {
 		this.pitch = pitch;
 		location = null;
 	}
 
-	public float getYaw() {
+	public Float getYaw() {
 		return yaw;
 	}
 
-	public void setYaw(float yaw) {
+	public void setYaw(Float yaw) {
 		this.yaw = yaw;
 		location = null;
 	}

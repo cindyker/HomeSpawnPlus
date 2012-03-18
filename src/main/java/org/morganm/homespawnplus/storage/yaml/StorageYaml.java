@@ -4,401 +4,113 @@
 package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.entity.Player;
-import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.StorageException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-/** Not yet a complete implementation, this exists primarily for the purpose of
- * facilitating backup/restore to a YAML file, so it only implements the required
- * functions to enable that process.
+/** Yaml storage back end.
  * 
  * @author morganm
  *
  */
-public class StorageYaml { //implements Storage {
-//	private HomeSpawnPlus plugin;
-	private final File file;
-	private YamlConfiguration storage;
+public class StorageYaml implements Storage {
+	private HomeSpawnPlus plugin;
+	// if multiple files are being used, this is the directory they are written to
+	private File dataDirectory;
+	// if all data is being written into a single file, this points to it
+	private File singleFile;
 	
-	public StorageYaml(final File file) {
-		this.file = file;
-	}
-	
-	/** Not yet part of the interface, can only be called directly or internally.
-	 */
-	public void save() throws IOException {
-		if( storage != null )
-			storage.save(file);
-	}
-	
-	public void addHomes(Set<Home> homes) {
-		final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		
-		for(Home home : homes) {
-			// for the purposes of addHomes, it's assumed lastModified and dateCreated already
-			// exist in the Set, but just in case, we set them to current time if they are not.
-			if( home.getLastModified() == null )
-				home.setLastModified(timestamp);
-			if( home.getDateCreated() == null )
-				home.setDateCreated(timestamp);
-			
-			int id = home.getId();
-			String baseNode = "homes."+id;
-			storage.set(baseNode+".player_name", home.getPlayerName());
-			storage.set(baseNode+".updatedBy", home.getUpdatedBy());
-			storage.set(baseNode+".world", home.getWorld());
-			storage.set(baseNode+".x", home.getX());
-			storage.set(baseNode+".y", home.getY());
-			storage.set(baseNode+".z", home.getZ());
-			storage.set(baseNode+".pitch", home.getPitch());
-			storage.set(baseNode+".yaw", home.getYaw());
-			storage.set(baseNode+".lastModified", new Long(home.getLastModified().getTime()).toString());
-			storage.set(baseNode+".dateCreated", new Long(home.getDateCreated().getTime()).toString());
-		}
-	}
-	
-	public void addSpawns(Set<Spawn> spawns) {
-		final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		
-		for(Spawn spawn : spawns) {
-			// for the purposes of addSpawns, it's assumed lastModified and dateCreated already
-			// exist in the Set, but just in case, we set them to current time if they are not.
-			if( spawn.getLastModified() == null )
-				spawn.setLastModified(timestamp);
-			if( spawn.getDateCreated() == null )
-				spawn.setDateCreated(timestamp);
-			
-			int id = spawn.getId();
-			String baseNode = "spawns."+id;
-			storage.set(baseNode+".world", spawn.getWorld());
-			storage.set(baseNode+".name", spawn.getName());
-			storage.set(baseNode+".updatedBy", spawn.getUpdatedBy());
-			storage.set(baseNode+".group_name", spawn.getGroup());
-			storage.set(baseNode+".x", spawn.getX());
-			storage.set(baseNode+".y", spawn.getY());
-			storage.set(baseNode+".z", spawn.getZ());
-			storage.set(baseNode+".pitch", spawn.getPitch());
-			storage.set(baseNode+".yaw", spawn.getYaw());
-			storage.set(baseNode+".lastModified", new Long(spawn.getLastModified().getTime()).toString());
-			storage.set(baseNode+".dateCreated", new Long(spawn.getDateCreated().getTime()).toString());
-		}
-	}
-	
-	public void addPlayers(Set<Player> players) {
-		final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		
-		for(Player player : players) {
-			// for the purposes of addPlayers, it's assumed lastModified and dateCreated already
-			// exist in the Set, but just in case, we set them to current time if they are not.
-			if( player.getLastModified() == null )
-				player.setLastModified(timestamp);
-			if( player.getDateCreated() == null )
-				player.setDateCreated(timestamp);
-			
-			int id = player.getId();
-			String baseNode = "players."+id;
-			storage.set(baseNode+".name", player.getName());
-			storage.set(baseNode+".world", player.getWorld());
-			storage.set(baseNode+".x", player.getX());
-			storage.set(baseNode+".y", player.getY());
-			storage.set(baseNode+".z", player.getZ());
-			storage.set(baseNode+".pitch", player.getPitch());
-			storage.set(baseNode+".yaw", player.getYaw());
-			storage.set(baseNode+".lastModified", new Long(player.getLastModified().getTime()).toString());
-			storage.set(baseNode+".dateCreated", new Long(player.getDateCreated().getTime()).toString());
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#initializeStorage()
-	 */
-	
-	public void initializeStorage() {
-		storage = YamlConfiguration.loadConfiguration(file);
-	}
+	private HomeDAOYaml homeDAO;
+	private HomeInviteDAOYaml homeInviteDAO;
+	private SpawnDAOYaml spawnDAO;
+	private PlayerDAOYaml playerDAO;
+	private VersionDAOYaml versionDAO;
+	private YamlDAOInterface[] allDAOs;
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#purgeCache()
+	/** Called to write all entities into a single file.
+	 * 
+	 * @param singleFile if true, the second param is taken to be a single filename that
+	 * all YAML data should be written to. If false, the second param is taken to be the
+	 * directory that individual YAML files should be stored in.
+	 * @param file The file to write to or the directory to put files in, depending on
+	 * the value of the first argument.
 	 */
+	public StorageYaml(final HomeSpawnPlus plugin, final boolean singleFile, final File file) {
+		this.plugin = plugin;
+		if( singleFile )
+			this.singleFile = file;
+		else
+			this.dataDirectory = file;
+	}
 	
+	@Override
+	public void initializeStorage() throws StorageException {
+		try {
+			if( singleFile != null ) {
+				homeDAO = new HomeDAOYaml(singleFile);
+				homeInviteDAO = new HomeInviteDAOYaml(plugin, singleFile);
+				spawnDAO = new SpawnDAOYaml(singleFile);
+				playerDAO = new PlayerDAOYaml(singleFile);
+				versionDAO = new VersionDAOYaml(singleFile);
+			}
+			else {
+				File file = new File(dataDirectory, "homes.yml");
+				homeDAO = new HomeDAOYaml(file);
+				file = new File(dataDirectory, "homeInvites.yml");
+				homeInviteDAO = new HomeInviteDAOYaml(plugin, file);
+				file = new File(dataDirectory, "spawns.yml");
+				spawnDAO = new SpawnDAOYaml(file);
+				file = new File(dataDirectory, "players.yml");
+				playerDAO = new PlayerDAOYaml(file);
+				file = new File(dataDirectory, "version.yml");
+				versionDAO = new VersionDAOYaml(file);
+			}
+			
+			allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+		}
+		catch(Exception e) {
+			throw new StorageException(e);
+		}
+	}
+	
+	
+	@Override
+	public org.morganm.homespawnplus.storage.dao.HomeDAO getHomeDAO() { return homeDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.HomeInviteDAO getHomeInviteDAO() { return homeInviteDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerDAO getPlayerDAO() { return playerDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.SpawnDAO getSpawnDAO() { return spawnDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.VersionDAO getVersionDAO() { return versionDAO; }
+	
+	@Override
 	public void purgeCache() {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getPlayer(java.lang.String)
-	 */
-	
-	public Player getPlayer(String name) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#writePlayer(org.morganm.homespawnplus.entity.Player)
-	 */
-	
-	public void writePlayer(Player player) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getHome(java.lang.String, java.lang.String)
-	 */
-	
-	public Home getDefaultHome(String world, String playerName) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getSpawn(java.lang.String)
-	 */
-	
-	public Spawn getSpawn(String world) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getSpawn(java.lang.String, java.lang.String)
-	 */
-	
-	public Spawn getSpawn(String world, String group) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getSpawnByName(java.lang.String)
-	 */
-	
-	public Spawn getSpawnByName(String name) {
-		throw new NotImplementedException();
-	}
-	
-	
-	public Spawn getSpawnById(int id) {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getSpawnDefinedGroups()
-	 */
-	
-	public Set<String> getSpawnDefinedGroups() {
-		throw new NotImplementedException();
-	}
-
-	public Home getHome(int id) {
-		final String baseNode = "homes."+id;
-		final Object node = storage.get(baseNode);
-		if( node == null )
-			return null;
-		
-		final Home home = new Home();
-		home.setId(id);
-		home.setPlayerName(storage.getString(baseNode+".player_name"));
-		home.setUpdatedBy(storage.getString(baseNode+".updatedBy"));
-		home.setWorld(storage.getString(baseNode+".world"));
-		home.setX(storage.getDouble(baseNode+".x", 0));
-		home.setY(storage.getDouble(baseNode+".y", 0));
-		home.setZ(storage.getDouble(baseNode+".z", 0));
-		home.setPitch(new Double(storage.getDouble(baseNode+".pitch", 0)).floatValue());
-		home.setYaw(new Double(storage.getDouble(baseNode+".yaw", 0)).floatValue());
-		
-		String sLastModified = storage.getString(baseNode+".lastModified");
-		long lastModified = 0L;
-		try {
-			lastModified = Long.valueOf(sLastModified);
-		} catch(NumberFormatException e) {}
-		home.setLastModified(new Timestamp(lastModified));
-		
-		String sDateCreated = storage.getString(baseNode+".dateCreated");
-		long dateCreated = 0L;
-		try {
-			dateCreated = Long.valueOf(sDateCreated);
-		} catch(NumberFormatException e) {}
-		home.setDateCreated(new Timestamp(dateCreated));
-		
-		return home;
-	}
-	
-	public Spawn getSpawn(int id) {
-		final String baseNode = "spawns."+id;
-		final Object node = storage.get(baseNode);
-		if( node == null )
-			return null;
-		
-		final Spawn spawn = new Spawn();
-		spawn.setId(id);
-		spawn.setName(storage.getString(baseNode+".name"));
-		spawn.setGroup(storage.getString(baseNode+".group_name"));
-		spawn.setUpdatedBy(storage.getString(baseNode+".updatedBy"));
-		spawn.setWorld(storage.getString(baseNode+".world"));
-		spawn.setX(storage.getDouble(baseNode+".x", 0));
-		spawn.setY(storage.getDouble(baseNode+".y", 0));
-		spawn.setZ(storage.getDouble(baseNode+".z", 0));
-		spawn.setPitch(new Double(storage.getDouble(baseNode+".pitch", 0)).floatValue());
-		spawn.setYaw(new Double(storage.getDouble(baseNode+".yaw", 0)).floatValue());
-		
-		String sLastModified = storage.getString(baseNode+".lastModified");
-		long lastModified = 0L;
-		try {
-			lastModified = Long.valueOf(sLastModified);
-		} catch(NumberFormatException e) {}
-		spawn.setLastModified(new Timestamp(lastModified));
-		
-		String sDateCreated = storage.getString(baseNode+".dateCreated");
-		long dateCreated = 0L;
-		try {
-			dateCreated = Long.valueOf(sDateCreated);
-		} catch(NumberFormatException e) {}
-		spawn.setDateCreated(new Timestamp(dateCreated));
-		
-		return spawn;
-	}
-	
-	public Player getPlayer(int id) {
-		final String baseNode = "players."+id;
-		final Object node = storage.get(baseNode);
-		if( node == null )
-			return null;
-		
-		final Player player = new Player();
-		player.setId(id);
-		player.setName(storage.getString(baseNode+".name"));
-		player.setWorld(storage.getString(baseNode+".world"));
-		player.setX(storage.getDouble(baseNode+".x", 0));
-		player.setY(storage.getDouble(baseNode+".y", 0));
-		player.setZ(storage.getDouble(baseNode+".z", 0));
-		player.setPitch(new Double(storage.getDouble(baseNode+".pitch", 0)).floatValue());
-		player.setYaw(new Double(storage.getDouble(baseNode+".yaw", 0)).floatValue());
-		
-		String sLastModified = storage.getString(baseNode+".lastModified");
-		long lastModified = 0L;
-		try {
-			lastModified = Long.valueOf(sLastModified);
-		} catch(NumberFormatException e) {}
-		player.setLastModified(new Timestamp(lastModified));
-		
-		String sDateCreated = storage.getString(baseNode+".dateCreated");
-		long dateCreated = 0L;
-		try {
-			dateCreated = Long.valueOf(sDateCreated);
-		} catch(NumberFormatException e) {}
-		player.setDateCreated(new Timestamp(dateCreated));
-		
-		return player;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getAllHomes()
-	 */
-	
-	public Set<Home> getAllHomes() {
-		HashSet<Home> homes = new HashSet<Home>();
-		
-		ConfigurationSection section = storage.getConfigurationSection("homes");
-		Set<String> keys = section.getKeys(false);
-		if( keys != null ) {
-			for(String key : keys) {
-				int id = Integer.valueOf(key);
-				homes.add(getHome(id));
-			}
+		for(int i=0; i < allDAOs.length; i++) {
+			allDAOs[i].invalidateCache();
 		}
-		
-		return homes;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getAllSpawns()
-	 */
-	
-	public Set<Spawn> getAllSpawns() {
-		HashSet<Spawn> spawns = new HashSet<Spawn>();
-		
-		ConfigurationSection section = storage.getConfigurationSection("spawns");
-		Set<String> keys = section.getKeys(false);
-		if( keys != null ) {
-			for(String key : keys) {
-				int id = Integer.valueOf(key);
-				spawns.add(getSpawn(id));
-			}
+	@Override
+	public void deleteAllData() throws StorageException {
+		for(int i=0; i < allDAOs.length; i++) {
+			allDAOs[i].deleteAllData();
 		}
-		
-		return spawns;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#getAllPlayers()
-	 */
-	
-	public Set<Player> getAllPlayers() {
-		HashSet<Player> players = new HashSet<Player>();
-		
-		ConfigurationSection section = storage.getConfigurationSection("players");
-		Set<String> keys = section.getKeys(false);
-		if( keys != null ) {
-			for(String key : keys) {
-				int id = Integer.valueOf(key);
-				players.add(getPlayer(id));
-			}
+	@Override
+	public void setDeferredWrites(boolean deferred) {
+		for(int i=0; i < allDAOs.length; i++) {
+			allDAOs[i].setDeferredWrite(deferred);
 		}
-		
-		return players;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#writeHome(org.morganm.homespawnplus.entity.Home)
-	 */
-	
-	public void writeHome(Home home) {
-		throw new NotImplementedException();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.Storage#writeSpawn(org.morganm.homespawnplus.entity.Spawn)
-	 */
-	
-	public void writeSpawn(Spawn spawn) {
-		throw new NotImplementedException();
-	}
-
-	
-	public void deleteAllData() {
-		storage = null;
-		file.delete();
-		initializeStorage();		
-	}
-
-	
-	public Home getNamedHome(String homeName, String playerName) {
-		throw new NotImplementedException();
-	}
-
-	
-	public Set<Home> getHomes(String world, String playerName) {
-		throw new NotImplementedException();
-	}
-	
-	
-	public void deleteHome(Home home) {
-		throw new NotImplementedException();
-	}
-	
-	
-	public void deleteSpawn(Spawn spawn) {
-		throw new NotImplementedException();
-	}
-
-	
-	public Home getBedHome(String world, String playerName) {
-		throw new NotImplementedException();
+	@Override
+	public void flushAll() throws StorageException {
+		for(int i=0; i < allDAOs.length; i++) {
+			allDAOs[i].flush();
+		}
 	}
 }

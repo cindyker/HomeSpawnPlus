@@ -32,7 +32,7 @@ import com.avaje.ebean.validation.NotNull;
 			@UniqueConstraint(columnNames={"name"})
 		}
 )
-public class Player {
+public class Player implements EntityWithLocation {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;

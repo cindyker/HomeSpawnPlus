@@ -13,6 +13,7 @@ import org.morganm.homespawnplus.storage.StorageException;
  *
  */
 public interface HomeDAO {
+	public Home findHomeById(int id);
 	public Home findDefaultHome(String world, String playerName);
 	public Home findBedHome(String world, String playerName);
 	public Home findHomeByNameAndPlayer(String homeName, String playerName);

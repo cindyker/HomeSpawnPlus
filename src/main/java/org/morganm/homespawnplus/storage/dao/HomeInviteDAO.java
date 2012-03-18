@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.storage.StorageException;
 
 /**
  * @author morganm
@@ -44,5 +45,8 @@ public interface HomeInviteDAO {
 	 */
 	public Set<HomeInvite> findAllOpenInvites(String player);
 	
-	public void saveHomeInvite(HomeInvite homeInvite);
+	public Set<HomeInvite> findAllHomeInvites();
+	
+	public void saveHomeInvite(HomeInvite homeInvite) throws StorageException;
+	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException;
 }

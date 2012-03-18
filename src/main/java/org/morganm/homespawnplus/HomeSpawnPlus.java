@@ -12,6 +12,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
@@ -38,6 +39,10 @@ import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.util.CommandUsurper;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.JarUtils;
@@ -56,6 +61,13 @@ public class HomeSpawnPlus extends JavaPlugin {
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
+	static {
+		ConfigurationSerialization.registerClass(SerializableHome.class, "Home");
+		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
+		ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
+		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
+	}
+	
     // singleton instance - not declared final as the plugin can be reloaded,
 	// and the instance will change to the new plugin. This will always
 	// return the most recent plugin object that was loaded.
@@ -168,6 +180,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
 
     	getServer().getScheduler().cancelTasks(this);
+    	
+    	try {
+    		storage.flushAll();
+    	}
+    	catch(StorageException e) {
+    		log.log(Level.WARNING, logPrefix+" Caught exception: "+e.getMessage(), e);
+    	}
+    	
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is disabled");
     }
     

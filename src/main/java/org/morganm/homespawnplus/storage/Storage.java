@@ -26,7 +26,7 @@ public interface Storage {
 	 * responsibility to keep track of whether it has already initialized and deal with that
 	 * situation appropriately. 
 	 */
-	public void initializeStorage();
+	public void initializeStorage() throws StorageException;
 	
 	public HomeDAO getHomeDAO();
 	public HomeInviteDAO getHomeInviteDAO();
@@ -38,5 +38,21 @@ public interface Storage {
 	 */
 	public void purgeCache();
 	
-	public void deleteAllData();
+	public void deleteAllData() throws StorageException;
+	
+	/** Optional implementation: the backing store can use this to respond to applications
+	 * wish to defer writes, as often happens with bulk loading or perhaps if the application
+	 * wants to flush writes on a timed cycle. Storage backends are not required to do
+	 * anything at all with this, it is just a hint.
+	 * 
+	 * @param deferred
+	 */
+	public void setDeferredWrites(boolean deferred);
+	/** For use with setDeferredWrites() above, this method instructs the backend that now
+	 * is a good time to flush any pending writes to storage. Again, a completely optional
+	 * implementation for the storage system, so there is no guarantee calling this does
+	 * anything. This is just a hint to the back-end storage that now is a good time to
+	 * flush pending writes.
+	 */
+	public void flushAll() throws StorageException;
 }

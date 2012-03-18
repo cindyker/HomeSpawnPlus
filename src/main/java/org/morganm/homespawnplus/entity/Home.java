@@ -34,7 +34,7 @@ import com.avaje.ebean.validation.NotNull;
 			@UniqueConstraint(columnNames={"player_name","name"})
 		}
 )
-public class Home {
+public class Home implements EntityWithLocation {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -56,14 +56,14 @@ public class Home {
 	private String world;
     
     @NotNull
-    private double x;
+    private Double x;
     @NotNull
-    private double y;
+    private Double y;
     @NotNull
-    private double z;
+    private Double z;
     
-    private float pitch;
-	private float yaw;
+    private Float pitch;
+	private Float yaw;
 	
 	@NotNull
     @Column(name="bed_home")
@@ -114,16 +114,30 @@ public class Home {
     	return location;
     }
     
+    public boolean equals(Object o) {
+    	if( o == null )
+    		return false;
+    	if( !(o instanceof Home) )
+    		return false;
+    	if( o == this )			// java object equality check
+    		return true;
+    	
+    	if( ((Home) o).getId() == getId() )
+    		return true;
+    	else
+    		return false;
+    }
+    
     public String toString() {
     	return "{id="+id
     			+",name="+name
     			+",playerName="+playerName
     			+",world="+world
-    			+",x="+(int)x
-    			+",y="+(int)y
-    			+",z="+(int)z
-    			+",yaw="+(int)yaw
-    			+",pitch="+(int)pitch
+    			+",x="+x
+    			+",y="+y
+    			+",z="+z
+    			+",yaw="+yaw
+    			+",pitch="+pitch
     			+",bedHome="+bedHome
     			+",defaultHome="+defaultHome
     			+"}";
@@ -148,24 +162,24 @@ public class Home {
 		this.world = world;
 		location = null;
 	}
-	public double getX() {
+	public Double getX() {
 		return x;
 	}
-	public void setX(double x) {
+	public void setX(Double x) {
 		this.x = x;
 		location = null;
 	}
-	public double getY() {
+	public Double getY() {
 		return y;
 	}
-	public void setY(double y) {
+	public void setY(Double y) {
 		this.y = y;
 		location = null;
 	}
-	public double getZ() {
+	public Double getZ() {
 		return z;
 	}
-	public void setZ(double z) {
+	public void setZ(Double z) {
 		this.z = z;
 		location = null;
 	}
@@ -194,20 +208,20 @@ public class Home {
 		this.dateCreated = dateCreated;
 	}
 
-	public float getPitch() {
+	public Float getPitch() {
 		return pitch;
 	}
 
-	public void setPitch(float pitch) {
+	public void setPitch(Float pitch) {
 		this.pitch = pitch;
 		location = null;
 	}
 
-	public float getYaw() {
+	public Float getYaw() {
 		return yaw;
 	}
 
-	public void setYaw(float yaw) {
+	public void setYaw(Float yaw) {
 		this.yaw = yaw;
 		location = null;
 	}

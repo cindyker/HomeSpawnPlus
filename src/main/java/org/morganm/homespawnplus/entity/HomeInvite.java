@@ -17,7 +17,7 @@ import javax.persistence.Version;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotEmpty;
+import com.avaje.ebean.validation.NotNull;
 
 /**
  * @author morganm
@@ -26,7 +26,7 @@ import com.avaje.ebean.validation.NotEmpty;
 @Entity()
 @Table(name="hsp_homeinvite",
 	uniqueConstraints={
-			@UniqueConstraint(columnNames={"home", "invited_player"})
+			@UniqueConstraint(columnNames={"home_id", "invited_player"})
 		}
 )
 public class HomeInvite implements BasicEntity {
@@ -34,15 +34,22 @@ public class HomeInvite implements BasicEntity {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
 
+    @NotNull
     @OneToOne
-    @Column(name="home")
+    @Column(name="home_id")
     private Home home;
     
-    @NotEmpty
+    @NotNull
     @Length(max=32)
     @Column(name="invited_player")
     private String invitedPlayer;
 
+    /* If this invite is temporary, the expiration time is recorded here. If the
+     * invite is permanent, this will be null.
+     * 
+     */
+	private Timestamp expires;
+	
 	@Version
 	private Timestamp lastModified;
 	
@@ -87,5 +94,13 @@ public class HomeInvite implements BasicEntity {
 
 	public void setDateCreated(Timestamp dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	public Timestamp getExpires() {
+		return expires;
+	}
+
+	public void setExpires(Timestamp expires) {
+		this.expires = expires;
 	}
 }

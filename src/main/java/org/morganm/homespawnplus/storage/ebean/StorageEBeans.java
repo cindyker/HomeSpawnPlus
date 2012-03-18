@@ -286,7 +286,63 @@ public class StorageEBeans implements Storage {
 	}
 	
 	private void updateToVersion150(final EbeanServer db) {
+		log.info(logPrefix + " Upgrading from version 0.9.1 database to version 1.5.0");
 		
+		boolean success = false;
+		if( isSqlLite() ) {
+			EBeanUtils ebu = EBeanUtils.getInstance();
+			try {
+				Connection conn = ebu.getConnection();
+				Statement stmt = conn.createStatement();
+				stmt.execute("BEGIN TRANSACTION;");
+				stmt.execute("CREATE TABLE hsp_homeinvite ("
+						+"id integer primary key,"
+						+"home_id integer not null,"
+						+"invited_player varchar(32) not null,"
+						+"expires timestamp,"
+						+"last_modified timestamp not null,"
+						+"date_created timestamp not null,"
+						+"constraint uq_hsp_homeinvite_1 unique (home_id,invited_player),"
+						+"constraint fk_hsp_homeinvite_home_1 foreign key (home_id) references hsp_home (id)"
+						+");"
+						);
+				stmt.execute("CREATE INDEX ix_hsp_homeinvite_home_1 on hsp_homeinvite (home_id);");
+
+				stmt.execute("COMMIT;");
+				stmt.close();
+				conn.close();
+				
+				success = true;
+			}
+			catch(SQLException e) {
+				log.severe(logPrefix + " error attempting to update SQLite database schema!");
+				e.printStackTrace();
+			}
+		}
+		else {	// not SQLite
+			SqlUpdate update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_homeinvite` ("
+							+"`id` int(11) NOT NULL AUTO_INCREMENT,"
+							+"`home_id` int(11) NOT NULL,"
+							+"`invited_player` varchar(32) NOT NULL,"
+							+"`expires` datetime DEFAULT NULL,"
+							+"`last_modified` datetime NOT NULL,"
+							+"`date_created` datetime NOT NULL,"
+							+"PRIMARY KEY (`id`),"
+							+"UNIQUE KEY `uq_hsp_homeinvite_1` (`home_id`,`invited_player`),"
+							+"KEY `ix_hsp_homeinvite_home_1` (`home_id`),"
+							+"CONSTRAINT `fk_hsp_homeinvite_home_1` FOREIGN KEY (`home_id`) REFERENCES `hsp_home` (`id`)"
+							+")"
+					);
+			update.execute();
+			success = true;
+		}
+		
+		if( success ) {
+			SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=150");
+			update.execute();
+		}
+		log.info(logPrefix + " Upgrade from version 0.9.1 database to version 1.5.0 complete");
 	}
 
 	// Ebeans does nothing with these methods

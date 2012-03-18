@@ -28,7 +28,7 @@ public class StorageYaml implements Storage {
 	private VersionDAOYaml versionDAO;
 	private YamlDAOInterface[] allDAOs;
 
-	/** Called to write all entities into a single file.
+	/**
 	 * 
 	 * @param singleFile if true, the second param is taken to be a single filename that
 	 * all YAML data should be written to. If false, the second param is taken to be the

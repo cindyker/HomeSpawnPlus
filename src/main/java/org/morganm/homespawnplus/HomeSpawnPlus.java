@@ -26,6 +26,7 @@ import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.i18n.Colors;
@@ -346,6 +347,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(Spawn.class);
         classList.add(org.morganm.homespawnplus.entity.Player.class);
         classList.add(Version.class);
+        classList.add(HomeInvite.class);
         return classList;
     }
     

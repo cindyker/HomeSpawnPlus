@@ -22,14 +22,12 @@ implements SerializableYamlObject<Player>
 		super(player);
 	}
 	
-	public Player deserialize(Map<String, Object> map) {
-		super.deserialize(map);
+	public SerializablePlayer(Map<String, Object> map) {
+		super(map);
 		
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )
 			getObject().setName((String) o);
-		
-		return getObject();
 	}
 
 	@Override

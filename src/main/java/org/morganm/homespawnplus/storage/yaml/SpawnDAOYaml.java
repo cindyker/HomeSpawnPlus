@@ -4,11 +4,9 @@
 package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -22,13 +20,12 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> implements SpawnDAO {
 	private static final String CONFIG_SECTION = "spawns";
 	
-	public SpawnDAOYaml(final File file, final YamlConfiguration yaml) throws IOException, InvalidConfigurationException {
+	public SpawnDAOYaml(final File file, final YamlConfiguration yaml) {
 		super(CONFIG_SECTION);
 		this.yaml = yaml;
 		this.file = file;
-		load();
 	}
-	public SpawnDAOYaml(final File file) throws IOException, InvalidConfigurationException {
+	public SpawnDAOYaml(final File file) {
 		this(file, null);
 	}
 	

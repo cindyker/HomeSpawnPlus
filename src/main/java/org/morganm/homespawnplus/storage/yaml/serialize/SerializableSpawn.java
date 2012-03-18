@@ -17,15 +17,15 @@ public class SerializableSpawn extends AbstractSerializableEntityWithLocation<Sp
 implements SerializableYamlObject<Spawn>
 {
 	private final static String ATTR_NAME = "name";
-	private final static String ATTR_GROUP = "group";
+	private final static String ATTR_GROUP = "group_name";
 	private final static String ATTR_UPDATED_BY = "updatedBy";
 	
 	public SerializableSpawn(Spawn spawn) {
 		super(spawn);
 	}
 	
-	public Spawn deserialize(Map<String, Object> map) {
-		super.deserialize(map);
+	public SerializableSpawn(Map<String, Object> map) {
+		super(map);
 		
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )
@@ -36,8 +36,6 @@ implements SerializableYamlObject<Spawn>
 		o = map.get(ATTR_UPDATED_BY);
 		if( o instanceof String )
 			getObject().setUpdatedBy((String) o);
-		
-		return getObject();
 	}
 
 	@Override

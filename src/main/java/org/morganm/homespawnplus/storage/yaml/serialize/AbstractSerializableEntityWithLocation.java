@@ -22,36 +22,31 @@ public abstract class AbstractSerializableEntityWithLocation<T extends EntityWit
 	private final static String ATTR_PITCH = "pitch";
 	private final static String ATTR_YAW = "yaw";
 	
-	public AbstractSerializableEntityWithLocation() {
-		super();
-	}
 	public AbstractSerializableEntityWithLocation(T object) {
 		super(object);
 	}
 
-	public T deserialize(Map<String, Object> map) {
-		super.deserialize(map);
+	public AbstractSerializableEntityWithLocation(Map<String, Object> map) {
+		super(map);
 		
 		Object o = map.get(ATTR_WORLD);
 		if( o instanceof String )
-			object.setWorld((String) o);
+			getObject().setWorld((String) o);
 		o = map.get(ATTR_X);
 		if( o instanceof Double )
-			object.setX((Double) o);
+			getObject().setX((Double) o);
 		o = map.get(ATTR_Y);
 		if( o instanceof Double )
-			object.setY((Double) o);
+			getObject().setY((Double) o);
 		o = map.get(ATTR_Z);
 		if( o instanceof Double )
-			object.setZ((Double) o);
+			getObject().setZ((Double) o);
 		o = map.get(ATTR_PITCH);
 		if( o instanceof Double )
-			object.setPitch(((Double) o).floatValue());
+			getObject().setPitch(((Double) o).floatValue());
 		o = map.get(ATTR_YAW);
 		if( o instanceof Double )
-			object.setYaw(((Double) o).floatValue());
-		
-		return getObject();
+			getObject().setYaw(((Double) o).floatValue());
 	}
 
 	@Override

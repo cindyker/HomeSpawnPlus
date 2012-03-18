@@ -19,7 +19,7 @@ public class SerializableHome extends AbstractSerializableEntityWithLocation<Hom
 implements SerializableYamlObject<Home>
 {
 	private final static String ATTR_NAME = "name";
-	private final static String ATTR_PLAYER_NAME = "playerName";
+	private final static String ATTR_PLAYER_NAME = "player_name";
 	private final static String ATTR_UPDATED_BY = "updatedBy";
 	private final static String ATTR_DEFAULT_HOME = "defaultHome";
 	private final static String ATTR_BED_HOME = "bedHome";
@@ -28,8 +28,8 @@ implements SerializableYamlObject<Home>
 		super(home);
 	}
 	
-	public Home deserialize(Map<String, Object> map) {
-		super.deserialize(map);
+	public SerializableHome(Map<String, Object> map) {
+		super(map);
 		
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )
@@ -46,8 +46,6 @@ implements SerializableYamlObject<Home>
 		o = map.get(ATTR_DEFAULT_HOME);
 		if( o instanceof Boolean )
 			getObject().setDefaultHome((Boolean) o);
-		
-		return getObject();
 	}
 
 	@Override

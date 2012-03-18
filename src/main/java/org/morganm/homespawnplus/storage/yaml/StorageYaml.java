@@ -5,9 +5,11 @@ package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.Debug;
 
 /** Yaml storage back end.
  * 
@@ -15,7 +17,10 @@ import org.morganm.homespawnplus.storage.StorageException;
  *
  */
 public class StorageYaml implements Storage {
-	private HomeSpawnPlus plugin;
+	@SuppressWarnings("unused")
+	private final HomeSpawnPlus plugin;
+	private final Debug debug;
+	
 	// if multiple files are being used, this is the directory they are written to
 	private File dataDirectory;
 	// if all data is being written into a single file, this points to it
@@ -38,6 +43,7 @@ public class StorageYaml implements Storage {
 	 */
 	public StorageYaml(final HomeSpawnPlus plugin, final boolean singleFile, final File file) {
 		this.plugin = plugin;
+		this.debug = Debug.getInstance();
 		if( singleFile )
 			this.singleFile = file;
 		else
@@ -46,31 +52,47 @@ public class StorageYaml implements Storage {
 	
 	@Override
 	public void initializeStorage() throws StorageException {
-		try {
-			if( singleFile != null ) {
-				homeDAO = new HomeDAOYaml(singleFile);
-				homeInviteDAO = new HomeInviteDAOYaml(plugin, singleFile);
-				spawnDAO = new SpawnDAOYaml(singleFile);
-				playerDAO = new PlayerDAOYaml(singleFile);
-				versionDAO = new VersionDAOYaml(singleFile);
-			}
-			else {
-				File file = new File(dataDirectory, "homes.yml");
-				homeDAO = new HomeDAOYaml(file);
-				file = new File(dataDirectory, "homeInvites.yml");
-				homeInviteDAO = new HomeInviteDAOYaml(plugin, file);
-				file = new File(dataDirectory, "spawns.yml");
-				spawnDAO = new SpawnDAOYaml(file);
-				file = new File(dataDirectory, "players.yml");
-				playerDAO = new PlayerDAOYaml(file);
-				file = new File(dataDirectory, "version.yml");
-				versionDAO = new VersionDAOYaml(file);
-			}
-			
-			allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+		// yaml list to load after we're done creating objects
+		YamlDAOInterface[] yamlLoadQueue;
+		
+		if( singleFile != null ) {
+			YamlConfiguration yaml = new YamlConfiguration();
+			homeDAO = new HomeDAOYaml(singleFile, yaml);
+			homeInviteDAO = new HomeInviteDAOYaml(singleFile, yaml);
+			spawnDAO = new SpawnDAOYaml(singleFile, yaml);
+			playerDAO = new PlayerDAOYaml(singleFile, yaml);
+			versionDAO = new VersionDAOYaml(singleFile, yaml);
+
+			// only need one load because all DAOs are using the same YamlConfiguration object
+			yamlLoadQueue = new YamlDAOInterface[] { homeDAO };
 		}
-		catch(Exception e) {
-			throw new StorageException(e);
+		else {
+			File file = new File(dataDirectory, "homes.yml");
+			homeDAO = new HomeDAOYaml(file);
+			file = new File(dataDirectory, "homeInvites.yml");
+			homeInviteDAO = new HomeInviteDAOYaml(file);
+			file = new File(dataDirectory, "spawns.yml");
+			spawnDAO = new SpawnDAOYaml(file);
+			file = new File(dataDirectory, "players.yml");
+			playerDAO = new PlayerDAOYaml(file);
+			file = new File(dataDirectory, "version.yml");
+			versionDAO = new VersionDAOYaml(file);
+
+			yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+			
+		}
+		
+		allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+		
+		// now load the YAML data into memory so it's ready to go when we need it
+		for(int i=0; i < yamlLoadQueue.length; i++) {
+			try {
+				debug.devDebug("calling load on YAML DAO object ",yamlLoadQueue[i]);
+				yamlLoadQueue[i].load();
+			}
+			catch(Exception e) {
+				throw new StorageException(e);
+			}
 		}
 	}
 	
@@ -110,6 +132,7 @@ public class StorageYaml implements Storage {
 	@Override
 	public void flushAll() throws StorageException {
 		for(int i=0; i < allDAOs.length; i++) {
+			debug.debug("Flushing DAO ",allDAOs[i]);
 			allDAOs[i].flush();
 		}
 	}

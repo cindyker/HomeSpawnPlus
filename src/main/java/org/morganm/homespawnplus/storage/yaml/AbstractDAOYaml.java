@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.entity.BasicEntity;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableYamlObject;
+import org.morganm.homespawnplus.util.Debug;
 
 /** Utilities/routines common to YAML DAOs.
  * 
@@ -24,6 +25,7 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializableYamlObject;
 public abstract class AbstractDAOYaml<T extends BasicEntity, U extends SerializableYamlObject<T>>
 implements YamlDAOInterface
 {
+	protected final Debug debug;
 	protected final String configBase;
 	protected YamlConfiguration yaml;
 	protected File file;
@@ -33,6 +35,7 @@ implements YamlDAOInterface
 	
 	protected AbstractDAOYaml(final String configBase) {
 		this.configBase = configBase;
+		debug = Debug.getInstance();
 	}
 
 	// while we don't do advanced caching here (that can be implemented elsewhere), we
@@ -42,7 +45,8 @@ implements YamlDAOInterface
 	private Set<T> allObjects;
 	
 	public void load() throws IOException, InvalidConfigurationException {
-		this.yaml = new YamlConfiguration();
+		if( yaml == null )
+			this.yaml = new YamlConfiguration();
 		if( file.exists() )
 			yaml.load(file);
 	}
@@ -76,23 +80,35 @@ implements YamlDAOInterface
 	protected abstract U newSerializable(T object);
 
 	protected Set<T> findAllObjects() {
+		debug.devDebug("findAllObjects() invoked for object ", this);
 		// if the cache is still valid, just return that
-		if( !cacheInvalid )
+		if( !cacheInvalid ) {
+			debug.devDebug("findAllObjects() cache is valid, returning cache");
 			return allObjects;
+		}
 		
-		if( allObjects == null )
+		if( allObjects == null ) {
+			debug.devDebug("findAllObjects() allObjects is null, initializing variable");
 			allObjects = new HashSet<T>(100);
-		if( cacheInvalid )
+		}
+		if( cacheInvalid ) {
+			debug.devDebug("findAllObjects() cache flagged as invalid, clearing cache");
 			allObjects.clear();
+		}
 		
 		ConfigurationSection section = yaml.getConfigurationSection(configBase);
-		Set<String> keys = section.getKeys(false);
-		
-		for(String key : keys) {
-			@SuppressWarnings("unchecked")
-			U object = (U) yaml.get(configBase+"."+key);
-			allObjects.add(object.getObject());
+		if( section != null ) {
+			Set<String> keys = section.getKeys(false);
+			debug.devDebug("findAllObjects() config section ",configBase," found, loading elements. keys=",keys);
+			
+			for(String key : keys) {
+				debug.devDebug("findAllObjects() loading key ",key);
+				@SuppressWarnings("unchecked")
+				U object = (U) yaml.get(configBase+"."+key);
+				allObjects.add(object.getObject());
+			}
 		}
+		debug.devDebug("findAllObjects() finished loading ",allObjects.size()," elements");
 			
 		cacheInvalid = false;
 		return allObjects;
@@ -103,7 +119,9 @@ implements YamlDAOInterface
 			object.setId(getNextId());
 		object.setLastModified(new Timestamp(System.currentTimeMillis()));
 
-		yaml.set(configBase+"."+object.getId(), newSerializable(object));
+		final String node = configBase+"."+object.getId();
+		debug.devDebug("YAML: saveObject called on ",object,", writing to node ",node);
+		yaml.set(node, newSerializable(object));
 		if( !deferredWrite ) {
 			try {
 				save();

@@ -26,13 +26,12 @@ public abstract class AbstractSerializableBasicEntity<T extends BasicEntity> imp
 	public T getObject() { return object; }
 	protected void setObject(T object) { this.object = object; } 
 	
-	public AbstractSerializableBasicEntity() {}
 	public AbstractSerializableBasicEntity(T object) {
 		setObject(object);
 	}
 
-	public T deserialize(Map<String, Object> map) {
-		T object = newEntity();
+	public AbstractSerializableBasicEntity(Map<String, Object> map) {
+		setObject(newEntity());
 		
 		Object o = map.get(ATTR_ID);
 		if( o instanceof Integer )
@@ -43,8 +42,6 @@ public abstract class AbstractSerializableBasicEntity<T extends BasicEntity> imp
 		o = map.get(ATTR_DATE_CREATED);
 		if( o instanceof Long )
 			object.setDateCreated(new Timestamp((Long) o));
-		
-		return getObject();
 	}
 
 	@Override

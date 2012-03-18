@@ -83,6 +83,36 @@ public class HSP extends BaseCommand {
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
 //			util.sendMessage(p, "Data cache purged and reloaded");
 		}
+		else if( args[0].startsWith("test") ) {
+			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
+			p.sendMessage("Found home with id "+home.getId());
+			org.morganm.homespawnplus.entity.Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnById(1);
+			p.sendMessage("Found spawn with id "+spawn.getId());
+			try {
+				Float yaw = Float.valueOf(new Random(System.currentTimeMillis()).nextInt(360));
+				File file = new File("plugins/HomeSpawnPlus/data.yml");
+				
+				HomeDAOYaml homeDAO = new HomeDAOYaml(file);
+				homeDAO.load();
+				home.setYaw(yaw);
+				homeDAO.saveHome(home);
+				
+				home = homeDAO.findDefaultHome("world", "morganm");
+				p.sendMessage("YML: Found home with yaw "+home.getYaw());
+
+				SpawnDAOYaml spawnDAO = new SpawnDAOYaml(file);
+				spawnDAO.load();
+				spawn.setYaw(yaw);
+				spawnDAO.saveSpawn(spawn);
+				
+				spawn = spawnDAO.findSpawnById(1);
+				p.sendMessage("YML: Found spawn with yaw "+spawn.getYaw());
+			}
+			catch(Exception e) {
+				p.sendMessage("Caught exception: "+e.getMessage());
+				e.printStackTrace();
+			}
+		}
 		else if( args[0].startsWith("backup") ) {
 			Storage storage = plugin.getStorage();
 
@@ -96,15 +126,19 @@ public class HSP extends BaseCommand {
 
 				backupStorage.setDeferredWrites(true);
 				for(org.morganm.homespawnplus.entity.Home o : storage.getHomeDAO().findAllHomes()) {
+					debug.devDebug("backing up Home object id ",o.getId());
 					backupStorage.getHomeDAO().saveHome(o);
 				}
 				for(org.morganm.homespawnplus.entity.Spawn o : storage.getSpawnDAO().findAllSpawns()) {
+					debug.devDebug("backing up Spawn object id ",o.getId());
 					backupStorage.getSpawnDAO().saveSpawn(o);
 				}
 				for(org.morganm.homespawnplus.entity.Player o : storage.getPlayerDAO().findAllPlayers()) {
+					debug.devDebug("backing up Player object id ",o.getId());
 					backupStorage.getPlayerDAO().savePlayer(o);
 				}
 				for(org.morganm.homespawnplus.entity.HomeInvite o : storage.getHomeInviteDAO().findAllHomeInvites()) {
+					debug.devDebug("backing up HomeInvite object id ",o.getId());
 					backupStorage.getHomeInviteDAO().saveHomeInvite(o);
 				}
 
@@ -119,36 +153,9 @@ public class HSP extends BaseCommand {
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
 			}
 		}
-		else if( args[0].startsWith("test") ) {
-			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
-			p.sendMessage("Found home with id "+home.getId());
-			org.morganm.homespawnplus.entity.Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnById(1);
-			p.sendMessage("Found spawn with id "+spawn.getId());
-			try {
-				Float yaw = Float.valueOf(new Random(System.currentTimeMillis()).nextInt(360));
-				File file = new File("plugins/HomeSpawnPlus/data.yml");
-				
-				HomeDAOYaml homeDAO = new HomeDAOYaml(file);
-				home.setYaw(yaw);
-				homeDAO.saveHome(home);
-				
-				home = homeDAO.findDefaultHome("world", "morganm");
-				p.sendMessage("YML: Found home with yaw "+home.getYaw());
-
-				SpawnDAOYaml spawnDAO = new SpawnDAOYaml(file);
-				spawn.setYaw(yaw);
-				spawnDAO.saveSpawn(spawn);
-				
-				spawn = spawnDAO.findSpawnById(1);
-				p.sendMessage("YML: Found spawn with yaw "+spawn.getYaw());
-			}
-			catch(Exception e) {
-				p.sendMessage("Caught exception: "+e.getMessage());
-				e.printStackTrace();
-			}
-		}
 		else if( args[0].startsWith("restore") ) {
-			if( args.length < 2 || !"OVERWRITE".equals(args[1]) ) {
+			if( args.length < 2 || (!"OVERWRITE".equals(args[1])
+					&& !("me".equals(args[1]) && p instanceof ConsoleCommandSender)) ) {	// testing shortcut
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
 //				util.sendMessage(p, "In order to start restore you must send the command \"/hsp restore OVERWRITE\"");
 //				util.sendMessage(p, "THIS WILL OVERWRITE EXISTING DATA and restore data from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
@@ -165,21 +172,25 @@ public class HSP extends BaseCommand {
 						
 						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
 						for(org.morganm.homespawnplus.entity.Home home : homes) {
+							debug.devDebug("Restoring home ",home);
 							home.setLastModified(null);
 							storage.getHomeDAO().saveHome(home);
 						}
 						Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getSpawnDAO().findAllSpawns();
 						for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
+							debug.devDebug("Restoring spawn ",spawn);
 							spawn.setLastModified(null);
 							storage.getSpawnDAO().saveSpawn(spawn);
 						}
 						Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getPlayerDAO().findAllPlayers();
 						for(org.morganm.homespawnplus.entity.Player player : players) {
+							debug.devDebug("Restoring player ",player);
 							player.setLastModified(null);
 							storage.getPlayerDAO().savePlayer(player);
 						}
 						Set<org.morganm.homespawnplus.entity.HomeInvite> homeInvites = backupStorage.getHomeInviteDAO().findAllHomeInvites();
 						for(org.morganm.homespawnplus.entity.HomeInvite homeInvite : homeInvites) {
+							debug.devDebug("Restoring homeInvite ",homeInvite);
 							homeInvite.setLastModified(null);
 							storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
 						}

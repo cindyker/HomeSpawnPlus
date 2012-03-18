@@ -24,12 +24,11 @@ public class VersionDAOYaml implements VersionDAO, YamlDAOInterface {
 	private File file;
 	private Version version;
 	
-	public VersionDAOYaml(final File file, final YamlConfiguration yaml) throws IOException, InvalidConfigurationException {
+	public VersionDAOYaml(final File file, final YamlConfiguration yaml) {
 		this.yaml = yaml;
 		this.file = file;
-		load();
 	}
-	public VersionDAOYaml(final File file) throws IOException, InvalidConfigurationException {
+	public VersionDAOYaml(final File file) {
 		this(file, null);
 	}
 	

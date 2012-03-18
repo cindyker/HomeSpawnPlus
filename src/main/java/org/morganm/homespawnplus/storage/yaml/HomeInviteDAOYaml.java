@@ -4,13 +4,10 @@
 package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -24,17 +21,13 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
 public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableHomeInvite> implements HomeInviteDAO {
 	private static final String CONFIG_SECTION = "homeInvites";
 	
-	private final HomeSpawnPlus plugin;
-	
-	public HomeInviteDAOYaml(final HomeSpawnPlus plugin, final File file, final YamlConfiguration yaml) throws IOException, InvalidConfigurationException {
+	public HomeInviteDAOYaml(final File file, final YamlConfiguration yaml) {
 		super(CONFIG_SECTION);
-		this.plugin = plugin;
 		this.yaml = yaml;
 		this.file = file;
-		load();
 	}
-	public HomeInviteDAOYaml(final HomeSpawnPlus plugin, final File file) throws IOException, InvalidConfigurationException {
-		this(plugin, file, null);
+	public HomeInviteDAOYaml(final File file) {
+		this(file, null);
 	}
 	
 	@Override
@@ -115,6 +108,6 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
 	}
 	@Override
 	protected SerializableHomeInvite newSerializable(HomeInvite object) {
-		return new SerializableHomeInvite(plugin);
+		return new SerializableHomeInvite(object);
 	}
 }

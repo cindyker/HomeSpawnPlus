@@ -107,6 +107,9 @@ public class StorageEBeans implements Storage {
 		update = db.createSqlUpdate("delete from hsp_player");
 		update.execute();
 		
+		update = db.createSqlUpdate("delete from hsp_homeinvite");
+		update.execute();
+
 		db.commitTransaction();
 	}
 	

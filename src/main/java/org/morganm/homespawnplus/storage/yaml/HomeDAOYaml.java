@@ -116,10 +116,13 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName) {
 		Set<Home> homes = new HashSet<Home>(4);
 		
+		if( world == null || "all".equals(world) || "*".equals(world) )
+			world = null;
+		
 		Set<Home> allHomes = findAllHomes();
 		if( allHomes != null && allHomes.size() > 0 ) {
 			for(Home h: allHomes) {
-				if( playerName.equals(h.getPlayerName()) && world.equals(h.getWorld()) ) {
+				if( playerName.equals(h.getPlayerName()) && (world == null || world.equals(h.getWorld())) ) {
 					homes.add(h);
 				}
 			}

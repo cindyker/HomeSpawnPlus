@@ -18,6 +18,9 @@ public class HomeListOther extends BaseCommand {
 	private HomeList homeListCommand;
 
 	@Override
+	public String[] getCommandAliases() { return new String[] {"hlo"}; }
+
+	@Override
 	public org.morganm.homespawnplus.command.Command setPlugin(HomeSpawnPlus plugin) {
 		homeListCommand = new HomeList();
 		homeListCommand.setPlugin(plugin);

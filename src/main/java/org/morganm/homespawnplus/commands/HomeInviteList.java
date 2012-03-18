@@ -22,6 +22,9 @@ public class HomeInviteList extends BaseCommand {
 	
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
+		if( !defaultCommandChecks(p) )
+			return true;
+
 		HomeInviteDAO dao = plugin.getStorage().getHomeInviteDAO();
 		
 		Set<HomeInvite> invites = dao.findAllOpenInvites(p.getName());

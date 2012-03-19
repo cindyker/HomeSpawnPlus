@@ -35,7 +35,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 	@Override
 	public HomeInvite findHomeInviteById(int id) {
 		String q = "find homeInvite where id = :id";
-		
+
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("id", id);
 		

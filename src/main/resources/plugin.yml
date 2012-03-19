@@ -54,7 +54,13 @@ commands:
     aliases: [hid]
     description: Delete an invite you created
     usage: |
-           /<command> inviteNumber - delete inviteNumber, you can see invite numbers from /hil
+           /<command> inviteNumber - delete invite #, you can see invite #s from /hil
+  homeinviteteleport:
+    aliases: [hit,hitp,homeinvitetp]
+    description: Teleport to a home you have been invited to
+    usage: |
+           /<command> inviteNumber - teleport to an invite #, you can see invite #s from /hil
+           /<command> player name - teleport to an invite, using player and home name to specify
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)

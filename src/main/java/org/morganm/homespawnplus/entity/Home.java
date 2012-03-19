@@ -107,8 +107,8 @@ public class Home implements EntityWithLocation {
     
     public Location getLocation() {
     	if( location == null ) {
-	    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(world);
-	    	location = new Location(w, x, y, z, yaw, pitch);
+	    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(getWorld());
+	    	location = new Location(w, getX(), getY(), getZ(), getYaw(), getPitch());
     	}
     	
     	return location;
@@ -129,17 +129,17 @@ public class Home implements EntityWithLocation {
     }
     
     public String toString() {
-    	return "{id="+id
-    			+",name="+name
-    			+",playerName="+playerName
-    			+",world="+world
-    			+",x="+x
-    			+",y="+y
-    			+",z="+z
-    			+",yaw="+yaw
-    			+",pitch="+pitch
-    			+",bedHome="+bedHome
-    			+",defaultHome="+defaultHome
+    	return "{id="+getId()
+    			+",name="+getName()
+    			+",playerName="+getPlayerName()
+    			+",world="+getWorld()
+    			+",x="+getX()
+    			+",y="+getY()
+    			+",z="+getZ()
+    			+",yaw="+getYaw()
+    			+",pitch="+getPitch()
+    			+",bedHome="+isBedHome()
+    			+",defaultHome="+isDefaultHome()
     			+"}";
     }
     

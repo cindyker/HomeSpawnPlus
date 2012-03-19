@@ -40,8 +40,11 @@ public class HomeInviteList extends BaseCommand {
 				String homeName = invite.getHome().getName();
 				util.sendMessage(p, "(id "+invite.getId()+") -> Invite for home "+homeName
 						+" to player "+invite.getInvitedPlayer()
-						+" [expires: "+General.getInstance().displayTimeString(
-								invite.getExpires().getTime()-System.currentTimeMillis(), false, true)+"]"
+						+" [expires: "+(invite.getExpires() != null ?
+								General.getInstance().displayTimeString(
+										invite.getExpires().getTime()-System.currentTimeMillis(), false, true) :
+								"never")
+						+"]"
 						);
 			}
 		}
@@ -56,10 +59,13 @@ public class HomeInviteList extends BaseCommand {
 					continue;
 				String homeName = invite.getHome().getName();
 				String playerName = invite.getHome().getPlayerName();
-				util.sendMessage(p, "-> Invite to home "+homeName
+				util.sendMessage(p, "(id "+invite.getId()+") -> Invite to home "+homeName
 						+" from player "+playerName
-						+" [expires: "+General.getInstance().displayTimeString(
-								invite.getExpires().getTime()-System.currentTimeMillis(), false, true)+"]"
+						+" [expires: "+(invite.getExpires() != null ?
+								General.getInstance().displayTimeString(
+										invite.getExpires().getTime()-System.currentTimeMillis(), false, true) :
+								"never")
+						+"]"
 						);
 //				util.sendMessage(p, "-> Player "+playerName+" has an open invite to you for their home named "+homeName);
 			}

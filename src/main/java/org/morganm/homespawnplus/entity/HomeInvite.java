@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.entity;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,7 +37,7 @@ public class HomeInvite implements BasicEntity {
     private int id;
 
     @NotNull
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     @Column(name="home_id")
     private Home home;
     

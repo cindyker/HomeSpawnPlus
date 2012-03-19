@@ -83,7 +83,9 @@ public class HomeInviteTeleport extends BaseCommand {
 				homeInvite = null;
 			
 			// check for expiry of the invite
-			Date expires = homeInvite.getExpires();
+			Date expires = null;
+			if( homeInvite != null )
+				expires = homeInvite.getExpires();
 			if( expires != null && expires.compareTo(new Date()) < 0 ) {
 				// it's expired, so delete it. we ignore any error here since it doesn't
 				// affect the outcome of the rest of the command.
@@ -98,8 +100,12 @@ public class HomeInviteTeleport extends BaseCommand {
 			}
 			
 			// if homeInvite is still non-null at this point, then we're allowed to use it
-			if( homeInvite != null )
+			if( homeInvite != null ) {
+				// BUG: EBEAN cascading is not working, the @OneToOne entity attached
+				// to homeInvite has the id set, but not the attributes.
+				debug.devDebug("HomeInviteTeleport: home=",homeInvite.getHome());
 				l = homeInvite.getHome().getLocation();
+			}
 		}
 		
 		

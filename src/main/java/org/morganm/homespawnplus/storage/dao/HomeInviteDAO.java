@@ -14,6 +14,13 @@ import org.morganm.homespawnplus.storage.StorageException;
  *
  */
 public interface HomeInviteDAO {
+	/** Given the primary id, find the HomeInvite object.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public HomeInvite findHomeInviteById(int id);
+	
 	/** Given a specific home and a specific invitee, find the HomeInvite
 	 * object. This will return null if no such relationship exists.
 	 * 

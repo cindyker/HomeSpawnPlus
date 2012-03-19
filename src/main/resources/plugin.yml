@@ -41,6 +41,20 @@ commands:
     usage: |
            /<command> player - show homes for player on all worlds
            /<command> player world - show homes for player on 'world'
+  homeinvite:
+    aliases: [hi]
+    description: Invite someone to one of your homes
+    usage: |
+           /<command> homeName player - permanently invite player to your home named 'homeName'
+           /<command> homeName player time - same as above but with expire time, for example '1d 4h'
+  homeinvitelist:
+    aliases: [hil]
+    description: List available home invites, yours and others to you
+  homeinvitedelete:
+    aliases: [hid]
+    description: Delete an invite you created
+    usage: |
+           /<command> inviteNumber - delete inviteNumber, you can see invite numbers from /hil
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)

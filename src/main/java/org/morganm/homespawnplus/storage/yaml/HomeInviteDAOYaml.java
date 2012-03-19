@@ -31,6 +31,23 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
 	}
 	
 	@Override
+	public HomeInvite findHomeInviteById(int id) {
+		HomeInvite homeInvite = null;
+		
+		Set<HomeInvite> homeInvites = findAllObjects();
+		if( homeInvites != null && homeInvites.size() > 0 ) {
+			for(HomeInvite h: homeInvites) {
+				if( id == h.getId() ) {
+					homeInvite = h;
+					break;
+				}
+			}
+		}
+		
+		return homeInvite;
+	}
+	
+	@Override
 	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
 		HomeInvite homeInvite = null;
 		

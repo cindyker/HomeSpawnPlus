@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.entity;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +49,7 @@ public class HomeInvite implements BasicEntity {
      * invite is permanent, this will be null.
      * 
      */
-	private Timestamp expires;
+	private Date expires;
 	
 	@Version
 	private Timestamp lastModified;
@@ -96,11 +97,11 @@ public class HomeInvite implements BasicEntity {
 		this.dateCreated = dateCreated;
 	}
 
-	public Timestamp getExpires() {
+	public Date getExpires() {
 		return expires;
 	}
 
-	public void setExpires(Timestamp expires) {
+	public void setExpires(Date expires) {
 		this.expires = expires;
 	}
 }

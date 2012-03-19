@@ -99,4 +99,5 @@ public enum HSPMessages {
 	
 	// v1.5
 	GENERIC_ERROR,
+	NO_HOME_INVITE_FOUND,
 }

@@ -188,15 +188,18 @@ cooldown:
   spawn-named: 0
  
   groupspawn: 60
+
+  homeinvitetp: 60
  
   # any cooldowns listed here will be on separate timers per
   # command argument. for example if "home-named" is listed,
   # then typing "/home home1" would start home1's cooldown,
   # and "/home home2" will be on a separate cooldown.
-#  cooldownSeparation: 
+#  separation: 
 #  - home-named
 #  - spawn-named
 #  - sethome-named
+#  - homeinvitetp
   
 #  example of world-specific cooldowns
 #  world:

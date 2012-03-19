@@ -214,62 +214,98 @@ public final class General {
      * that time format.
      * 
      * @param millis
+     * @param useShortHand set to true to use shorthand notation. shorthand will return a string
+     * of the form "4d3h2m" whereas this set to false would return "4 days 3 hours 2 minutes"
+     * @param mostSignificantOnly if true, only the most significant time is returned. For example,
+     * when false this might return "4 days 3 hours 2 minutes", when true it would return "4 days"
      * @return
      * @throws NumberFormatException
      */
-    public String displayTimeString(long millis) throws NumberFormatException {
+    public String displayTimeString(long millis, boolean useShortHand, boolean mostSignificantOnly) throws NumberFormatException {
     	final StringBuffer sb = new StringBuffer();
     	millis /= 1000;		// chop down to seconds
     	
     	long remainder = millis % (86400 * 7);
     	if( remainder > 0 ) {
     		sb.append(remainder);
-    		sb.append("week");
-    		if( remainder > 1 )
-        		sb.append("s");
+    		if( useShortHand )
+    			sb.append("w");
+    		else {
+	    		sb.append(" week");
+	    		if( remainder > 1 )
+	        		sb.append("s");
+    		}
     	}
     	millis -= remainder * (86400 * 7);
     	
+    	if( mostSignificantOnly && sb.length() > 0 )
+    		return sb.toString();
+    	
     	remainder = millis % 86400;
     	if( remainder > 0 ) {
-    		if( sb.length() > 0 )
+    		if( !useShortHand && sb.length() > 0 )
     			sb.append(" ");
     		sb.append(remainder);
-    		sb.append("day");
-    		if( remainder > 1 )
-        		sb.append("s");
+    		if( useShortHand )
+    			sb.append("d");
+    		else {
+	    		sb.append(" day");
+	    		if( remainder > 1 )
+	        		sb.append("s");
+    		}
     	}
     	millis -= remainder * 86400;
     	
+    	if( mostSignificantOnly && sb.length() > 0 )
+    		return sb.toString();
+    	
     	remainder = millis % 3600;
     	if( remainder > 0 ) {
-    		if( sb.length() > 0 )
+    		if( !useShortHand && sb.length() > 0 )
     			sb.append(" ");
     		sb.append(remainder);
-    		sb.append("hour");
-    		if( remainder > 1 )
-        		sb.append("s");
+    		if( useShortHand )
+    			sb.append("h");
+    		else {
+	    		sb.append(" hour");
+	    		if( remainder > 1 )
+	        		sb.append("s");
+    		}
     	}    	
     	millis -= remainder * 3600;
     	
+    	if( mostSignificantOnly && sb.length() > 0 )
+    		return sb.toString();
+    	
     	remainder = millis % 60;
     	if( remainder > 0 ) {
-    		if( sb.length() > 0 )
+    		if( !useShortHand && sb.length() > 0 )
     			sb.append(" ");
     		sb.append(remainder);
-    		sb.append("minute");
-    		if( remainder > 1 )
-        		sb.append("s");
+    		if( useShortHand )
+    			sb.append("m");
+    		else {
+	    		sb.append(" minute");
+	    		if( remainder > 1 )
+	        		sb.append("s");
+    		}
     	}    	
     	millis -= remainder * 60;
     	
+    	if( mostSignificantOnly && sb.length() > 0 )
+    		return sb.toString();
+    	
     	if( remainder > 0 ) {
-    		if( sb.length() > 0 )
+    		if( !useShortHand && sb.length() > 0 )
     			sb.append(" ");
     		sb.append(remainder);
-    		sb.append("second");
-    		if( remainder > 1 )
-        		sb.append("s");
+    		if( useShortHand )
+    			sb.append("s");
+    		else {
+	    		sb.append(" second");
+	    		if( remainder > 1 )
+	        		sb.append("s");
+    		}
     	}
     	
     	return sb.toString();

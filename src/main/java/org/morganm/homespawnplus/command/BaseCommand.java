@@ -146,8 +146,15 @@ public abstract class BaseCommand implements Command {
 				
 				if( response.transactionSuccess() ) {
 					if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
+						// had an error report that might have been related to a null value
+						// being returned from economy.format(price), so let's check for that
+						// and protect against any error.
+						String priceString = economy.format(price);
+						if( priceString == null )
+							priceString = ""+price;
+						
 						util.sendLocalizedMessage(p, HSPMessages.COST_CHARGED,
-								"price", economy.format(price),
+								"price", priceString,
 								"command", getCommandName());
 //						util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
 					}

@@ -27,8 +27,7 @@ public class HomeOther extends BaseCommand {
 			return true;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+			return false;
 		}
 		
 		final String playerName = args[0];

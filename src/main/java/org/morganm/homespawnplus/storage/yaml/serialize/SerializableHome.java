@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.storage.yaml.StorageYaml;
+import org.morganm.homespawnplus.util.Debug;
 
 /** Class which maps Home entity to YAML using Bukkit's ConfigurationSerializable
  * interface.
@@ -31,6 +33,8 @@ implements SerializableYamlObject<Home>
 	public SerializableHome(Map<String, Object> map) {
 		super(map);
 		
+		Debug.getInstance().devDebug("SerializeHome constructor, map=",map);
+		
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )
 			getObject().setName((String) o);
@@ -46,6 +50,12 @@ implements SerializableYamlObject<Home>
 		o = map.get(ATTR_DEFAULT_HOME);
 		if( o instanceof Boolean )
 			getObject().setDefaultHome((Boolean) o);
+		
+		// tell the currently loading StorageYaml that this object has been
+		// loaded. @see org.morganm.homespawnplus.storage.yaml.HomeDAYYaml.temporaryAllObjects
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			StorageYaml.getCurrentlyInitializingInstance().objectLoaded(getObject());
+		}
 	}
 
 	@Override

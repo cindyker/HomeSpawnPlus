@@ -32,8 +32,7 @@ public class SpawnDelete extends BaseCommand {
 		org.morganm.homespawnplus.entity.Spawn spawn = null;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+			return false;
 		}
 		
 		SpawnDAO dao = plugin.getStorage().getSpawnDAO();

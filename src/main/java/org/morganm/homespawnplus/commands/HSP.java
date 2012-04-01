@@ -51,7 +51,8 @@ public class HSP extends BaseCommand {
 			return false;
 		
 		if( args.length < 1 ) {
-			printUsage(p, command);
+			return false;
+//			printUsage(p, command);
 		}
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
@@ -83,7 +84,7 @@ public class HSP extends BaseCommand {
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
 //			util.sendMessage(p, "Data cache purged and reloaded");
 		}
-		else if( args[0].startsWith("test") ) {
+		else if( args[0].equals("test") ) {
 			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
 			p.sendMessage("Found home with id "+home.getId());
 			org.morganm.homespawnplus.entity.Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnById(1);
@@ -112,6 +113,10 @@ public class HSP extends BaseCommand {
 				p.sendMessage("Caught exception: "+e.getMessage());
 				e.printStackTrace();
 			}
+		}
+		else if( args[0].equals("test2") ) {
+			Set<org.morganm.homespawnplus.entity.Home> allHomes = plugin.getStorage().getHomeDAO().findAllHomes();
+			p.sendMessage("allHomes.size="+allHomes.size());
 		}
 		else if( args[0].startsWith("backup") ) {
 			Storage storage = plugin.getStorage();
@@ -216,20 +221,21 @@ public class HSP extends BaseCommand {
 			}
 		}
 		else {
-			printUsage(p, command);
+			return false;
+//			printUsage(p, command);
 		}
 
 		return true;
 	}
 	
-	private void printUsage(CommandSender p, Command command) {
-		util.sendMessage(p, command.getUsage());
-		
-//		util.sendMessage(p, "Usage:");
-//		util.sendMessage(p, "/"+getCommandName()+" reloadconfig - reload config files");
-//		util.sendMessage(p, "/"+getCommandName()+" reloaddata - force reloading of plugin data from database");
-//		util.sendMessage(p, "/"+getCommandName()+" backup - backup database to a file");
-//		util.sendMessage(p, "/"+getCommandName()+" restore - restore database from a file");
-	}
+//	private void printUsage(CommandSender p, Command command) {
+//		util.sendMessage(p, command.getUsage());
+//		
+////		util.sendMessage(p, "Usage:");
+////		util.sendMessage(p, "/"+getCommandName()+" reloadconfig - reload config files");
+////		util.sendMessage(p, "/"+getCommandName()+" reloaddata - force reloading of plugin data from database");
+////		util.sendMessage(p, "/"+getCommandName()+" backup - backup database to a file");
+////		util.sendMessage(p, "/"+getCommandName()+" restore - restore database from a file");
+//	}
 
 }

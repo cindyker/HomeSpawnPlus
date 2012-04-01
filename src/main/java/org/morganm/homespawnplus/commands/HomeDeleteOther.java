@@ -29,8 +29,8 @@ public class HomeDeleteOther extends BaseCommand {
 			return false;
 
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+//			util.sendMessage(p, command.getUsage());
+			return false;
 		}
 		
 		final String playerName = args[0];

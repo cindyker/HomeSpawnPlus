@@ -46,8 +46,7 @@ public class HomeListOther extends BaseCommand {
 		String world = "all";
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+			return false;
 		}
 		
 		player = args[0];

@@ -151,7 +151,8 @@ public class CommandProcessor
 		List<Command> cmds = new ArrayList<Command>();
 
 		ClassLoader loader = plugin.getClassLoader();
-		InputStream is = loader.getResourceAsStream("META-INF/commandlist");
+//		InputStream is = loader.getResourceAsStream("META-INF/commandlist");
+		InputStream is = plugin.getResource("META-INF/commandlist");
 		
 		if( is == null )
 			throw new NullPointerException("Could not get commandlist resource");

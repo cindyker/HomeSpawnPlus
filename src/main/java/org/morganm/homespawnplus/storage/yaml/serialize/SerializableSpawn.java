@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.util.Debug;
 
 /**
  * @author morganm
@@ -27,6 +28,8 @@ implements SerializableYamlObject<Spawn>
 	public SerializableSpawn(Map<String, Object> map) {
 		super(map);
 		
+		Debug.getInstance().devDebug("SerializeSpawn constructor, map=",map);
+
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )
 			getObject().setName((String) o);

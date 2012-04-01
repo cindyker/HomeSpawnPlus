@@ -27,12 +27,7 @@ public class SetHomeOther extends BaseCommand {
 			return true;
 		
 		if(args.length < 1) {
-			util.sendMessage(p, command.getUsage());
-//			util.sendMessage(p, "Usage:");
-//			util.sendMessage(p, "  /sethomeother <player> : set <player>'s default home to the current location");
-//			util.sendMessage(p, "  /sethomeother <player> <name> : set <player>'s home named <name> to the current location");
-			
-			return true;
+			return false;
 		}
 		
 		final String setter = p.getName();

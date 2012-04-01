@@ -28,8 +28,7 @@ public class HomeInviteDelete extends BaseCommand {
 			return true;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+			return false;
 		}
 		
 		int id = Integer.parseInt(args[0]);

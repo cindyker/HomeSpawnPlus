@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.util.Debug;
@@ -17,6 +18,8 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StorageYaml implements Storage {
+	private static StorageYaml currentlyInitializingInstance = null;
+	
 	@SuppressWarnings("unused")
 	private final HomeSpawnPlus plugin;
 	private final Debug debug;
@@ -50,52 +53,82 @@ public class StorageYaml implements Storage {
 			this.dataDirectory = file;
 	}
 	
+	public static StorageYaml getCurrentlyInitializingInstance() {
+		return currentlyInitializingInstance;
+	}
+	
 	@Override
 	public void initializeStorage() throws StorageException {
-		// yaml list to load after we're done creating objects
-		YamlDAOInterface[] yamlLoadQueue;
-		
-		if( singleFile != null ) {
-			YamlConfiguration yaml = new YamlConfiguration();
-			homeDAO = new HomeDAOYaml(singleFile, yaml);
-			homeInviteDAO = new HomeInviteDAOYaml(singleFile, yaml);
-			spawnDAO = new SpawnDAOYaml(singleFile, yaml);
-			playerDAO = new PlayerDAOYaml(singleFile, yaml);
-			versionDAO = new VersionDAOYaml(singleFile, yaml);
+		// only allow this to run once per JVM and we keep track of which
+		// instance is loading so that while Bukkit is deserializing objects,
+		// we can keep track of them for @OneToOne mappings
+		synchronized (StorageYaml.class) {
+			currentlyInitializingInstance = this;
 
-			// only need one load because all DAOs are using the same YamlConfiguration object
-			yamlLoadQueue = new YamlDAOInterface[] { homeDAO };
-		}
-		else {
-			File file = new File(dataDirectory, "homes.yml");
-			homeDAO = new HomeDAOYaml(file);
-			file = new File(dataDirectory, "homeInvites.yml");
-			homeInviteDAO = new HomeInviteDAOYaml(file);
-			file = new File(dataDirectory, "spawns.yml");
-			spawnDAO = new SpawnDAOYaml(file);
-			file = new File(dataDirectory, "players.yml");
-			playerDAO = new PlayerDAOYaml(file);
-			file = new File(dataDirectory, "version.yml");
-			versionDAO = new VersionDAOYaml(file);
+			// yaml list to load after we're done creating objects
+			YamlDAOInterface[] yamlLoadQueue;
 
-			yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
-			
-		}
-		
-		allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
-		
-		// now load the YAML data into memory so it's ready to go when we need it
-		for(int i=0; i < yamlLoadQueue.length; i++) {
-			try {
-				debug.devDebug("calling load on YAML DAO object ",yamlLoadQueue[i]);
-				yamlLoadQueue[i].load();
+			if( singleFile != null ) {
+				YamlConfiguration yaml = new YamlConfiguration();
+				homeDAO = new HomeDAOYaml(singleFile, yaml);
+				homeInviteDAO = new HomeInviteDAOYaml(singleFile, yaml);
+				spawnDAO = new SpawnDAOYaml(singleFile, yaml);
+				playerDAO = new PlayerDAOYaml(singleFile, yaml);
+				versionDAO = new VersionDAOYaml(singleFile, yaml);
+
+				// only need one load because all DAOs are using the same YamlConfiguration object
+				yamlLoadQueue = new YamlDAOInterface[] { homeDAO };
 			}
-			catch(Exception e) {
-				throw new StorageException(e);
+			else {
+				File file = new File(dataDirectory, "homes.yml");
+				homeDAO = new HomeDAOYaml(file);
+				file = new File(dataDirectory, "homeInvites.yml");
+				homeInviteDAO = new HomeInviteDAOYaml(file);
+				file = new File(dataDirectory, "spawns.yml");
+				spawnDAO = new SpawnDAOYaml(file);
+				file = new File(dataDirectory, "players.yml");
+				playerDAO = new PlayerDAOYaml(file);
+				file = new File(dataDirectory, "version.yml");
+				versionDAO = new VersionDAOYaml(file);
+
+				yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+
 			}
+
+			allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+
+			// now load the YAML data into memory so it's ready to go when we need it
+			for(int i=0; i < yamlLoadQueue.length; i++) {
+				try {
+					debug.devDebug("calling load on YAML DAO object ",yamlLoadQueue[i]);
+					yamlLoadQueue[i].load();
+				}
+				catch(Exception e) {
+					throw new StorageException(e);
+				}
+			}
+
+			// while loading above, the Bukkit YAML loader will load objects as well.
+			// this results in an issue where @OneToOne mappings try to load before
+			// the YAML is ready, which in turns results in the cache being loaded
+			// as empty. Here we invalidate the cache to get around that issue.
+			for(int i=0; i < allDAOs.length; i++) {
+				allDAOs[i].invalidateCache();
+			}
+
+			currentlyInitializingInstance = null;
 		}
 	}
 	
+	/** As homes are loaded, we need to keep track of them because HomeInvite objects
+	 * can reference them and the YAML file isn't fully loaded so homeDAO.getAllObjects()
+	 * won't work yet.
+	 * 
+	 * @param home
+	 */
+	public void objectLoaded(Home home) {
+		homeDAO.homeLoaded(home);
+	}
 	
 	@Override
 	public org.morganm.homespawnplus.storage.dao.HomeDAO getHomeDAO() { return homeDAO; }

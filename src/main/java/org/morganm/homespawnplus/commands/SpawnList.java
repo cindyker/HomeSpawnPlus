@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -21,14 +23,20 @@ public class SpawnList extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"spawnl", "listspawns"}; }
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
-	public boolean execute(final Player p, final Command command, final String[] args) {
+	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
+		return executePrivate(console, command, args);
+	}
+
+	@Override
+	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
+		return executePrivate(p, command, args);
+	}
+	
+	private boolean executePrivate(CommandSender p, Command command, String[] args) {
 		String world = "all";
 		if( args.length > 0 )
 			world = args[0];

@@ -35,7 +35,7 @@ public class StorageFactory {
 //			return new StorageCache(new StorageEBeans(plugin));
 		}
 		else if( storageType == STORAGE_TYPE_YAML_SINGLE_FILE ) {
-			storage = new StorageYaml(plugin, true, new File("plugins/HomeSpawnPlus/data.yml"));
+			storage = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
 		}
 		else if( storageType == STORAGE_TYPE_YAML_MULTI_FILE ) {
 			storage = new StorageYaml(plugin, false, null);
@@ -44,7 +44,6 @@ public class StorageFactory {
 			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);
 		}
 		
-		storage.initializeStorage();
 		return storage;
 	}
 

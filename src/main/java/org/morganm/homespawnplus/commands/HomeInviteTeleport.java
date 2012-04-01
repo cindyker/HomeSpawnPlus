@@ -37,8 +37,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			return true;
 		
 		if( args.length < 1 ) {
-			util.sendMessage(p, command.getUsage());
-			return true;
+			return false;
 		}
 		
 		Location l = null;
@@ -51,7 +50,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			}
 			catch(NumberFormatException e) {
 				util.sendMessage(p, "Error: Expected id number, got \""+args[0]+"\"");
-				util.sendMessage(p, command.getUsage());
+				return false;			// send command usage
 			}
 		}
 		else if( args.length == 2 ) {
@@ -74,8 +73,9 @@ public class HomeInviteTeleport extends BaseCommand {
 				homeInvite = plugin.getStorage().getHomeInviteDAO().findInviteByHomeAndInvitee(home, p.getName());
 			}
 		}
-		else
-			util.sendMessage(p, command.getUsage());
+		else {
+			return false;		// send command usage
+		}
 		
 		if( homeInvite != null ) {
 			// if we're not the invited player, we can't use this invite id

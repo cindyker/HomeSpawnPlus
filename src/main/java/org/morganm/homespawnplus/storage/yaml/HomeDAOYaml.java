@@ -150,9 +150,40 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 		return homes;
 	}
 
+	/** While a YAML file is loading, super.findAllObjects() will fail since
+	 * it's not yet loaded. Yet if that YAML file has HomeInvite objects in it,
+	 * HomeInvite has a @OneToOne mapping to a Home, so it needs to be able
+	 * to find Homes in order to load. So this temporaryAllObjects works around
+	 * the problem by holding Home objects as they are loaded so that
+	 * HomeInvite can find them.
+	 */
+	private Set<Home> temporaryAllObjects;
 	@Override
 	public Set<Home> findAllHomes() {
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			if( StorageYaml.getCurrentlyInitializingInstance().getHomeDAO() == this ) {
+				return temporaryAllObjects;
+			}
+		}
+		// if there is no intializing going on, then erase the temporary set
+		// and fall through to findAllObjects
+		else if( temporaryAllObjects != null ) {
+			temporaryAllObjects.clear();
+			temporaryAllObjects = null;
+		}
+		
 		return super.findAllObjects();
+	}
+	
+	public void homeLoaded(Home home) {
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			if( StorageYaml.getCurrentlyInitializingInstance().getHomeDAO() == this ) {
+				if( temporaryAllObjects == null )
+					temporaryAllObjects = new HashSet<Home>(50);
+				
+				temporaryAllObjects.add(home);
+			}
+		}
 	}
 	
 	@Override

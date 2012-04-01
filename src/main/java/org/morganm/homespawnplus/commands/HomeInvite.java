@@ -32,8 +32,9 @@ public class HomeInvite extends BaseCommand {
 			return true;
 		
 		if( args.length < 2 ) {
-			p.sendMessage(command.getUsage());
-			return true;
+//			util.sendLocalizedMessage(p, HSPMessages.CMDHELP_HOME_INVITE, "command", "hi");
+//			util.sendMessage(p, command.getUsage());
+			return false;
 		}
 		
 		String homeName = args[0];

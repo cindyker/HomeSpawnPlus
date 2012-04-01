@@ -110,10 +110,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     @Override
     public void onEnable() {
     	boolean loadError = false;
+    	instance = this;
     	
     	getConfig();
     	
-    	instance = this;
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
     	
@@ -224,6 +224,7 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @throws StorageException
      */
     public void initializeDatabase() throws IOException, StorageException {
+    	Debug.getInstance().devDebug("TRACE: BEGIN initializeDatabase");
     	int type = config.getInt(ConfigOptions.STORAGE_TYPE, 0);
         storage = StorageFactory.getInstance(type, this);
         
@@ -231,6 +232,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         storage.initializeStorage();
         
         // TODO: possibly pre-cache the data here later
+    	Debug.getInstance().devDebug("TRACE: END initializeDatabase");
     }
     
     private void initPermissions() {

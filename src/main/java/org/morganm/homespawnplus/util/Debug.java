@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  */
 public class Debug {
-	// class version: 6
+	// class version: 7
 	private static Debug instance = null;
 	
 	private Logger pluginLog;
@@ -32,14 +32,34 @@ public class Debug {
 	
 	public void init(Logger log, String logPrefix, boolean isDebug) {
 		this.pluginLog = log;
-		this.logPrefix = logPrefix;
 		this.debugLog = log;
 		this.useConsoleLogger = true;
+		
+		this.logPrefix = logPrefix;
+		if( logPrefix != null ) {
+			if( logPrefix.endsWith(" ") )
+				this.logPrefix = logPrefix;
+			else
+				this.logPrefix = logPrefix + " ";
+		}
+		else
+			this.logPrefix = "["+log.getName()+"] ";
+
 		setDebug(isDebug);
 	}
 	public void init(Logger log, String logPrefix, String logFileName, boolean isDebug) {
 		this.pluginLog = log;
 		this.logPrefix = logPrefix;
+		
+		if( logPrefix != null ) {
+			if( logPrefix.endsWith(" ") )
+				this.logPrefix = logPrefix;
+			else
+				this.logPrefix = logPrefix + " ";
+		}
+		else
+			this.logPrefix = "["+log.getName()+"] ";
+
 		this.useConsoleLogger = false;
 		
 		setDebugFile(log.getName()+".debug", logFileName);

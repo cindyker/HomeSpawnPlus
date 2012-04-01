@@ -114,6 +114,10 @@ commands:
     aliases: [hspspawn]
     description: Respawns you at the world spawn
     usage: /<command>
+  setmapspawn:
+    aliases: [sms]
+    description: Set the map spawn to your current location
+    usage: /<command>
   spawnlist:
     aliases: [spawnl, listspawns]
     description: List spawns

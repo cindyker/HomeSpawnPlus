@@ -225,7 +225,24 @@ public class HomeSpawnPlus extends JavaPlugin {
      */
     public void initializeDatabase() throws IOException, StorageException {
     	Debug.getInstance().devDebug("TRACE: BEGIN initializeDatabase");
-    	int type = config.getInt(ConfigOptions.STORAGE_TYPE, 0);
+    	
+    	StorageFactory.Type type = null;
+    	
+    	String stringType = config.getString(ConfigOptions.STORAGE_TYPE, "EBEANS");
+    	int intType = -1;
+    	// backwards compatibility means it might be an integer,
+    	// so look for that
+    	try {
+    		intType = Integer.valueOf(stringType);
+    	}
+    	catch(NumberFormatException e) {}	// ignore, we don't care
+    	
+    	if( intType != -1 )
+    		type = StorageFactory.getType(intType);
+    	else
+    		type = StorageFactory.getType(stringType);
+    		
+    	Debug.getInstance().debug("using storage type ",type);
         storage = StorageFactory.getInstance(type, this);
         
         // Make sure storage system is initialized

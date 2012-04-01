@@ -39,7 +39,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *
  */
 public class PermissionSystem {
-	// class version: 11
+	// class version: 12
 	public static final int SUPERPERMS = 0x00;		// default
 	public static final int VAULT = 0x01;
 	public static final int WEPIF = 0x02;
@@ -90,6 +90,27 @@ public class PermissionSystem {
 	}
 	
 	public int getSystemInUse() { return systemInUse; }
+	
+	// uggg I should have used an enum instead of static ints. Shame on me.
+	public String getSystemInUseString() {
+		switch(systemInUse) {
+		case VAULT:
+			return "VAULT";
+		case WEPIF:
+			return "WEPIF";
+		case PERM2_COMPAT:
+			return "PERM2_COMPAT";
+		case PEX:
+			return "PEX";
+		case OPS:
+			return "OPS";
+
+		case SUPERPERMS:
+		default:
+			return "SUPERPERMS";
+		
+		}
+	}
 	
 	public void setupPermissions() {
 		setupPermissions(true);
@@ -287,7 +308,7 @@ public class PermissionSystem {
 	/** Superperms has no group support, but we fake it (this is slow and stupid since
 	  * it has to iterate through ALL permissions a player has).  But if you're
 	  * attached to superperms and not using a nice plugin like bPerms and Vault
-	  * then this is as good as it gets)
+	  * then this is as good as it gets.
 	  * 
 	  * @param player
 	  * @return the group name or null
@@ -360,7 +381,7 @@ public class PermissionSystem {
     	try {
 	    	Plugin worldEdit = plugin.getServer().getPluginManager().getPlugin("WorldEdit");
 	    	String version = null;
-	    	int versionNumber = 0;
+	    	int versionNumber = 840;	// assume compliance unless we find otherwise
 	    	
 	    	try {
 		    	version = worldEdit.getDescription().getVersion();

@@ -12,6 +12,10 @@ commands:
            Incorrect usage of command /<command>. Examples:
            /<command> - respawns you at your primary group spawn
            /<command> Admins - respawns you at the 'Admins' group spawn
+  groupquery:
+    aliases: [gq]
+    description: Show what group HSP finds a player to be in
+    usage: /<command> player
   home:
     aliases: [hsphome]
     description: Respawns you at your home
@@ -30,7 +34,7 @@ commands:
            /<command> player homeName
            /<command> player w:worldName
   homelist:
-    aliases: [homel, listhomes]
+    aliases: [homel, listhomes, hl]
     description: Show your homes
     usage: |
            /<command> - show homes on all worlds
@@ -200,13 +204,19 @@ permissions:
     hsp.command.*:
         description: Gives access to all HomeSpawnPlus commands
         children:
+            hsp.command.groupquery: true
             hsp.command.groupspawn: true
             hsp.command.home: true
             hsp.command.home.named: true
             hsp.command.home.otherworld: true
             hsp.command.homedelete: true
             hsp.command.homedeleteother: true
+            hsp.command.homeinvite: true
+            hsp.command.homeinvitedelete: true
+            hsp.command.homeinviteteleport: true
+            hsp.command.homeinvitelist: true
             hsp.command.homelist: true
+            hsp.command.homelistother: true
             hsp.command.homeother: true
             hsp.command.setdefaulthome: true
             hsp.command.setdefaultspawn: true
@@ -216,12 +226,16 @@ permissions:
             hsp.command.sethome.named: true
             hsp.command.sethomeother: true
             hsp.command.setspawn: true
+            hsp.command.setmapspawn: true
             hsp.command.spawn: true
             hsp.command.spawn.named: true
             hsp.command.spawndelete: true
             hsp.command.spawnlist: true
     hsp.command.groupspawn:
         description: Allows use of the /groupspawn command
+        default: op
+    hsp.command.groupquery:
+        description: Allows use of the /groupquery command
         default: op
     hsp.command.home:
         description: Allows use of the /home command
@@ -241,8 +255,23 @@ permissions:
     hsp.command.homelist:
         description: Allows use of the /homelist command to list homes
         default: op
+    hsp.command.homelistother:
+        description: Allows use of the /homelistother command to list other people's homes
+        default: op
     hsp.command.homeother:
         description: "Allows use of the /homeother command to teleport to other people's homes"
+        default: op
+    hsp.command.homeinvite:
+        description: Allows use of the /homeinvite command
+        default: op
+    hsp.command.homeinvitedelete:
+        description: Allows use of the /homeinvitedelete command
+        default: op
+    hsp.command.homeinvitelist:
+        description: Allows use of the /homeinvitelist command
+        default: op
+    hsp.command.homeinviteteleport:
+        description: Allows use of the /homeinviteteleport command
         default: op
     hsp.command.setdefaulthome:
         description: Allows use of the /setdefaulthome command
@@ -264,6 +293,9 @@ permissions:
         default: op
     hsp.command.setspawn:
         description: Allows use of the /setspawn command
+        default: op
+    hsp.command.setmapspawn:
+        description: Allows use of the /setmapspawn command
         default: op
     hsp.command.spawn:
         description: Allows use of the /spawn command

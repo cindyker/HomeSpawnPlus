@@ -1,12 +1,19 @@
 v1.5 - ?
 * refactored storage subsystem in preparation for home invite feature
-* coded full YAML backend on new storage subsystem; storage id 2 for individual YAML files per object (home/spawn/player) or 3 for a large single data file
-* Ticket #28: home invite feature enhancement
+* coded full YAML backend on new storage subsystem; storage type YAML for
+individual YAML files per object (home/spawn/player) or YAML_SINGLE_FILE for a
+large single data file. YAML storage types are cached in memory for fast,
+efficient access. You can use the backup/restore feature to backup an existing
+SQL database, then convert to YAML and restore if you want to switch.
+* Ticket #28: home invite feature enhancement. Local testing works good, but
+needs mass-testing so I'm looking forward to feedback on this feature.
 * Ticket #77: show MC spawn (use /spawnlist -m)
 * added /setmapspawn for changing a map's spawn point (not really useful for
 HSP in any way, just a general utility command)
+* added /groupquery command for troubleshooting group problems
+* added /homelistother command to list other people's homes
 
-v1.4.4 - ?
+v1.4.4 - never released, merged into 1.5
 * fixed WorldGuard compatibility to work with newest WorldGuard 5.5 changes
 * added Dutch translation; locale nl (thanks @Dunncann!)
 

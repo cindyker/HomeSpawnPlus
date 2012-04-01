@@ -421,7 +421,9 @@ public class HomeSpawnPlus extends JavaPlugin {
 	public String getPlayerGroup(String world, String playerName) {
     	return perms.getPlayerGroup(world, playerName);
     }
-        
+	
+	public PermissionSystem getPermissionSystem() { return perms; }
+
     @Override
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     

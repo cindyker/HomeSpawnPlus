@@ -47,6 +47,9 @@ public interface ConfigOptions {
 	public static final String SETTING_GROUPSPAWN_CMD_BEHAVIOR = "onGroupSpawnCommand";
 	public static final String SETTING_HOME_CMD_BEHAVIOR = "onHomeCommand";
 	public static final String SETTING_HOME_NAMED_CMD_BEHAVIOR = "onNamedHomeCommand";
+	
+	public static final String HOME_INVITE_TIMEOUT = "homeInvite.timeout";
+	public static final String HOME_INVITE_ALLOW_BEDHOME = "homeInvite.allowBedHomeInvites";
 
 	public static final String VALUE_DEFAULT = "default";
 	public static final String VALUE_HOME = "home";

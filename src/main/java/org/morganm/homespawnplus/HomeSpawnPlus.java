@@ -79,6 +79,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private CooldownManager cooldownManager;
     private WarmupManager warmupManager;
     private HomeSpawnUtils spawnUtils;
+    private HomeInviteManager homeInviteManager;
 	private Config config;
     private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
@@ -145,6 +146,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	cooldownManager = new CooldownManager(this);
     	warmupManager = new WarmupManager(this);
     	spawnUtils = new HomeSpawnUtils(this);
+    	homeInviteManager = new HomeInviteManager(this);
     	
         PluginManager pm = getServer().getPluginManager();
 
@@ -431,6 +433,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     public CooldownManager getCooldownManager() { return cooldownManager; }
     public WarmupManager getWarmupmanager() { return warmupManager; }
     public HomeSpawnUtils getUtil() { return spawnUtils; }
+    public HomeInviteManager getHomeInviteManager() { return homeInviteManager; }
     public String getPluginName() { return pluginName; }
     public JarUtils getJarUtils() { return jarUtils; }
 }

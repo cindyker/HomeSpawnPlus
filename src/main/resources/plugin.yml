@@ -49,8 +49,8 @@ commands:
     aliases: [hi]
     description: Invite someone to one of your homes
     usage: |
-           /<command> homeName player - permanently invite player to your home named 'homeName'
-           /<command> homeName player time - same as above but with expire time, for example '1d 4h'
+           /<command> homeName player - temporarily invite player to your home named 'homeName'
+           /<command> homeName player time - same as above but with expire time, for example '1d 4h' or 'perm' for permanent
   homeinvitelist:
     aliases: [hil]
     description: List available home invites, yours and others to you
@@ -65,6 +65,9 @@ commands:
     usage: |
            /<command> inviteNumber - teleport to an invite #, you can see invite #s from /hil
            /<command> player name - teleport to an invite, using player and home name to specify
+  homeinviteaccept:
+    aliases: [hiaccept, hia]
+    description: Accept an invite you were sent.
   homeother:
     aliases: [homeo]
     description: Go to someone else's home (named or specific world)
@@ -215,6 +218,7 @@ permissions:
             hsp.command.homeinvitedelete: true
             hsp.command.homeinviteteleport: true
             hsp.command.homeinvitelist: true
+            hsp.command.homeinviteaccept: true
             hsp.command.homelist: true
             hsp.command.homelistother: true
             hsp.command.homeother: true
@@ -272,6 +276,9 @@ permissions:
         default: op
     hsp.command.homeinviteteleport:
         description: Allows use of the /homeinviteteleport command
+        default: op
+    hsp.command.homeinviteaccept:
+        description: Allows use of the /homeinviteaccept command
         default: op
     hsp.command.setdefaulthome:
         description: Allows use of the /setdefaulthome command

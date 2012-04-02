@@ -48,8 +48,14 @@ public abstract class AbstractSerializableBasicEntity<T extends BasicEntity> imp
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new LinkedHashMap<String, Object>(15);
 		map.put(ATTR_ID, getObject().getId());
+		
+		getObject().setLastModified(new Timestamp(System.currentTimeMillis()));
 		map.put(ATTR_LAST_MODIFIED, getObject().getLastModified().getTime());
+		
+		if( getObject().getDateCreated() == null )
+			getObject().setDateCreated(new Timestamp(System.currentTimeMillis()));
 		map.put(ATTR_DATE_CREATED, getObject().getDateCreated().getTime());
+		
 		return map;
 	}
 

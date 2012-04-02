@@ -303,3 +303,11 @@ cost:
 #        - group.mygroup
 #      home: 250
 #      sethome: 500
+
+homeInvite:
+  # timeout (in seconds) for temporary invites
+  timeout: 30
+
+  # set to false if you don't want to allow
+  # players to send invite for bedHomes
+  allowBedHomeInvites: true

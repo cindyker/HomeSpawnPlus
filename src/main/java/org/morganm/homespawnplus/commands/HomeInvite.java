@@ -86,7 +86,7 @@ public class HomeInvite extends BaseCommand {
 					return true;
 				}
 				else
-					expireTimeAsString = General.getInstance().displayTimeString(timeInMilliseconds, false, false);
+					expireTimeAsString = General.getInstance().displayTimeString(timeInMilliseconds, false, null);
 				
 				expiresTime = System.currentTimeMillis() + timeInMilliseconds;
 			}
@@ -102,6 +102,13 @@ public class HomeInvite extends BaseCommand {
 			plugin.getHomeInviteManager().sendHomeInvite(onlinePlayer, p, home);
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
 					"player", invitee, "home", home.getName());
+			return true;
+		}
+		
+		// if we get here, this is not a temporary invite, so we need to check permissions
+		if( !plugin.hasPermission(p, getCommandPermissionNode()+".permanent") ) {
+			util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+			return true;
 		}
 		
 		org.morganm.homespawnplus.entity.HomeInvite homeInvite = new org.morganm.homespawnplus.entity.HomeInvite();

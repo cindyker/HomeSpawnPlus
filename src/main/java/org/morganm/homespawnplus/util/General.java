@@ -186,10 +186,13 @@ public final class General {
     	
     	String[] args = input.split(" ");
     	for(int i=0; i < args.length; i++) {
-    		int multiplier = 1000;	// milliseconds multiplier
+    		long multiplier = 1000;	// milliseconds multiplier
     		int index = -1;
     		
-    		if( (index = args[i].indexOf("w")) != -1 ) {		// week
+    		if( (index = args[i].indexOf("mo")) != -1 ) {		// month
+    			multiplier *= 86400 * 31;
+    		}
+    		else if( (index = args[i].indexOf("w")) != -1 ) {		// week
     			multiplier *= 86400 * 7;
     		}
     		else if( (index = args[i].indexOf("d")) != -1 ) {		// day
@@ -198,112 +201,143 @@ public final class General {
     		else if( (index = args[i].indexOf("h")) != -1 ) {		// hours
     			multiplier *= 3600;
     		}
-    		else if( (index = args[i].indexOf("m")) != -1 ) {		// hours
+    		else if( (index = args[i].indexOf("m")) != -1 ) {		// minutes
     			multiplier *= 60;
     		}
     		
 			String value = args[i].substring(0, index);
+			Debug.getInstance().devDebug("parseTimeInput: value=",value,", multiplier=",multiplier);
 			int v = Integer.valueOf(value);
 			time += v * multiplier;
     	}
     	
+		Debug.getInstance().devDebug("parseTimeInput: return time=",time);
     	return time;
     }
 
     /** Given milliseconds as input, this will return a string that represents
      * that time format.
      * 
-     * @param millis
+     * @param seconds
      * @param useShortHand set to true to use shorthand notation. shorthand will return a string
      * of the form "4d3h2m" whereas this set to false would return "4 days 3 hours 2 minutes"
-     * @param mostSignificantOnly if true, only the most significant time is returned. For example,
+     * @param mostSignificantOnly Most significant string to show. "mo" for month, "w" for week,
+     * "d" for day, "m" for minute and null to include seconds
+     * 
+     * if true, only the most significant time is returned. For example,
      * when false this might return "4 days 3 hours 2 minutes", when true it would return "4 days"
      * @return
      * @throws NumberFormatException
      */
-    public String displayTimeString(long millis, boolean useShortHand, boolean mostSignificantOnly) throws NumberFormatException {
+    public String displayTimeString(final long millis, boolean useShortHand, String mostSignificant) throws NumberFormatException {
     	final StringBuffer sb = new StringBuffer();
-    	millis /= 1000;		// chop down to seconds
+    	long seconds = millis / 1000;		// chop down to seconds
     	
-    	long remainder = millis % (86400 * 7);
-    	if( remainder > 0 ) {
-    		sb.append(remainder);
-    		if( useShortHand )
-    			sb.append("w");
-    		else {
-	    		sb.append(" week");
-	    		if( remainder > 1 )
-	        		sb.append("s");
-    		}
+    	if( seconds >= (86400 * 31) ) {
+    		long months = seconds / (86400 * 31);
+	    	Debug.getInstance().devDebug("months =",months);
+	    	if( months > 0 ) {
+	    		sb.append(months);
+	    		if( useShortHand )
+	    			sb.append("mo");
+	    		else {
+		    		sb.append(" month");
+		    		if( months > 1 )
+		        		sb.append("s");
+	    		}
+	    	}
+	    	seconds -= months * (86400 * 31);
     	}
-    	millis -= remainder * (86400 * 7);
-    	
-    	if( mostSignificantOnly && sb.length() > 0 )
+    	if( mostSignificant != null && mostSignificant.startsWith("mo") )
     		return sb.toString();
-    	
-    	remainder = millis % 86400;
-    	if( remainder > 0 ) {
-    		if( !useShortHand && sb.length() > 0 )
-    			sb.append(" ");
-    		sb.append(remainder);
-    		if( useShortHand )
-    			sb.append("d");
-    		else {
-	    		sb.append(" day");
-	    		if( remainder > 1 )
-	        		sb.append("s");
-    		}
+
+    	if( seconds >= (86400 * 7) ) {
+    		long weeks = seconds / (86400 * 7);
+	    	Debug.getInstance().devDebug("weeks =",weeks);
+	    	if( weeks > 0 ) {
+	    		if( !useShortHand && sb.length() > 0 )
+	    			sb.append(" ");
+	    		sb.append(weeks);
+	    		if( useShortHand )
+	    			sb.append("w");
+	    		else {
+		    		sb.append(" week");
+		    		if( weeks > 1 )
+		        		sb.append("s");
+	    		}
+	    	}
+	    	seconds -= weeks * (86400 * 7);
     	}
-    	millis -= remainder * 86400;
-    	
-    	if( mostSignificantOnly && sb.length() > 0 )
+    	Debug.getInstance().devDebug("week remaining seconds=",seconds);
+    	if( mostSignificant != null && mostSignificant.startsWith("w") )
     		return sb.toString();
     	
-    	remainder = millis % 3600;
-    	if( remainder > 0 ) {
-    		if( !useShortHand && sb.length() > 0 )
-    			sb.append(" ");
-    		sb.append(remainder);
-    		if( useShortHand )
-    			sb.append("h");
-    		else {
-	    		sb.append(" hour");
-	    		if( remainder > 1 )
-	        		sb.append("s");
-    		}
-    	}    	
-    	millis -= remainder * 3600;
-    	
-    	if( mostSignificantOnly && sb.length() > 0 )
+    	if( seconds >= 86400 ) {
+    		long days = seconds / 86400;
+	    	if( days > 0 ) {
+	    		if( !useShortHand && sb.length() > 0 )
+	    			sb.append(" ");
+	    		sb.append(days);
+	    		if( useShortHand )
+	    			sb.append("d");
+	    		else {
+		    		sb.append(" day");
+		    		if( days > 1 )
+		        		sb.append("s");
+	    		}
+	    	}
+	    	seconds -= days * 86400;
+    	}
+    	if( mostSignificant != null && mostSignificant.startsWith("d") )
     		return sb.toString();
     	
-    	remainder = millis % 60;
-    	if( remainder > 0 ) {
-    		if( !useShortHand && sb.length() > 0 )
-    			sb.append(" ");
-    		sb.append(remainder);
-    		if( useShortHand )
-    			sb.append("m");
-    		else {
-	    		sb.append(" minute");
-	    		if( remainder > 1 )
-	        		sb.append("s");
-    		}
-    	}    	
-    	millis -= remainder * 60;
-    	
-    	if( mostSignificantOnly && sb.length() > 0 )
+    	if( seconds >= 3600 ) {
+    		long hours = seconds / 3600;
+	    	if( hours > 0 ) {
+	    		if( !useShortHand && sb.length() > 0 )
+	    			sb.append(" ");
+	    		sb.append(hours);
+	    		if( useShortHand )
+	    			sb.append("h");
+	    		else {
+		    		sb.append(" hour");
+		    		if( hours > 1 )
+		        		sb.append("s");
+	    		}
+	    	}    	
+	    	seconds -= hours * 3600;
+    	}
+    	if( mostSignificant != null && mostSignificant.startsWith("h") )
     		return sb.toString();
     	
-    	if( remainder > 0 ) {
+    	if( seconds >= 60 ) {
+    		long minutes = seconds / 60;
+	    	if( minutes > 0 ) {
+	    		if( !useShortHand && sb.length() > 0 )
+	    			sb.append(" ");
+	    		sb.append(minutes);
+	    		if( useShortHand )
+	    			sb.append("m");
+	    		else {
+		    		sb.append(" minute");
+		    		if( minutes > 1 )
+		        		sb.append("s");
+	    		}
+	    	}    	
+	    	seconds -= minutes * 60;
+    	}
+    	if( mostSignificant != null && mostSignificant.startsWith("m") )
+    		return sb.toString();
+    	
+    	if( seconds > 0 ) {
     		if( !useShortHand && sb.length() > 0 )
     			sb.append(" ");
-    		sb.append(remainder);
+    		sb.append(seconds);
     		if( useShortHand )
     			sb.append("s");
     		else {
 	    		sb.append(" second");
-	    		if( remainder > 1 )
+	    		if( seconds > 1 )
 	        		sb.append("s");
     		}
     	}

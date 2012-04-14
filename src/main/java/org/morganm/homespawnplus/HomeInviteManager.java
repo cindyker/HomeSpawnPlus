@@ -28,6 +28,9 @@ public class HomeInviteManager {
 		this.plugin = plugin;
 	}
 	
+	/** Return the invite timeout in milliseconds (ie. 30 seconds would return 30000)
+	 * 
+	 */
 	public int getInviteTimeout() {
 		return plugin.getConfig().getInt(ConfigOptions.HOME_INVITE_TIMEOUT) * 1000;
 	}
@@ -55,7 +58,7 @@ public class HomeInviteManager {
 		inviteMap.put(home.getPlayerName()+":"+home.getName(), Long.valueOf(timeout));
 
 		plugin.getUtil().sendLocalizedMessage(to, HSPMessages.TEMP_HOMEINVITE_RECEIVED,
-				"who", from.getName(), "home", home.getName(), "time", getInviteTimeout());
+				"who", from.getName(), "home", home.getName(), "time", getInviteTimeout()/1000);
 		
 		return true;
 	}
@@ -68,7 +71,7 @@ public class HomeInviteManager {
 	 */
 	public Home getInvitedHome(Player to) {
 		Map<String, Long> inviteMap = tmpHomeInvites.get(to.getName());
-		if( inviteMap == null )
+		if( inviteMap == null || inviteMap.size() == 0 )
 			return null;
 		
 		// assumes we only allow one outstanding invite right now
@@ -92,7 +95,7 @@ public class HomeInviteManager {
 		Map<String, Long> inviteMap = tmpHomeInvites.get(to.getName());
 		if( inviteMap != null ) {
 			// assumes we only allow one outstanding invite right now
-			inviteMap.keySet().iterator().remove();
+			inviteMap.clear();
 		}
 	}
 }

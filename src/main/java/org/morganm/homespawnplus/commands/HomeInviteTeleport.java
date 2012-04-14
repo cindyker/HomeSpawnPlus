@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
 
@@ -87,17 +88,16 @@ public class HomeInviteTeleport extends BaseCommand {
 			if( homeInvite != null )
 				expires = homeInvite.getExpires();
 			if( expires != null && expires.compareTo(new Date()) < 0 ) {
-				// it's expired, so delete it. we ignore any error here since it doesn't
-				// affect the outcome of the rest of the command.
-				try {
-					plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(homeInvite);
-				}
-				catch(StorageException e) {
-					log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
-				}
-				
+				deleteHomeInvite(homeInvite);
 				homeInvite = null;
 			}
+			
+			// check if it's a bedhome and we're not allowed to teleport to bedhomes
+    		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
+    		if( !allowBedHomeInvites && homeInvite.getHome().isBedHome() ) {
+				deleteHomeInvite(homeInvite);
+				homeInvite = null;
+    		}
 			
 			// if homeInvite is still non-null at this point, then we're allowed to use it
 			if( homeInvite != null ) {
@@ -117,12 +117,17 @@ public class HomeInviteTeleport extends BaseCommand {
     			return true;
     		}
     		
-    		final String cooldownName = getCooldownName("homeinvitetp", Integer.toString(homeInvite.getId()));
-    		final String warmupName = "homeinvitetp";
+			String cooldownName = getCooldownName(getCommandName(), Integer.toString(homeInvite.getId()));
+			if( plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_USE_HOME_COOLDOWN, true) )
+				cooldownName = getCooldownName("home", Integer.toString(homeInvite.getId()));
+			String warmupName = getCommandName();
+			if( plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_USE_HOME_WARMUP, true) )
+				warmupName = "home";
+			
     		debug.debug("homeInviteTeleport command running cooldown check, cooldownName=",cooldownName);
     		if( !cooldownCheck(p, cooldownName) )
     			return true;
-
+    		
 			if( hasWarmup(p, warmupName) ) {
 	    		final Location finalL = l;
 	    		final String placeString = "home of "+ homeInvite.getHome().getPlayerName();
@@ -161,5 +166,15 @@ public class HomeInviteTeleport extends BaseCommand {
     	
 		return true;
 	}
-
+	
+	private void deleteHomeInvite(final org.morganm.homespawnplus.entity.HomeInvite hi) {
+		// it's expired, so delete it. we ignore any error here since it doesn't
+		// affect the outcome of the rest of the command.
+		try {
+			plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(hi);
+		}
+		catch(StorageException e) {
+			log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
+		}
+	}
 }

@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
@@ -42,7 +43,7 @@ public class HomeInviteList extends BaseCommand {
 						+" to player "+invite.getInvitedPlayer()
 						+" [expires: "+(invite.getExpires() != null ?
 								General.getInstance().displayTimeString(
-										invite.getExpires().getTime()-System.currentTimeMillis(), false, true) :
+										invite.getExpires().getTime()-System.currentTimeMillis(), true, "m") :
 								"never")
 						+"]"
 						);
@@ -63,11 +64,10 @@ public class HomeInviteList extends BaseCommand {
 						+" from player "+playerName
 						+" [expires: "+(invite.getExpires() != null ?
 								General.getInstance().displayTimeString(
-										invite.getExpires().getTime()-System.currentTimeMillis(), false, true) :
+										invite.getExpires().getTime()-System.currentTimeMillis(), true, "m") :
 								"never")
 						+"]"
 						);
-//				util.sendMessage(p, "-> Player "+playerName+" has an open invite to you for their home named "+homeName);
 			}
 		}
 		else
@@ -83,19 +83,30 @@ public class HomeInviteList extends BaseCommand {
 	 * @return true if the invite is expired, false if not
 	 */
 	private boolean isExpired(final HomeInvite homeInvite) {
+		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
+		
 		Date expires = homeInvite.getExpires();
 		if( expires != null && expires.compareTo(new Date()) < 0 ) {
-			// it's expired, so delete it. ignore any errors
-			try {
-				plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(homeInvite);
-			}
-			catch(StorageException e) {
-				log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
-			}
-			
+			deleteHomeInvite(homeInvite);
 			return true;	// expired
+		}
+		// also check if it's a bedhome and we're not allowed to teleport to bedhomes
+		else if( !allowBedHomeInvites && homeInvite.getHome().isBedHome() ) {
+			deleteHomeInvite(homeInvite);
+			return true;
 		}
 		else
 			return false;	// not expired
+	}
+	
+	private void deleteHomeInvite(final org.morganm.homespawnplus.entity.HomeInvite hi) {
+		// it's expired, so delete it. we ignore any error here since it doesn't
+		// affect the outcome of the rest of the command.
+		try {
+			plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(hi);
+		}
+		catch(StorageException e) {
+			log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
+		}
 	}
 }

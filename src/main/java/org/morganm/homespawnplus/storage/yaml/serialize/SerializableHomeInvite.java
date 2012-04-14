@@ -49,7 +49,10 @@ implements SerializableYamlObject<HomeInvite>
 		Map<String, Object> map = super.serialize();
 		map.put(ATTR_HOME, getObject().getHome().getId());
 		map.put(ATTR_INVITED_PLAYER, getObject().getInvitedPlayer());
-		map.put(ATTR_EXPIRES, getObject().getExpires());
+		Long expiresTime = null;
+		if( getObject().getExpires() != null )
+			expiresTime = getObject().getExpires().getTime();
+		map.put(ATTR_EXPIRES, expiresTime);
 		return map;
 	}
 

@@ -36,7 +36,6 @@ public abstract class BaseCommand implements Command {
 	protected String logPrefix;
 	private boolean enabled;
 	private String permissionNode;
-	private String oldPermissionNode;
 	private String commandName;
 
 	/** By default, commands do not respond to console input. They can override this if they wish
@@ -311,6 +310,13 @@ public abstract class BaseCommand implements Command {
 			return baseName;
 	}
 
+	public String getCommandPermissionNode() {
+		if( permissionNode == null )
+			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
+		
+		return permissionNode;
+	}
+	
 	/** Return true if the player has permission to run this command.  If they
 	 * don't have permission, print them a message saying so and return false.
 	 * 
@@ -318,12 +324,7 @@ public abstract class BaseCommand implements Command {
 	 * @return
 	 */
 	protected boolean hasPermission(Player p) {
-		if( permissionNode == null )
-			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
-		if( oldPermissionNode == null )
-			oldPermissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName() + ".use";
-		
-		if( !plugin.hasPermission(p, permissionNode) && !plugin.hasPermission(p, oldPermissionNode) ) {
+		if( !plugin.hasPermission(p, getCommandPermissionNode()) ) {
 			util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
 //			p.sendMessage("You don't have permission to do that.");
 			return false;

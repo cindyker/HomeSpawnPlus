@@ -50,6 +50,8 @@ public interface ConfigOptions {
 	
 	public static final String HOME_INVITE_TIMEOUT = "homeInvite.timeout";
 	public static final String HOME_INVITE_ALLOW_BEDHOME = "homeInvite.allowBedHomeInvites";
+	public static final String HOME_INVITE_USE_HOME_COOLDOWN = "homeInvite.useHomeCooldown";
+	public static final String HOME_INVITE_USE_HOME_WARMUP = "homeInvite.useHomeWarmup";
 
 	public static final String VALUE_DEFAULT = "default";
 	public static final String VALUE_HOME = "home";

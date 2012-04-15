@@ -30,10 +30,16 @@ permissions:
   - ops
 
 core:
-  # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined
+  # EBEANS - Ebeans storage (will go to SqlLite or MySQL, as defined
   #     by bukkit.yml)
-  # 1 - Cached Ebeans - currently disabled, don't use
-  storage: 0
+  # YAML - YAML storage in your plugins/HomeSpawnPlus directory.
+  #     Will store one file per data type (home, spawn, etc).
+  # YAML_SINGLE_FILE - YAML storage in your plugins/HomeSpawnPlus
+  #     directory. Stores all data in single "data.yml" file.
+  #
+  # This is one option that cannot be reloaded live with "/hsp rc",
+  # you must restart Bukkit if you change this option.
+  storage: EBEANS
 
   # this is ONLY used when "ops" is used in the "permissions" section
   # above.
@@ -218,7 +224,6 @@ cooldown:
 #        - my.special.permission
 #      home: 30
 #      spawn: 30
-
 warmup:
   # globally enable or disable warmups.
   enabled: false

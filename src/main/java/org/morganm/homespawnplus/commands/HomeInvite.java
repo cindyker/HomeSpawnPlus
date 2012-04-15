@@ -99,6 +99,10 @@ public class HomeInvite extends BaseCommand {
 				return true;
 			}
 			
+			// if there is a cost and we don't have the money, do not pass go
+			if( !applyCost(p, true, getCommandName()) )
+				return true;
+
 			plugin.getHomeInviteManager().sendHomeInvite(onlinePlayer, p, home);
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
 					"player", invitee, "home", home.getName());
@@ -116,6 +120,10 @@ public class HomeInvite extends BaseCommand {
 		homeInvite.setInvitedPlayer(invitee);
 		if( expiresTime > System.currentTimeMillis() )
 			homeInvite.setExpires(new Date(expiresTime));
+		
+		// if there is a cost and we don't have the money, do not pass go
+		if( !applyCost(p, true, getCommandName()) )
+			return true;
 		
 		try {
 			plugin.getStorage().getHomeInviteDAO().saveHomeInvite(homeInvite);

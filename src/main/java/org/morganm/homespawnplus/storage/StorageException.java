@@ -3,7 +3,10 @@
  */
 package org.morganm.homespawnplus.storage;
 
-/**
+/** Exceptions relating to backing storage. Usually wraps some other exception
+ * type such as SQLException or IOException, to give us a consistent exception
+ * interface.
+ * 
  * @author morganm
  *
  */

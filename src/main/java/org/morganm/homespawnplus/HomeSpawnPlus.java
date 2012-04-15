@@ -12,6 +12,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
@@ -25,6 +26,7 @@ import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.i18n.Colors;
@@ -35,9 +37,13 @@ import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
 import org.morganm.homespawnplus.storage.Storage;
-import org.morganm.homespawnplus.storage.StorageEBeans;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
+import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.util.CommandUsurper;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.JarUtils;
@@ -56,6 +62,13 @@ public class HomeSpawnPlus extends JavaPlugin {
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
+	static {
+		ConfigurationSerialization.registerClass(SerializableHome.class, "Home");
+		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
+		ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
+		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
+	}
+	
     // singleton instance - not declared final as the plugin can be reloaded,
 	// and the instance will change to the new plugin. This will always
 	// return the most recent plugin object that was loaded.
@@ -66,6 +79,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private CooldownManager cooldownManager;
     private WarmupManager warmupManager;
     private HomeSpawnUtils spawnUtils;
+    private HomeInviteManager homeInviteManager;
 	private Config config;
     private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
@@ -97,10 +111,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     @Override
     public void onEnable() {
     	boolean loadError = false;
+    	instance = this;
     	
     	getConfig();
     	
-    	instance = this;
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
     	
@@ -132,6 +146,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	cooldownManager = new CooldownManager(this);
     	warmupManager = new WarmupManager(this);
     	spawnUtils = new HomeSpawnUtils(this);
+    	homeInviteManager = new HomeInviteManager(this);
     	
         PluginManager pm = getServer().getPluginManager();
 
@@ -168,6 +183,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     	}
 
     	getServer().getScheduler().cancelTasks(this);
+    	
+    	try {
+    		storage.flushAll();
+    	}
+    	catch(StorageException e) {
+    		log.log(Level.WARNING, logPrefix+" Caught exception: "+e.getMessage(), e);
+    	}
+    	
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is disabled");
     }
     
@@ -203,13 +226,32 @@ public class HomeSpawnPlus extends JavaPlugin {
      * @throws StorageException
      */
     public void initializeDatabase() throws IOException, StorageException {
-    	int type = config.getInt(ConfigOptions.STORAGE_TYPE, 0);
+    	Debug.getInstance().devDebug("TRACE: BEGIN initializeDatabase");
+    	
+    	StorageFactory.Type type = null;
+    	
+    	String stringType = config.getString(ConfigOptions.STORAGE_TYPE, "EBEANS");
+    	int intType = -1;
+    	// backwards compatibility means it might be an integer,
+    	// so look for that
+    	try {
+    		intType = Integer.valueOf(stringType);
+    	}
+    	catch(NumberFormatException e) {}	// ignore, we don't care
+    	
+    	if( intType != -1 )
+    		type = StorageFactory.getType(intType);
+    	else
+    		type = StorageFactory.getType(stringType);
+    		
+    	Debug.getInstance().debug("using storage type ",type);
         storage = StorageFactory.getInstance(type, this);
         
         // Make sure storage system is initialized
         storage.initializeStorage();
         
         // TODO: possibly pre-cache the data here later
+    	Debug.getInstance().devDebug("TRACE: END initializeDatabase");
     }
     
     private void initPermissions() {
@@ -326,6 +368,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(Spawn.class);
         classList.add(org.morganm.homespawnplus.entity.Player.class);
         classList.add(Version.class);
+        classList.add(HomeInvite.class);
         return classList;
     }
     
@@ -380,7 +423,9 @@ public class HomeSpawnPlus extends JavaPlugin {
 	public String getPlayerGroup(String world, String playerName) {
     	return perms.getPlayerGroup(world, playerName);
     }
-        
+	
+	public PermissionSystem getPermissionSystem() { return perms; }
+
     @Override
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     
@@ -388,6 +433,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     public CooldownManager getCooldownManager() { return cooldownManager; }
     public WarmupManager getWarmupmanager() { return warmupManager; }
     public HomeSpawnUtils getUtil() { return spawnUtils; }
+    public HomeInviteManager getHomeInviteManager() { return homeInviteManager; }
     public String getPluginName() { return pluginName; }
     public JarUtils getJarUtils() { return jarUtils; }
 }

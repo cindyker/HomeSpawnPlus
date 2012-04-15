@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="compile" depends="prepare" description="Compile all source code">
-		<javac srcdir="${src.home}" destdir="${build.home}" >
+		<javac srcdir="${src.home}" destdir="${build.home}" debug="true" >
 			<classpath refid="project.classpath" />
 		</javac>
 	</target>

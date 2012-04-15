@@ -3,11 +3,11 @@
  */
 package org.morganm.homespawnplus.storage;
 
-import java.util.Set;
-
-import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.entity.Player;
-import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
+import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
+import org.morganm.homespawnplus.storage.dao.PlayerDAO;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
+import org.morganm.homespawnplus.storage.dao.VersionDAO;
 
 
 /** Storage interface for stored objects this plugin uses.
@@ -26,36 +26,33 @@ public interface Storage {
 	 * responsibility to keep track of whether it has already initialized and deal with that
 	 * situation appropriately. 
 	 */
-	public void initializeStorage();
+	public void initializeStorage() throws StorageException;
+	
+	public HomeDAO getHomeDAO();
+	public HomeInviteDAO getHomeInviteDAO();
+	public SpawnDAO getSpawnDAO();
+	public PlayerDAO getPlayerDAO();
+	public VersionDAO getVersionDAO();
 	
 	/** Notify the backing store that it should purge any in-memory cache it has.
 	 */
 	public void purgeCache();
 	
-	public Player getPlayer(String name);
-	public void writePlayer(Player player);
+	public void deleteAllData() throws StorageException;
 	
-	public Home getDefaultHome(String world, String playerName);
-	public Home getBedHome(String world, String playerName);
-	public Home getNamedHome(String homeName, String playerName);
-	public Set<Home> getHomes(String world, String playerName);
-	
-	public Spawn getSpawn(String world);
-	public Spawn getSpawn(String world, String group);
-	public Spawn getSpawnByName(String name);
-	public Spawn getSpawnById(int id);
-	
-	public Set<String> getSpawnDefinedGroups();
-	
-	public Set<Home> getAllHomes();
-	public Set<Spawn> getAllSpawns();
-	public Set<Player> getAllPlayers();
-	
-	public void writeHome(Home home);
-	public void writeSpawn(Spawn spawn);
-	
-	public void deleteHome(Home home);
-	public void deleteSpawn(Spawn spawn);
-	
-	public void deleteAllData();
+	/** Optional implementation: the backing store can use this to respond to applications
+	 * wish to defer writes, as often happens with bulk loading or perhaps if the application
+	 * wants to flush writes on a timed cycle. Storage backends are not required to do
+	 * anything at all with this, it is just a hint.
+	 * 
+	 * @param deferred
+	 */
+	public void setDeferredWrites(boolean deferred);
+	/** For use with setDeferredWrites() above, this method instructs the backend that now
+	 * is a good time to flush any pending writes to storage. Again, a completely optional
+	 * implementation for the storage system, so there is no guarantee calling this does
+	 * anything. This is just a hint to the back-end storage that now is a good time to
+	 * flush pending writes.
+	 */
+	public void flushAll() throws StorageException;
 }

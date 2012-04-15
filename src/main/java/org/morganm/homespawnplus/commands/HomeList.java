@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import java.util.Set;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -17,23 +18,31 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
 public class HomeList extends BaseCommand {
 
 	@Override
-	public String[] getCommandAliases() { return new String[] {"homel", "listhomes"}; }
+	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl"}; }
 	
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
-		Set<org.morganm.homespawnplus.entity.Home> homes;
 		String world = "all";
-		
 		if( args.length > 0 )
 			world = args[0];
 		
-		homes = plugin.getStorage().getHomes(world, p.getName());
+		return executeCommand(p, p.getName(), world);
+	}
+
+	/** Package visibility, code is reused by HomeListOther.
+	 * 
+	 * @param p
+	 * @param command
+	 * @param args
+	 * @return
+	 */
+	boolean executeCommand(CommandSender p, String player, String world) {
+		Set<org.morganm.homespawnplus.entity.Home> homes;
+		
+		homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(world, player);
 		
 		if( homes != null && homes.size() > 0 ) {
 			/*

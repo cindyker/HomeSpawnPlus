@@ -30,10 +30,16 @@ permissions:
   - ops
 
 core:
-  # 0 - Ebeans storage (will go to SqlLite or MySQL, as defined
+  # EBEANS - Ebeans storage (will go to SqlLite or MySQL, as defined
   #     by bukkit.yml)
-  # 1 - Cached Ebeans - currently disabled, don't use
-  storage: 0
+  # YAML - YAML storage in your plugins/HomeSpawnPlus directory.
+  #     Will store one file per data type (home, spawn, etc).
+  # YAML_SINGLE_FILE - YAML storage in your plugins/HomeSpawnPlus
+  #     directory. Stores all data in single "data.yml" file.
+  #
+  # This is one option that cannot be reloaded live with "/hsp rc",
+  # you must restart Bukkit if you change this option.
+  storage: EBEANS
 
   # this is ONLY used when "ops" is used in the "permissions" section
   # above.
@@ -188,15 +194,18 @@ cooldown:
   spawn-named: 0
  
   groupspawn: 60
+
+  homeinvitetp: 60
  
   # any cooldowns listed here will be on separate timers per
   # command argument. for example if "home-named" is listed,
   # then typing "/home home1" would start home1's cooldown,
   # and "/home home2" will be on a separate cooldown.
-#  cooldownSeparation: 
+#  separation: 
 #  - home-named
 #  - spawn-named
 #  - sethome-named
+#  - homeinvitetp
   
 #  example of world-specific cooldowns
 #  world:
@@ -215,7 +224,6 @@ cooldown:
 #        - my.special.permission
 #      home: 30
 #      spawn: 30
-
 warmup:
   # globally enable or disable warmups.
   enabled: false
@@ -300,3 +308,18 @@ cost:
 #        - group.mygroup
 #      home: 250
 #      sethome: 500
+
+homeInvite:
+  # timeout (in seconds) for temporary invites
+  timeout: 30
+
+  # set to true if you want /homeinviteaccept and /homeinviteteleport
+  # to use the same cooldown as /home. This respects any home-separation
+  # settings you have.
+  useHomeCooldown: true
+  # same as above, but for warmups
+  useHomeWarmup: true
+
+  # set to false if you don't want to allow
+  # players to send invite for bedHomes
+  allowBedHomeInvites: true

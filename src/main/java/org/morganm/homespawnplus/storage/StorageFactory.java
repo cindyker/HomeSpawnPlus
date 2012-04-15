@@ -3,9 +3,12 @@
  */
 package org.morganm.homespawnplus.storage;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
+import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
 
 /**
@@ -13,23 +16,69 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  *
  */
 public class StorageFactory {
-	public static final int STORAGE_TYPE_EBEANS = 0;
-	public static final int STORAGE_TYPE_CACHED_EBEANS = 1;
+	public enum Type {
+		EBEANS,
+		CACHED_EBEANS,
+		YAML,
+		YAML_SINGLE_FILE
+	}
+//	public static final int STORAGE_TYPE_EBEANS = 0;
+//	public static final int STORAGE_TYPE_CACHED_EBEANS = 1;
+//	public static final int STORAGE_TYPE_YAML_MULTI_FILE = 2;
+//	public static final int STORAGE_TYPE_YAML_SINGLE_FILE = 3;
 	
-	public static Storage getInstance(int storageType, HomeSpawnPlus plugin)
+	/** Ordinarily this is BAD to expose enum ordinal values. Sadly, these
+	 * values started life as static ints and were exposed in the config
+	 * directly that way, so many existing configs have the int values in
+	 * them and so backwards compatibility requires we allow the int values
+	 * to still work.
+	 */
+	public static Type getType(int intType) {
+		Type[] types = Type.values();
+		for(int i=0; i < types.length; i++) {
+			if( types[i].ordinal() == intType )
+				return types[i];
+		}
+		
+		return Type.EBEANS;		// default to EBEANS
+	}
+	
+	public static Type getType(String stringType) {
+		Type[] types = Type.values();
+		for(int i=0; i < types.length; i++) {
+			if( types[i].toString().equalsIgnoreCase(stringType) )
+				return types[i];
+		}
+		
+		return Type.EBEANS;		// default to EBEANS
+	}
+	
+	public static Storage getInstance(Type storageType, HomeSpawnPlus plugin)
 		throws StorageException, IOException
 	{
-		if ( storageType == STORAGE_TYPE_EBEANS ) {
-			return new StorageEBeans(plugin);
-		}
-		else if( storageType == STORAGE_TYPE_CACHED_EBEANS ) {
+		Storage storage = null;
+		
+		switch(storageType)
+		{
+		case CACHED_EBEANS:
 			HomeSpawnPlus.log.warning(HomeSpawnPlus.logPrefix + " CACHED_EBEANS storage not currently supported, defaulting to regular EBEANS storage");
-			return new StorageEBeans(plugin);
-//			return new StorageCache(new StorageEBeans(plugin));
-		}
-		else {
+		case EBEANS:
+			storage = new StorageEBeans(plugin);
+			break;
+
+		case YAML:
+			storage = new StorageYaml(plugin, false, null);
+			break;
+			
+		case YAML_SINGLE_FILE:
+			storage = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
+			break;
+			
+		default:
 			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);
 		}
+		
+		return storage;
 	}
 
 }

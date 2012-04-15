@@ -3,10 +3,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import java.util.logging.Level;
+
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.storage.StorageException;
 
 /**
  * @author morganm
@@ -36,9 +39,15 @@ public class SetDefaultHome extends BaseCommand {
 			
 			if( home != null ) {
 				home.setDefaultHome(true);
-				plugin.getStorage().writeHome(home);
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_HOME_CHANGED,
-						"world", home.getWorld(), "home", home.getName());
+				try {
+					plugin.getStorage().getHomeDAO().saveHome(home);
+					util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_HOME_CHANGED,
+							"world", home.getWorld(), "home", home.getName());
+				}
+				catch(StorageException e) {
+					util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+					log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+				}
 //				util.sendMessage(p, "Your default home on world "+home.getWorld()+" has been changed to your home named "+home.getName());
 			}
 		}

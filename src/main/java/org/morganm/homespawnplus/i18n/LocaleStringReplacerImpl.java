@@ -15,6 +15,12 @@ import java.util.Map;
  *
  */
 public class LocaleStringReplacerImpl implements Locale {
+	private static final Map<String, String> predefinedReplacements = new HashMap<String,String>();
+	static {
+		// newline didn't work like I'd hoped.  So no predefinedReplacements for now ..
+//		predefinedReplacements.put("%newline%", "\n");
+	}
+	
 	private final MessageLibrary msgLib;
 	
 	public LocaleStringReplacerImpl(final MessageLibrary msgLib) {
@@ -46,7 +52,14 @@ public class LocaleStringReplacerImpl implements Locale {
 	                value = value.replaceAll(colorKey, color);
 	            }
 	        }
-	
+
+	        // apply any predefined replacements
+	        for (Map.Entry<String, String> entry : predefinedReplacements.entrySet()) {
+	            if (value.contains(entry.getKey())) {
+	                value = value.replaceAll(entry.getKey(), entry.getValue());
+	            }
+	        }
+
 	        // apply binds
 	        for (String bindKey : bind.keySet()) {
 	        	if( bindKey == null )

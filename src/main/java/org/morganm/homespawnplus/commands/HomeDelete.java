@@ -4,11 +4,13 @@
 package org.morganm.homespawnplus.commands;
 
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.storage.StorageException;
 
 /**
  * @author morganm
@@ -43,7 +45,8 @@ public class HomeDelete extends BaseCommand {
 				}
 			}
 			else if( homeName.equals("<noname>") ) {
-				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage().getHomes(p.getWorld().getName(), p.getName());
+				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage()
+						.getHomeDAO().findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
 				if( homes != null ) {
 					for(org.morganm.homespawnplus.entity.Home h : homes) {
 						if( h.getName() == null ) {
@@ -69,18 +72,17 @@ public class HomeDelete extends BaseCommand {
 				log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to delete home for player "+home.getPlayerName());
 			}
 			else {
-				plugin.getStorage().deleteHome(home);
-				if( homeName != null )
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName);
-				else
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED);
-				
-//				String msg = null;
-//				if( homeName != null )
-//					msg = "Home named "+homeName+" for player "+p.getName()+" deleted.";
-//				else
-//					msg = "Default home for player "+p.getName()+" on world "+p.getWorld().getName()+" deleted";
-//				util.sendMessage(p, msg);
+				try {
+					plugin.getStorage().getHomeDAO().deleteHome(home);
+					if( homeName != null )
+						util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName);
+					else
+						util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED);
+				}
+				catch(StorageException e) {
+					util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+					log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+				}
 			}
 		}
 		else if( homeName != null )

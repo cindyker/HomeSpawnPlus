@@ -55,10 +55,14 @@ public class HomeInviteManager {
 		}
 		
 		long timeout = System.currentTimeMillis() + getInviteTimeout();
-		inviteMap.put(home.getPlayerName()+":"+home.getName(), Long.valueOf(timeout));
+		inviteMap.put(home.getPlayerName()+":"+home.getId(), Long.valueOf(timeout));
 
+		String homeName = home.getName();
+		if( homeName == null )
+			homeName = "loc "+plugin.getUtil().shortLocationString(home);
+		
 		plugin.getUtil().sendLocalizedMessage(to, HSPMessages.TEMP_HOMEINVITE_RECEIVED,
-				"who", from.getName(), "home", home.getName(), "time", getInviteTimeout()/1000);
+				"who", from.getName(), "home", homeName, "time", getInviteTimeout()/1000);
 		
 		return true;
 	}
@@ -85,10 +89,14 @@ public class HomeInviteManager {
 		}
 		
 		int index = inviteName.indexOf(":");
-		String playerFrom = inviteName.substring(0, index);
-		String homeName = inviteName.substring(index+1, inviteName.length());
+//		String playerFrom = inviteName.substring(0, index);
+		String idString = inviteName.substring(index+1, inviteName.length());
+		// will blow up with NumberFormatException if it's not an integer,
+		// but that's OK because that should never be possible, so we want
+		// it to blow up as a significant error condition.
+		int id = Integer.valueOf(idString);
 		
-		return plugin.getUtil().getHomeByName(playerFrom, homeName);
+		return plugin.getStorage().getHomeDAO().findHomeById(id);
 	}
 	
 	public void removeInvite(Player to) {

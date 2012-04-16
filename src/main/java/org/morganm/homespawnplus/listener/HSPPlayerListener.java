@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -83,61 +84,92 @@ public class HSPPlayerListener implements Listener {
     	return l;
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.isCancelled())
+    	debug.devDebug("onPlayerInteract: invoked");
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
-        
-        final Player p = event.getPlayer();
-        
+
         // config option needs to be enabled in order to use this feature
-        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) ) {
-        	debug.debug("onPlayerInteract(): player ",p," bed right-click: config option ",ConfigOptions.ENABLE_HOME_BEDS," is disabled");
+        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
         	return;
-        }
+
+        // if BED_HOME_MUST_BE_NIGHT config is set, then we ignore this click and let
+        // the PlayerBedEnterEvent handler handle it instead.
+        if( plugin.getHSPConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) )
+        	return;
         
         Block b = event.getClickedBlock();
-        if( b.getTypeId() == 26 ) {			// did they click on a bed?
-//        	log.info(logPrefix + " clicked on bed");
-        	// someone clicked on a bed, good time to keep the hash clean
-        	cleanupBedClicks();
-
-            // if permissions are enabled, they need to have permission too.
-            if( !plugin.hasPermission(event.getPlayer(), HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
-            	debug.debug("onPlayerInteract(): player ",p," has no permission");
-            	return;
-            }
-            
-        	Player player = event.getPlayer();
-        	ClickedEvent ce = bedClicks.get(player.getName());
-        	
-        	// if there is an event in the cache, then this is their second click - save their home
-        	if( ce != null ) {
-        		if( b.getLocation().equals(ce.location) ) {
-        			boolean setDefaultHome = false;
-        			
-        			// we set the bed to be the default home only if there isn't another non-bed
-        			// default home that exists
-        			Home existingDefaultHome = util.getDefaultHome(player.getName(), player.getWorld().getName());
-        			if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
-        				setDefaultHome = true;
-        			
-        			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) )
-    					util.sendLocalizedMessage(p, HSPMessages.HOME_BED_SET);
-//        				util.sendMessage(player, "Your home has been set to this location.");
-
-        			bedClicks.remove(player.getName());
-//            		event.setCancelled(true);
-        		}
-        	}
-        	// otherwise this is first click, tell them to click again to save their home
-        	else {
-        		bedClicks.put(player.getName(), new ClickedEvent(b.getLocation(), System.currentTimeMillis()));
-				util.sendLocalizedMessage(p, HSPMessages.HOME_BED_ONE_MORE_CLICK);
-//        		util.sendMessage(player, "Click the bed one more time in the next 5 seconds to permanently change your home to this location.");
-//        		event.setCancelled(true);
-        	}
+		// did they click on a bed?
+        if( b.getTypeId() == 26 ) {
+        	debug.debug("onPlayerInteract: calling doBedSet for player ",event.getPlayer());
+        	if( doBedSet(event.getPlayer(), b) )
+        		event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
+    public void onBedEvent(PlayerBedEnterEvent event) {
+    	debug.devDebug("onBedEvent: invoked");
+        // config option needs to be enabled in order to use this feature
+        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
+        	return;
+        
+        // we only handle events if BED_HOME_MUST_BE_NIGHT config is true, otherwise
+        // the PlayerInteractEvent handler takes care of it.
+        if( plugin.getHSPConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) ) {
+        	debug.debug("onBedEvent: calling doBedSet for player ",event.getPlayer());
+        	if( doBedSet(event.getPlayer(), event.getBed()) )
+        		event.setCancelled(true);
+        }
+    }
+    
+    /** Called when player right-clicks on a bed. Includes 2-click protection mechanism, if enabled.
+     * 
+     * @return true if the event should be canceled, false if not
+     * @param p
+     */
+    private boolean doBedSet(final Player player, final Block bedBlock) {
+    	// someone clicked on a bed, good time to keep the 2-click hash clean
+    	cleanupBedClicks();
+
+    	// make sure player has permission
+    	if( !plugin.hasPermission(player, HomeSpawnPlus.BASE_PERMISSION_NODE+".home.bedsethome") ) {
+    		debug.debug("onPlayerInteract(): player ",player," has no permission");
+    		return false;
+    	}
+
+    	final boolean require2Clicks = plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_2CLICKS, true);
+
+    	ClickedEvent ce = bedClicks.get(player.getName());
+
+    	// if there is an event in the cache, then this is their second click - save their home
+    	if( ce != null || !require2Clicks ) {
+    		if( ce == null || bedBlock.getLocation().equals(ce.location) ) {
+    			boolean setDefaultHome = false;
+
+    			// we set the bed to be the default home only if there isn't another non-bed
+    			// default home that exists
+    			Home existingDefaultHome = util.getDefaultHome(player.getName(), player.getWorld().getName());
+    			if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
+    				setDefaultHome = true;
+
+    			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) )
+    				util.sendLocalizedMessage(player, HSPMessages.HOME_BED_SET);
+
+    			bedClicks.remove(player.getName());
+    		}
+    	}
+    	// otherwise this is first click, tell them to click again to save their home
+    	else {
+    		bedClicks.put(player.getName(), new ClickedEvent(bedBlock.getLocation(), System.currentTimeMillis()));
+    		util.sendLocalizedMessage(player, HSPMessages.HOME_BED_ONE_MORE_CLICK);
+			
+			// cancel the first-click event if 2 clicks is required
+			return require2Clicks;
+    	}
+    	
+    	return false;
     }
     
     private void cleanupBedClicks() {

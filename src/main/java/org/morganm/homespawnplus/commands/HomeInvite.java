@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.commands;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -33,21 +34,58 @@ public class HomeInvite extends BaseCommand {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
-		if( args.length < 2 ) {
+		if( args.length < 1 ) {
 //			util.sendLocalizedMessage(p, HSPMessages.CMDHELP_HOME_INVITE, "command", "hi");
 //			util.sendMessage(p, command.getUsage());
 			return false;
 		}
 		
-		String homeName = args[0];
-		org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
-		if( home == null ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_HOME_NOT_FOUND,
-					"home", homeName);
-			return true;
+		org.morganm.homespawnplus.entity.Home home = null;
+		if( args.length > 1 ) {
+			String homeName = args[1];
+			
+			// try id # first
+			try {
+				int id = Integer.parseInt(homeName);
+				home = plugin.getStorage().getHomeDAO().findHomeById(id);
+				// the name on the home and this player's name must match, else we ignore it
+				if( !p.getName().equals(home.getPlayerName()) )
+					home = null;
+				if( home != null )
+					homeName = home.getName();
+			}
+			catch(NumberFormatException e) { /* do nothing, we don't care */ }
+			
+			// then try by name
+			if( home == null )
+				home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
+			
+			// if we didn't find a home, report error message to player
+			if( home == null ) {
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_HOME_NOT_FOUND,
+						"home", homeName);
+				return true;
+			}
+		}
+		// if they didn't pass a 2nd arg, then we try some assumptions to find a home
+		else {
+			// try the default home on the world the player is in
+			home = util.getDefaultHome(p.getName(), p.getWorld());
+			
+			// if that didn't work, try to see if they only have 1 total home, and if so, use that one
+			if( home == null ) {
+				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(p.getName());
+				if( homes.size() == 1 )
+					home = homes.iterator().next();
+			}
+			
+			if( home == null ) {
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NO_HOME_SPECIFIED);
+				return true;
+			}
 		}
 		
-		String invitee = args[1];
+		String invitee = args[0];
 		final Player onlinePlayer = Bukkit.getPlayer(invitee);
 		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(invitee);
 		if( onlinePlayer == null && offlinePlayer == null ) {
@@ -94,7 +132,7 @@ public class HomeInvite extends BaseCommand {
 		// it's just a temporary invite
 		else {
 			if( onlinePlayer == null ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NO_PLAYER_FOUND,
+				util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
 						"player", invitee);
 				return true;
 			}

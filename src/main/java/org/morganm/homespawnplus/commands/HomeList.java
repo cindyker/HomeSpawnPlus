@@ -67,7 +67,7 @@ public class HomeList extends BaseCommand {
 				String name = home.getName();
 				if( name == null )
 					name = "<noname>";
-				util.sendMessage(p, name+": "+ util.shortLocationString(home)
+				util.sendMessage(p, name+" [id:"+home.getId()+"]: "+ util.shortLocationString(home)
 						+ (home.isDefaultHome()
 								? " ("+util.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
 								: ""));

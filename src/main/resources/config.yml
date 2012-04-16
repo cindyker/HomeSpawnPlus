@@ -52,6 +52,14 @@ core:
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'hsp.home.bedsethome' permission.
   bedsethome: true
+
+  # If true, HSP will require 2 clicks on the bed to set the home. This
+  # avoids accidentally setting your bedhome when you don't mean to.
+  bedhome2clicks: true
+
+  # If true, HSP will require it be night time in order for a bed home
+  # to be saved by clicking on it. (ie. single player mechanics)
+  bedHomeMustBeNight: false
  
   # The default/main world. Strategies reference this as the default
   # world, you can change that here if you like.

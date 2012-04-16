@@ -49,8 +49,9 @@ commands:
     aliases: [hi]
     description: Invite someone to one of your homes
     usage: |
-           /<command> homeName player - temporarily invite player to your home named 'homeName'
-           /<command> homeName player time - same as above but with expire time, for example '1d 4h' or 'perm' for permanent
+           /<command> player - temporarily invite player to your default home on this world, or global home if you only have one home
+           /<command> player homeName - temporarily invite player to your home named 'homeName' (can be home id #)
+           /<command> player homeName time - same as above but with expire time, for example '1d 4h' or 'perm' for permanent
   homeinvitelist:
     aliases: [hil]
     description: List available home invites, yours and others to you

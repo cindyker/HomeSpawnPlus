@@ -17,6 +17,8 @@ public interface ConfigOptions {
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";
 	public static final String DEFAULT_WORLD = "core.defaultWorld";
 	public static final String ENABLE_HOME_BEDS = "core.bedsethome";
+	public static final String BED_HOME_2CLICKS = "core.bedhome2clicks";
+	public static final String BED_HOME_MUST_BE_NIGHT = "core.bedHomeMustBeNight";
 	public static final String ENABLE_RECORD_LAST_LOGOUT = "core.recordLastLogout";
 //	public static final String ENABLE_GROUP_SPAWN = "core.groupSpawnEnabled";
 	public static final String SETTING_WORLD_OVERRIDE = "core.override_world";

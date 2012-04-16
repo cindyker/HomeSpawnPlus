@@ -1,4 +1,18 @@
-v1.5 - ?
+v1.5.1 - April 15, 2012
+* simplified the /hi command (a suggestion by @Infuscu). The /hi (homeinvite)
+command arguments are reversed to now be "/hi player homename", so that if
+you only have one home, you only have to type "/hi player".
+* in addition, I have added the "id #" of a home to /homelist and modified
+/hi to accept an ID, so you can type "/hi player 4" to invite player to your
+home with the id #4.
+* fixed a localization bug for a homeinvite message
+* added "core.bedhome2clicks" option (default: true), which enables or
+disables the 2-click requirement for setting a bed home
+* added "core.bedHomeMustBeNight" option (default: false) which requires
+that it be night time in order to use the bed to save a home (single player
+mechanics)
+
+v1.5 - April 15, 2012
 * refactored storage subsystem in preparation for home invite feature
 * coded full YAML backend on new storage subsystem; storage type YAML for
 individual YAML files per object (home/spawn/player) or YAML_SINGLE_FILE for a

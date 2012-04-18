@@ -27,11 +27,11 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
-import org.morganm.homespawnplus.SpawnInfo;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -65,7 +65,8 @@ public class HSPPlayerListener implements Listener {
      * @param p
      * @param spawnInfo
      */
-    private Location doSpawn(Player p, SpawnInfo spawnInfo) {
+    /*
+    private Location doSpawn(Player p, StrategyInfo spawnInfo) {
 //    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
     	Location l = util.getStrategyLocation(p, spawnInfo);
     	
@@ -83,6 +84,7 @@ public class HSPPlayerListener implements Listener {
     	
     	return l;
     }
+    */
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -104,6 +106,11 @@ public class HSPPlayerListener implements Listener {
         if( b.getTypeId() == 26 ) {
         	debug.debug("onPlayerInteract: calling doBedSet for player ",event.getPlayer());
         	if( doBedSet(event.getPlayer(), b) )
+        		event.setCancelled(true);
+        	
+        	// if they aren't sneaking, we cancel the event to avoid "You can only sleep
+        	// at night" messages.
+        	if( !event.getPlayer().isSneaking() )
         		event.setCancelled(true);
         }
     }
@@ -197,17 +204,17 @@ public class HSPPlayerListener implements Listener {
     
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-    	Player p = event.getPlayer();
+    	final Player p = event.getPlayer();
     	
-    	SpawnInfo spawnInfo = new SpawnInfo();
-    	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
+//    	StrategyInfo spawnInfo = new StrategyInfo();
+//    	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
     	
 		// Is this a new player?
     	if( util.isNewPlayer(p) ) {
     		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected.");
     		
-    		spawnInfo.isFirstLogin = true;
+//    		spawnInfo.isFirstLogin = true;
     		
     		/*
 
@@ -242,7 +249,7 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	
-    	Location l = doSpawn(p, spawnInfo);
+    	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_JOIN, p);
     	if( l != null )
     		util.delayedTeleport(p, l);
     }
@@ -264,10 +271,7 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
 
-    	SpawnInfo spawnInfo = new SpawnInfo();
-    	spawnInfo.spawnEventType = ConfigOptions.SETTING_DEATH_BEHAVIOR;
-    	Location l = doSpawn(e.getPlayer(), spawnInfo);
-
+    	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_DEATH, e.getPlayer());
     	if( l != null )
     		e.setRespawnLocation(l);
     }

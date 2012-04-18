@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.SpawnStrategy;
 
 
 /**
@@ -150,14 +149,15 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
     /** TODO: add caching so we aren't string->enum converting on every join/death
      * 
      */
+    /*
 	@Override
-	public List<SpawnStrategy> getStrategies(String node) {
-		List<SpawnStrategy> spawnStrategies = new ArrayList<SpawnStrategy>();
+	public List<OldSpawnStrategy> getStrategies(String node) {
+		List<OldSpawnStrategy> spawnStrategies = new ArrayList<OldSpawnStrategy>();
     	List<String> strategies = getStringList(node, null);
 
     	for(String s : strategies) {
     		try {
-    			spawnStrategies.add(SpawnStrategy.mapStringToStrategy(s));
+    			spawnStrategies.add(OldSpawnStrategy.mapStringToStrategy(s));
     		}
     		catch(ConfigException e) {
     			log.warning(e.getMessage());
@@ -167,4 +167,5 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
     	
 		return spawnStrategies;
 	}
+	*/
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.morganm.homespawnplus.SpawnStrategy;
 
 /** Our configuration which determines how a number of things about how this mod operates.
  * Intended to be used with ConfigOptions class for setting nodes as String keys.
@@ -97,5 +96,5 @@ public interface Config {
      */
     public Set<String> getPermStrategies();
     
-    public List<SpawnStrategy> getStrategies(String node);
+//    public List<OldSpawnStrategy> getStrategies(String node);
 }

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.entity;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,8 @@ import com.avaje.ebean.validation.NotNull;
 		}
 )
 public class Home implements EntityWithLocation {
+	static private final transient DecimalFormat decimalFormat = new DecimalFormat("#.##");
+	
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
@@ -133,11 +136,11 @@ public class Home implements EntityWithLocation {
     			+",name="+getName()
     			+",playerName="+getPlayerName()
     			+",world="+getWorld()
-    			+",x="+getX()
-    			+",y="+getY()
-    			+",z="+getZ()
-    			+",yaw="+getYaw()
-    			+",pitch="+getPitch()
+    			+",x="+decimalFormat.format(getX())
+    			+",y="+decimalFormat.format(getY())
+    			+",z="+decimalFormat.format(getZ())
+    			+",yaw="+decimalFormat.format(getYaw())
+    			+",pitch="+decimalFormat.format(getPitch())
     			+",bedHome="+isBedHome()
     			+",defaultHome="+isDefaultHome()
     			+"}";

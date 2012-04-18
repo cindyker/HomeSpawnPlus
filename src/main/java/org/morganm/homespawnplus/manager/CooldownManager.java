@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.manager;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;

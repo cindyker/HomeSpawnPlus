@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.WarmupManager;
+import org.morganm.homespawnplus.manager.WarmupManager;
 
 /**
  * @author morganm

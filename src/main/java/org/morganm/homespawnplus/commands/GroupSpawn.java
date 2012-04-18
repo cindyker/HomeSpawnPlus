@@ -7,11 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.SpawnInfo;
-import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.strategy.EventType;
 
 
 /**
@@ -53,9 +52,10 @@ public class GroupSpawn extends BaseCommand
 			}
 		}
 		else {
-			SpawnInfo spawnInfo = new SpawnInfo();
-			spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
-			l = util.getStrategyLocation(p, spawnInfo);
+			l = plugin.getStrategyEngine().getStrategyLocation(EventType.GROUPSPAWN_COMMAND, p);
+//			StrategyInfo spawnInfo = new StrategyInfo();
+//			spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
+//			l = util.getStrategyLocation(p, spawnInfo);
 		}
 
 		if( !cooldownCheck(p, cooldownName) )

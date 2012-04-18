@@ -43,12 +43,12 @@ public interface ConfigOptions {
 	public static final String SETTING_EVENTS_WORLDBASE = "world";
 	public static final String SETTING_EVENTS_PERMBASE = "permission";
 	
-	public static final String SETTING_JOIN_BEHAVIOR = "onJoin";
-	public static final String SETTING_DEATH_BEHAVIOR = "onDeath";
-	public static final String SETTING_SPAWN_CMD_BEHAVIOR = "onSpawnCommand";
-	public static final String SETTING_GROUPSPAWN_CMD_BEHAVIOR = "onGroupSpawnCommand";
-	public static final String SETTING_HOME_CMD_BEHAVIOR = "onHomeCommand";
-	public static final String SETTING_HOME_NAMED_CMD_BEHAVIOR = "onNamedHomeCommand";
+//	public static final String SETTING_JOIN_BEHAVIOR = "onJoin";
+//	public static final String SETTING_DEATH_BEHAVIOR = "onDeath";
+//	public static final String SETTING_SPAWN_CMD_BEHAVIOR = "onSpawnCommand";
+//	public static final String SETTING_GROUPSPAWN_CMD_BEHAVIOR = "onGroupSpawnCommand";
+//	public static final String SETTING_HOME_CMD_BEHAVIOR = "onHomeCommand";
+//	public static final String SETTING_HOME_NAMED_CMD_BEHAVIOR = "onNamedHomeCommand";
 	
 	public static final String HOME_INVITE_TIMEOUT = "homeInvite.timeout";
 	public static final String HOME_INVITE_ALLOW_BEDHOME = "homeInvite.allowBedHomeInvites";
@@ -76,31 +76,31 @@ public interface ConfigOptions {
 	public static final String HOME_LIMITS_GLOBAL = "global";
 	public static final String SINGLE_GLOBAL_HOME = HOME_LIMITS_BASE + "singleGlobalHome";
 	
-	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
-	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";
-	public static final String STRATEGY_HOME_MULTI_WORLD = "homeMultiWorld";
-	public static final String STRATEGY_HOME_NEAREST_HOME = "homeNearest";
-	public static final String STRATEGY_HOME_NAMED_HOME = "homeNamedHome";
-	public static final String STRATEGY_HOME_SPECIFIC_WORLD = "homeSpecificWorld";
-	public static final String STRATEGY_HOME_ANY_WORLD = "homeAnyWorld";
+//	public static final String STRATEGY_HOME_THIS_WORLD_ONLY = "homeLocalWorld";
+//	public static final String STRATEGY_HOME_DEFAULT_WORLD = "homeDefaultWorld";
+//	public static final String STRATEGY_HOME_MULTI_WORLD = "homeMultiWorld";
+//	public static final String STRATEGY_HOME_NEAREST_HOME = "homeNearest";
+//	public static final String STRATEGY_HOME_NAMED_HOME = "homeNamedHome";
+//	public static final String STRATEGY_HOME_SPECIFIC_WORLD = "homeSpecificWorld";
+//	public static final String STRATEGY_HOME_ANY_WORLD = "homeAnyWorld";
 	
-	public static final String STRATEGY_MODE_HOME_NORMAL = "modeHomeNormal";
-	public static final String STRATEGY_MODE_HOME_BED_ONLY = "modeHomeBedOnly";
-	public static final String STRATEGY_MODE_HOME_NO_BED = "modeHomeNoBed";
-	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
-	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
-	public static final String STRATEGY_MODE_HOME_REQUIRES_BED = "modeRequiresBed";
+//	public static final String STRATEGY_MODE_HOME_NORMAL = "modeHomeNormal";
+//	public static final String STRATEGY_MODE_HOME_BED_ONLY = "modeHomeBedOnly";
+//	public static final String STRATEGY_MODE_HOME_NO_BED = "modeHomeNoBed";
+//	public static final String STRATEGY_MODE_HOME_DEFAULT_ONLY = "modeHomeDefaultOnly";
+//	public static final String STRATEGY_MODE_HOME_ANY = "modeHomeAny";
+//	public static final String STRATEGY_MODE_HOME_REQUIRES_BED = "modeRequiresBed";
 	
-	public static final String STRATEGY_SPAWN_LOCAL_RANDOM = "spawnLocalRandom";
-	public static final String STRATEGY_SPAWN_WG_REGION = "spawnWGregion";
-	public static final String STRATEGY_SPAWN_NEW_PLAYER = "spawnNewPlayer";
-	public static final String STRATEGY_SPAWN_THIS_WORLD_ONLY = "spawnLocalWorld";
-	public static final String STRATEGY_SPAWN_DEFAULT_WORLD = "spawnDefaultWorld";
-	public static final String STRATEGY_SPAWN_SPECIFIC_WORLD = "spawnSpecificWorld";
-	public static final String STRATEGY_SPAWN_NAMED_SPAWN = "spawnNamedSpawn";
-	public static final String STRATEGY_SPAWN_GROUP = "spawnGroup";
-	public static final String STRATEGY_SPAWN_GROUP_SPECIFIC_WORLD = "spawnGroupSpecificWorld";
-	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearest";
+//	public static final String STRATEGY_SPAWN_LOCAL_RANDOM = "spawnLocalRandom";
+//	public static final String STRATEGY_SPAWN_WG_REGION = "spawnWGregion";
+//	public static final String STRATEGY_SPAWN_NEW_PLAYER = "spawnNewPlayer";
+//	public static final String STRATEGY_SPAWN_THIS_WORLD_ONLY = "spawnLocalWorld";
+//	public static final String STRATEGY_SPAWN_DEFAULT_WORLD = "spawnDefaultWorld";
+//	public static final String STRATEGY_SPAWN_SPECIFIC_WORLD = "spawnSpecificWorld";
+//	public static final String STRATEGY_SPAWN_NAMED_SPAWN = "spawnNamedSpawn";
+//	public static final String STRATEGY_SPAWN_GROUP = "spawnGroup";
+//	public static final String STRATEGY_SPAWN_GROUP_SPECIFIC_WORLD = "spawnGroupSpecificWorld";
+//	public static final String STRATEGY_NEAREST_SPAWN = "spawnNearest";
 	
 	public static final String STRATEGY_DEFAULT = "default";
 	

@@ -10,13 +10,13 @@ import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.CooldownManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
-import org.morganm.homespawnplus.WarmupManager;
-import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.manager.CooldownManager;
+import org.morganm.homespawnplus.manager.WarmupManager;
+import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.util.Debug;
 
 

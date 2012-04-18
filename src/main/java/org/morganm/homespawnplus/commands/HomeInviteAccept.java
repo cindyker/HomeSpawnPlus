@@ -6,10 +6,10 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.manager.WarmupRunner;
 
 /**
  * @author morganm

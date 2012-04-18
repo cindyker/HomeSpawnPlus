@@ -36,6 +36,9 @@ import org.morganm.homespawnplus.i18n.LocaleFactory;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
+import org.morganm.homespawnplus.manager.CooldownManager;
+import org.morganm.homespawnplus.manager.HomeInviteManager;
+import org.morganm.homespawnplus.manager.WarmupManager;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
@@ -44,15 +47,16 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.util.CommandUsurper;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.JarUtils;
 import org.morganm.homespawnplus.util.PermissionSystem;
 
 /**
- * HomeSpawnPlus plugin for Bukkit
+ * HomeSpawnPlus plugin for Bukkit.
  *
- * @author morganm, Timberjaw
+ * @author morganm
  */
 public class HomeSpawnPlus extends JavaPlugin {
     public static final Logger log = Logger.getLogger("HomeSpawnPlus");
@@ -69,9 +73,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
 	}
 	
-    // singleton instance - not declared final as the plugin can be reloaded,
-	// and the instance will change to the new plugin. This will always
-	// return the most recent plugin object that was loaded.
+    // singleton instance - This will always return the most recent
+	// plugin object that was loaded.
     private static HomeSpawnPlus instance;
 
     private PermissionSystem perms;
@@ -80,6 +83,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private WarmupManager warmupManager;
     private HomeSpawnUtils spawnUtils;
     private HomeInviteManager homeInviteManager;
+    private StrategyEngine strategyEngine;
 	private Config config;
     private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
@@ -124,6 +128,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	// load our configuration and database
     	try {
+        	strategyEngine = new StrategyEngine(this);
     		loadConfig();
     		updateConfigDefaultFile();
             initializeDatabase();
@@ -148,7 +153,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	spawnUtils = new HomeSpawnUtils(this);
     	homeInviteManager = new HomeInviteManager(this);
     	
-        PluginManager pm = getServer().getPluginManager();
+        final PluginManager pm = getServer().getPluginManager();
 
     	playerListener = new HSPPlayerListener(this);
     	pm.registerEvents(playerListener, this);		// bukkit annotation events
@@ -287,6 +292,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 				log, logPrefix);
 		locale = LocaleFactory.getLocale(localeConfig);
 		Colors.setDefaultColor(config.getString("core.defaultMessageColor", "%yellow%"));
+		
+    	strategyEngine.getStrategyConfig().loadConfig();
     }
 
     private Boolean setupVaultEconomy()
@@ -429,6 +436,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     @Override
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     
+    public StrategyEngine getStrategyEngine() { return strategyEngine; }
+    public Logger getLogger() { return log; }
+    public String getLogPrefix() { return logPrefix; }
     public Storage getStorage() { return storage; }
     public CooldownManager getCooldownManager() { return cooldownManager; }
     public WarmupManager getWarmupmanager() { return warmupManager; }

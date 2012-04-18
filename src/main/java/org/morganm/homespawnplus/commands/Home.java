@@ -6,11 +6,10 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.SpawnInfo;
-import org.morganm.homespawnplus.WarmupRunner;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.strategy.EventType;
 
 
 /**
@@ -67,11 +66,7 @@ public class Home extends BaseCommand
 					return true;
 				}
 				
-				SpawnInfo spawnInfo = new SpawnInfo();
-				spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_NAMED_CMD_BEHAVIOR;
-				spawnInfo.argData = args[0];
-				l = util.getStrategyLocation(p, spawnInfo);
-//				home = util.getHomeByName(p.getName(), args[0]);
+				l = util.getStrategyLocation(EventType.NAMED_HOME_COMMAND, p, args[0]);
 			}
 				
 			if( home != null ) {
@@ -90,9 +85,7 @@ public class Home extends BaseCommand
 			}
 		}
 		else {
-			SpawnInfo spawnInfo = new SpawnInfo();
-			spawnInfo.spawnEventType = ConfigOptions.SETTING_HOME_CMD_BEHAVIOR;
-			l = util.getStrategyLocation(p, spawnInfo);
+			l = util.getStrategyLocation(EventType.HOME_COMMAND, p);
 		}
 		
 		debug.debug("home command running cooldown check, cooldownName=",cooldownName);

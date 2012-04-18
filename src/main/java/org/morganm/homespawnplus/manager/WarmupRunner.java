@@ -1,7 +1,9 @@
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.manager;
 
 
-/**
+/** Interface used by warmup-related functionality, then used by WarmupManager to manage
+ * that warmup through it's lifecycle.
+ *  
  * @author morganm
  *
  */

@@ -62,9 +62,10 @@ public class StrategyEngine {
 	 * @param context
 	 */
 	public StrategyResult evaluateStrategies(StrategyContext context) {
+		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
 		StrategyResult result = null;
 		
-		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
+		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer()); 
 		
 		debug.debug("evaluateStrategies: evaluating permission-based strategies");
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
@@ -119,6 +120,7 @@ public class StrategyEngine {
 				logVerbose("Evaluation chain complete, result = ", result);
 		}
 
+		debug.debug("evaluateStrategies: exit result = ",result);
 		return result;
 	}
 	

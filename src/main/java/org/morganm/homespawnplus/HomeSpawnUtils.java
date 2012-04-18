@@ -40,8 +40,6 @@ public class HomeSpawnUtils {
 
 	private final HomeSpawnPlus plugin;
     private final Server server;
-//    private WorldGuardInterface wgInterface;
-//	private Random random = new Random(System.currentTimeMillis());
     private Debug debug;
 	
 	// set when we first find the defaultSpawnWorld, cached for future reference

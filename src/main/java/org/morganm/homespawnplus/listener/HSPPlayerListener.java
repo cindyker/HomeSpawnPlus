@@ -60,32 +60,6 @@ public class HSPPlayerListener implements Listener {
         debug = Debug.getInstance();
     }
 
-    /** Return location player should be sent to.
-     * 
-     * @param p
-     * @param spawnInfo
-     */
-    /*
-    private Location doSpawn(Player p, StrategyInfo spawnInfo) {
-//    	spawnInfo.spawnStrategies = plugin.getHSPConfig().getStrategies(spawnInfo.spawnEventType);
-    	Location l = util.getStrategyLocation(p, spawnInfo);
-    	
-    	// default behavior is do nothing
-    	if( l == null ) {
-    		// if we are spawning and the RECORD_LAST_LOGOUT config is set, then we lookup
-    		// our last logout location and return that
-    		if( ConfigOptions.SETTING_JOIN_BEHAVIOR.equals(spawnInfo.spawnEventType) &&
-    				plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
-    			org.morganm.homespawnplus.entity.Player storagePlayer = plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName());
-    			if( storagePlayer != null )
-    				l = storagePlayer.getLastLogoutLocation();
-    		}
-    	}
-    	
-    	return l;
-    }
-    */
-    
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
     	debug.devDebug("onPlayerInteract: invoked");
@@ -206,33 +180,10 @@ public class HSPPlayerListener implements Listener {
     {
     	final Player p = event.getPlayer();
     	
-//    	StrategyInfo spawnInfo = new StrategyInfo();
-//    	spawnInfo.spawnEventType = ConfigOptions.SETTING_JOIN_BEHAVIOR;
-    	
 		// Is this a new player?
     	if( util.isNewPlayer(p) ) {
     		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected.");
-    		
-//    		spawnInfo.isFirstLogin = true;
-    		
-    		/*
-
-    		// also make sure they don't have a home set.  it's possible if they were running HomeSpawnPlus
-    		// before the above Player check was created, that they already have a home set even though
-    		// they weren't in the Player table yet.  In that case, we've already recorded them as a player
-    		// now so just fall through to the default onjoin logic.
-    		if( plugin.getStorage().getHome(p.getWorld().getName(), p.getName()) == null ) {
-	    		// send the new player to the default world spawn
-    			if( isVerboseLogging() )
-    				HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Sending new player " + p.getName() + " to global spawn.");
-	    		
-	    		Location l = util.getDefaultSpawn().getLocation();
-	    		util.delayedTeleport(p, l);
-	    		
-	    		return;
-    		}
-    		*/
     	}
     	
 		// if they don't have a player record yet, create one.
@@ -249,6 +200,7 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	
+    	// execute ON_JOIN strategy to find out where we should put the player
     	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_JOIN, p);
     	if( l != null )
     		util.delayedTeleport(p, l);
@@ -271,6 +223,7 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
 
+    	// execute ON_DEATH strategy to find out where we should spawn the player
     	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_DEATH, e.getPlayer());
     	if( l != null )
     		e.setRespawnLocation(l);

@@ -2,6 +2,12 @@
 # documentation for these options can always be found on the web at:
 #
 # 'http://dev.bukkit.org/server-mods/homespawnplus/pages/config-params'
+#
+# This config_defaults.yml is NOT USED by HSP in any way and is
+# overwritten everytime HSP starts up. It is simply here for reference
+# to the full set of options available in HSP as well as their
+# default values. Copy any sections you want here into your config.yml
+# to make changes.
 
 # If you're having problems with other plugins that have registered
 # commands that you want to use with HSP (for example, CommandBook has
@@ -36,6 +42,9 @@ core:
   #     Will store one file per data type (home, spawn, etc).
   # YAML_SINGLE_FILE - YAML storage in your plugins/HomeSpawnPlus
   #     directory. Stores all data in single "data.yml" file.
+  # PERSISTANCE_REIMPLEMENTED_EBEANS - use persitance reimplemented
+  #     ebeans implementation. Exactly like EBEANS above except with
+  #     a few extra benefits. http://goo.gl/rtdDH
   #
   # This is one option that cannot be reloaded live with "/hsp rc",
   # you must restart Bukkit if you change this option.

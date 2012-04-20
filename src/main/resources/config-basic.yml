@@ -4,11 +4,12 @@
 # 'http://dev.bukkit.org/server-mods/homespawnplus/pages/config-params'
 #
 # This is the simplified "basic" configuration. See the
-# "config_default.yml" file for full options listing.
+# "config_defaults.yml" file for full options listing.
 
 core:
-  # 0 - Use SqlLite or MySQL, as defined by bukkit.yml
-  storage: 0
+  # EBEANS - Use SqlLite or MySQL, as defined by bukkit.yml
+  # YAML - Use yaml storage files
+  storage: EBEANS
 
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'hsp.home.bedsethome' permission.
@@ -18,6 +19,7 @@ core:
   defaultWorld: world
 
   verboseLogging: false
+  verboseStrategyLogging: false
 
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
@@ -92,3 +94,10 @@ cost:
   sethome: 0
   spawn: 0
   groupspawn: 0
+
+# If you want to use home invites, please read documentation:
+# http://goo.gl/sc6oa
+homeInvite:
+  timeout: 30
+  useHomeCooldown: true
+  useHomeWarmup: true

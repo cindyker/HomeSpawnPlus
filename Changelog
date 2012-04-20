@@ -1,3 +1,11 @@
+v1.5.2 - April 18, 2012
+* Major refactor of strategies. End result if things were done right is
+there should be no noticeable change to end users. However, the refactor
+includes some performance improvements as well as signficantly more
+maintainable code, which also increases the chance others can easily
+create and contribute their own strategies.
+* fix for home invites sent for homes without a name
+
 v1.5.1 - April 15, 2012
 * simplified the /hi command (a suggestion by @Infuscu). The /hi (homeinvite)
 command arguments are reversed to now be "/hi player homename", so that if

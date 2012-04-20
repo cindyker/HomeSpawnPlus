@@ -94,6 +94,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private String pluginName;
     private Storage storage;
     private Locale locale;
+    private Debug debug;
 
     public Economy vaultEconomy = null;
     
@@ -114,6 +115,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     
     @Override
     public void onEnable() {
+    	long startupBegin = System.currentTimeMillis();
+    	long startupTimer = 0;
     	boolean loadError = false;
     	instance = this;
     	
@@ -123,15 +126,24 @@ public class HomeSpawnPlus extends JavaPlugin {
     	pluginName = pluginDescription.getName();
     	
     	Debug.getInstance().init(log, logPrefix, "plugins/HomeSpawnPlus/debug.log", false);
+		debug = Debug.getInstance();
     	jarUtils = new JarUtils(this, getFile(), log, logPrefix);
 		buildNumber = jarUtils.getBuildNumber();
-    	
+
     	// load our configuration and database
     	try {
         	strategyEngine = new StrategyEngine(this);
+        	
+        	startupTimer = System.currentTimeMillis();
+        	debug.debug("[Startup Timer] loading config (t+", System.currentTimeMillis()-startupBegin+")");
     		loadConfig();
     		updateConfigDefaultFile();
+        	debug.debug("[Startup Timer] config loaded in ", System.currentTimeMillis()-startupTimer, "ms");
+        	
+        	startupTimer = System.currentTimeMillis();
+        	debug.debug("[Startup Timer] initializing database (t+", System.currentTimeMillis()-startupBegin+")");
             initializeDatabase();
+        	debug.debug("[Startup Timer] database initialized in ", System.currentTimeMillis()-startupTimer, "ms");
     	}
     	catch(Exception e) {
     		loadError = true;
@@ -145,14 +157,26 @@ public class HomeSpawnPlus extends JavaPlugin {
     		return;
     	}
     	
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] initializing permissions (t+", System.currentTimeMillis()-startupBegin+")");
     	initPermissions();
-    	setupVaultEconomy();
+    	debug.debug("[Startup Timer] permissions initialized in ", System.currentTimeMillis()-startupTimer, "ms");
     	
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] initializing economy (t+", System.currentTimeMillis()-startupBegin+")");
+    	setupVaultEconomy();
+    	debug.debug("[Startup Timer] economy initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] initializing HSP managers (t+", System.currentTimeMillis()-startupBegin+")");
     	cooldownManager = new CooldownManager(this);
     	warmupManager = new WarmupManager(this);
     	spawnUtils = new HomeSpawnUtils(this);
     	homeInviteManager = new HomeInviteManager(this);
+    	debug.debug("[Startup Timer] HSP managers initialized in ", System.currentTimeMillis()-startupTimer, "ms");
     	
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] initializing Bukkit event registration (t+", System.currentTimeMillis()-startupBegin+")");
         final PluginManager pm = getServer().getPluginManager();
 
     	playerListener = new HSPPlayerListener(this);
@@ -163,11 +187,16 @@ public class HomeSpawnPlus extends JavaPlugin {
 
     	entityListener = new HSPEntityListener(this);
         hookWarmups();
+    	debug.debug("[Startup Timer] Bukkit event registration initialized in ", System.currentTimeMillis()-startupTimer, "ms");
         
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] initializing command system (t+", System.currentTimeMillis()-startupBegin+")");
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	new CommandUsurper(this, log, logPrefix).usurpCommands();
+    	debug.debug("[Startup Timer] command system initialized in ", System.currentTimeMillis()-startupTimer, "ms");
     	
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
+    	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
     }
     
     @Override

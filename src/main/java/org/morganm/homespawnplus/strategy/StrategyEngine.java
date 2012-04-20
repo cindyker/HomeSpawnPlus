@@ -36,7 +36,7 @@ public class StrategyEngine {
 		return strategyConfig;
 	}
 	
-	/** Convenience methods for routines only interested in an output location (as
+	/** Convenience method for routines only interested in an output location (as
 	 * opposed to other result details).
 	 * 
 	 * @param event
@@ -47,7 +47,7 @@ public class StrategyEngine {
     	StrategyContext context = new StrategyContext();
     	context.setPlayer(player);
     	context.setSpawnEventType(event);
-    	if( args != null && args.length > 1 )
+    	if( args != null && args.length > 0 )
     		context.setArg(args[0]);
     	
     	StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
@@ -124,6 +124,13 @@ public class StrategyEngine {
 		return result;
 	}
 	
+	/** Private method that takes an input Set of strategies and iterates through the set
+	 * looking for a positive result match.
+	 * 
+	 * @param context
+	 * @param strategies
+	 * @return the StrategyResult of executing the strategies, possibly null
+	 */
 	private StrategyResult evaluateStrategies(final StrategyContext context, final Set<Strategy> strategies) {
 		StrategyResult result = null;
 		
@@ -181,7 +188,7 @@ public class StrategyEngine {
 	 * @param firstElement
 	 * @return
 	 */
-	static <T> T[] prepend(T[] arr, T firstElement) {
+	static private <T> T[] prepend(T[] arr, T firstElement) {
 	    final int N = arr.length;
 	    arr = java.util.Arrays.copyOf(arr, N+1);
 	    System.arraycopy(arr, 0, arr, 1, N);

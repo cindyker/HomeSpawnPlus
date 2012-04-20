@@ -106,13 +106,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     	return instance;
     }
     
-    /** Divergent from typical singleton pattern, our singleton CAN be unloaded.
-     * 
-     */
-    public static void clearInstance() {
-    	instance = null;
-    }
-    
     @Override
     public void onEnable() {
     	long startupBegin = System.currentTimeMillis();

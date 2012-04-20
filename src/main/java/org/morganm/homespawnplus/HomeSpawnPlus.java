@@ -106,6 +106,35 @@ public class HomeSpawnPlus extends JavaPlugin {
     	return instance;
     }
     
+    /** Routine to detect other plugins that use the same commands as HSP and
+     * often cause conflicts and create confusion.
+     * 
+     */
+    private void detectAndWarn() {
+    	// do nothing if warning is disabled
+    	if( !getConfig().getBoolean(ConfigOptions.WARN_CONFLICTS, true) )
+    		return;
+    	
+    	if( getServer().getPluginManager().getPlugin("Essentials") != null ) {
+    		log.warning(logPrefix+" Essentials found. It is likely your HSP /home and /spawn commands will"
+    				+ " end up going to Essentials instead. Please either use the HSP config.yml"
+    				+ " \"usurpCommands\" option to enable HSP commands or consider disabling Essentials.");
+    		log.warning(logPrefix+" Also note that HSP can convert your homes from Essentials for you. Just"
+    				+ " run the command \"/hspconvert essentials\" (must have hsp.command.admin permission)");
+    		log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
+    				+ " this warning.");
+    	}
+    	
+    	if( getServer().getPluginManager().getPlugin("CommandBook") != null ) {
+    		log.warning(logPrefix+" CommandBook found. It is likely your HSP /home and /spawn commands will"
+    				+ " end up going to CommandBook instead. Please either use the HSP config.yml"
+    				+ " \"usurpCommands\" option to enable HSP commands or add \"homes\" and"
+    				+ " \"spawn-locations\" to your CommandBook config.yml \"components.disabled\" section.");
+    		log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
+    				+ " this warning.");
+    	}
+    }
+    
     @Override
     public void onEnable() {
     	long startupBegin = System.currentTimeMillis();
@@ -187,6 +216,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	new CommandUsurper(this, log, logPrefix).usurpCommands();
     	debug.debug("[Startup Timer] command system initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	
+    	detectAndWarn();
     	
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");

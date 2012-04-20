@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -46,6 +47,7 @@ public class StorageEBeans implements Storage {
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.logPrefix = HomeSpawnPlus.logPrefix;
+		this.usePersistanceReimplemented = false;
 	}
 	public StorageEBeans(HomeSpawnPlus plugin, boolean usePersistanceReimplemented) {
 		this(plugin);
@@ -67,21 +69,47 @@ public class StorageEBeans implements Storage {
 		return usePersistanceReimplemented;
 	}
 
+	private void persistanceReimplementedInitialize() {
+        final EBeanUtils utils = EBeanUtils.getInstance();
+
+		persistanceReimplementedDatabase = new MyDatabase(plugin) {
+        	protected java.util.List<Class<?>> getDatabaseClasses() {
+        		return plugin.getDatabaseClasses();
+            };        	
+        };
+
+        persistanceReimplementedDatabase.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
+        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#initializeStorage
 	 */
 	public void initializeStorage() throws StorageException {
-        EBeanUtils utils = EBeanUtils.getInstance();
-
 		if( usePersistanceReimplemented ) {
-			persistanceReimplementedDatabase = new MyDatabase(plugin) {
-	        	protected java.util.List<Class<?>> getDatabaseClasses() {
-	        		return plugin.getDatabaseClasses();
-	            };        	
-	        };
-
-	        persistanceReimplementedDatabase.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
-	        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
+			persistanceReimplementedInitialize();
+		}
+		else {
+	        EbeanServer db = plugin.getDatabase();
+	        if( db == null )
+	        	throw new NullPointerException("plugin.getDatabase() returned null EbeanServer!");
+	        
+			// Check that our tables exist - if they don't, then install the database.
+	        try {
+	            db.find(Spawn.class).findRowCount();
+	        } catch (PersistenceException ex) {
+	            log.info("Installing database for "
+	                    + plugin.getPluginName()
+	                    + " due to first time usage");
+	            
+	            // for some reason bukkit's EBEAN implementation blows up when trying
+	            // to create the HomeInvite FK relationship. Pesistance reimplemented
+	            // does not have this problem. So if we have to initialize the database,
+	            // we always do it with Persistance Reimplemented, regardless of the
+	            // EBEAN implementation we will use after this initialization.
+	            persistanceReimplementedInitialize();
+//	            plugin.installDatabaseDDL();
+	        }
 		}
         
         homeDAO = new HomeDAOEBean(getDatabase());

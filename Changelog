@@ -1,9 +1,15 @@
-v1.5.3 - April 19, 2012
+v1.5.3 - 
 * Ticket #93: named homes not working
 * startup delay resolved. Default 'EBEANS' storage just uses Bukkit ebeans. To
 use Persitance Reimplemented (http://goo.gl/rtdDH) which enables live-reload
 (among other benefits, check link), you can use PERSISTANCE_REIMPLEMENTED_EBEANS
 storage engine, at the cost of a ~0.75 second delay at startup.
+* Added startup warnings for anyone using Essentials or CommandBook that also
+gives brief instructions for how to make those plugins play nice with HSP.
+* Updated Essentials home converter to Essentials 2.9 (most current version).
+* Added converter for CommandBook. Since CommandBook can already import
+MyHomes and warpz0r, this means users of those plugins can use the CommandBook
+converter script and then import that into HSP. link: http://goo.gl/v0a0j
 
 v1.5.2 - April 18, 2012
 * Major refactor of strategies. End result if things were done right is

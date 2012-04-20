@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 
 
@@ -26,9 +26,9 @@ public class SpawnControl implements Runnable {
 
 	private final String logPrefix;
 	private org.morganm.homespawnplus.HomeSpawnPlus plugin;
-	private Player initiatingPlayer;
+	private CommandSender initiatingPlayer;
 
-	public SpawnControl(org.morganm.homespawnplus.HomeSpawnPlus plugin, Player initiatingPlayer) {
+	public SpawnControl(org.morganm.homespawnplus.HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
 		this.plugin = plugin;
 		this.initiatingPlayer = initiatingPlayer;
 		

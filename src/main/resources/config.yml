@@ -44,11 +44,17 @@ core:
   #     directory. Stores all data in single "data.yml" file.
   # PERSISTANCE_REIMPLEMENTED_EBEANS - use persitance reimplemented
   #     ebeans implementation. Exactly like EBEANS above except with
-  #     a few extra benefits. http://goo.gl/rtdDH
+  #     a few extra benefits. http://goo.gl/rtdDH  To live-reload
+  #     with this, due to a Bukkit limitation, you must edit
+  #     plugin.yml and set 'database: false'
   #
   # This is one option that cannot be reloaded live with "/hsp rc",
   # you must restart Bukkit if you change this option.
   storage: EBEANS
+
+  # Warn on any known plugin conflicts that might prevent HSP from
+  # working the way the admin expects.
+  warnConflicts: true
 
   # this is ONLY used when "ops" is used in the "permissions" section
   # above.

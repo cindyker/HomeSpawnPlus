@@ -2,7 +2,7 @@ name: HomeSpawnPlus
 main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 1.5.3a
 author: morganm
-database: false
+database: true
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]
 commands:
   groupspawn:
@@ -34,7 +34,7 @@ commands:
            /<command> player homeName
            /<command> player w:worldName
   homelist:
-    aliases: [homel, listhomes, hl]
+    aliases: [homel, listhomes, hl, homes]
     description: Show your homes
     usage: |
            /<command> - show homes on all worlds

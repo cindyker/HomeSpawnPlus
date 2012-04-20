@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 
@@ -25,9 +25,9 @@ public class Essentials23 implements Runnable {
 	
 	private final String logPrefix;
 	private HomeSpawnPlus plugin;
-	private Player initiatingPlayer;
+	private CommandSender initiatingPlayer;
 	
-	public Essentials23(HomeSpawnPlus plugin, Player initiatingPlayer) {
+	public Essentials23(HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
 		this.plugin = plugin;
 		this.initiatingPlayer = initiatingPlayer;
 		

@@ -21,6 +21,10 @@ core:
   verboseLogging: false
   verboseStrategyLogging: false
 
+  # Warn on any known plugin conflicts that might prevent HSP from
+  # working the way the admin expects.
+  warnConflicts: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

@@ -18,7 +18,7 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
 public class HomeList extends BaseCommand {
 
 	@Override
-	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl"}; }
+	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl", "homes"}; }
 	
 	@Override
 	public boolean execute(Player p, Command command, String[] args) {

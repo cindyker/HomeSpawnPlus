@@ -20,7 +20,8 @@ public class StorageFactory {
 		EBEANS,
 		CACHED_EBEANS,
 		YAML,
-		YAML_SINGLE_FILE
+		YAML_SINGLE_FILE,
+		PERSISTANCE_REIMPLEMENTED_EBEANS
 	}
 //	public static final int STORAGE_TYPE_EBEANS = 0;
 //	public static final int STORAGE_TYPE_CACHED_EBEANS = 1;
@@ -72,6 +73,10 @@ public class StorageFactory {
 			
 		case YAML_SINGLE_FILE:
 			storage = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
+			break;
+			
+		case PERSISTANCE_REIMPLEMENTED_EBEANS:
+			storage = new StorageEBeans(plugin, true);
 			break;
 			
 		default:

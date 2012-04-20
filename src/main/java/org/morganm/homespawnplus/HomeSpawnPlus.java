@@ -406,10 +406,12 @@ public class HomeSpawnPlus extends JavaPlugin {
     	// override method to use new Bukkit Persistance reimplemented ebean server
     	if( storage instanceof StorageEBeans ) {
     		StorageEBeans storageEbeans = (StorageEBeans) storage;
-    		return storageEbeans.getDatabase().getDatabase();
+    		if( storageEbeans.usePersistanceReimplemented() ) {
+    			return storageEbeans.getPersistanceReimplementedDatabase().getDatabase();
+    		}
     	}
-    	else
-    		return super.getDatabase();
+
+		return super.getDatabase();
     }
     
     public boolean hasPermission(String worldName, String playerName, String permissionNode) {

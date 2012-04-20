@@ -34,7 +34,8 @@ public class StorageEBeans implements Storage {
 
 	private final HomeSpawnPlus plugin;
 	private final String logPrefix;
-	private MyDatabase database;
+	private MyDatabase persistanceReimplementedDatabase;
+	private boolean usePersistanceReimplemented = false;
 	
 	private HomeDAOEBean homeDAO;
 	private HomeInviteDAOEBean homeInviteDAO;
@@ -46,30 +47,48 @@ public class StorageEBeans implements Storage {
 		this.plugin = plugin;
 		this.logPrefix = HomeSpawnPlus.logPrefix;
 	}
+	public StorageEBeans(HomeSpawnPlus plugin, boolean usePersistanceReimplemented) {
+		this(plugin);
+		this.usePersistanceReimplemented = usePersistanceReimplemented;
+	}
 	
-	public MyDatabase getDatabase() {
-		return database;
+	public MyDatabase getPersistanceReimplementedDatabase() {
+		return persistanceReimplementedDatabase;
+	}
+	
+	public EbeanServer getDatabase() {
+		if( usePersistanceReimplemented )
+			return persistanceReimplementedDatabase.getDatabase();
+		else
+			return plugin.getDatabase();
+	}
+	
+	public boolean usePersistanceReimplemented() {
+		return usePersistanceReimplemented;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.IStorage#initializeStorage
 	 */
 	public void initializeStorage() throws StorageException {
-        database = new MyDatabase(plugin) {
-        	protected java.util.List<Class<?>> getDatabaseClasses() {
-        		return plugin.getDatabaseClasses();
-            };        	
-        };
-        
         EBeanUtils utils = EBeanUtils.getInstance();
-        database.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
-        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
 
-        homeDAO = new HomeDAOEBean(database.getDatabase());
-        homeInviteDAO = new HomeInviteDAOEBean(database.getDatabase(), plugin);
-        spawnDAO = new SpawnDAOEBean(database.getDatabase());
-        playerDAO = new PlayerDAOEBean(database.getDatabase());
-        versionDAO = new VersionDAOEBean(database.getDatabase());
+		if( usePersistanceReimplemented ) {
+			persistanceReimplementedDatabase = new MyDatabase(plugin) {
+	        	protected java.util.List<Class<?>> getDatabaseClasses() {
+	        		return plugin.getDatabaseClasses();
+	            };        	
+	        };
+
+	        persistanceReimplementedDatabase.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
+	        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
+		}
+        
+        homeDAO = new HomeDAOEBean(getDatabase());
+        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), plugin);
+        spawnDAO = new SpawnDAOEBean(getDatabase());
+        playerDAO = new PlayerDAOEBean(getDatabase());
+        versionDAO = new VersionDAOEBean(getDatabase());
         
         try {
         	upgradeDatabase();
@@ -95,7 +114,7 @@ public class StorageEBeans implements Storage {
 
 	@Override
 	public void deleteAllData() {
-		EbeanServer db = database.getDatabase();
+		EbeanServer db = getDatabase();
 		db.beginTransaction();
 		
 		SqlUpdate update = db.createSqlUpdate("delete from hsp_spawn");
@@ -123,7 +142,7 @@ public class StorageEBeans implements Storage {
 	
 	private void upgradeDatabase() {
 		int knownVersion = CURRENT_VERSION;		// assume current version to start
-		final EbeanServer db = database.getDatabase();
+		final EbeanServer db = getDatabase();
 		final Version versionObject = getVersionDAO().getVersionObject();
 		
 		if( versionObject == null ) {

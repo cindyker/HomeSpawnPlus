@@ -1,3 +1,10 @@
+v1.5.3 - April 19, 2012
+* Ticket #93: named homes not working
+* startup delay resolved. Default 'EBEANS' storage just uses Bukkit ebeans. To
+use Persitance Reimplemented (http://goo.gl/rtdDH) which enables live-reload
+(among other benefits, check link), you can use PERSISTANCE_REIMPLEMENTED_EBEANS
+storage engine, at the cost of a ~0.75 second delay at startup.
+
 v1.5.2 - April 18, 2012
 * Major refactor of strategies. End result if things were done right is
 there should be no noticeable change to end users. However, the refactor

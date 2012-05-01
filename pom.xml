@@ -20,67 +20,11 @@
       <id>morganm-repo</id>
       <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
     </repository>
-<!--
-    <repository>
-      <id>zml-repo</id>
-      <url>http://files.zachsthings.com/repo</url>
-    </repository>
--->
     <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public/</url>
     </repository>
-
-<!-- Would like build number management, but currently this leads to
-     maven Apache snapshot builds that don't exist..
-
-    <repository>
-      <id>codehaus-snapshot</id>
-      <url>https://nexus.codehaus.org/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>Apache Snapshots</id>
-      <url>http://repository.apache.org/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
--->
   </repositories>
-
-<!--
-  <pluginRepositories>
-    <pluginRepository>
-      <id>Codehaus Snapshots</id>
-      <url>http://nexus.codehaus.org/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-    <pluginRepository>
-      <id>Apache Snapshots</id>
-      <url>http://repository.apache.org/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
--->
 
   <dependencies>
     <!-- Required component -->
@@ -144,17 +88,38 @@
       <resource>
         <targetPath>.</targetPath>
         <directory>${basedir}/src/main/resources/</directory>
-<!--
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}</directory>
         <filtering>true</filtering>
         <includes>
-          <include>plugin.yml</include>
+          <include>build.number</include>
         </includes>
--->
       </resource>
     </resources>
 
     <!-- Plugins -->
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <buildnumber />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Compile plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -187,27 +152,6 @@
           </archive>
         </configuration>
       </plugin>
-
-     <!-- Build number -->
-<!--
-     <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doCheck>true</doCheck>
-          <doUpdate>true</doUpdate>
-        </configuration>
-      </plugin>
--->
 
       <!-- Assembly -->
 <!--

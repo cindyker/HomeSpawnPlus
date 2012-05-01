@@ -3,3 +3,7 @@ bin
 dist
 lib
 target
+old
+.classpath
+.project
+.settings

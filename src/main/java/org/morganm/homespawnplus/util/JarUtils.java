@@ -6,6 +6,8 @@ package org.morganm.homespawnplus.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -88,5 +90,48 @@ public class JarUtils {
         }
         
         return buildNum;
+    }
+    
+    /** Given a packageName, return all classes that are in this jar file that are part
+     * of that package or sub packages.
+     * 
+     * @param packageName
+     * @return
+     */
+    public Class<?>[] getClasses(final String packageName) {
+		ArrayList<Class<?>> classList = new ArrayList<Class<?>>();
+		
+    	try {
+    		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    		assert classLoader != null;
+    		String path = packageName.replace('.', '/');
+    		JarFile jar = new JarFile(jarFile);
+    		Enumeration<JarEntry> entries = jar.entries();
+    		for(; entries.hasMoreElements();) {
+    			final JarEntry entry = entries.nextElement();
+    			final String entryName = entry.getName();
+    			
+//    			Debug.getInstance().devDebug("entry name=",entryName,", path=",path);
+    			if( entryName.endsWith(".class") && entryName.startsWith(path) ) {
+    				String className = entryName.replace("/", ".");
+    				className = className.substring(0, className.length()-6);
+//        			Debug.getInstance().devDebug("className=",className);
+        			
+    				try {
+    					Class<?> clazz = Class.forName(className);
+        				classList.add(clazz);
+//        				Debug.getInstance().devDebug("added class: ",clazz);
+    				}
+    				catch(ClassNotFoundException e) {
+    		    		e.printStackTrace();
+    				}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+		return classList.toArray(new Class<?>[] {});
     }
 }

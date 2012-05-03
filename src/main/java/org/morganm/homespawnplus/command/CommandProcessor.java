@@ -3,10 +3,7 @@
  */
 package org.morganm.homespawnplus.command;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -21,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.util.Debug;
 
 
 /**
@@ -146,8 +144,57 @@ public class CommandProcessor
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	public List<Command> getCommands() {
+		List<Command> cmds = new ArrayList<Command>();
+		
+		Debug.getInstance().devDebug("loading commands for package org.morganm.homespawnplus.commands");
+		Class<?>[] classes = plugin.getJarUtils().getClasses("org.morganm.homespawnplus.commands");
+//		Class<?>[] classes = JavaUtils.getClasses("org.morganm.homespawnplus.commands");
+		
+		for(int i=0; i < classes.length; i++) {
+//			Debug.getInstance().devDebug("testing class ",classes[i]);
+
+			try {
+				// check if class extends the BaseCommand class, which implements the Command interface
+				Class<?> superClass = classes[i].getSuperclass();
+				if( BaseCommand.class.equals(superClass) ) {
+					Command cmd = (Command) classes[i].newInstance();
+					cmds.add(cmd);
+				}
+				// No BaseCommand super, check to see if class implements Command interface directly
+				else {
+					Class<?>[] interfaces = classes[i].getInterfaces();
+					for(Class<?> iface : interfaces) {
+						if( iface.equals(Command.class) ) {
+							Command cmd = (Command) classes[i].newInstance();
+							cmds.add(cmd);
+						}
+					}
+				}
+			}
+			catch(Exception e) {
+				log.severe(logPrefix + " error trying to load command class "+classes[i]);
+				e.printStackTrace();
+			}
+			
+			/*
+			if( classes[i].isAssignableFrom(Command.class) ) {
+				try {
+					Command cmd = (Command) classes[i].newInstance();
+					Debug.getInstance().debug("Adding command class ",cmd);
+					cmds.add(cmd);
+				}
+				catch(Exception e) {
+					log.severe(logPrefix + " error trying to load command class "+classes[i]);
+					e.printStackTrace();
+				}
+			}
+			*/
+		}
+		
+		return cmds;
+		
+		/*
 		List<Command> cmds = new ArrayList<Command>();
 
 		ClassLoader loader = plugin.getClassLoader();
@@ -197,5 +244,6 @@ public class CommandProcessor
 		}
 		
 		return cmds;
+	*/
 	}
 }

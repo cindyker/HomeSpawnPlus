@@ -20,6 +20,8 @@ public interface ConfigOptions {
 	public static final String ENABLE_HOME_BEDS = "core.bedsethome";
 	public static final String BED_HOME_2CLICKS = "core.bedhome2clicks";
 	public static final String BED_HOME_MUST_BE_NIGHT = "core.bedHomeMustBeNight";
+	public static final String BED_HOME_NEVER_DISPLAY_NIGHT_MSG = "core.bedHomeNeverDisplayNightMessage";
+	public static final String BED_HOME_ORIGINAL_BEHAVIOR = "core.bedHomeOriginalBehavior";
 	public static final String ENABLE_RECORD_LAST_LOGOUT = "core.recordLastLogout";
 //	public static final String ENABLE_GROUP_SPAWN = "core.groupSpawnEnabled";
 	public static final String SETTING_WORLD_OVERRIDE = "core.override_world";
@@ -72,6 +74,7 @@ public interface ConfigOptions {
 	public static final String WARMUP_BASE = "warmup.";
 	public static final String COST_BASE = "cost.";
 	public static final String COST_VERBOSE = COST_BASE + "verbose";
+	public static final String COST_SETHOME_MULTIPLIER = "cost.sethome-multiplier";
 	public static final String HOME_LIMITS_BASE = "homeLimits.";
 	public static final String HOME_LIMITS_DEFAULT = "default";
 	public static final String HOME_LIMITS_PER_WORLD = "perWorld";

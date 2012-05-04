@@ -67,24 +67,33 @@ public class HSPPlayerListener implements Listener {
             return;
 
         // config option needs to be enabled in order to use this feature
-        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
+        if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
         	return;
 
         // if BED_HOME_MUST_BE_NIGHT config is set, then we ignore this click and let
         // the PlayerBedEnterEvent handler handle it instead.
-        if( plugin.getHSPConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) )
+        if( plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) )
         	return;
         
+        // canCancel is true if we can cancel the event to avoid spurious additional
+        // "You can only sleep at night" messages. The original behavior did not do this,
+        // so this is only false if they enable the "original" behavior
+        boolean canCancel = !plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_ORIGINAL_BEHAVIOR, false);
+
+        // we do nothing further if the player is sneaking
+        if( event.getPlayer().isSneaking() )
+        	return;
+
         Block b = event.getClickedBlock();
 		// did they click on a bed?
         if( b.getTypeId() == 26 ) {
         	debug.debug("onPlayerInteract: calling doBedSet for player ",event.getPlayer());
-        	if( doBedSet(event.getPlayer(), b) )
-        		event.setCancelled(true);
         	
-        	// if they aren't sneaking, we cancel the event to avoid "You can only sleep
-        	// at night" messages.
-        	if( !event.getPlayer().isSneaking() )
+        	if( doBedSet(event.getPlayer(), b) )
+        		event.setCancelled(canCancel);
+        	// if we're never supposed to display "You can only sleep at night" message, then
+        	// cancel the event to avoid the message
+        	else if( plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_NEVER_DISPLAY_NIGHT_MSG, false) )
         		event.setCancelled(true);
         }
     }
@@ -93,12 +102,16 @@ public class HSPPlayerListener implements Listener {
     public void onBedEvent(PlayerBedEnterEvent event) {
     	debug.devDebug("onBedEvent: invoked");
         // config option needs to be enabled in order to use this feature
-        if( !plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
+        if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
         	return;
         
+        // we do nothing further if the player is sneaking
+        if( event.getPlayer().isSneaking() )
+        	return;
+
         // we only handle events if BED_HOME_MUST_BE_NIGHT config is true, otherwise
         // the PlayerInteractEvent handler takes care of it.
-        if( plugin.getHSPConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) ) {
+        if( plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_MUST_BE_NIGHT, false) ) {
         	debug.debug("onBedEvent: calling doBedSet for player ",event.getPlayer());
         	if( doBedSet(event.getPlayer(), event.getBed()) )
         		event.setCancelled(true);

@@ -1,4 +1,4 @@
-v1.5.4 - May ?, 2012
+v1.5.4 - May 4, 2012
 * converted build system over to maven (finally stood up my own nexus
 respository required to host dependent artifacts that aren't maven enabled).
 This simplifies the build process to git cloning the source and then just
@@ -6,7 +6,10 @@ running 'mvn install'. Easy!
 * Ticket #95: added time string messages to cooldowns, ie: "32 minutes 25
 seconds remaining"
 * Ticket #94: safe teleport, now settable via "config.safeTeleport" option
+* Ticket #92: bed home request. See new bedHome documentation available at:
+http://dev.bukkit.org/server-mods/homespawnplus/pages/bed-homes/
 * localized time strings
+* Ticket #89: home cost multiplier
 
 v1.5.3 - April 20, 2012
 * Ticket #93: named homes not working

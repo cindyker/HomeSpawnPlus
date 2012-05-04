@@ -700,7 +700,7 @@ public class HomeSpawnUtils {
     public int getCommandCost(Player player, String commandName) {
     	int cost = 0;
     	
-    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COST_BASE
+    	ConfigurationSection cs = plugin.getConfig().getConfigurationSection(ConfigOptions.COST_BASE
     			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
     	if( cs != null ) {
     		Set<String> keys = cs.getKeys(false);
@@ -711,13 +711,13 @@ public class HomeSpawnUtils {
     				if( cost != 0 )
     					break;
 
-    				int entryCost  = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE
+    				int entryCost  = plugin.getConfig().getInt(ConfigOptions.COST_BASE
     						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + commandName, 0);
 
     				if( entryCost > 0 ) {
-    					List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.COST_BASE
+    					List<String> perms = plugin.getConfig().getStringList(ConfigOptions.COST_BASE
     							+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-    							+ entry + ".permissions", null);
+    							+ entry + ".permissions");
 
     					for(String perm : perms) {
     						debug.debug("getCommandCost(): checking permission ",perm," for entry ",entry);
@@ -736,7 +736,7 @@ public class HomeSpawnUtils {
     	// if cost is still 0, then check for world-specific cost
     	if( cost == 0 ) {
     		final String worldName = player.getWorld().getName();
-    		cost = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE
+    		cost = plugin.getConfig().getInt(ConfigOptions.COST_BASE
 					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
 					+ worldName + "." + commandName, 0);
 			
@@ -745,8 +745,31 @@ public class HomeSpawnUtils {
     	
     	// if cost is still 0, then check global cost setting
     	if( cost == 0 ) {
-    		cost = plugin.getHSPConfig().getInt(ConfigOptions.COST_BASE + commandName, 0);
+    		cost = plugin.getConfig().getInt(ConfigOptions.COST_BASE + commandName, 0);
         	debug.debug("getCommandCost(): post-global cost=",cost);
+    	}
+
+    	// apply sethome-multiplier, if any
+    	if( cost > 0 && commandName.equalsIgnoreCase("sethome") ) {
+    		double multiplier = plugin.getConfig().getDouble(ConfigOptions.COST_SETHOME_MULTIPLIER, 0);
+    		if( multiplier > 0 )
+    		{
+    			// by the time this method is called, the new home has already been created,
+    			// so it is already part of our globalHomeCount
+    			int globalHomeCount = getHomeCount(player.getName(), null);
+    			if( globalHomeCount > 1 ) {
+    				double totalCost = cost;
+    				for(int i=1; i < globalHomeCount; i++)
+    					totalCost *= multiplier; 
+    				double additionalCost = totalCost - cost;
+    				debug.debug("applying sethome-multplier ",multiplier," for player ",player,
+    						", total global home count=",globalHomeCount,", original cost=",cost,
+    						",additionalCost=",additionalCost);
+    				// should always be true, but check just in case
+    				if( additionalCost > 0 )
+    					cost += additionalCost;
+    			}
+    		}
     	}
     	
     	return cost;

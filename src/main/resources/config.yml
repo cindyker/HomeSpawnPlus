@@ -75,6 +75,18 @@ core:
   # If true, HSP will require it be night time in order for a bed home
   # to be saved by clicking on it. (ie. single player mechanics)
   bedHomeMustBeNight: false
+
+  # If set to true, the player will never see the "You can only
+  # sleep at night" message. Be warned this has the unfortunate side
+  # effect that they can never actually sleep in their bed, either.
+  bedHomeNeverDisplayNightMessage: false
+
+  # This restores the "original" behavior where all bed clicks go
+  # through (instead of supressing the first in 2click mode), which
+  # makes it possible to night sleep on first click and set home on
+  # 2 clicks. Note this is also possible without this option by
+  # the player using sneak to sleep vs. set home.
+  bedHomeOriginalBehavior: false
  
   # The default/main world. Strategies reference this as the default
   # world, you can change that here if you like.
@@ -327,6 +339,12 @@ cost:
   sethome: 0
   spawn: 0
   groupspawn: 0
+  # if sethome-multiplier is non-zero, then each additional home past
+  # the first (globally) will cost this much more. Example: sethome cost
+  # is 500, sethome-multiplier is 1.5. First home will cost 500, second
+  # will cost (500*1.5) = 750. 3rd home will cost (500*1.5*1.5) = 1125.
+  # 4th home is (500*1.5*1.5*1.5) = 1687.5, and so on.
+  sethome-multiplier: 0
 
 #  world:
 #    myworld:

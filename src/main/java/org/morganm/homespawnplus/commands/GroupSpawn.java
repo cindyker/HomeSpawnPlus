@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -81,7 +82,7 @@ public class GroupSpawn extends BaseCommand
 								"name", getWarmupName(), "place", "group spawn");
 //						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
 						if( applyCost(p, true) )
-							p.teleport(finalL);
+				    		util.teleport(p, finalL, TeleportCause.COMMAND);
 					}
 				}
 
@@ -97,7 +98,7 @@ public class GroupSpawn extends BaseCommand
 		}
 		else {
 			if( applyCost(p, true) )
-				p.teleport(l);
+	    		util.teleport(p, l, TeleportCause.COMMAND);
 		}
 		
 		return true;

@@ -25,6 +25,6 @@ public class LocaleFactory {
 		MessageLibrary msgLib = new MessageLibrary(config);
 		msgLib.load();
 		
-		return new LocaleStringReplacerImpl(msgLib);
+		return new LocaleStringReplacerImpl(msgLib, config.getLocale());
 	}
 }

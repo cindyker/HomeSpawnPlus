@@ -27,6 +27,7 @@ public interface ConfigOptions {
 	public static final String LAST_HOME_IS_DEFAULT = "core.lastHomeIsDefault";
 	public static final String RELOAD_CHUNK_ON_TELEPORT = "core.reloadChunkOnTeleport";
 	public static final String NEW_PLAYER_STRATEGY = "core.newPlayerStrategy";
+	public static final String SAFE_TELEPORT = "core.safeTeleport";
 	
 	public static final String USE_WARMUPS = "warmup.enabled";
 	public static final String WARMUPS_ON_MOVE_CANCEL = "warmup.onMoveCancel";

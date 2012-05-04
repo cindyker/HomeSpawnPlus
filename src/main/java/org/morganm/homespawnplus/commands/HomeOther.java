@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 
@@ -66,7 +67,7 @@ public class HomeOther extends BaseCommand {
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEOTHER_TELEPORTING,
 					"home", home.getName(), "player", home.getPlayerName(), "world", home.getWorld());
 			if( applyCost(p) )
-				p.teleport(home.getLocation());
+	    		util.teleport(p, home.getLocation(), TeleportCause.COMMAND);
 		}
 		else if( homeName != null )
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,

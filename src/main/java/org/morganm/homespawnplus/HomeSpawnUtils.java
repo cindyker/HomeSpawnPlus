@@ -17,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
@@ -28,6 +29,7 @@ import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.General;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 
@@ -807,6 +809,22 @@ public class HomeSpawnUtils {
     	// if we didn't find any record of this player, they must be new
     	return true;
     }
+    
+    /** Teleport a player, optionally safe teleporting them if specified in the config
+     * 
+     * @param p
+     * @param l
+     * @param cause
+     */
+    public void teleport(Player p, Location l, TeleportCause cause) {
+    	if( cause == null )
+    		cause = TeleportCause.UNKNOWN;
+    	
+		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, false) )
+			General.getInstance().safeTeleport(p, l, TeleportCause.PLUGIN);
+		else
+			p.teleport(l, cause);
+    }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
      * the server if you teleport them during certain events (such as onPlayerJoin).
@@ -829,7 +847,7 @@ public class HomeSpawnUtils {
     	
     	public void run() {
     		debug.debug(logPrefix+" delayed teleporting "+p+" to "+l);
-    		p.teleport(l);
+    		teleport(p, l, TeleportCause.PLUGIN);
     	}
     }
 }

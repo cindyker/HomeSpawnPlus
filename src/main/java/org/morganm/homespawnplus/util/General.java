@@ -7,9 +7,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,13 +22,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.morganm.homespawnplus.i18n.Locale;
 
 /**
  * @author morganm
  *
  */
 public final class General {
-	// class version: 2
+	// class version: 3
 	
 	private static BlockFace[] directions = new BlockFace[] {
 		BlockFace.UP,
@@ -37,7 +41,15 @@ public final class General {
 	};
 	private static General instance;
 	
-	private General() {}
+	private Logger log = Logger.getLogger(General.class.toString());
+	private String logPrefix = "";
+	private Locale locale;
+	private final Map<String, String> timeLongHand = new HashMap<String, String>();
+	private final Map<String, String> timeShortHand = new HashMap<String, String>();
+	
+	private General() {
+		setupTimeLocaleStrings();
+	}
 	
 	public static General getInstance() {
 		if( instance == null )
@@ -45,17 +57,94 @@ public final class General {
 		return instance;
 	}
 	
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+		setupTimeLocaleStrings();
+	}
+	public void setLogger(Logger log) {
+		this.log = log;
+	}
+	public void setLogPrefix(String logPrefix) {
+		this.logPrefix = logPrefix;
+	}
+	
+	private void setupTimeLocaleStrings() {
+		timeLongHand.clear();
+		timeShortHand.clear();
+		
+		// default English is hard-coded so that even without a Locale specified,
+		// the time-related functions will work.
+		if( locale == null || "en".equalsIgnoreCase(locale.getLocale()) ) {
+			timeLongHand.put("month", "month");
+			timeLongHand.put("months", "months");
+			timeLongHand.put("week", "week");
+			timeLongHand.put("weeks", "weeks");
+			timeLongHand.put("day", "day");
+			timeLongHand.put("days", "days");
+			timeLongHand.put("hour", "hour");
+			timeLongHand.put("hours", "hours");
+			timeLongHand.put("minute", "minute");
+			timeLongHand.put("minutes", "minutes");
+			timeLongHand.put("second", "second");
+			timeLongHand.put("seconds", "seconds");
+			
+			timeShortHand.put("mo", "mo");
+			timeShortHand.put("w", "w");
+			timeShortHand.put("d", "d");
+			timeShortHand.put("h", "h");
+			timeShortHand.put("m", "m");
+			timeShortHand.put("s", "s");
+		}
+		
+		// even if "en" is set and receives defaults from above, this allows
+		// the actual locale specified to override the hardcoded defaults
+		if( locale != null ) {
+			timeLongHand.put("month", locale.getMessage("month"));
+			timeLongHand.put("months", locale.getMessage("months"));
+			timeLongHand.put("week", locale.getMessage("week"));
+			timeLongHand.put("weeks", locale.getMessage("weeks"));
+			timeLongHand.put("day", locale.getMessage("day"));
+			timeLongHand.put("days", locale.getMessage("days"));
+			timeLongHand.put("hour", locale.getMessage("hour"));
+			timeLongHand.put("hours", locale.getMessage("hours"));
+			timeLongHand.put("minute", locale.getMessage("minute"));
+			timeLongHand.put("minutes", locale.getMessage("minutes"));
+			timeLongHand.put("second", locale.getMessage("second"));
+			timeLongHand.put("seconds", locale.getMessage("seconds"));
+			
+			timeShortHand.put("mo", locale.getMessage("MONTH_SHORTHAND"));
+			timeShortHand.put("w", locale.getMessage("WEEK_SHORTHAND"));
+			timeShortHand.put("d", locale.getMessage("DAY_SHORTHAND"));
+			timeShortHand.put("h", locale.getMessage("HOUR_SHORTHAND"));
+			timeShortHand.put("m", locale.getMessage("MINUTE_SHORTHAND"));
+			timeShortHand.put("s", locale.getMessage("SECOND_SHORTHAND"));
+		}
+	}
+	
+	private boolean isSafeBlock(Block b) {
+		final Block up = b.getRelative(BlockFace.UP);
+		final Block down = b.getRelative(BlockFace.DOWN);
+		if( b.getTypeId() == 0 && up.getTypeId() == 0
+				&& (down.getTypeId() != 10 && down.getTypeId() != 11)	// no lava underneath
+				&& (down.getTypeId() != 0)								// no air underneath
+		){
+			return true;
+		}
+		else
+			return false;
+		
+	}
+	
 	/** Recursively look for 2 vertical safe air spots nearest the given location.
-	 * 
-	 *  TODO: ensure safety by also checking for lava underneath
 	 * 
 	 * @param base
 	 */
 	private Location findSafeLocation(final Set<Location> alreadyTraversed, final int level, final Location location) {
-		Block base = location.getBlock();
-		Block up = base.getRelative(BlockFace.UP);
+		if( location == null )
+			return null;
+		final Block base = location.getBlock();
 		
-		if( base.getTypeId() == 0 && up.getTypeId() == 0 )
+		if( isSafeBlock(base) )
 			return location;
 		else {
 			// first try all the closest blocks before recursing further
@@ -65,11 +154,10 @@ public final class General {
 				if( alreadyTraversed.contains(tryLocation) ) {
 					continue;
 				}
-				alreadyTraversed.add(tryLocation);
-				up = tryBlock.getRelative(BlockFace.UP);
 				
-				if( tryBlock.getTypeId() == 0 && up.getTypeId() == 0 )
-					return location;
+				if( isSafeBlock(tryBlock) ) {
+					return tryLocation;
+				}
 			}
 			
 			// we only recurse so far before we give up
@@ -81,6 +169,8 @@ public final class General {
 				Location recurseLocation = base.getRelative(directions[i]).getLocation();
 				if( alreadyTraversed.contains(recurseLocation) )
 					continue;
+				alreadyTraversed.add(recurseLocation);
+				
 				Location result = findSafeLocation(alreadyTraversed, level+1, recurseLocation);
 				if( result != null )
 					return result;
@@ -91,19 +181,35 @@ public final class General {
 	}
 	
 	/** Safely teleport a player to a location. Should avoid them being stuck in blocks,
-	 * teleported over lava, etc.  (not fully implemented)
+	 * teleported over lava, etc.
 	 * 
 	 * @param p
 	 * @param l
 	 */
 	public void safeTeleport(final Player p, final Location l, final TeleportCause cause) {
+		p.teleport(safeLocation(l), cause);
+	}
+	
+	/** Given a location, find the nearest "safe" location, ie. that won't suffocate a
+	 * player, spawn them over lava, etc.
+	 * 
+	 * @param l
+	 */
+	public Location safeLocation(final Location l) {
 		Location target = findSafeLocation(new HashSet<Location>(10), 0, l);
-
-		// if we didn't find a safe location, then just teleport them to the original location
-		if( target == null )
-			target = l;
 		
-		p.teleport(target, cause);
+		// if we didn't find a safe location, then just use the original location
+		if( target == null ) {
+			log.info(logPrefix+" safeLocation: couldn't find nearby safe location, using original location "+l);
+			target = l;
+		}
+		else {
+			// preserve pitch/yaw
+			target.setPitch(l.getPitch());
+			target.setYaw(l.getYaw());
+		}
+		
+		return target;
 	}
 	
 	public String shortLocationString(final Location l) {
@@ -189,19 +295,19 @@ public final class General {
     		long multiplier = 1000;	// milliseconds multiplier
     		int index = -1;
     		
-    		if( (index = args[i].indexOf("mo")) != -1 ) {		// month
+    		if( (index = args[i].indexOf(timeShortHand.get("mo"))) != -1 ) {		// month
     			multiplier *= 86400 * 31;
     		}
-    		else if( (index = args[i].indexOf("w")) != -1 ) {		// week
+    		else if( (index = args[i].indexOf(timeShortHand.get("w"))) != -1 ) {		// week
     			multiplier *= 86400 * 7;
     		}
-    		else if( (index = args[i].indexOf("d")) != -1 ) {		// day
+    		else if( (index = args[i].indexOf(timeShortHand.get("d"))) != -1 ) {		// day
     			multiplier *= 86400;
     		}
-    		else if( (index = args[i].indexOf("h")) != -1 ) {		// hours
+    		else if( (index = args[i].indexOf(timeShortHand.get("h"))) != -1 ) {		// hours
     			multiplier *= 3600;
     		}
-    		else if( (index = args[i].indexOf("m")) != -1 ) {		// minutes
+    		else if( (index = args[i].indexOf(timeShortHand.get("m"))) != -1 ) {		// minutes
     			multiplier *= 60;
     		}
     		
@@ -221,11 +327,9 @@ public final class General {
      * @param seconds
      * @param useShortHand set to true to use shorthand notation. shorthand will return a string
      * of the form "4d3h2m" whereas this set to false would return "4 days 3 hours 2 minutes"
-     * @param mostSignificantOnly Most significant string to show. "mo" for month, "w" for week,
+     * @param mostSignificant Most significant string to show. "mo" for month, "w" for week,
      * "d" for day, "m" for minute and null to include seconds
      * 
-     * if true, only the most significant time is returned. For example,
-     * when false this might return "4 days 3 hours 2 minutes", when true it would return "4 days"
      * @return
      * @throws NumberFormatException
      */
@@ -239,15 +343,19 @@ public final class General {
 	    	if( months > 0 ) {
 	    		sb.append(months);
 	    		if( useShortHand )
-	    			sb.append("mo");
+	    			sb.append(timeShortHand.get("mo"));
 	    		else {
-		    		sb.append(" month");
+	    			sb.append(" ");
 		    		if( months > 1 )
-		        		sb.append("s");
+		        		sb.append(timeLongHand.get("months"));
+		    		else
+		        		sb.append(timeLongHand.get("month"));
 	    		}
 	    	}
 	    	seconds -= months * (86400 * 31);
     	}
+    	// "mostSignificant" is only passed in code (no user input) so this string
+    	// is not localized.
     	if( mostSignificant != null && mostSignificant.startsWith("mo") )
     		return sb.toString();
 
@@ -255,15 +363,20 @@ public final class General {
     		long weeks = seconds / (86400 * 7);
 	    	Debug.getInstance().devDebug("weeks =",weeks);
 	    	if( weeks > 0 ) {
-	    		if( !useShortHand && sb.length() > 0 )
+	    		if( sb.length() > 0 ) {
+	    			if( !useShortHand )
+	    				sb.append(",");
 	    			sb.append(" ");
+	    		}
 	    		sb.append(weeks);
 	    		if( useShortHand )
-	    			sb.append("w");
+	    			sb.append(timeShortHand.get("w"));
 	    		else {
-		    		sb.append(" week");
+	    			sb.append(" ");
 		    		if( weeks > 1 )
-		        		sb.append("s");
+		        		sb.append(timeLongHand.get("weeks"));
+		    		else
+		        		sb.append(timeLongHand.get("week"));
 	    		}
 	    	}
 	    	seconds -= weeks * (86400 * 7);
@@ -275,15 +388,20 @@ public final class General {
     	if( seconds >= 86400 ) {
     		long days = seconds / 86400;
 	    	if( days > 0 ) {
-	    		if( !useShortHand && sb.length() > 0 )
+	    		if( sb.length() > 0 ) {
+	    			if( !useShortHand )
+	    				sb.append(",");
 	    			sb.append(" ");
+	    		}
 	    		sb.append(days);
 	    		if( useShortHand )
-	    			sb.append("d");
+	    			sb.append(timeShortHand.get("d"));
 	    		else {
-		    		sb.append(" day");
+	    			sb.append(" ");
 		    		if( days > 1 )
-		        		sb.append("s");
+		        		sb.append(timeLongHand.get("days"));
+		    		else
+		        		sb.append(timeLongHand.get("day"));
 	    		}
 	    	}
 	    	seconds -= days * 86400;
@@ -294,15 +412,20 @@ public final class General {
     	if( seconds >= 3600 ) {
     		long hours = seconds / 3600;
 	    	if( hours > 0 ) {
-	    		if( !useShortHand && sb.length() > 0 )
+	    		if( sb.length() > 0 ) {
+	    			if( !useShortHand )
+	    				sb.append(",");
 	    			sb.append(" ");
+	    		}
 	    		sb.append(hours);
 	    		if( useShortHand )
-	    			sb.append("h");
+	    			sb.append(timeShortHand.get("h"));
 	    		else {
-		    		sb.append(" hour");
+	    			sb.append(" ");
 		    		if( hours > 1 )
-		        		sb.append("s");
+		        		sb.append(timeLongHand.get("hours"));
+		    		else
+		        		sb.append(timeLongHand.get("hour"));
 	    		}
 	    	}    	
 	    	seconds -= hours * 3600;
@@ -313,15 +436,20 @@ public final class General {
     	if( seconds >= 60 ) {
     		long minutes = seconds / 60;
 	    	if( minutes > 0 ) {
-	    		if( !useShortHand && sb.length() > 0 )
+	    		if( sb.length() > 0 ) {
+	    			if( !useShortHand )
+	    				sb.append(",");
 	    			sb.append(" ");
+	    		}
 	    		sb.append(minutes);
 	    		if( useShortHand )
-	    			sb.append("m");
+	    			sb.append(timeShortHand.get("m"));
 	    		else {
-		    		sb.append(" minute");
+	    			sb.append(" ");
 		    		if( minutes > 1 )
-		        		sb.append("s");
+		        		sb.append(timeLongHand.get("minutes"));
+		    		else
+		        		sb.append(timeLongHand.get("minute"));
 	    		}
 	    	}    	
 	    	seconds -= minutes * 60;
@@ -330,15 +458,20 @@ public final class General {
     		return sb.toString();
     	
     	if( seconds > 0 ) {
-    		if( !useShortHand && sb.length() > 0 )
+    		if( sb.length() > 0 ) {
+    			if( !useShortHand )
+    				sb.append(",");
     			sb.append(" ");
+    		}
     		sb.append(seconds);
     		if( useShortHand )
-    			sb.append("s");
+    			sb.append(timeShortHand.get("s"));
     		else {
-	    		sb.append(" second");
+    			sb.append(" ");
 	    		if( seconds > 1 )
-	        		sb.append("s");
+	        		sb.append(timeLongHand.get("seconds"));
+	    		else
+	        		sb.append(timeLongHand.get("second"));
     		}
     	}
     	

@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.commands;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -116,7 +117,7 @@ public class Home extends BaseCommand
 									"name", getWarmupName(), "place", "home");
 //							util.sendMessage(p, "Warmup \""+wuName+"\" finished, teleporting to home");
 							if( applyCost(p, true, cdName) )
-								p.teleport(finalL);
+					    		util.teleport(p, finalL, TeleportCause.COMMAND);
 						}
 					}
 
@@ -133,7 +134,7 @@ public class Home extends BaseCommand
 			}
 			else {
 				if( applyCost(p, true, cooldownName) )
-					p.teleport(l);
+		    		util.teleport(p, l, TeleportCause.COMMAND);
 			}
     	}
     	else

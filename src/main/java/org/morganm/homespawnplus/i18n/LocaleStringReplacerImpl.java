@@ -22,9 +22,16 @@ public class LocaleStringReplacerImpl implements Locale {
 	}
 	
 	private final MessageLibrary msgLib;
+	private final String localeString;
 	
-	public LocaleStringReplacerImpl(final MessageLibrary msgLib) {
+	public LocaleStringReplacerImpl(final MessageLibrary msgLib, final String localeString) {
 		this.msgLib = msgLib;
+		this.localeString = localeString;
+	}
+	
+	@Override
+	public String getLocale() {
+		return localeString;
 	}
 	
 	@Override

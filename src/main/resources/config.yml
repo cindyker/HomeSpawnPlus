@@ -140,6 +140,13 @@ core:
   #     the player.dat file.
   newPlayerStrategy: PLAYER_DAT
 
+  # If enabled, "safe teleport" will be used for any teleport
+  # HSP does. This means if the players location is not "safe"
+  # (it has solid blocks that might suffocate them, is over lava,
+  # etc), they will be teleported to the nearest "safe" location
+  # instead.
+  safeTeleport: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

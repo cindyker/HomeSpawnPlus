@@ -17,4 +17,10 @@ public interface Locale {
 	 * @return the localized string
 	 */
 	public String getMessage(String key, Object... args);
+	
+	/** Return the Locale string this object represents.
+	 * 
+	 * @return
+	 */
+	public String getLocale();
 }

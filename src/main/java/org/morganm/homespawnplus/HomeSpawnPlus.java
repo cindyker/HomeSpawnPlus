@@ -50,6 +50,7 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.util.CommandUsurper;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.JarUtils;
 import org.morganm.homespawnplus.util.PermissionSystem;
 
@@ -143,6 +144,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     	instance = this;
     	
     	getConfig();
+    	
+    	General.getInstance().setLogger(log);
+    	General.getInstance().setLogPrefix(logPrefix+" ");
     	
     	pluginDescription = getDescription();
     	pluginName = pluginDescription.getName();
@@ -347,6 +351,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 		Colors.setDefaultColor(config.getString("core.defaultMessageColor", "%yellow%"));
 		
     	strategyEngine.getStrategyConfig().loadConfig();
+    	
+    	General.getInstance().setLocale(getLocale());
     }
 
     private Boolean setupVaultEconomy()

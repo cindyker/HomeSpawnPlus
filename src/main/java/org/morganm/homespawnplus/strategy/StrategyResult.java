@@ -52,6 +52,10 @@ public class StrategyResult {
 			this.isSuccess = true;
 	}
 	
+	public void setLocation(Location l) {
+		location = l;
+	}
+	
 	public boolean isSuccess() {
 		return isSuccess;
 	}

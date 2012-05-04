@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.commands;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -50,7 +51,7 @@ public class HomeInviteAccept extends BaseCommand {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", h.getName());
 							if( applyCost(p, true, cdName) )
-								p.teleport(finalL);
+								util.teleport(p, finalL, TeleportCause.COMMAND);
 							plugin.getHomeInviteManager().removeInvite(p);
 						}
 					}
@@ -68,7 +69,7 @@ public class HomeInviteAccept extends BaseCommand {
 			}
 			else {
 				if( applyCost(p, true, cooldownName) ) {
-					p.teleport(h.getLocation());
+					util.teleport(p, h.getLocation(), TeleportCause.COMMAND);
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HIACCEPT_TELEPORTED,
 							"home", h.getName(), "player", h.getPlayerName());
 					plugin.getHomeInviteManager().removeInvite(p);

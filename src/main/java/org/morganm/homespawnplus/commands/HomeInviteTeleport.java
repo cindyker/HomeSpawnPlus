@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
@@ -141,7 +142,7 @@ public class HomeInviteTeleport extends BaseCommand {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", placeString);
 							if( applyCost(p, true, cdName) )
-								p.teleport(finalL);
+								util.teleport(p, finalL, TeleportCause.COMMAND);
 						}
 					}
 
@@ -158,7 +159,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			}
 			else {
 				if( applyCost(p, true, cooldownName) )
-					p.teleport(l);
+					util.teleport(p, l, TeleportCause.COMMAND);
 			}
     	}
     	else

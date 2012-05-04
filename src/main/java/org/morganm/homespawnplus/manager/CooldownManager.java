@@ -14,6 +14,7 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.General;
 
 
 /** Class which manages player cooldowns.
@@ -64,7 +65,10 @@ public class CooldownManager {
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
 		if(cooldownTimeLeft > 0)
 		{
-			plugin.getUtil().sendLocalizedMessage(p, HSPMessages.COOLDOWN_IN_EFFECT, "name", cooldownName, "seconds", cooldownTimeLeft);
+			plugin.getUtil().sendLocalizedMessage(p, HSPMessages.COOLDOWN_IN_EFFECT,
+					"name", cooldownName,
+					"time", General.getInstance().displayTimeString(cooldownTimeLeft*1000,
+							false, null));
 //			plugin.getUtil().sendMessage(p, "Cooldown "+cooldownName+" is in effect. You must wait " + cooldownTimeLeft + " seconds.");
 			return false;
 		}

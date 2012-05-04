@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.General;
 
 /** Class responsible for processing strategies at run-time.
  * 
@@ -120,6 +121,13 @@ public class StrategyEngine {
 				logVerbose("Evaluation chain complete, result = ", result);
 		}
 
+		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, false) ) {
+			Location oldLocation = result.getLocation();
+			result.setLocation(General.getInstance().safeLocation(oldLocation));
+			if( !oldLocation.equals(result.getLocation()) )
+				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
+		}
+		
 		debug.debug("evaluateStrategies: exit result = ",result);
 		return result;
 	}

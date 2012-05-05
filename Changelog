@@ -1,3 +1,7 @@
+v1.5.4.1 - May 5, 2012
+* bugfix for an NPE on teleport, reported in comments
+* made safe teleporting default to ON, can be disabled in config
+
 v1.5.4 - May 4, 2012
 * converted build system over to maven (finally stood up my own nexus
 respository required to host dependent artifacts that aren't maven enabled).

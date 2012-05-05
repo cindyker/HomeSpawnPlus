@@ -840,10 +840,12 @@ public class HomeSpawnUtils {
      * @param cause
      */
     public void teleport(Player p, Location l, TeleportCause cause) {
+    	if( l == null || p == null )
+    		return;
     	if( cause == null )
     		cause = TeleportCause.UNKNOWN;
     	
-		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, false) )
+		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) )
 			General.getInstance().safeTeleport(p, l, TeleportCause.PLUGIN);
 		else
 			p.teleport(l, cause);

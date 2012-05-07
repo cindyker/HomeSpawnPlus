@@ -3,7 +3,7 @@ main: org.morganm.homespawnplus.HomeSpawnPlus
 version: 1.5.4.1
 author: morganm
 database: true
-softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx]
+softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap]
 commands:
   groupspawn:
     aliases: [gs]

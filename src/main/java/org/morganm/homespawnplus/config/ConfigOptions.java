@@ -30,7 +30,14 @@ public interface ConfigOptions {
 	public static final String RELOAD_CHUNK_ON_TELEPORT = "core.reloadChunkOnTeleport";
 	public static final String NEW_PLAYER_STRATEGY = "core.newPlayerStrategy";
 	public static final String SAFE_TELEPORT = "core.safeTeleport";
-	
+
+	public static final String DYNMAP_INTEGRATION_ENABLED = "dynmap.enabled";
+	public static final String DYNMAP_INTEGRATION_UPDATE_PERIOD = "dynmap.update.period";
+	public static final String DYNMAP_INTEGRATION_HOMES = "dynmap.homes";
+	public static final String DYNMAP_INTEGRATION_HOMES_ENABLED = DYNMAP_INTEGRATION_HOMES + ".enabled";
+	public static final String DYNMAP_INTEGRATION_SPAWNS = "dynmap.spawns";
+	public static final String DYNMAP_INTEGRATION_SPAWNS_ENABLED = DYNMAP_INTEGRATION_SPAWNS + ".enabled";
+
 	public static final String USE_WARMUPS = "warmup.enabled";
 	public static final String WARMUPS_ON_MOVE_CANCEL = "warmup.onMoveCancel";
 	public static final String WARMUPS_ON_DAMAGE_CANCEL = "warmup.onDamageCancel";

@@ -78,6 +78,13 @@
       <artifactId>bukkit</artifactId>
       <version>1.2.5-R1.1</version>
     </dependency>
+
+    <!-- Dynmap -->
+    <dependency>
+      <groupId>org.dynmap</groupId>
+      <artifactId>dynmap-api</artifactId>
+      <version>0.39</version>
+    </dependency>
   </dependencies>
 
   <build>

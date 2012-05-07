@@ -37,11 +37,10 @@ public class HomeLocationManager implements LocationManager {
 				if( !home.getWorld().equals(world) )
 					continue;
 				
-				locations.add(home);
+				locations.add(new HomeNamedLocation(home));
 			}
 		}
 		
 		return locations;
 	}
-
 }

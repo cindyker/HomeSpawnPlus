@@ -141,9 +141,13 @@ public class HomeInvite extends BaseCommand {
 			if( !applyCost(p, true, getCommandName()) )
 				return true;
 
+			String homeName = home.getName();
+			if( homeName == null )
+				homeName = "loc "+plugin.getUtil().shortLocationString(home);
+			
 			plugin.getHomeInviteManager().sendHomeInvite(onlinePlayer, p, home);
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
-					"player", invitee, "home", home.getName());
+					"player", invitee, "home", homeName);
 			return true;
 		}
 		

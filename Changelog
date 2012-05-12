@@ -1,4 +1,4 @@
-v1.5.5
+v1.5.5 - May 12, 2012
 * bugfix (unreported) for MODE_HOME_NO_BED not working
 * Ticket #96: home name is "null" message in /homeinvite
 * Ticket #98: delete homes with ID

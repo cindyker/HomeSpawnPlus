@@ -35,8 +35,24 @@ public class HomeDelete extends BaseCommand {
 		if( args.length > 0 ) {
 			homeName = args[0];
 			
-			if( args[0].startsWith("w:") ) {
-				String worldName = args[0].substring(2);
+			int id = -1;
+			try {
+				id = Integer.parseInt(homeName);
+			}
+			catch(NumberFormatException e) {}
+			
+			if( id != -1 ) {
+				home = plugin.getStorage().getHomeDAO().findHomeById(id);
+				// make sure it belongs to this player
+				if( home != null && !p.getName().equals(home.getPlayerName()) )
+					home = null;
+				
+				// otherwise set the name according to the home that was selected
+				if( home != null )
+					homeName = home.getName() + " (id #"+id+")";
+			}
+			else if( args[0].startsWith("w:") ) {
+				String worldName = homeName.substring(2);
 				home = util.getDefaultHome(p.getName(), worldName);
 				if( home == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
@@ -56,7 +72,9 @@ public class HomeDelete extends BaseCommand {
 					}
 				}
 			}
-			else
+			
+			// if home is still null here, then just do a regular lookup
+			if( home == null )
 				home = util.getHomeByName(p.getName(), homeName);
 		}
 		else

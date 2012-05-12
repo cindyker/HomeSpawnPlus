@@ -288,6 +288,21 @@ public class HomeSpawnUtils {
 		return home;
 	}
 	
+	/** Check if we should enforce singleGlobalHome behavior for a given player.
+	 * 
+	 * @param world
+	 * @param playerName
+	 * @return
+	 */
+	private boolean isSingleGlobalHomeEnabled(String world, String playerName) {
+		if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
+				!plugin.hasPermission(world, playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+			return true;
+		}
+		else
+			return false;
+	}
+	
 	/** Set a player's home.
 	 * 
 	 * @param playerName
@@ -312,7 +327,7 @@ public class HomeSpawnUtils {
     		// if no bed home was found using existing bed name, check all other bed homes
     		// for the bed flag
     		if( home != null && !home.isBedHome() ) {
-    			Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
+				Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
     			if( homes != null ) {
     				for(Home h : homes) {
     					if( h.isBedHome() ) {
@@ -330,8 +345,7 @@ public class HomeSpawnUtils {
 		// if we get an object back, we already have a Home set for this player/world combo, so we
 		// just update the x/y/z location of it.
     	if( home != null ) {
-    		if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
-    				!plugin.hasPermission(l.getWorld().getName(), playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+    		if( isSingleGlobalHomeEnabled(l.getWorld().getName(), playerName) ) {
     			home = enforceSingleGlobalHome(playerName);
     			
     			// it's possible enforceSingleGlobalHome() just wiped all of our homes
@@ -352,8 +366,7 @@ public class HomeSpawnUtils {
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
-    		if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
-    				!plugin.hasPermission(l.getWorld().getName(), playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+    		if( isSingleGlobalHomeEnabled(l.getWorld().getName(), playerName) ) {
     			home = enforceSingleGlobalHome(playerName);
     			if( home != null ) {
 					home.setLocation(l);

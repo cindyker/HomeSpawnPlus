@@ -32,11 +32,16 @@ public class HomeNamedHome extends HomeStrategy {
 		// otherwise use the name given at instantiation
 		if( name == null )
 			name = homeName;
+		
+		debug.debug("HomeNamedHome: name=",name);
 
 		if( name != null ) {
 			final List<HomeMode> currentModes = context.getCurrentModes();
 
 			home = plugin.getUtil().getHomeByName(context.getPlayer().getName(), name);
+			
+			debug.debug("HomeNamedHome: home pre-modes=",home,", current modes=",currentModes);
+			
 			if( isModeEnabled(currentModes, HomeMode.MODE_HOME_DEFAULT_ONLY) && !home.isDefaultHome() )
 				home = null;
 			if( isModeEnabled(currentModes, HomeMode.MODE_HOME_BED_ONLY) && !home.isBedHome() )

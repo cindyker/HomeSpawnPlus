@@ -1,3 +1,8 @@
+v1.5.5
+* bugfix (unreported) for MODE_HOME_NO_BED not working
+* Ticket #51: dynmap integration added
+* Ticket #96: home name is "null" message in /homeinvite
+
 v1.5.4.1 - May 5, 2012
 * bugfix for an NPE on teleport, reported in comments
 * made safe teleporting default to ON, can be disabled in config

@@ -33,10 +33,10 @@ public interface ConfigOptions {
 
 	public static final String DYNMAP_INTEGRATION_ENABLED = "dynmap.enabled";
 	public static final String DYNMAP_INTEGRATION_UPDATE_PERIOD = "dynmap.update.period";
-	public static final String DYNMAP_INTEGRATION_HOMES = "dynmap.homes";
-	public static final String DYNMAP_INTEGRATION_HOMES_ENABLED = DYNMAP_INTEGRATION_HOMES + ".enabled";
-	public static final String DYNMAP_INTEGRATION_SPAWNS = "dynmap.spawns";
-	public static final String DYNMAP_INTEGRATION_SPAWNS_ENABLED = DYNMAP_INTEGRATION_SPAWNS + ".enabled";
+	public static final String DYNMAP_INTEGRATION_HOMES = "dynmap.layer.homes";
+	public static final String DYNMAP_INTEGRATION_HOMES_ENABLED = DYNMAP_INTEGRATION_HOMES + ".enable";
+	public static final String DYNMAP_INTEGRATION_SPAWNS = "dynmap.layer.spawns";
+	public static final String DYNMAP_INTEGRATION_SPAWNS_ENABLED = DYNMAP_INTEGRATION_SPAWNS + ".enable";
 
 	public static final String USE_WARMUPS = "warmup.enabled";
 	public static final String WARMUPS_ON_MOVE_CANCEL = "warmup.onMoveCancel";

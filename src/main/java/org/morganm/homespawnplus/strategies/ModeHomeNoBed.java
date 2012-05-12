@@ -14,7 +14,7 @@ public class ModeHomeNoBed extends HomeModeStrategy {
 
 	@Override
 	protected HomeMode getHomeMode() {
-		return HomeMode.MODE_HOME_BED_ONLY;
+		return HomeMode.MODE_HOME_NO_BED;
 	}
 
 	@Override

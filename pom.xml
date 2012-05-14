@@ -5,9 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.5.5</version>
+  <version>1.5.6</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
+  <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
 
   <scm>
     <connection>scm:git:git://github.com/morganm/HomeSpawnPlus.git</connection>
@@ -103,6 +104,13 @@
         <filtering>true</filtering>
         <includes>
           <include>build.number</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>plugin.yml</include>
         </includes>
       </resource>
     </resources>

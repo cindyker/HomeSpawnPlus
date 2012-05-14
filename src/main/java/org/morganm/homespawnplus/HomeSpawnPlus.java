@@ -96,6 +96,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private Storage storage;
     private Locale locale;
     private Debug debug;
+    private Metrics metrics;
 
     public Economy vaultEconomy = null;
     
@@ -135,11 +136,29 @@ public class HomeSpawnPlus extends JavaPlugin {
     				+ " this warning.");
     	}
     }
+
+    static long startupBegin = 0L;
+    static long startupTimer = 0L;
+    /** Start the timer, print a message.
+     * 
+     * @param s
+     */
+    private void debugStartTimer(String s) {
+    	startupTimer = System.currentTimeMillis();
+    	debug.debug("[Startup Timer] starting "+s+" (t+", System.currentTimeMillis()-startupBegin+")");
+    }
+    /** End the timer, print the timing information.
+     * 
+     * @param s
+     */
+    private void debugEndTimer(String s) {
+    	debug.debug("[Startup Timer] "+s+" finished in ", System.currentTimeMillis()-startupTimer, "ms");
+    }
     
     @Override
     public void onEnable() {
-    	long startupBegin = System.currentTimeMillis();
-    	long startupTimer = 0;
+//    	long startupBegin = System.currentTimeMillis();
+//    	long startupTimer = 0;
     	boolean loadError = false;
     	instance = this;
     	
@@ -160,16 +179,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     	try {
         	strategyEngine = new StrategyEngine(this);
         	
-        	startupTimer = System.currentTimeMillis();
-        	debug.debug("[Startup Timer] loading config (t+", System.currentTimeMillis()-startupBegin+")");
+        	debugStartTimer("config");
     		loadConfig();
     		updateConfigDefaultFile();
-        	debug.debug("[Startup Timer] config loaded in ", System.currentTimeMillis()-startupTimer, "ms");
+    		debugEndTimer("config");
         	
-        	startupTimer = System.currentTimeMillis();
-        	debug.debug("[Startup Timer] initializing database (t+", System.currentTimeMillis()-startupBegin+")");
+        	debugStartTimer("database");
             initializeDatabase();
-        	debug.debug("[Startup Timer] database initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    		debugEndTimer("database");
     	}
     	catch(Exception e) {
     		loadError = true;
@@ -183,26 +200,22 @@ public class HomeSpawnPlus extends JavaPlugin {
     		return;
     	}
     	
-    	startupTimer = System.currentTimeMillis();
-    	debug.debug("[Startup Timer] initializing permissions (t+", System.currentTimeMillis()-startupBegin+")");
+    	debugStartTimer("permissions");
     	initPermissions();
-    	debug.debug("[Startup Timer] permissions initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	debugEndTimer("permissions");
     	
-    	startupTimer = System.currentTimeMillis();
-    	debug.debug("[Startup Timer] initializing economy (t+", System.currentTimeMillis()-startupBegin+")");
+    	debugStartTimer("economy");
     	setupVaultEconomy();
-    	debug.debug("[Startup Timer] economy initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	debugEndTimer("economy");
     	
-    	startupTimer = System.currentTimeMillis();
-    	debug.debug("[Startup Timer] initializing HSP managers (t+", System.currentTimeMillis()-startupBegin+")");
+    	debugStartTimer("HSP managers");
     	cooldownManager = new CooldownManager(this);
     	warmupManager = new WarmupManager(this);
     	spawnUtils = new HomeSpawnUtils(this);
     	homeInviteManager = new HomeInviteManager(this);
-    	debug.debug("[Startup Timer] HSP managers initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	debugEndTimer("HSP managers");
     	
-    	startupTimer = System.currentTimeMillis();
-    	debug.debug("[Startup Timer] initializing Bukkit event registration (t+", System.currentTimeMillis()-startupBegin+")");
+    	debugStartTimer("Bukkit events");
         final PluginManager pm = getServer().getPluginManager();
 
     	playerListener = new HSPPlayerListener(this);
@@ -213,32 +226,32 @@ public class HomeSpawnPlus extends JavaPlugin {
 
     	entityListener = new HSPEntityListener(this);
         hookWarmups();
-    	debug.debug("[Startup Timer] Bukkit event registration initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	debugEndTimer("Bukkit events");
         
-    	startupTimer = System.currentTimeMillis();
-    	debug.debug("[Startup Timer] initializing command system (t+", System.currentTimeMillis()-startupBegin+")");
+    	debugStartTimer("commands");
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	new CommandUsurper(this, log, logPrefix).usurpCommands();
-    	debug.debug("[Startup Timer] command system initialized in ", System.currentTimeMillis()-startupTimer, "ms");
+    	debugEndTimer("commands");
     	
     	detectAndWarn();
     	
+    	debugStartTimer("metrics");
+        // Load up the Plugin metrics
+        try {
+            metrics = new Metrics(this);
+            metrics.findCustomData(this);
+            metrics.start();
+        } catch (IOException e) {
+            // ignore exception
+        }
+    	debugEndTimer("metrics");
+        
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
     }
     
     @Override
     public void onDisable() {
-    	/*
-    	try {
-    		config.save();
-    	}
-    	catch(ConfigException e) {
-    		log.warning(logPrefix + " error saving configuration during onDisable");
-    		e.printStackTrace();
-    	}
-    	*/
-    	
     	Player[] players = getServer().getOnlinePlayers();
     	for(int i=0; i < players.length;i++) {
     		spawnUtils.updateQuitLocation(players[i]);
@@ -455,7 +468,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	boolean result = perms.has(worldName, playerName, permissionNode);
     	
     	// if using OPS system, support legacy HSP "defaultPermission" setting
-    	if( !result && perms.getSystemInUse() == PermissionSystem.OPS ) {
+    	if( !result && perms.getSystemInUse() == PermissionSystem.Type.OPS ) {
     		List<String> defaultPerms = config.getStringList(ConfigOptions.DEFAULT_PERMISSIONS, null);
     		if( defaultPerms.contains(permissionNode) )
     			result = true;
@@ -475,7 +488,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	boolean result = perms.has(sender, permissionNode);
     	
     	// if using OPS system, support legacy HSP "defaultPermission" setting
-    	if( !result && perms.getSystemInUse() == PermissionSystem.OPS ) {
+    	if( !result && perms.getSystemInUse() == PermissionSystem.Type.OPS ) {
     		List<String> defaultPerms = config.getStringList(ConfigOptions.DEFAULT_PERMISSIONS, null);
     		if( defaultPerms.contains(permissionNode) )
     			result = true;

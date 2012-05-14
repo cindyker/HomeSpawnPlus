@@ -55,4 +55,11 @@ public interface Storage {
 	 * flush pending writes.
 	 */
 	public void flushAll() throws StorageException;
+	
+	/** Return a String name for this storage implementation, which can be used for
+	 * metrics purposes.
+	 * 
+	 * @return
+	 */
+	public String getImplName();
 }

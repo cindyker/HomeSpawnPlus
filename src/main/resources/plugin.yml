@@ -1,6 +1,7 @@
-name: HomeSpawnPlus
+name: ${project.name}
 main: org.morganm.homespawnplus.HomeSpawnPlus
-version: 1.5.5
+url: ${project.url}
+version: ${project.version}
 author: morganm
 database: true
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap]
@@ -16,6 +17,10 @@ commands:
     aliases: [gq]
     description: Show what group HSP finds a player to be in
     usage: /<command> player
+  permcheck:
+    aliases: [pc]
+    description: Check if a given player has a given permission
+    usage: /<command> permission [player] [world] - player and world are optional, default to current player and world
   home:
     aliases: [hsphome]
     description: Respawns you at your home

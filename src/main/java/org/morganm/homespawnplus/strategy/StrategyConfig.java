@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -236,6 +237,101 @@ public class StrategyConfig {
 			return worldStrats.eventStrategies.get(event);
 		else
 			return null;
+	}
+	
+	/** Metrics: return total number of Permission-related strategies.
+	 * 
+	 * @return
+	 */
+	public int getPermissionStrategyCount() {
+		int count = 0;
+		for(EventType type : EventType.values()) {
+			for(PermissionStrategies strat : permissionStrategies.values()) {
+				Set<Strategy> set = strat.eventStrategies.get(type);
+				if( set != null ) {
+					for(@SuppressWarnings("unused") Strategy s : set) {
+						count++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+	
+	/** Metrics: return total number of World-related strategies.
+	 * 
+	 * @return
+	 */
+	public int getWorldStrategyCount() {
+		int count = 0;
+		for(EventType type : EventType.values()) {
+			for(WorldStrategies strat : worldStrategies.values()) {
+				Set<Strategy> set = strat.eventStrategies.get(type);
+				if( set != null ) {
+					for(@SuppressWarnings("unused") Strategy s : set) {
+						count++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	/** Metrics: return total number of default strategies.
+	 * 
+	 * @return
+	 */
+	public int getDefaultStrategyCount() {
+		int count = 0;
+		for(Set<Strategy> set : defaultStrategies.values()) {
+			for(@SuppressWarnings("unused") Strategy s : set) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/** For metrics, return the count of each strategy that is in use.
+	 * 
+	 * @return
+	 */
+	public Map<String, Integer> getStrategyCountMap() {
+		Map<String, Integer> map = new TreeMap<String, Integer>();
+		
+		for(EventType type : EventType.values()) {
+			// for each permission strategy, increment strategy counter
+			for(PermissionStrategies strat : permissionStrategies.values()) {
+				Set<Strategy> set = strat.eventStrategies.get(type);
+				incrementStrategyCounters(map, set);
+			}
+			
+			// for each world strategy, increment strategy counter
+			for(WorldStrategies strat : worldStrategies.values()) {
+				Set<Strategy> set = strat.eventStrategies.get(type);
+				incrementStrategyCounters(map, set);
+			}
+		}
+
+		// for each default strategy, increment strategy counter
+		for(Set<Strategy> set : defaultStrategies.values()) {
+			incrementStrategyCounters(map, set);
+		}
+		
+		return map;
+	}
+	
+	private void incrementStrategyCounters(Map<String, Integer> map, Set<Strategy> set) {
+		if( set == null )
+			return;
+
+		for(Strategy s : set) {
+			Integer i = map.get(s.getStrategyConfigName());
+			if( i == null )
+				i = new Integer(1);
+			else
+				i++;
+			map.put(s.getStrategyConfigName(), i);
+		}
 	}
 	
 	private class WorldStrategies {

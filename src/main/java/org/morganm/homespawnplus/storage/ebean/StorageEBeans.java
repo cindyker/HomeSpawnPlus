@@ -54,6 +54,14 @@ public class StorageEBeans implements Storage {
 		this.usePersistanceReimplemented = usePersistanceReimplemented;
 	}
 	
+	@Override
+	public String getImplName() {
+		if( usePersistanceReimplemented )
+			return "PersistenceReimplemented";
+		else
+			return "EBEANS";
+	}
+	
 	public MyDatabase getPersistanceReimplementedDatabase() {
 		return persistanceReimplementedDatabase;
 	}

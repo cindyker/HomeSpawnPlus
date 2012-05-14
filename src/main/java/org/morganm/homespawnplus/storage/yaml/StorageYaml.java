@@ -58,6 +58,14 @@ public class StorageYaml implements Storage {
 	}
 	
 	@Override
+	public String getImplName() {
+		if( singleFile != null )
+			return "YAML_SINGLE_FILE";
+		else
+			return "YAML";
+	}
+
+	@Override
 	public void initializeStorage() throws StorageException {
 		// only allow this to run once per JVM and we keep track of which
 		// instance is loading so that while Bukkit is deserializing objects,

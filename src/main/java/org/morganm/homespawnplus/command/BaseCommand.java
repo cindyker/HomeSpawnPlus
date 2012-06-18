@@ -131,8 +131,10 @@ public abstract class BaseCommand implements Command {
 		if( economy == null )
 			returnValue = true;
 		
-		if( !returnValue && plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+		final String perm = HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName();
+		if( !returnValue && plugin.hasPermission(p, perm) )
 			returnValue = true;
+		debug.debug("applyCost: player=",p,", exempt permissionChecked=",perm,", exempt returnValue=",returnValue);
 
 		if( !costCheck(p) ) {
 			printInsufficientFundsMessage(p);

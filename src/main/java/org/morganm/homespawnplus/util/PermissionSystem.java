@@ -43,7 +43,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *
  */
 public class PermissionSystem {
-	// class version: 13
+	// class version: 14
 	public enum Type {
 		SUPERPERMS,
 		VAULT,
@@ -162,48 +162,51 @@ public class PermissionSystem {
 			if( "vault".equalsIgnoreCase(system) ) {
 				if( setupVaultPermissions() ) {
 					systemInUse = Type.VAULT;
-					if( verbose )
-						log.info(logPrefix+"using Vault permissions");
+//					if( verbose )
+//						log.info(logPrefix+"using Vault permissions");
 					break;
 				}
 			}
 			else if( "wepif".equalsIgnoreCase(system) ) {
 				if( setupWEPIFPermissions() ) {
 					systemInUse = Type.WEPIF;
-					if( verbose )
-						log.info(logPrefix+"using WEPIF permissions");
+//					if( verbose )
+//						log.info(logPrefix+"using WEPIF permissions");
 					break;
 				}
 			}
 			else if( "pex".equalsIgnoreCase(system) ) {
 				if( setupPEXPermissions() ) {
 					systemInUse = Type.PEX;
-					if( verbose )
-						log.info(logPrefix+"using PEX permissions");
+//					if( verbose )
+//						log.info(logPrefix+"using PEX permissions");
 					break;
 				}
 			}
 			else if( "perm2".equalsIgnoreCase(system) || "perm2-compat".equalsIgnoreCase(system) ) {
 				if( setupPerm2() ) {
 					systemInUse = Type.PERM2_COMPAT;
-					if( verbose )
-						log.info(logPrefix+"using Perm2-compatible permissions");
+//					if( verbose )
+//						log.info(logPrefix+"using Perm2-compatible permissions");
 					break;
 				}
 			}
 			else if( "superperms".equalsIgnoreCase(system) ) {
 				systemInUse = Type.SUPERPERMS;
-				if( verbose )
-					log.info(logPrefix+"using Superperms permissions");
+//				if( verbose )
+//					log.info(logPrefix+"using Superperms permissions");
 	        	break;
 			}
 			else if( "ops".equalsIgnoreCase(system) ) {
 				systemInUse = Type.OPS;
-				if( verbose )
-					log.info(logPrefix+"using basic Op check for permissions");
+//				if( verbose )
+//					log.info(logPrefix+"using basic Op check for permissions");
 	        	break;
 			}
 		}
+		
+		if( verbose )
+			log.info(logPrefix+"using "+getSystemInUseString()+" for permissions");
 	}
 	
     /** Check to see if player has a given permission.

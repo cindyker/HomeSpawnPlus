@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.strategy.EventType;
@@ -35,6 +36,7 @@ public class Spawn extends BaseCommand
 		
 		Location l = null;
 		if( args.length > 0 ) {
+			boolean hasPermission = false;
 			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
 				org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
 				cooldownName = getCooldownName("spawn-named", args[0]);
@@ -43,13 +45,22 @@ public class Spawn extends BaseCommand
 				
 				if( l == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
-//					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
 					return true;
 				}
+				
+				// if we check named permissions individually, then check now
+				if( plugin.getConfig().getBoolean(ConfigOptions.SPAWN_NAMED_PERMISSIONS, false) ) {
+					if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION + "." + spawn.getName().toLowerCase()) )
+							hasPermission = true;
+				}
+				// otherwise they have permission since we already checked the base permission above
+				else
+					hasPermission = true;
 			}
-			else {
+			
+			if( !hasPermission ) {
 				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
-//				util.sendMessage(p,  "No permission");
+				return true;
 			}
 		}
 		else {

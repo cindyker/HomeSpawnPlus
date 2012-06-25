@@ -30,6 +30,7 @@ public interface ConfigOptions {
 	public static final String RELOAD_CHUNK_ON_TELEPORT = "core.reloadChunkOnTeleport";
 	public static final String NEW_PLAYER_STRATEGY = "core.newPlayerStrategy";
 	public static final String SAFE_TELEPORT = "core.safeTeleport";
+	public static final String SPAWN_NAMED_PERMISSIONS = "core.spawnNamedPermissions";
 
 	public static final String DYNMAP_INTEGRATION_ENABLED = "dynmap.enabled";
 	public static final String DYNMAP_INTEGRATION_UPDATE_PERIOD = "dynmap.update.period";

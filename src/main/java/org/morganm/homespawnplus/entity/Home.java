@@ -19,6 +19,7 @@ import javax.persistence.Version;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.dynmap.NamedLocation;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
@@ -154,9 +155,15 @@ public class Home implements EntityWithLocation, NamedLocation {
 		this.id = id;
 	}
 	public String getPlayerName() {
+		// due to the way Java handles strings, if playerName is already lowercase, this has
+		// no effect other than the time it takes to run toLowerCase().
+		if( playerName != null && HomeSpawnPlus.getInstance().getConfig().getBoolean(ConfigOptions.PLAYER_NAME_IGNORE_CASE, false) )
+			playerName = playerName.toLowerCase();
 		return playerName;
 	}
 	public void setPlayerName(String playerName) {
+		if( playerName != null && HomeSpawnPlus.getInstance().getConfig().getBoolean(ConfigOptions.PLAYER_NAME_IGNORE_CASE, false) )
+			playerName = playerName.toLowerCase();
 		this.playerName = playerName;
 	}
 	public String getWorld() {

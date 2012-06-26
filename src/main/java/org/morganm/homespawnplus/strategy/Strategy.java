@@ -33,6 +33,15 @@ public interface Strategy {
 	 */
 	public void setPlugin(HomeSpawnPlus plugin);
 	
+	/** This method should be called after Strategy instantiation so the strategy
+	 * can do validation on it's inputs. This should be called AFTER setPlugin() so
+	 * the strategy can count on a valid plugin reference to do it's work.
+	 * 
+	 * If the strategy is invalid and should not be used, it should throw a
+	 * StrategyException explaining why so the admin can fix any issue.
+	 */
+	public void validate() throws StrategyException;
+	
 	/** If this is a "default strategy", that means it is not associated
 	 * to a specific world or specific permission nodes.
 	 * 

@@ -57,7 +57,7 @@ public class HSP extends BaseCommand {
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
 			try {
-				plugin.loadConfig();
+				plugin.loadConfig(true);
 				
 				// also call hookWarmups, in case admin changed the warmup settings
 				plugin.hookWarmups();

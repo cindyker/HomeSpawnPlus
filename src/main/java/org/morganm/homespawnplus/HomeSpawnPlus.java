@@ -180,7 +180,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         	strategyEngine = new StrategyEngine(this);
         	
         	debugStartTimer("config");
-    		loadConfig();
+    		loadConfig(false);
     		updateConfigDefaultFile();
     		debugEndTimer("config");
         	
@@ -233,6 +233,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	new CommandUsurper(this, log, logPrefix).usurpCommands();
     	debugEndTimer("commands");
     	
+    	processStrategyConfig();
     	detectAndWarn();
     	
     	debugStartTimer("metrics");
@@ -349,7 +350,7 @@ public class HomeSpawnPlus extends JavaPlugin {
 		}
     }
     
-    public void loadConfig() throws ConfigException, IOException {
+    public void loadConfig(boolean processStrategies) throws ConfigException, IOException {
     	if( config == null )
     		config = ConfigFactory.getInstance(ConfigFactory.Type.YAML, this, YAML_CONFIG_ROOT_PATH+"config.yml");
 		config.load();
@@ -363,9 +364,14 @@ public class HomeSpawnPlus extends JavaPlugin {
 		locale = LocaleFactory.getLocale(localeConfig);
 		Colors.setDefaultColor(config.getString("core.defaultMessageColor", "%yellow%"));
 		
-    	strategyEngine.getStrategyConfig().loadConfig();
+		if( processStrategies )
+			processStrategyConfig();
     	
     	General.getInstance().setLocale(getLocale());
+    }
+    
+    private void processStrategyConfig() {
+    	strategyEngine.getStrategyConfig().loadConfig();
     }
 
     private Boolean setupVaultEconomy()

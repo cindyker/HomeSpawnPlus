@@ -27,7 +27,7 @@ public class SpawnNamedSpawn extends BaseStrategy {
 		// find a named spawn that the admin identified, so print a warning so they can
 		// fix the issue.
 		if( spawn == null )
-			log.warning("No spawn found for name \""+namedSpawn+"\" for \""+getStrategyConfigName()+"\" strategy");
+			log.warning(logPrefix+" No spawn found for name \""+namedSpawn+"\" for \""+getStrategyConfigName()+"\" strategy");
 		
 		return new StrategyResult(spawn);
 	}

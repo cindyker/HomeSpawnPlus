@@ -2,6 +2,7 @@ v1.5.6 -
 * added /permcheck command (alias /pc) for checking permissions
 * added plugin metrics (from LWC author Hidendra, website http://mcstats.org). Edit "plugins/PluginMetrics/config.yml" and set "opt-out: true" if you wish to opt out of all mcstats reporting.
 * Ticket #112: added permission for named spawns. By default this behavior is off, controlled by the "core.spawnNamedPermissions" config option. If enabled, HSP will check for permission: "hsp.command.spawn.named.<spawnname>" in order for the player to have permission to use the named teleport
+* Ticket #114: random spawn. Added 'spawnNamedRandom' strategy
 
 v1.5.5 - May 12, 2012
 * bugfix (unreported) for MODE_HOME_NO_BED not working

@@ -2,8 +2,10 @@ v1.5.6 -
 * added /permcheck command (alias /pc) for checking permissions
 * added plugin metrics (from LWC author Hidendra, website http://mcstats.org). Edit "plugins/PluginMetrics/config.yml" and set "opt-out: true" if you wish to opt out of all mcstats reporting.
 * Ticket #112: added permission for named spawns. By default this behavior is off, controlled by the "core.spawnNamedPermissions" config option. If enabled, HSP will check for permission: "hsp.command.spawn.named.<spawnname>" in order for the player to have permission to use the named teleport
-* Ticket #114: random spawn. Added 'spawnNamedRandom' strategy
 * Enhancement request: "resetOnDeath" cooldown config option. Can be used per-permission, per-world or in default cooldown sections
+* Ticket #114: random world spawn. Added 'spawnWorldRandom' strategy
+* Ticket #114: random named spawn. Added 'spawnNamedRandom' strategy
+* added "spawnRegionRandom" strategy for spawning at a completely random location inside a worldGuard region
 
 v1.5.5 - May 12, 2012
 * bugfix (unreported) for MODE_HOME_NO_BED not working

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,6 +28,8 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StrategyConfig {
+	private final Logger log;
+	private final String logPrefix;
 	private final HomeSpawnPlus plugin;
 	private final Debug debug = Debug.getInstance();
 	private final Map<EventType, Set<Strategy>> defaultStrategies;
@@ -34,6 +38,9 @@ public class StrategyConfig {
 	
 	public StrategyConfig(final HomeSpawnPlus plugin) {
 		this.plugin = plugin;
+		this.log = plugin.getLogger();
+		this.logPrefix = plugin.getLogPrefix();
+		
 		defaultStrategies = new HashMap<EventType, Set<Strategy>>();
 		worldStrategies = new HashMap<String, WorldStrategies>();
 		permissionStrategies = new LinkedHashMap<String, PermissionStrategies>();
@@ -70,8 +77,7 @@ public class StrategyConfig {
 						set.add(strategy);
 						count++;
 					} catch (StrategyException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
 					}
 				}
 			}
@@ -112,8 +118,7 @@ public class StrategyConfig {
 								set.add(strategy);
 								count++;
 							} catch (StrategyException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
 							}
 						}
 					}
@@ -170,8 +175,7 @@ public class StrategyConfig {
 								set.add(strategy);
 								count++;
 							} catch (StrategyException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
 							}
 						}
 					}

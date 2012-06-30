@@ -6,9 +6,11 @@ package org.morganm.homespawnplus.util;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -131,7 +133,7 @@ public class WorldGuardInterface {
 				*/
 			}
 		}
-		catch(Exception e) {
+		catch(Throwable e) {
 			// we only print once to avoid spamming the log with errors, since this is possibly
 			// a permanent condition (ie. admin chooses to run older version of WorldGuard that
 			// this plugin is not compatible with)
@@ -144,5 +146,21 @@ public class WorldGuardInterface {
 		
 		Debug.getInstance().debug("getWorldGuardSpawnLocation(): exit, loc=",loc);
 		return loc;
+	}
+	
+	public ProtectedRegion getWorldGuardRegion(World world, String regionName) {
+		try {
+			Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+			if( p != null ) {
+				WorldGuardPlugin worldGuard = (WorldGuardPlugin) p;
+				RegionManager mgr = worldGuard.getRegionManager(world);
+				return mgr.getRegion(regionName);
+			}
+		}
+		catch(Throwable e) {
+			log.log(Level.WARNING, logPrefix + " Error trying find WorldGuard region \""+regionName+"\": "+e.getMessage(), e);
+		}
+		
+		return null;
 	}
 }

@@ -32,8 +32,10 @@ import org.morganm.homespawnplus.strategies.SpawnNamedSpawn;
 import org.morganm.homespawnplus.strategies.SpawnNearestSpawn;
 import org.morganm.homespawnplus.strategies.SpawnNewPlayer;
 import org.morganm.homespawnplus.strategies.SpawnRandomNamed;
+import org.morganm.homespawnplus.strategies.SpawnRegionRandom;
 import org.morganm.homespawnplus.strategies.SpawnSpecificWorld;
 import org.morganm.homespawnplus.strategies.SpawnWorldGuardRegion;
+import org.morganm.homespawnplus.strategies.SpawnWorldRandom;
 
 /**
  * @author morganm
@@ -46,7 +48,7 @@ public class StrategyFactory {
 	/* Replace these static definitions with annotations at some point.
 	 */
 	static {
-		noArgStrategies = new HashMap<String, Class<? extends Strategy>>(5);
+		noArgStrategies = new HashMap<String, Class<? extends Strategy>>(20);
 		noArgStrategies.put(new HomeAnyWorld().getStrategyConfigName(), HomeAnyWorld.class);
 		noArgStrategies.put(new HomeDefaultWorld().getStrategyConfigName(), HomeDefaultWorld.class);
 		noArgStrategies.put(new HomeLocalWorld().getStrategyConfigName(), HomeLocalWorld.class);
@@ -71,16 +73,22 @@ public class StrategyFactory {
 		catch(StrategyException e) {
 			e.printStackTrace();
 		}
-		// HomeNamedHome is special, it can be both a noArg and 1-arg strategy
-		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName(), HomeNamedHome.class);
 		
-		oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(5);
+		oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(10);
+		
+		// Special strategies that can be both a noArg and a 1-arg strategy
+		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName(), HomeNamedHome.class);
 		oneArgStrategies.put(new HomeNamedHome(null).getStrategyConfigName(), HomeNamedHome.class);
+		noArgStrategies.put(new SpawnWorldRandom(null).getStrategyConfigName(), SpawnWorldRandom.class);
+		oneArgStrategies.put(new SpawnWorldRandom(null).getStrategyConfigName(), SpawnWorldRandom.class);
+
+		// 1-arg Strategies
 		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName(), HomeSpecificWorld.class);
 		oneArgStrategies.put(new SpawnNamedSpawn(null).getStrategyConfigName(), SpawnNamedSpawn.class);
 		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName(), SpawnSpecificWorld.class);
 		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName(), SpawnGroupSpecificWorld.class);
 		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName(), SpawnRandomNamed.class);
+		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName(), SpawnRegionRandom.class);
 	}
 	
 	

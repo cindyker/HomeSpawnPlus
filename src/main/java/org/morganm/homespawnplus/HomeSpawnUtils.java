@@ -6,6 +6,7 @@ package org.morganm.homespawnplus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,7 @@ public class HomeSpawnUtils {
 
 	private final HomeSpawnPlus plugin;
     private final Server server;
+	private final Random random = new Random(System.currentTimeMillis());
     private Debug debug;
 	
 	// set when we first find the defaultSpawnWorld, cached for future reference
@@ -844,6 +846,86 @@ public class HomeSpawnUtils {
 		debug.debug("isNewPlayer: using ",strategy," strategy, player is determined to be NEW player");
     	// if we didn't find any record of this player, they must be new
     	return true;
+    }
+    
+    /** Given two equal integer values, figure out their "distance delta".
+     * For example, assume two Locations A and B where we're trying to find
+     * the distanceDelta between A.x and B.x. Here are examples:
+     * 
+     *   A.x: -550, B.x: -570 = 20
+     *   A.x: 550, B.x: 570 = 20
+     *   A.x: -50, B.x: 50 = 100
+     *   
+     * @param i
+     * @param j
+     * @return
+     */
+    private int getDistanceDelta(int i, int j) {
+    	int highest = i;
+    	int lowest = j;
+    	// swap them if it's wrong
+    	if( lowest > highest ) {
+    		highest = j;
+    		lowest = i;
+    	}
+    	
+    	// if both are < 0, swap sign and subtract lowest from highest
+    	// (since with swapped sign, the lowest/highest will be reversed)
+    	if( highest < 0 && lowest < 0 )
+    		return Math.abs(lowest) - Math.abs(highest);
+    	else
+    		return highest - lowest;
+    }
+    
+    /** Given two integers representing a location component (such as x, y or z),
+     * pick a random number that falls between them.
+     * 
+     * @param i
+     * @param j
+     * @return
+     */
+    private int randomDeltaInt(int i, int j) {
+    	int result = 0;
+    	int delta = getDistanceDelta(i, j);
+    	int r = random.nextInt(delta);
+    	if( i < j )
+    		result = i + r;
+    	else
+    		result = j + r;
+    	
+    	debug.debug("randomDeltaInt(): i=",i,", j=",j,", delta=",delta,", r=",r,", result=",result);
+    	return result;
+    }
+    
+    /** Given a min and max (that define a square cube "region"), randomly pick
+     * a location in between them, and then find a "safe spawn" point based on
+     * that location (ie. that won't suffocate or be right above lava, etc).
+     * 
+     * @param min
+     * @param max
+     * @return the random safe Location, or null if one couldn't be located
+     */
+    public Location findRandomSafeLocation(Location min, Location max) {
+    	if( min == null || max == null )
+    		return null;
+    	
+    	if( !min.getWorld().equals(max.getWorld()) ) {
+    		log.warning(logPrefix+" Attempted to find random location between two different worlds: "+min.getWorld()+", "+max.getWorld());
+    		return null;
+    	}
+    	
+    	debug.debug("findRandomSafeLocation(): min: ",min,", max: ",max);
+    	
+    	int x = randomDeltaInt(min.getBlockX(), max.getBlockX());
+    	int y = randomDeltaInt(min.getBlockY(), max.getBlockY());
+    	int z = randomDeltaInt(min.getBlockZ(), max.getBlockZ());
+    	
+    	Location newLoc = new Location(min.getWorld(), x, y, z);
+    	debug.debug("findRandomSafeLocation(): newLoc=",newLoc);
+    	Location safeLoc = General.getInstance().safeLocation(newLoc);
+    	debug.debug("findRandomSafeLocation(): safeLoc=",safeLoc);
+
+    	return safeLoc;
     }
     
     /** Teleport a player, optionally safe teleporting them if specified in the config

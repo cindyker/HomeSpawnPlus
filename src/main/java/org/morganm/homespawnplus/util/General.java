@@ -29,7 +29,7 @@ import org.morganm.homespawnplus.i18n.Locale;
  *
  */
 public final class General {
-	// class version: 3
+	// class version: 4
 	
 	private static BlockFace[] directions = new BlockFace[] {
 		BlockFace.UP,
@@ -195,7 +195,16 @@ public final class General {
 	 * 
 	 * @param l
 	 */
-	public Location safeLocation(final Location l) {
+	public Location safeLocation(Location l) {
+    	// location may be way high up in the sky, if so, move it to the
+    	// highest non-air block before proceeding with safe search algorithm
+    	Location highest = l.getWorld().getHighestBlockAt(l).getLocation();
+		Debug.getInstance().debug("safeLocation(): l=",l,", highest=",highest);
+    	if( l.getY() > highest.getY() ) {
+    		l = new Location(l.getWorld(), l.getX(), highest.getY(), l.getZ(), l.getYaw(), l.getPitch());
+    		Debug.getInstance().debug("safeLocation(): adjusted for highest, new l=",l);
+    	}
+    	
 		Location target = findSafeLocation(new HashSet<Location>(10), 0, l);
 		
 		// if we didn't find a safe location, then just use the original location
@@ -209,6 +218,7 @@ public final class General {
 			target.setYaw(l.getYaw());
 		}
 		
+		Debug.getInstance().debug("safeLocation(): target=",target);
 		return target;
 	}
 	

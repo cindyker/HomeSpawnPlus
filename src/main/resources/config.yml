@@ -238,6 +238,9 @@ cooldown:
   groupspawn: 60
 
   homeinvitetp: 60
+
+  # if set to true, cooldowns reset on death
+  resetOnDeath: false
  
   # any cooldowns listed here will be on separate timers per
   # command argument. for example if "home-named" is listed,
@@ -256,6 +259,8 @@ cooldown:
 #      cooldownPerWorld: false
 #      home: 120
 #      spawn: 120
+#      # resetOnDeath can be per-world or even per-permission
+#      resetOnDeath: true
 #
 #  example of permission-specific cooldowns
 #  permission:

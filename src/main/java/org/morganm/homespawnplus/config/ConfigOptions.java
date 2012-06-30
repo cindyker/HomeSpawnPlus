@@ -79,6 +79,7 @@ public interface ConfigOptions {
 //	public static final String COOLDOWN_PER_HOME = COOLDOWN_BASE + "cooldownPerHome";
 //	public static final String COOLDOWN_PER_HOME_OVERRIDE = COOLDOWN_BASE + "cooldownPerHomeOverride";
 	public static final String COOLDOWN_SEPARATION = "cooldown.separation";
+	public static final String COOLDOWN_RESET_ON_DEATH = "resetOnDeath";
 	public static final String WARMUP_BASE = "warmup.";
 	public static final String COST_BASE = "cost.";
 	public static final String COST_VERBOSE = COST_BASE + "verbose";

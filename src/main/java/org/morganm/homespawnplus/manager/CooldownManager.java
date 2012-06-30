@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.manager;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -180,7 +181,7 @@ public class CooldownManager {
      * @param cooldown
      * @return
      */
-    public CooldownTime getCooldownTime(final Player player, final String cooldown) {
+    private CooldownTime getCooldownTime(final Player player, final String cooldown) {
     	final CooldownTime cdt = new CooldownTime();
     	cdt.cooldownName = cooldown;	// default to existing cooldown name
     	
@@ -271,6 +272,86 @@ public class CooldownManager {
     	}
     	
     	return cdt;
+    }
+    
+    /** Should be called when a player dies. Will determine if the player's
+     * cooldowns should be reset based on config options and location.
+     * 
+     * @param player
+     * @param location
+     */
+    public void onDeath(Player player) {
+    	boolean resetOnDeath = false;
+    	// if we find a match in any config option, matchFound is set to true
+    	// to stop any further config processing.
+    	boolean matchFound = false;
+
+    	// check permission-specific settings
+    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.COOLDOWN_BASE
+    			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
+    	if( cs != null ) {
+    		Set<String> keys = cs.getKeys(false);
+    		if( keys != null ) 
+    			for(String entry : keys) {
+    				final String entryBase = ConfigOptions.COOLDOWN_BASE
+    				+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
+    				+ entry;
+
+    				String permMatch = null;
+    				List<String> perms = plugin.getHSPConfig().getStringList(entryBase + ".permissions", null);
+    				for(String perm : perms) {
+    					debug.debug("getCooldownTime(): checking permission ",perm," for entry ",entry);
+
+    					if( plugin.hasPermission(player, perm) ) {
+    						// if the RESET_ON_DEATH flag is defined, we use it
+    						if( plugin.getConfig().contains(entryBase + "."
+    								+ ConfigOptions.COOLDOWN_RESET_ON_DEATH) )
+    						{
+    							permMatch = perm;
+    							break;
+    						}
+    					}
+    				}
+
+    				if( permMatch != null ) {
+    					resetOnDeath = plugin.getConfig().getBoolean(entryBase + "."
+    							+ ConfigOptions.COOLDOWN_RESET_ON_DEATH);
+    					matchFound = true;
+    					break;				// stop processing now that we found a match
+    				}
+    			}
+    	}
+
+    	// check for world-specific setting
+    	if( !matchFound ) {
+    		final String worldName = player.getLocation().getWorld().getName();
+    		final String worldBase = ConfigOptions.COOLDOWN_BASE
+    		+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
+    		+ worldName;
+
+    		if( plugin.getConfig().contains(worldBase + "." + ConfigOptions.COOLDOWN_RESET_ON_DEATH) )
+    		{
+    			resetOnDeath = plugin.getConfig().getBoolean(worldBase + "." + ConfigOptions.COOLDOWN_RESET_ON_DEATH);
+    			matchFound = true;
+    		}
+
+    	}
+
+    	// no permission or world-specific entry found, check default setting
+    	if( !matchFound )
+    		resetOnDeath = plugin.getConfig().getBoolean(ConfigOptions.COOLDOWN_BASE + "." + ConfigOptions.COOLDOWN_RESET_ON_DEATH);
+    	
+    	// If resetonDeath flag is set, remove all cooldowns for this player
+    	if( resetOnDeath ) {
+    		// cooldowns for this player will all start with this string
+    		final String playerBase = player.getName() + ".";
+    		
+    		for(Iterator<String> i = cooldowns.keySet().iterator(); i.hasNext();) {
+    			String key = i.next();
+    			if( key.startsWith(playerBase) )
+    				i.remove();
+    		}
+    	}
     }
     
     class CooldownTime {

@@ -887,6 +887,10 @@ public class HomeSpawnUtils {
     private int randomDeltaInt(int i, int j) {
     	int result = 0;
     	int delta = getDistanceDelta(i, j);
+    	debug.debug("randomDeltaInt(): i=",i,", j=",j,", delta=",delta);
+    	if( delta == 0 )
+    		return 0;
+    	
     	int r = random.nextInt(delta);
     	if( i < j )
     		result = i + r;

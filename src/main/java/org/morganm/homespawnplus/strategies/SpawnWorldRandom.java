@@ -52,7 +52,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 			int radius = border.getRadius();
 			
 			Location min = new Location(w,x-radius, 1, z-radius);
-			Location max = new Location(w,x+radius, 1, z+radius);
+			Location max = new Location(w,x+radius, 255, z+radius);
 			
 			// we loop and try multiple times, because it's possible we randomly select
 			// a location outside of the border. If so, we just loop and guess again.
@@ -72,7 +72,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 		// no WorldBorder? just assume default min/max of +/- 1000
 		else {
 			Location min = new Location(w, -1000, 1, -1000);
-			Location max = new Location(w, 1000, 256, 1000);
+			Location max = new Location(w, 1000, 255, 1000);
 			result = plugin.getUtil().findRandomSafeLocation(min, max);
 		}
 		

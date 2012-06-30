@@ -31,6 +31,7 @@ import org.morganm.homespawnplus.strategies.SpawnLocalWorld;
 import org.morganm.homespawnplus.strategies.SpawnNamedSpawn;
 import org.morganm.homespawnplus.strategies.SpawnNearestSpawn;
 import org.morganm.homespawnplus.strategies.SpawnNewPlayer;
+import org.morganm.homespawnplus.strategies.SpawnRandomNamed;
 import org.morganm.homespawnplus.strategies.SpawnSpecificWorld;
 import org.morganm.homespawnplus.strategies.SpawnWorldGuardRegion;
 
@@ -79,6 +80,7 @@ public class StrategyFactory {
 		oneArgStrategies.put(new SpawnNamedSpawn(null).getStrategyConfigName(), SpawnNamedSpawn.class);
 		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName(), SpawnSpecificWorld.class);
 		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName(), SpawnGroupSpecificWorld.class);
+		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName(), SpawnRandomNamed.class);
 	}
 	
 	
@@ -95,7 +97,11 @@ public class StrategyFactory {
 		try {
 			Strategy strategy = clazz.newInstance();
 			strategy.setPlugin(HomeSpawnPlus.getInstance());
+			strategy.validate();
 			return strategy;
+		}
+		catch(StrategyException e) {
+			throw e;	// just re-throw
 		}
 		catch(Exception e) {
 			throw new StrategyException("Error instantiating new 0-arg strategy instance", e);
@@ -108,8 +114,14 @@ public class StrategyFactory {
 		try {
 			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
 			Strategy strategy = constructor.newInstance(arg);
+			
 			strategy.setPlugin(HomeSpawnPlus.getInstance());
+			strategy.validate();
+			
 			return strategy;
+		}
+		catch(StrategyException e) {
+			throw e;	// just re-throw
 		}
 		catch(Exception e) {
 			throw new StrategyException("Error instantiating new 1-arg strategy instance", e);
@@ -134,7 +146,7 @@ public class StrategyFactory {
 					// check to see if this config also has a noArg version. If so, we don't
 					// throw an error, we let the code fall through to the noArg checks below
 					if( !noArgStrategies.containsKey(entry.getKey()) )
-						throw new StrategyException("Invalid strategy: "+strategyName);
+						throw new StrategyException("Invalid strategy: "+strategyName+" (strategy requires argument)");
 					else
 						break;
 				}

@@ -16,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.util.Debug;
@@ -36,11 +35,9 @@ public class WarmupManager {
 	
 	private final HomeSpawnPlus plugin;
 	private final Debug debug;
-	private final Config config;
 	
 	public WarmupManager(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
-		this.config = plugin.getHSPConfig();
 		this.logPrefix = HomeSpawnPlus.logPrefix;
     	this.debug = Debug.getInstance();
 		
@@ -62,7 +59,7 @@ public class WarmupManager {
 	 * @return true if warmup should be enforced, flase if not
 	 */
 	public boolean hasWarmup(Player p, String warmupName) {
-		if( config.getBoolean(ConfigOptions.USE_WARMUPS, false) &&
+		if( plugin.getConfig().getBoolean(ConfigOptions.USE_WARMUPS, false) &&
 			getWarmupTime(p, warmupName).warmupTime > 0 &&
 			!isExemptFromWarmup(p, warmupName) )
 		{
@@ -247,7 +244,7 @@ public class WarmupManager {
 			return;
 		
 		// if we aren't supposed to cancel on damage, no further processing required
-		if( !config.getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) )
+		if( !plugin.getConfig().getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) )
 			return;
 
 		// don't do any extra processing if there are no pending warmups
@@ -330,7 +327,7 @@ public class WarmupManager {
 				boolean scheduleNext = true;
 				
 				// do movement checks to see if player has moved since the warmup started
-				if( config.getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
+				if( plugin.getConfig().getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
 					Location currentLoc = p.getLocation();
 					if( playerLocation.getBlockX() != currentLoc.getBlockX() ||
 						playerLocation.getBlockY() != currentLoc.getBlockY() ||

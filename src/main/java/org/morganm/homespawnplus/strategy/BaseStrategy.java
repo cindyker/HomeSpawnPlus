@@ -47,4 +47,9 @@ public abstract class BaseStrategy implements Strategy {
 		this.log = plugin.getLogger();
 		this.logPrefix = plugin.getLogPrefix();
 	}
+	
+	/** By default, strategy is assumed valid. Subclass can override to do
+	 * it's own checks.
+	 */
+	public void validate() throws StrategyException {}
 }

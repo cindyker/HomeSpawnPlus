@@ -54,6 +54,8 @@ public class CommandUsurper {
 		        	// restarting the server.
 		        	cmd.setExecutor(usurp);
 	        	}
+	        	else
+	        		Debug.getInstance().debug("usurpCommands() tried to usurp \"",command,"\", but no registered command was found");
 	    	}
     	}
     }

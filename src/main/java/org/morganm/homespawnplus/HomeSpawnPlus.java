@@ -230,7 +230,13 @@ public class HomeSpawnPlus extends JavaPlugin {
         
     	debugStartTimer("commands");
     	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
-    	new CommandUsurper(this, log, logPrefix).usurpCommands();
+    	
+    	final HomeSpawnPlus pluginInstance = this;
+    	getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+		    	new CommandUsurper(pluginInstance, log, logPrefix).usurpCommands();
+			}
+		} , 40);
     	debugEndTimer("commands");
     	
     	processStrategyConfig();

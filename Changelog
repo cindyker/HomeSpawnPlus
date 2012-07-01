@@ -6,6 +6,7 @@ v1.5.6 -
 * Ticket #114: random world spawn. Added 'spawnWorldRandom' strategy
 * Ticket #114: random named spawn. Added 'spawnNamedRandom' strategy
 * added "spawnRegionRandom" strategy for spawning at a completely random location inside a worldGuard region
+* Ticket #104: /sethome and bedHome don't play nice together
 
 v1.5.5 - May 12, 2012
 * bugfix (unreported) for MODE_HOME_NO_BED not working

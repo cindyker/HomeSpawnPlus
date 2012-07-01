@@ -263,20 +263,20 @@ public class HomeSpawnUtils {
 	private Home enforceSingleGlobalHome(String playerName) {
 		Home home = null;
 		
-		debug.debug("singleGlobalHome config enabled, entered enforceSingleGlobalHome");
+		debug.debug("enforceSingleGlobalHome() ENTER");
 		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(playerName);
 		
 		if( homes != null ) {
 			// if we find a single home in the DB, move it to the new location
 			if( homes.size() == 1 ) {
-    			debug.debug("singleGlobalHome: found 1 home, updated it");
+    			debug.debug("enforceSingleGlobalHome() found 1 home, updated it");
 				home = homes.iterator().next();
 			}
 			// otherwise, delete all homes and a new one will be created below
 			else {
-    			debug.debug("singleGlobalHome: found multiple homes, removing them");
+    			debug.debug("enforceSingleGlobalHome() found multiple homes, removing them");
 				for(Home h : homes) {
-					debug.debug("removing home ",h);
+					debug.debug("enforceSingleGlobalHome() removing home ",h);
 					try {
 						plugin.getStorage().getHomeDAO().deleteHome(h);
 					}
@@ -287,6 +287,7 @@ public class HomeSpawnUtils {
 			}
 		}
 		
+		debug.debug("enforceSingleGlobalHome() EXIT, home=",home);
 		return home;
 	}
 	
@@ -338,6 +339,11 @@ public class HomeSpawnUtils {
     					}
     				}
     			}
+    		}
+    		
+    		if( home == null ) {
+    			debug.debug("setHome: bedHome flag enabled, but no bedHome found. Using default home");
+            	home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
     		}
     	}
     	

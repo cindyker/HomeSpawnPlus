@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.morganm.homespawnplus.entity.Home;
 
 /** Methods that are useful for Home-related strategies.
@@ -149,74 +147,8 @@ public abstract class HomeStrategy extends BaseStrategy {
 			return false;
 		
 		HashSet<Location> checkedLocs = new HashSet<Location>(50);
-		Location bedLoc = findBed(l.getBlock(), checkedLocs, 0, 5);
+		Location bedLoc = plugin.getUtil().findBed(l.getBlock(), checkedLocs, 0, 5);
 		
 		return bedLoc != null;
-	}
-	
-	private static final BlockFace[] cardinalFaces = new BlockFace[] {BlockFace.NORTH,
-		BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
-	private static final BlockFace[] adjacentFaces = new BlockFace[] {BlockFace.NORTH,
-			BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
-			BlockFace.UP, BlockFace.DOWN
-	};
-	
-	/** Find a bed starting at a given Block, up to maxDepth blocks away.
-	 * 
-	 * @param l
-	 * @param currentLevel
-	 * @param maxDepth
-	 * @return
-	 */
-	private Location findBed(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
-		debug.devDebug("findBed: b=",b," currentLevel=",currentLevel);
-		if( b.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
-			debug.devDebug("findBed: Block ",b," is bed block");
-			for(BlockFace bf : cardinalFaces) {
-				Block nextBlock = b.getRelative(bf);
-				if( nextBlock.getTypeId() == 26 ) {
-					debug.devDebug("findBed: Block ",nextBlock," is second bed block");
-					return b.getLocation();
-				}
-			}
-		}
-		
-		// first we check for a bed in all the adjacent blocks, before recursing to move out a level
-		for(BlockFace bf : adjacentFaces) {
-			Block nextBlock = b.getRelative(bf);
-			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't check the same block twice
-				continue;
-			
-			if( nextBlock.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
-				debug.devDebug("findBed: Block ",nextBlock," is bed block");
-				for(BlockFace cardinal : cardinalFaces) {
-					Block possibleBedBlock = nextBlock.getRelative(cardinal);
-					if( possibleBedBlock.getTypeId() == 26 ) {
-						debug.devDebug("findBed: Block ",possibleBedBlock," is second bed block");
-						return nextBlock.getLocation();
-					}
-				}
-			}
-		}
-		
-		// don't recurse beyond the maxDepth
-		if( currentLevel+1 > maxDepth )
-			return null;
-		
-		// if we get here, there were no beds in the adjacent blocks, so now we recurse out one
-		// level of blocks to check at the next depth.
-		Location l = null;
-		for(BlockFace bf : adjacentFaces) {
-			Block nextBlock = b.getRelative(bf);
-			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't recurse to the same block twice
-				continue;
-			checkedLocs.add(nextBlock.getLocation());
-			
-			l = findBed(nextBlock, checkedLocs, currentLevel+1, maxDepth);
-			if( l != null )
-				break;
-		}
-		
-		return l;
 	}
 }

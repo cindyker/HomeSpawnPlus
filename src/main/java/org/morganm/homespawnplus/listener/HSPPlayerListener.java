@@ -148,8 +148,18 @@ public class HSPPlayerListener implements Listener {
     			if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
     				setDefaultHome = true;
 
-    			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) )
+    			// we update the Bukkit bed first as this avoids setHome() having to
+    			// guess which bed we clicked on. However, it's possible setHome() will
+    			// refuse to set the home for some reason, so we first record the
+    			// old location so we can restore it if the setHome() call fails.
+    			Location oldBedLoc = player.getBedSpawnLocation();
+				player.setBedSpawnLocation(bedBlock.getLocation());	// update Bukkit bed
+				
+    			if( util.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true) ) {
     				util.sendLocalizedMessage(player, HSPMessages.HOME_BED_SET);
+    			}
+    			else
+    				player.setBedSpawnLocation(oldBedLoc);	// restore old bed if setHome() failed
 
     			bedClicks.remove(player.getName());
     		}
@@ -233,6 +243,11 @@ public class HSPPlayerListener implements Listener {
     
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
+    	if( debug.isDevDebug() ) {
+    		Location bedSpawn = e.getPlayer().getBedSpawnLocation();
+    		debug.devDebug("onPlayerRespawn(): isBedSpawn=",e.isBedSpawn(),", bedSpawn=",bedSpawn);
+    	}
+
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+e.getPlayer().getName()+" (respawning).");
 

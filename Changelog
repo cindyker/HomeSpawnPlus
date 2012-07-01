@@ -8,6 +8,8 @@ v1.5.6 -
 * added "spawnRegionRandom" strategy for spawning at a completely random location inside a worldGuard region
 * Ticket #104: /sethome and bedHome don't play nice together
 * lots of testing and fixes to dynmap integration (it works now!)
+* Ticket #106: fixed the annoying "your home bed was missing or obstructed" message
+* Ticket #102: added French localizaton (thanks JohOply!)
 
 v1.5.5 - May 12, 2012
 * bugfix (unreported) for MODE_HOME_NO_BED not working

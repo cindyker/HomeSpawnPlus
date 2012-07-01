@@ -5,6 +5,7 @@ package org.morganm.homespawnplus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -15,6 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -369,8 +372,6 @@ public class HomeSpawnUtils {
     		
     		home.setLocation(l);
 			home.setUpdatedBy(updatedBy);
-			if( home.isBedHome() )
-				p.setBedSpawnLocation(l);
     	}
     	// this is a new home for this player/world combo, create a new object
     	else {
@@ -398,7 +399,7 @@ public class HomeSpawnUtils {
     	
     	if( bedHome ) {
     		home.setName(l.getWorld().getName() + "_" + Storage.HSP_BED_RESERVED_NAME);
-			p.setBedSpawnLocation(l);
+    		setBukkitBedHome(p, l);
     	}
     	// we don't allow use of the reserved suffix "_bed" name unless the bed flag is true
     	else if( home.getName() != null && home.getName().endsWith("_" + Storage.HSP_BED_RESERVED_NAME) ) {
@@ -417,6 +418,41 @@ public class HomeSpawnUtils {
 		}
 		
 		return false;
+    }
+    
+    /** Although HSP records the exact location that a player is when clicking
+     * on a bed (which allows the player to respawn exactly where they were),
+     * the latest version of Bukkit actually check to see if the bed exists
+     * at the players Bed location and print an annoying "Your home bed was
+     * missing or obstructed" if there is not a block at the location.
+     * 
+     * So this method takes a given location and find the exact location of
+     * the nearest bed and sets the Bukkit location there.
+     * 
+     * @param player
+     * @param l
+     */
+    private void setBukkitBedHome(final Player player, final Location l) {
+    	if( l == null )
+    		return;
+    	
+    	// First check the existing bed location. If it exists and is within
+    	// 10 blocks already, do nothing. This allows the player listener to
+    	// set the exact location of the bed as opposed to us guessing
+    	// within 10 blocks (might be multiple beds in that range).
+    	Location oldBedLoc = player.getBedSpawnLocation();
+    	if( oldBedLoc != null ) {
+    		double distance = oldBedLoc.distance(l);
+    		if( distance < 10 )
+    			return;
+    	}
+    	
+    	// look up to 10 blocks away for the bed
+		HashSet<Location> checkedLocs = new HashSet<Location>(50);
+		Location bedLoc = plugin.getUtil().findBed(l.getBlock(), checkedLocs, 0, 10);
+
+		if( bedLoc != null )
+			player.setBedSpawnLocation(bedLoc);
     }
     
     /** Set a named home for a player.
@@ -938,6 +974,72 @@ public class HomeSpawnUtils {
     	return safeLoc;
     }
     
+	private static final BlockFace[] cardinalFaces = new BlockFace[] {BlockFace.NORTH,
+		BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+	private static final BlockFace[] adjacentFaces = new BlockFace[] {BlockFace.NORTH,
+			BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+			BlockFace.UP, BlockFace.DOWN
+	};
+	
+	/** Find a bed starting at a given Block, up to maxDepth blocks away.
+	 * 
+	 * @param l
+	 * @param currentLevel
+	 * @param maxDepth
+	 * @return
+	 */
+	public Location findBed(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
+		debug.devDebug("findBed: b=",b," currentLevel=",currentLevel);
+		if( b.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+			debug.devDebug("findBed: Block ",b," is bed block");
+			for(BlockFace bf : cardinalFaces) {
+				Block nextBlock = b.getRelative(bf);
+				if( nextBlock.getTypeId() == 26 ) {
+					debug.devDebug("findBed: Block ",nextBlock," is second bed block");
+					return b.getLocation();
+				}
+			}
+		}
+		
+		// first we check for a bed in all the adjacent blocks, before recursing to move out a level
+		for(BlockFace bf : adjacentFaces) {
+			Block nextBlock = b.getRelative(bf);
+			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't check the same block twice
+				continue;
+			
+			if( nextBlock.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+				debug.devDebug("findBed: Block ",nextBlock," is bed block");
+				for(BlockFace cardinal : cardinalFaces) {
+					Block possibleBedBlock = nextBlock.getRelative(cardinal);
+					if( possibleBedBlock.getTypeId() == 26 ) {
+						debug.devDebug("findBed: Block ",possibleBedBlock," is second bed block");
+						return nextBlock.getLocation();
+					}
+				}
+			}
+		}
+		
+		// don't recurse beyond the maxDepth
+		if( currentLevel+1 > maxDepth )
+			return null;
+		
+		// if we get here, there were no beds in the adjacent blocks, so now we recurse out one
+		// level of blocks to check at the next depth.
+		Location l = null;
+		for(BlockFace bf : adjacentFaces) {
+			Block nextBlock = b.getRelative(bf);
+			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't recurse to the same block twice
+				continue;
+			checkedLocs.add(nextBlock.getLocation());
+			
+			l = findBed(nextBlock, checkedLocs, currentLevel+1, maxDepth);
+			if( l != null )
+				break;
+		}
+		
+		return l;
+	}
+
     /** Teleport a player, optionally safe teleporting them if specified in the config
      * 
      * @param p

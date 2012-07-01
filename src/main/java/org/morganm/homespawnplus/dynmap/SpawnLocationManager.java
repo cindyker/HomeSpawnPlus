@@ -37,7 +37,7 @@ public class SpawnLocationManager implements LocationManager {
 				if( !spawn.getWorld().equals(world) )
 					continue;
 				
-				locations.add(spawn);
+				locations.add(new SpawnNamedLocation(spawn));
 			}
 		}
 		

@@ -15,6 +15,7 @@ import org.dynmap.DynmapAPI;
 import org.dynmap.markers.MarkerAPI;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.util.Debug;
 
 /** Dynmap module for HSP, code heavily borrowed from Mike Primm's
  * excellent DynmapCommandBookPlugin and simply adapted for HSP.
@@ -38,6 +39,11 @@ public class DynmapModule {
     /* Spawn layer settings */
     private Layer spawnLayer;
     
+    private boolean activated = false;
+    private boolean stop = false;
+    private long updperiod;
+    private MarkerUpdate markerUpdateObject = null;
+    
     public DynmapModule(final HomeSpawnPlus plugin) {
     	this.plugin = plugin;
     	this.log = plugin.getLogger();
@@ -50,10 +56,10 @@ public class DynmapModule {
      */
     public void init() {
     	// don't do anything if we're not supposed to
-    	if( plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_ENABLED, false) )
+    	if( !plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_ENABLED, false) )
     		return;
     	
-        info("initializing");
+        info("initializing HSP dynmap integration");
         PluginManager pm = plugin.getServer().getPluginManager();
         
         /* Get dynmap */
@@ -72,6 +78,10 @@ public class DynmapModule {
     }
 
     private void activate() {
+    	// do nothing if we've already activated
+    	if( activated )
+    		return;
+    	
         /* Now, get markers API */
         markerapi = api.getMarkerAPI();
         if(markerapi == null) {
@@ -82,27 +92,30 @@ public class DynmapModule {
         /* Determine update period */
         double per = plugin.getConfig().getDouble(ConfigOptions.DYNMAP_INTEGRATION_UPDATE_PERIOD, 5.0);
         if(per < 2.0) per = 2.0;
-        long updperiod = (long)(per*20.0);
+        updperiod = (long)(per*20.0);
 
         /* Check which is enabled */
-        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_HOMES_ENABLED, true) == false) {
+        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_HOMES_ENABLED, true)) {
             HomeLocationManager mgr = new HomeLocationManager(plugin);
             ConfigurationSection cfg = plugin.getConfig().getConfigurationSection(ConfigOptions.DYNMAP_INTEGRATION_HOMES);
             /* Now, add marker set for homes */
             homelayer = new Layer(this, mgr, "homes", cfg, "Homes", "house", "%name%(home)", updperiod);
         }
         
-        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS_ENABLED, true) == false) {
+        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS_ENABLED, true)) {
             SpawnLocationManager mgr = new SpawnLocationManager(plugin);
         	ConfigurationSection cfg = plugin.getConfig().getConfigurationSection(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS);
+        	Debug.getInstance().debug("spawn cfg=",cfg);
 	        /* Now, add marker set for spawns */
-	        spawnLayer = new Layer(this, mgr, "spawns", cfg, "Spawns", "spawn", "[%name%]", updperiod);
+	        spawnLayer = new Layer(this, mgr, "spawns", cfg, "Spawns", "spawn", "%name%", updperiod);
         }
         
-//        stop = false;
-//        plugin.getServer().getScheduler().scheduleSyncDelayedTask(this, new MarkerUpdate(), 5*20);
+        stop = false;
+        markerUpdateObject = new MarkerUpdate();
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, markerUpdateObject, 5*20);
         
         info("dynmap integration is activated");
+        activated = true;
     }
 
     public void onDisable() {
@@ -114,7 +127,7 @@ public class DynmapModule {
             spawnLayer.stop();
             spawnLayer = null;
         }
-//        stop = true;
+        stop = true;
     }
 
     private class OurServerListener implements Listener {
@@ -123,44 +136,38 @@ public class DynmapModule {
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin p = event.getPlugin();
             String name = p.getDescription().getName();
-            if(name.equals("dynmap") || name.equals("CommandBook")) {
+            if(name.equals("dynmap") || name.equals("HomeSpawnPlus")) {
                 if(dynmap.isEnabled())
                     activate();
             }
         }
     }
     
-    /** Supposed to update us on a regular interval, but is redundant with the smarter
-     * updating built into layer. Disabling.
-     * 
-     */
-    /*
     private class MarkerUpdate implements Runnable {
         public void run() {
             if(!stop)
                 updateMarkers();
         }
     }
-    */
     
-    /** This method appears to be redundant with the one built into the Layer object
-     * (which I broke out into it's own file). Except the Layer one is "smart" enough
-     * to disable itself when no players are logged into the server.
-     */
-    /*
     private void updateMarkers() {
-        if(homelayer != null) {
-            homelayer.updateMarkerSet(homesmgr);
-        }
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new MarkerUpdate(), updperiod);
+    	long startTime = System.currentTimeMillis();
+    	Debug.getInstance().debug("DynmapModule.updateMarkers() START");
+    	
+        if(homelayer != null)
+            homelayer.updateMarkerSet();
+        if(spawnLayer != null)
+        	spawnLayer.updateMarkerSet();
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, markerUpdateObject, updperiod);
+        
+    	Debug.getInstance().debug("DynmapModule.updateMarkers() END (",System.currentTimeMillis()-startTime," total ms)");
     }
-    */
 
     public void info(String msg) {
-        log.log(Level.INFO, logPrefix + msg);
+        log.log(Level.INFO, logPrefix + " " + msg);
     }
     public void severe(String msg) {
-        log.log(Level.SEVERE, logPrefix + msg);
+        log.log(Level.SEVERE, logPrefix + " " + msg);
     }
     
     public Server getServer() {

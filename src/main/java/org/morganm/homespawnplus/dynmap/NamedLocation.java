@@ -13,4 +13,11 @@ import org.bukkit.Location;
 public interface NamedLocation {
 	public Location getLocation();
 	public String getName();
+
+	/** If the object is owned by a player, this method should return
+	 * the player name of the owner.
+	 * 
+	 * @return
+	 */
+	public String getPlayerName();
 }

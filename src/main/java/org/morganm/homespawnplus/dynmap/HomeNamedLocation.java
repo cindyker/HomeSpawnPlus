@@ -12,6 +12,7 @@ import org.morganm.homespawnplus.entity.Home;
  */
 public class HomeNamedLocation implements NamedLocation {
 	private final Home home;
+	private String name;
 	
 	public HomeNamedLocation(final Home home) {
 		this.home = home;
@@ -27,6 +28,18 @@ public class HomeNamedLocation implements NamedLocation {
 	 */
 	@Override
 	public String getName() {
+		if( name == null ) {
+			if( home.getName() != null )
+				name = home.getPlayerName() + ":" + home.getName();
+			else
+				name = home.getPlayerName();
+		}
+
+		return name;
+	}
+
+	@Override
+	public String getPlayerName() {
 		return home.getPlayerName();
 	}
 }

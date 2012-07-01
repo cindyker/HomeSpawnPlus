@@ -25,6 +25,7 @@ import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.dynmap.DynmapModule;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.entity.Spawn;
@@ -157,8 +158,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     
     @Override
     public void onEnable() {
-//    	long startupBegin = System.currentTimeMillis();
-//    	long startupTimer = 0;
+    	startupBegin = System.currentTimeMillis();
     	boolean loadError = false;
     	instance = this;
     	
@@ -252,6 +252,13 @@ public class HomeSpawnPlus extends JavaPlugin {
             // ignore exception
         }
     	debugEndTimer("metrics");
+    	
+    	if( getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_ENABLED, false) ) {
+        	debugStartTimer("dynmap");
+    		DynmapModule dynmap = new DynmapModule(this);
+    		dynmap.init();
+        	debugEndTimer("dynmap");
+    	}
         
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");

@@ -216,21 +216,21 @@ public abstract class BaseCommand implements Command {
 	 * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
 	 */
 	protected boolean defaultCommandChecks(Player p) {
-		debug.devDebug("enabled =",enabled);
+		debug.devDebug("defaultCommandChecks() enabled=",enabled);
 		if( !enabled )
 			return false;
 
 		final boolean hasP = hasPermission(p);
-		debug.devDebug("hasPermission =",hasP);
+		debug.devDebug("defaultCommandChecks() hasPermission =",hasP);
 		if( !hasP )
 			return false;
 
 		final boolean cd = cooldownCheck(p);
-		debug.devDebug("cooldownCheck = ",cd);
+		debug.devDebug("defaultCommandChecks() cooldownCheck = ",cd);
 		if( !cd )
 			return false;
 		
-		debug.devDebug("all defaultCommandChecks return true");
+		debug.devDebug("defaultCommandChecks() all defaultCommandChecks return true");
 		return true;
 	}
 	

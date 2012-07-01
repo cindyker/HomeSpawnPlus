@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -127,6 +128,8 @@ public final class General {
 		if( b.getTypeId() == 0 && up.getTypeId() == 0
 				&& (down.getTypeId() != 10 && down.getTypeId() != 11)	// no lava underneath
 				&& (down.getTypeId() != 0)								// no air underneath
+				&& (b.getTypeId() != Material.FIRE.getId())				// not fire block
+				&& (up.getTypeId() != Material.FIRE.getId())			// not fire above
 		){
 			return true;
 		}

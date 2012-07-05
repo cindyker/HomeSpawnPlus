@@ -23,6 +23,7 @@ import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
 import org.morganm.homespawnplus.strategies.ModeHomeNormal;
 import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
+import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
 import org.morganm.homespawnplus.strategies.SpawnDefaultWorld;
 import org.morganm.homespawnplus.strategies.SpawnGroup;
 import org.morganm.homespawnplus.strategies.SpawnGroupSpecificWorld;
@@ -69,6 +70,7 @@ public class StrategyFactory {
 		try {
 			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName(), HomeMultiWorld.class);
 			noArgStrategies.put(new SpawnGroup().getStrategyConfigName(), SpawnGroup.class);
+			noArgStrategies.put(new NearestHomeOrSpawn().getStrategyConfigName(), NearestHomeOrSpawn.class);
 		}
 		catch(StrategyException e) {
 			e.printStackTrace();

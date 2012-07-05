@@ -148,12 +148,12 @@ public class StrategyFactory {
 	 */
 	public static Strategy newStrategy(final String strategyName) throws StrategyException {
 		for(Entry<String, Class<? extends Strategy>> entry : oneArgStrategies.entrySet()) {
-			if( strategyName.startsWith(entry.getKey()) ) {
+			if( strategyName.toLowerCase().startsWith(entry.getKey().toLowerCase()) ) {
 				String[] strings = strategyName.split(":");
 				if( strings.length < 2 ) {
 					// check to see if this config also has a noArg version. If so, we don't
 					// throw an error, we let the code fall through to the noArg checks below
-					if( !noArgStrategies.containsKey(entry.getKey()) )
+					if( !noArgStrategies.containsKey(entry.getKey().toLowerCase()) )
 						throw new StrategyException("Invalid strategy: "+strategyName+" (strategy requires argument)");
 					else
 						break;
@@ -164,7 +164,7 @@ public class StrategyFactory {
 		}
 		
 		for(Entry<String, Class<? extends Strategy>> entry : noArgStrategies.entrySet()) {
-			if( strategyName.equals(entry.getKey()) ) {
+			if( strategyName.toLowerCase().equals(entry.getKey().toLowerCase()) ) {
 				return newStrategy(entry.getValue());
 			}
 		}

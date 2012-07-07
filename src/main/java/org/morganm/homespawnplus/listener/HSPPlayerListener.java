@@ -47,6 +47,15 @@ public class HSPPlayerListener implements Listener {
     private final HomeSpawnUtils util;
     private final Debug debug;
     
+    /** Bukkit events are guaranteed to be single-threaded, so we take advantage
+     * of this knowledge by recording the last known player/location for common
+     * events and then checking at a MONITOR priority to see if it changed. This
+     * allows us to warn the admin if another plugin changed the respawn/join
+     * locations to something other than what they specified in HSP.
+     */
+    private Player lastRespawnPlayer;
+    private Location lastRespawnLocation;
+    
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
     private long lastCleanup;
@@ -225,8 +234,28 @@ public class HSPPlayerListener implements Listener {
     	
     	// execute ON_JOIN strategy to find out where we should put the player
     	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_JOIN, p);
-    	if( l != null )
+    	if( l != null ) {
     		util.delayedTeleport(p, l);
+    		
+    		// verify they ended up where we sent them by checking 1 second (20 tics) later
+    		final Location hspLocation = l;
+        	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					Location currentLocation = p.getLocation();
+					
+					// do manual world/x/y/z check instead of .equals() so that we avoid comparing
+					// pitch/yaw and also so we round to integer blocks instead of exact double loc
+					if( currentLocation.getWorld() != hspLocation.getWorld()
+							|| currentLocation.getBlockX() != hspLocation.getBlockX()
+							|| currentLocation.getBlockY() != hspLocation.getBlockY()
+							|| currentLocation.getBlockZ() != hspLocation.getBlockZ() ) {
+						log.info(logPrefix + " onJoin: final player location is different than where HSP sent player, another plugin has changed the location."
+								+" Player "+p.getName()+", HSP location "+util.shortLocationString(hspLocation)
+								+", final player location "+util.shortLocationString(currentLocation));
+					}
+				}
+			}, 20); 
+    	}
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -241,6 +270,11 @@ public class HSPPlayerListener implements Listener {
     	util.updateQuitLocation(event.getPlayer());
     }
     
+    /** This method is bound manually instead of using @EventHandler annotation, so
+     * that the priority can be dynamically assigned by the admin.
+     * 
+     * @param e
+     */
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
     	if( debug.isDevDebug() ) {
@@ -255,6 +289,9 @@ public class HSPPlayerListener implements Listener {
     	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_DEATH, e.getPlayer());
     	if( l != null )
     		e.setRespawnLocation(l);
+    	
+    	lastRespawnPlayer = e.getPlayer();
+    	lastRespawnLocation = l;
     }
 
     /** Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
@@ -273,6 +310,41 @@ public class HSPPlayerListener implements Listener {
 	    	world.refreshChunk(chunkx, chunkz);
     	}
     }
+    
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void verifyRespawn(PlayerRespawnEvent e)
+    {
+		// don't proceed if admin has warnings turned off
+		if( !plugin.getConfig().getBoolean(ConfigOptions.WARN_LOCATION_CHANGE, true) )
+			return;
+
+    	if( lastRespawnPlayer != null && lastRespawnLocation != null ) {
+    		// shouldn't happen, but protect from silliness in case it does
+    		if( !lastRespawnPlayer.equals(e.getPlayer()) ) {
+    			lastRespawnPlayer = null;
+    			lastRespawnLocation = null;
+    			return;
+    		}
+    		
+    		final Location currentLocation = lastRespawnPlayer.getLocation();
+
+			// do manual world/x/y/z check instead of .equals() so that we avoid comparing
+			// pitch/yaw and also so we round to integer blocks instead of exact double loc
+			if( currentLocation.getWorld() != lastRespawnLocation.getWorld()
+					|| currentLocation.getBlockX() != lastRespawnLocation.getBlockX()
+					|| currentLocation.getBlockY() != lastRespawnLocation.getBlockY()
+					|| currentLocation.getBlockZ() != lastRespawnLocation.getBlockZ() ) {
+				log.info(logPrefix + " onDeath: final player location is different than where HSP sent player, another plugin has changed the location."
+						+" Player "+lastRespawnPlayer.getName()+", HSP location "+util.shortLocationString(lastRespawnLocation)
+						+", final player location "+util.shortLocationString(currentLocation));
+			}
+    		
+    	}
+    	
+    	lastRespawnPlayer = null;
+    	lastRespawnLocation = null;
+    }
+
 
     private class ClickedEvent {
     	public Location location;

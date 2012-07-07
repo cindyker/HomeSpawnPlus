@@ -13,6 +13,8 @@ public interface ConfigOptions {
 	public static final String DEBUG = "core.debug";
 	public static final String DEV_DEBUG = "core.devDebug";
 	public static final String WARN_CONFLICTS = "core.warnConflicts";
+	public static final String WARN_NULL_STRATEGY = "core.warnNullStrategy";
+	public static final String WARN_LOCATION_CHANGE = "core.warnLocationChange";
 	
 	public static final String STORAGE_TYPE = "core.storage";
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";

@@ -56,6 +56,15 @@ core:
   # working the way the admin expects.
   warnConflicts: true
 
+  # Warn if a strategy chain returns no location. While this might
+  # be intended behavior, it can also hint at a configuration mistake.
+  warnNullStrategy: true
+
+  # Warn if the player ended up somewhere other than where HSP
+  # expected. This often indicates another plugin doing something
+  # that you don't intend.
+  warnLocationChange: true
+
   # this is ONLY used when "ops" is used in the "permissions" section
   # above.
   # In that case, any permissions listed here are given to everyone by
@@ -130,6 +139,7 @@ core:
   # localization. "en" for english, "fr" for french, etc. Will
   # use given localization if it exists, otherwise will fall
   # back to English as the default.
+  # locales available: en, de, fr, nl, ru
   locale: en
 
   # default color of messages. ie. %yellow%, %red%, ..

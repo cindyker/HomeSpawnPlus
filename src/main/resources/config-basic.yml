@@ -15,15 +15,18 @@ core:
   # they must also have the 'hsp.home.bedsethome' permission.
   bedsethome: true
  
-  # The default/main world.
-  defaultWorld: world
+  # locales available: en, de, fr, nl, ru
+  locale: en
 
   verboseLogging: false
   verboseStrategyLogging: false
 
-  # Warn on any known plugin conflicts that might prevent HSP from
-  # working the way the admin expects.
+  # HSP warnings which help you find possible errors in your config.
+  # Leave on unless you're getting warnings in your server.log that
+  # you know you want to disable & ignore.
   warnConflicts: true
+  warnNullStrategy: true
+  warnLocationChange: true
 
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/

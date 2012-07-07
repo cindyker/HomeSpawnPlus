@@ -52,6 +52,13 @@ public class StrategyEngine {
     		context.setArg(args[0]);
     	
     	StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
+    	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
+			log.info(logPrefix + " strategy result is null for event "+event.toString()+"."
+					+ " This could indicate a configuration mistake."
+					+ " Either include \"default\" as the end of your strategy chains to avoid this warning, or set "
+					+ ConfigOptions.WARN_NULL_STRATEGY + " in your config.yml to false");
+    	}
+
     	if( result != null && result.getLocation() != null )
     		return result.getLocation();
     	else

@@ -32,6 +32,8 @@ import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
 
 
@@ -294,13 +296,13 @@ public class HSPPlayerListener implements Listener {
     	lastRespawnLocation = l;
     }
 
-    /** Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
-     * to refresh the chunk the player is teleporting into.
-     */
     public void onPlayerTeleport(PlayerTeleportEvent event) {
     	if( event.isCancelled() )
     		return;
 
+    	// implement "chunk refresh" if enabled
+        // Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
+        // to refresh the chunk the player is teleporting into.
     	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, true) ) {
 	    	Player player = event.getPlayer();
 	    	World world = player.getWorld();
@@ -308,6 +310,18 @@ public class HSPPlayerListener implements Listener {
 	    	int chunkx = chunk.getX();
 	    	int chunkz = chunk.getZ();
 	    	world.refreshChunk(chunkx, chunkz);
+    	}
+    	
+    	// cross-world teleport event?
+    	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+        	final StrategyContext context = new StrategyContext();
+        	context.setPlayer(event.getPlayer());
+        	context.setSpawnEventType(EventType.CROSS_WORLD_TELEPORT);
+        	context.setLocation(event.getTo());	// location involved is the target location
+        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
+        	
+        	if( result != null && result.getLocation() != null )
+        		event.setTo(result.getLocation());
     	}
     }
     

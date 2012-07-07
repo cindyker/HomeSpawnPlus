@@ -3,18 +3,18 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.morganm.homespawnplus.strategy.HomeMode;
-import org.morganm.homespawnplus.strategy.HomeModeStrategy;
+import org.morganm.homespawnplus.strategy.StrategyMode;
+import org.morganm.homespawnplus.strategy.ModeStrategy;
 
 /**
  * @author morganm
  *
  */
-public class ModeHomeNormal extends HomeModeStrategy {
+public class ModeHomeNormal extends ModeStrategy {
 
 	@Override
-	protected HomeMode getHomeMode() {
-		return HomeMode.MODE_HOME_NORMAL;
+	protected StrategyMode getMode() {
+		return StrategyMode.MODE_HOME_NORMAL;
 	}
 
 	@Override

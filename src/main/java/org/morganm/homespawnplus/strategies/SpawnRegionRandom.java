@@ -13,6 +13,7 @@ import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.Teleport;
 import org.morganm.homespawnplus.util.WorldGuardInterface;
 
 import com.sk89q.worldedit.BlockVector;
@@ -66,12 +67,23 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( region == null )
 			return null;
 
-		BlockVector bvMin = wgRegion.getMinimumPoint();
-		Location min = new Location(theWorld, bvMin.getBlockX(), bvMin.getBlockY(), bvMin.getBlockZ());
-		BlockVector bvMax = wgRegion.getMaximumPoint();
-		Location max = new Location(theWorld, bvMax.getBlockX(), bvMax.getBlockY(), bvMax.getBlockZ());
+		final Teleport.Bounds yBounds = context.getModeBounds();
 		
-		Location loc = plugin.getUtil().findRandomSafeLocation(min, max);
+		BlockVector bvMin = wgRegion.getMinimumPoint();
+		// minimum Y never goes below yBounds
+		int minY = bvMin.getBlockY();
+		if( yBounds.minY > minY )
+			minY = yBounds.minY;
+		Location min = new Location(theWorld, bvMin.getBlockX(), minY, bvMin.getBlockZ());
+		
+		BlockVector bvMax = wgRegion.getMaximumPoint();
+		// maximum Y never goes above yBounds
+		int maxY = bvMax.getBlockY();
+		if( yBounds.maxY > maxY )
+			maxY = yBounds.maxY;
+		Location max = new Location(theWorld, bvMax.getBlockX(), maxY, bvMax.getBlockZ());
+		
+		Location loc = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
 		if( loc == null )
 			return null;
 

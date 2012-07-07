@@ -8,20 +8,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.morganm.homespawnplus.i18n.Locale;
 
@@ -30,16 +24,8 @@ import org.morganm.homespawnplus.i18n.Locale;
  *
  */
 public final class General {
-	// class version: 4
+	// class version: 5
 	
-	private static BlockFace[] directions = new BlockFace[] {
-		BlockFace.UP,
-		BlockFace.NORTH,
-		BlockFace.WEST,
-		BlockFace.SOUTH,
-		BlockFace.EAST,
-		BlockFace.DOWN
-	};
 	private static General instance;
 	
 	private Logger log = Logger.getLogger(General.class.toString());
@@ -47,6 +33,7 @@ public final class General {
 	private Locale locale;
 	private final Map<String, String> timeLongHand = new HashMap<String, String>();
 	private final Map<String, String> timeShortHand = new HashMap<String, String>();
+	private Teleport teleportObject;
 	
 	private General() {
 		setupTimeLocaleStrings();
@@ -67,6 +54,16 @@ public final class General {
 	}
 	public void setLogPrefix(String logPrefix) {
 		this.logPrefix = logPrefix;
+	}
+	
+	public Teleport getTeleport() {
+		if( teleportObject == null ) {
+			teleportObject = Teleport.getInstance();
+			teleportObject.setLogger(log);
+			teleportObject.setLogPrefix(logPrefix);
+		}
+		
+		return teleportObject;
 	}
 	
 	private void setupTimeLocaleStrings() {
@@ -120,109 +117,6 @@ public final class General {
 			timeShortHand.put("m", locale.getMessage("MINUTE_SHORTHAND"));
 			timeShortHand.put("s", locale.getMessage("SECOND_SHORTHAND"));
 		}
-	}
-	
-	private boolean isSafeBlock(Block b) {
-		final Block up = b.getRelative(BlockFace.UP);
-		final Block down = b.getRelative(BlockFace.DOWN);
-		if( b.getTypeId() == 0 && up.getTypeId() == 0
-				&& (down.getTypeId() != 10 && down.getTypeId() != 11)	// no lava underneath
-				&& (down.getTypeId() != 0)								// no air underneath
-				&& (b.getTypeId() != Material.FIRE.getId())				// not fire block
-				&& (up.getTypeId() != Material.FIRE.getId())			// not fire above
-		){
-			return true;
-		}
-		else
-			return false;
-		
-	}
-	
-	/** Recursively look for 2 vertical safe air spots nearest the given location.
-	 * 
-	 * @param base
-	 */
-	private Location findSafeLocation(final Set<Location> alreadyTraversed, final int level, final Location location) {
-		if( location == null )
-			return null;
-		final Block base = location.getBlock();
-		
-		if( isSafeBlock(base) )
-			return location;
-		else {
-			// first try all the closest blocks before recursing further
-			for(int i=0; i < directions.length; i++) {
-				Block tryBlock = base.getRelative(directions[i]);
-				Location tryLocation = tryBlock.getLocation();
-				if( alreadyTraversed.contains(tryLocation) ) {
-					continue;
-				}
-				
-				if( isSafeBlock(tryBlock) ) {
-					return tryLocation;
-				}
-			}
-			
-			// we only recurse so far before we give up
-			if( level > 10 )
-				return null;
-			
-			// if we're here, none of them were safe, now recurse
-			for(int i=0; i < directions.length; i++) {
-				Location recurseLocation = base.getRelative(directions[i]).getLocation();
-				if( alreadyTraversed.contains(recurseLocation) )
-					continue;
-				alreadyTraversed.add(recurseLocation);
-				
-				Location result = findSafeLocation(alreadyTraversed, level+1, recurseLocation);
-				if( result != null )
-					return result;
-			}
-		}
-		
-		return null;
-	}
-	
-	/** Safely teleport a player to a location. Should avoid them being stuck in blocks,
-	 * teleported over lava, etc.
-	 * 
-	 * @param p
-	 * @param l
-	 */
-	public void safeTeleport(final Player p, final Location l, final TeleportCause cause) {
-		p.teleport(safeLocation(l), cause);
-	}
-	
-	/** Given a location, find the nearest "safe" location, ie. that won't suffocate a
-	 * player, spawn them over lava, etc.
-	 * 
-	 * @param l
-	 */
-	public Location safeLocation(Location l) {
-    	// location may be way high up in the sky, if so, move it to the
-    	// highest non-air block before proceeding with safe search algorithm
-    	Location highest = l.getWorld().getHighestBlockAt(l).getLocation();
-		Debug.getInstance().debug("safeLocation(): l=",l,", highest=",highest);
-    	if( l.getY() > highest.getY() ) {
-    		l = new Location(l.getWorld(), l.getX(), highest.getY(), l.getZ(), l.getYaw(), l.getPitch());
-    		Debug.getInstance().debug("safeLocation(): adjusted for highest, new l=",l);
-    	}
-    	
-		Location target = findSafeLocation(new HashSet<Location>(10), 0, l);
-		
-		// if we didn't find a safe location, then just use the original location
-		if( target == null ) {
-			log.info(logPrefix+" safeLocation: couldn't find nearby safe location, using original location "+l);
-			target = l;
-		}
-		else {
-			// preserve pitch/yaw
-			target.setPitch(l.getPitch());
-			target.setYaw(l.getYaw());
-		}
-		
-		Debug.getInstance().debug("safeLocation(): target=",target);
-		return target;
 	}
 	
 	public String shortLocationString(final Location l) {

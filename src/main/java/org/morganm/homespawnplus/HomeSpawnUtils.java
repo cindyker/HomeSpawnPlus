@@ -32,8 +32,11 @@ import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
+import org.morganm.homespawnplus.util.Teleport;
 
 /** Utility methods related to spawn/home teleporting and simple entity management.
  * 
@@ -94,6 +97,9 @@ public class HomeSpawnUtils {
 	// convenience method proxy
 	public Location getStrategyLocation(EventType event, Player player, String...args) {
 		return plugin.getStrategyEngine().getStrategyLocation(event, player, args);
+	}
+	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
+		return plugin.getStrategyEngine().getStrategyResult(event, player, args);
 	}
 	
 	/** Given a location, return a short string format of the form:
@@ -951,7 +957,7 @@ public class HomeSpawnUtils {
      * @param max
      * @return the random safe Location, or null if one couldn't be located
      */
-    public Location findRandomSafeLocation(Location min, Location max) {
+    public Location findRandomSafeLocation(Location min, Location max, Teleport.Bounds bounds, int flags) {
     	if( min == null || max == null )
     		return null;
     	
@@ -962,13 +968,21 @@ public class HomeSpawnUtils {
     	
     	debug.debug("findRandomSafeLocation(): min: ",min,", max: ",max);
     	
+    	int minY = min.getBlockY();
+    	if( bounds.minY > minY )
+    		minY = bounds.minY;
+    	int maxY = max.getBlockY();
+    	if( bounds.maxY < maxY )
+    		maxY = bounds.maxY;
+    	debug.debug("findRandomSafeLocation(): minY: ",minY,", maxY: ",maxY);
+    	
     	int x = randomDeltaInt(min.getBlockX(), max.getBlockX());
-    	int y = randomDeltaInt(min.getBlockY(), max.getBlockY());
+    	int y = randomDeltaInt(minY, maxY);
     	int z = randomDeltaInt(min.getBlockZ(), max.getBlockZ());
     	
     	Location newLoc = new Location(min.getWorld(), x, y, z);
     	debug.debug("findRandomSafeLocation(): newLoc=",newLoc);
-    	Location safeLoc = General.getInstance().safeLocation(newLoc);
+    	Location safeLoc = General.getInstance().getTeleport().safeLocation(newLoc, bounds, flags);
     	debug.debug("findRandomSafeLocation(): safeLoc=",safeLoc);
 
     	return safeLoc;
@@ -1045,17 +1059,25 @@ public class HomeSpawnUtils {
      * @param p
      * @param l
      * @param cause
+     * @context StrategyResult context, if any. Can be null.
      */
-    public void teleport(Player p, Location l, TeleportCause cause) {
+    public void teleport(Player p, Location l, TeleportCause cause, StrategyContext context) {
     	if( l == null || p == null )
     		return;
     	if( cause == null )
     		cause = TeleportCause.UNKNOWN;
     	
-		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) )
-			General.getInstance().safeTeleport(p, l, TeleportCause.PLUGIN);
-		else
-			p.teleport(l, cause);
+		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
+			if( context != null )
+				l = General.getInstance().getTeleport().safeLocation(l, context.getModeBounds(), context.getModeSafeTeleportFlags());
+			else
+				l = General.getInstance().getTeleport().safeLocation(l);
+		}
+		
+		p.teleport(l, cause);
+    }
+    public void teleport(Player p, Location l, TeleportCause cause) {
+    	teleport(p, l, cause, null);
     }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash

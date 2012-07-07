@@ -18,6 +18,7 @@ public class StrategyResult {
 	private Home home;
 	private Spawn spawn;
 	private boolean explicitDefault = false;
+	private StrategyContext context;
 	
 	/** This is true if the strategy is considered a successful match, such
 	 * as having a location result or being a mode change, default value, etc 
@@ -70,6 +71,12 @@ public class StrategyResult {
 	}
 	public boolean isExplicitDefault() {
 		return explicitDefault;
+	}
+	public void setContext(StrategyContext context) {
+		this.context = context;
+	}
+	public StrategyContext getContext() {
+		return context;
 	}
 	
 	public String toString() {

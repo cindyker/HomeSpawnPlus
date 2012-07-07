@@ -13,6 +13,7 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
+import org.morganm.homespawnplus.util.Teleport;
 
 /** Class responsible for processing strategies at run-time.
  * 
@@ -44,25 +45,46 @@ public class StrategyEngine {
 	 * @param player
 	 * @return
 	 */
-	public Location getStrategyLocation(EventType event, Player player, String...args) {
-    	StrategyContext context = new StrategyContext();
-    	context.setPlayer(player);
-    	context.setSpawnEventType(event);
+	public StrategyResult getStrategyResult(StrategyContext context, String...args) {
+		if( context == null ) {
+			log.warning(logPrefix+" null context received, doing nothing");
+			return null;
+		}
+		
     	if( args != null && args.length > 0 )
     		context.setArg(args[0]);
     	
     	StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
     	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
-			log.info(logPrefix + " strategy result is null for event "+event.toString()+"."
+			log.info(logPrefix + " strategy result is null for event "+context.getEventType()+"."
 					+ " This could indicate a configuration mistake."
 					+ " Either include \"default\" as the end of your strategy chains to avoid this warning, or set "
 					+ ConfigOptions.WARN_NULL_STRATEGY + " in your config.yml to false");
     	}
 
-    	if( result != null && result.getLocation() != null )
-    		return result.getLocation();
-    	else
-    		return null;
+    	return result;
+	}
+	
+	/** Convenience method for routines only interested in an output location (as
+	 * opposed to other result details).
+	 * 
+	 * @param event
+	 * @param player
+	 * @return
+	 */
+	public Location getStrategyLocation(EventType event, Player player, String...args) {
+		StrategyResult result = getStrategyResult(event, player, args);
+		if( result != null )
+			return result.getLocation();
+		else
+			return null;
+	}
+	
+	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
+    	final StrategyContext context = new StrategyContext();
+    	context.setPlayer(player);
+    	context.setSpawnEventType(event);
+		return getStrategyResult(context, args);
 	}
 	
 	/** Given a StrategyContext, evaluate the strategies for that context.
@@ -122,6 +144,8 @@ public class StrategyEngine {
 		if( result == null )
 			log.warning(logPrefix + " Warning: no event strategy defined for event "+context.getEventType()+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
 		else {
+			result.setContext(context);	// associate context with the result
+			
 			if( result.isExplicitDefault() )
 				logVerbose("Evaluation chain complete, result = explicit default");
 			else
@@ -130,7 +154,12 @@ public class StrategyEngine {
 
 		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, false) ) {
 			Location oldLocation = result.getLocation();
-			result.setLocation(General.getInstance().safeLocation(oldLocation));
+			int flags = context.getModeSafeTeleportFlags();
+			Teleport.Bounds bounds = context.getModeBounds();
+
+			debug.devDebug("evaluateStrategies(): Invoking safeLocation() for event=",context.getEventType(),", current startegy result=",result);
+			debug.devDebug("evaluateStrategies(): bounds=",bounds);
+			result.setLocation(General.getInstance().getTeleport().safeLocation(oldLocation, bounds, flags));
 			if( !oldLocation.equals(result.getLocation()) )
 				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
 		}
@@ -192,7 +221,7 @@ public class StrategyEngine {
 	
 	protected void logStrategyResult(final Strategy strat, final StrategyResult result) {
 		// we ignore logging for mode strategies
-		if( !(strat instanceof HomeModeStrategy) )
+		if( !(strat instanceof ModeStrategy) )
 			logVerboseStrategy(strat, "result is ", result);
 	}
 	

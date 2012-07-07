@@ -4,6 +4,8 @@ v1.6.1 -
 * added some extra warnings to hopefully detect configuration issues and reduce the number of support tickets
 * added Portuguese translation (locale pt) - thanks @Traki08!
 * updated German translation (locale de) - thanks @Jobsti2!
+* new event "onNamedSpawnCommand" for controlling named spawn behavior
+* new strategies "modeNoWater" and "modeYBounds" for controlling safe spawn and random spawn behavior
 
 v1.6 - Jun 30, 2012
 * added /permcheck command (alias /pc) for checking permissions

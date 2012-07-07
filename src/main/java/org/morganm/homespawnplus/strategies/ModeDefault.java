@@ -3,23 +3,27 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /**
  * @author morganm
  *
  */
-public class ModeHomeAny extends ModeStrategy {
+public class ModeDefault extends ModeStrategy {
 
 	@Override
 	public String getStrategyConfigName() {
-		return "modeHomeAny";
+		return "modeDefault";
 	}
 
 	@Override
 	protected StrategyMode getMode() {
-		return StrategyMode.MODE_HOME_ANY;
+		return StrategyMode.MODE_DEFAULT;
 	}
 
+	@Override
+	protected boolean isAdditive() {
+		return false;
+	}
 }

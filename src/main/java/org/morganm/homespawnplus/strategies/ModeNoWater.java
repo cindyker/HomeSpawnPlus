@@ -3,23 +3,27 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /**
  * @author morganm
  *
  */
-public class ModeHomeNoBed extends ModeStrategy {
+public class ModeNoWater extends ModeStrategy {
 
 	@Override
 	protected StrategyMode getMode() {
-		return StrategyMode.MODE_HOME_NO_BED;
+		return StrategyMode.MODE_NO_WATER;
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "modeHomeNoBed";
+		return "modeNoWater";
 	}
 
+	@Override
+	protected boolean isAdditive() {
+		return true;
+	}
 }

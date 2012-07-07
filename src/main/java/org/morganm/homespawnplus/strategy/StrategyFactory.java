@@ -17,12 +17,15 @@ import org.morganm.homespawnplus.strategies.HomeMultiWorld;
 import org.morganm.homespawnplus.strategies.HomeNamedHome;
 import org.morganm.homespawnplus.strategies.HomeNearestHome;
 import org.morganm.homespawnplus.strategies.HomeSpecificWorld;
+import org.morganm.homespawnplus.strategies.ModeDefault;
 import org.morganm.homespawnplus.strategies.ModeHomeAny;
 import org.morganm.homespawnplus.strategies.ModeHomeBedOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
 import org.morganm.homespawnplus.strategies.ModeHomeNormal;
 import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
+import org.morganm.homespawnplus.strategies.ModeNoWater;
+import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
 import org.morganm.homespawnplus.strategies.SpawnDefaultWorld;
 import org.morganm.homespawnplus.strategies.SpawnGroup;
@@ -54,12 +57,16 @@ public class StrategyFactory {
 		noArgStrategies.put(new HomeDefaultWorld().getStrategyConfigName().toLowerCase(), HomeDefaultWorld.class);
 		noArgStrategies.put(new HomeLocalWorld().getStrategyConfigName().toLowerCase(), HomeLocalWorld.class);
 		noArgStrategies.put(new HomeNearestHome().getStrategyConfigName().toLowerCase(), HomeNearestHome.class);
+		
 		noArgStrategies.put(new ModeHomeAny().getStrategyConfigName().toLowerCase(), ModeHomeAny.class);
 		noArgStrategies.put(new ModeHomeBedOnly().getStrategyConfigName().toLowerCase(), ModeHomeBedOnly.class);
 		noArgStrategies.put(new ModeHomeDefaultOnly().getStrategyConfigName().toLowerCase(), ModeHomeDefaultOnly.class);
 		noArgStrategies.put(new ModeHomeNoBed().getStrategyConfigName().toLowerCase(), ModeHomeNoBed.class);
 		noArgStrategies.put(new ModeHomeNormal().getStrategyConfigName().toLowerCase(), ModeHomeNormal.class);
 		noArgStrategies.put(new ModeHomeRequiresBed().getStrategyConfigName().toLowerCase(), ModeHomeRequiresBed.class);
+		noArgStrategies.put(new ModeNoWater().getStrategyConfigName().toLowerCase(), ModeNoWater.class);
+		noArgStrategies.put(new ModeDefault().getStrategyConfigName().toLowerCase(), ModeDefault.class);
+		
 		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);
 		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName().toLowerCase(), SpawnLocalRandom.class);
 		noArgStrategies.put(new SpawnLocalWorld().getStrategyConfigName().toLowerCase(), SpawnLocalWorld.class);
@@ -81,16 +88,19 @@ public class StrategyFactory {
 		// Special strategies that can be both a noArg and a 1-arg strategy
 		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
 		oneArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
+		noArgStrategies.put(new SpawnNamedSpawn().getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
+		oneArgStrategies.put(new SpawnNamedSpawn().getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
 		noArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
 		oneArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
 
 		// 1-arg Strategies
 		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName().toLowerCase(), HomeSpecificWorld.class);
-		oneArgStrategies.put(new SpawnNamedSpawn(null).getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
 		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnSpecificWorld.class);
 		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnGroupSpecificWorld.class);
 		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName().toLowerCase(), SpawnRandomNamed.class);
 		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName().toLowerCase(), SpawnRegionRandom.class);
+		
+		oneArgStrategies.put(new ModeYBounds().getStrategyConfigName().toLowerCase(), ModeYBounds.class);
 	}
 	
 	

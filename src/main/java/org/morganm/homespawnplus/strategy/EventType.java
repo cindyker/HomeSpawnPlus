@@ -11,8 +11,10 @@ public enum EventType {
 	ON_DEATH("onDeath"),
 	HOME_COMMAND("onHomeCommand"),
 	NAMED_HOME_COMMAND("onNamedHomeCommand"),
+	NAMED_SPAWN_COMMAND("onNamedSpawnCommand"),
 	SPAWN_COMMAND("onSpawnCommand"),
-	GROUPSPAWN_COMMAND("onGroupSpawnCommand");
+	GROUPSPAWN_COMMAND("onGroupSpawnCommand"),
+	CROSS_WORLD_TELEPORT("crossWorldTeleport");
 	
 	private String configOption;
 	EventType(String configOption) {

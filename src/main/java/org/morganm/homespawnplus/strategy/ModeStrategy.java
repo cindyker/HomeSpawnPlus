@@ -4,14 +4,13 @@
 package org.morganm.homespawnplus.strategy;
 
 
-/** Base strategy for HomeModes. Implements common logic.
+/** Base strategy for Strategy Modes. Implements common logic.
  * 
  * @author morganm
  *
  */
-public abstract class HomeModeStrategy extends BaseStrategy {
-
-	protected abstract HomeMode getHomeMode();
+public abstract class ModeStrategy extends BaseStrategy {
+	protected abstract StrategyMode getMode();
 	protected boolean isAdditive() { return false; }
 	
 	@Override
@@ -20,7 +19,7 @@ public abstract class HomeModeStrategy extends BaseStrategy {
 		if( !isAdditive() )
 			context.getCurrentModes().clear();
 		
-		context.getCurrentModes().add(getHomeMode());
+		context.getCurrentModes().add(this);
 		logVerbose("Evaluated mode change strategy, new mode = "+context.getCurrentModes().toString());
 		return null;
 	}

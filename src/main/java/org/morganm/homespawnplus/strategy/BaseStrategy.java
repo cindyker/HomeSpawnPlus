@@ -42,6 +42,10 @@ public abstract class BaseStrategy implements Strategy {
 		}
 	}
 	
+	protected void logInfo(String msg) {
+		log.info(logPrefix + " " + msg);
+	}
+	
 	public void setPlugin(final HomeSpawnPlus plugin) {
 		this.plugin = plugin;
 		this.log = plugin.getLogger();

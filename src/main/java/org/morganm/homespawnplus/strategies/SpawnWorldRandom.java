@@ -11,6 +11,8 @@ import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.Teleport;
 
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.WorldBorder;
@@ -39,7 +41,10 @@ public class SpawnWorldRandom extends BaseStrategy {
 			}
 		}
 		else
-			w = context.getPlayer().getLocation().getWorld();
+			w = context.getLocation().getWorld();
+		
+		final Teleport.Bounds yBounds = context.getModeBounds();
+		Debug.getInstance().devDebug("SpawnWorldRandom() minY=",yBounds.minY,", maxY=",yBounds.maxY);
 		
 		Location result = null;
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
@@ -51,8 +56,8 @@ public class SpawnWorldRandom extends BaseStrategy {
 			double z = border.getZ();
 			int radius = border.getRadius();
 			
-			Location min = new Location(w,x-radius, 1, z-radius);
-			Location max = new Location(w,x+radius, 255, z+radius);
+			Location min = new Location(w,x-radius, yBounds.minY, z-radius);
+			Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
 			
 			// we loop and try multiple times, because it's possible we randomly select
 			// a location outside of the border. If so, we just loop and guess again.
@@ -61,7 +66,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 			int tries = 0;
 			while( result == null && tries < MAX_TRIES ) {
 				tries++;
-				result = plugin.getUtil().findRandomSafeLocation(min, max);
+				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
 				if( !border.insideBorder(result) )
 					result = null;
 			}
@@ -71,9 +76,9 @@ public class SpawnWorldRandom extends BaseStrategy {
 		}
 		// no WorldBorder? just assume default min/max of +/- 1000
 		else {
-			Location min = new Location(w, -1000, 1, -1000);
-			Location max = new Location(w, 1000, 255, 1000);
-			result = plugin.getUtil().findRandomSafeLocation(min, max);
+			Location min = new Location(w, -1000, yBounds.minY, -1000);
+			Location max = new Location(w, 1000, yBounds.maxY, 1000);
+			result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
 		}
 		
 		if( result ==  null )

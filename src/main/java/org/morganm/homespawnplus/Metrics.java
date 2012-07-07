@@ -200,6 +200,16 @@ public class Metrics {
             }
         });
 
+        Graph localGraph = createGraph(plugin, Graph.Type.Pie, "Locale");
+        final String locale = hsp.getLocale().getLocale();
+        // Add our Chat Plotters
+        localGraph.addPlotter(new Metrics.Plotter(locale) {
+            @Override
+            public int getValue() {
+                return 1;
+            }
+        });
+        
         Graph storageGraph = createGraph(plugin, Graph.Type.Pie, "Storage");
         final String storageName = hsp.getStorage().getImplName();
         // Add our Chat Plotters

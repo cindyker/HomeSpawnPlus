@@ -139,7 +139,7 @@ core:
   # localization. "en" for english, "fr" for french, etc. Will
   # use given localization if it exists, otherwise will fall
   # back to English as the default.
-  # locales available: en, de, fr, nl, ru
+  # locales available: en, de, fr, nl, ru, pt
   locale: en
 
   # default color of messages. ie. %yellow%, %red%, ..

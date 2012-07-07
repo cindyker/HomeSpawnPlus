@@ -2,6 +2,8 @@ v1.6.1 -
 * made strategies no longer case-sensitive in the configuration
 * added "nearestHomeOrSpawn" strategy
 * added some extra warnings to hopefully detect configuration issues and reduce the number of support tickets
+* added Portuguese translation (locale pt) - thanks @Traki08!
+* updated German translation (locale de) - thanks @Jobsti2!
 
 v1.6 - Jun 30, 2012
 * added /permcheck command (alias /pc) for checking permissions

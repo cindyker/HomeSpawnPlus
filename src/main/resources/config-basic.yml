@@ -15,7 +15,7 @@ core:
   # they must also have the 'hsp.home.bedsethome' permission.
   bedsethome: true
  
-  # locales available: en, de, fr, nl, ru
+  # locales available: en, de, fr, nl, ru, pt
   locale: en
 
   verboseLogging: false

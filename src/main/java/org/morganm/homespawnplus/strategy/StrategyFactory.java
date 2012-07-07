@@ -50,27 +50,27 @@ public class StrategyFactory {
 	 */
 	static {
 		noArgStrategies = new HashMap<String, Class<? extends Strategy>>(20);
-		noArgStrategies.put(new HomeAnyWorld().getStrategyConfigName(), HomeAnyWorld.class);
-		noArgStrategies.put(new HomeDefaultWorld().getStrategyConfigName(), HomeDefaultWorld.class);
-		noArgStrategies.put(new HomeLocalWorld().getStrategyConfigName(), HomeLocalWorld.class);
-		noArgStrategies.put(new HomeNearestHome().getStrategyConfigName(), HomeNearestHome.class);
-		noArgStrategies.put(new ModeHomeAny().getStrategyConfigName(), ModeHomeAny.class);
-		noArgStrategies.put(new ModeHomeBedOnly().getStrategyConfigName(), ModeHomeBedOnly.class);
-		noArgStrategies.put(new ModeHomeDefaultOnly().getStrategyConfigName(), ModeHomeDefaultOnly.class);
-		noArgStrategies.put(new ModeHomeNoBed().getStrategyConfigName(), ModeHomeNoBed.class);
-		noArgStrategies.put(new ModeHomeNormal().getStrategyConfigName(), ModeHomeNormal.class);
-		noArgStrategies.put(new ModeHomeRequiresBed().getStrategyConfigName(), ModeHomeRequiresBed.class);
-		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName(), SpawnDefaultWorld.class);
-		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName(), SpawnLocalRandom.class);
-		noArgStrategies.put(new SpawnLocalWorld().getStrategyConfigName(), SpawnLocalWorld.class);
-		noArgStrategies.put(new SpawnNearestSpawn().getStrategyConfigName(), SpawnNearestSpawn.class);
-		noArgStrategies.put(new SpawnNewPlayer().getStrategyConfigName(), SpawnNewPlayer.class);
-		noArgStrategies.put(new SpawnWorldGuardRegion().getStrategyConfigName(), SpawnWorldGuardRegion.class);
-		noArgStrategies.put(new Default().getStrategyConfigName(), Default.class);
+		noArgStrategies.put(new HomeAnyWorld().getStrategyConfigName().toLowerCase(), HomeAnyWorld.class);
+		noArgStrategies.put(new HomeDefaultWorld().getStrategyConfigName().toLowerCase(), HomeDefaultWorld.class);
+		noArgStrategies.put(new HomeLocalWorld().getStrategyConfigName().toLowerCase(), HomeLocalWorld.class);
+		noArgStrategies.put(new HomeNearestHome().getStrategyConfigName().toLowerCase(), HomeNearestHome.class);
+		noArgStrategies.put(new ModeHomeAny().getStrategyConfigName().toLowerCase(), ModeHomeAny.class);
+		noArgStrategies.put(new ModeHomeBedOnly().getStrategyConfigName().toLowerCase(), ModeHomeBedOnly.class);
+		noArgStrategies.put(new ModeHomeDefaultOnly().getStrategyConfigName().toLowerCase(), ModeHomeDefaultOnly.class);
+		noArgStrategies.put(new ModeHomeNoBed().getStrategyConfigName().toLowerCase(), ModeHomeNoBed.class);
+		noArgStrategies.put(new ModeHomeNormal().getStrategyConfigName().toLowerCase(), ModeHomeNormal.class);
+		noArgStrategies.put(new ModeHomeRequiresBed().getStrategyConfigName().toLowerCase(), ModeHomeRequiresBed.class);
+		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);
+		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName().toLowerCase(), SpawnLocalRandom.class);
+		noArgStrategies.put(new SpawnLocalWorld().getStrategyConfigName().toLowerCase(), SpawnLocalWorld.class);
+		noArgStrategies.put(new SpawnNearestSpawn().getStrategyConfigName().toLowerCase(), SpawnNearestSpawn.class);
+		noArgStrategies.put(new SpawnNewPlayer().getStrategyConfigName().toLowerCase(), SpawnNewPlayer.class);
+		noArgStrategies.put(new SpawnWorldGuardRegion().getStrategyConfigName().toLowerCase(), SpawnWorldGuardRegion.class);
+		noArgStrategies.put(new Default().getStrategyConfigName().toLowerCase(), Default.class);
 		try {
-			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName(), HomeMultiWorld.class);
-			noArgStrategies.put(new SpawnGroup().getStrategyConfigName(), SpawnGroup.class);
-			noArgStrategies.put(new NearestHomeOrSpawn().getStrategyConfigName(), NearestHomeOrSpawn.class);
+			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName().toLowerCase(), HomeMultiWorld.class);
+			noArgStrategies.put(new SpawnGroup().getStrategyConfigName().toLowerCase(), SpawnGroup.class);
+			noArgStrategies.put(new NearestHomeOrSpawn().getStrategyConfigName().toLowerCase(), NearestHomeOrSpawn.class);
 		}
 		catch(StrategyException e) {
 			e.printStackTrace();
@@ -79,18 +79,18 @@ public class StrategyFactory {
 		oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(10);
 		
 		// Special strategies that can be both a noArg and a 1-arg strategy
-		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName(), HomeNamedHome.class);
-		oneArgStrategies.put(new HomeNamedHome(null).getStrategyConfigName(), HomeNamedHome.class);
-		noArgStrategies.put(new SpawnWorldRandom(null).getStrategyConfigName(), SpawnWorldRandom.class);
-		oneArgStrategies.put(new SpawnWorldRandom(null).getStrategyConfigName(), SpawnWorldRandom.class);
+		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
+		oneArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
+		noArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
+		oneArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
 
 		// 1-arg Strategies
-		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName(), HomeSpecificWorld.class);
-		oneArgStrategies.put(new SpawnNamedSpawn(null).getStrategyConfigName(), SpawnNamedSpawn.class);
-		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName(), SpawnSpecificWorld.class);
-		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName(), SpawnGroupSpecificWorld.class);
-		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName(), SpawnRandomNamed.class);
-		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName(), SpawnRegionRandom.class);
+		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName().toLowerCase(), HomeSpecificWorld.class);
+		oneArgStrategies.put(new SpawnNamedSpawn(null).getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
+		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnSpecificWorld.class);
+		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnGroupSpecificWorld.class);
+		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName().toLowerCase(), SpawnRandomNamed.class);
+		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName().toLowerCase(), SpawnRegionRandom.class);
 	}
 	
 	

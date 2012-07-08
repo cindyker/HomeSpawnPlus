@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.strategies.ModeDefault;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.Teleport;
 
 /** The context given to a strategy that is being evaluated.
@@ -120,7 +119,7 @@ public class StrategyContext {
 		}
 		
 		Debug.getInstance().devDebug("mode check returning ",ret);
-		return false;
+		return ret;
 	}
 	
 	/** Using currently set modes, return any flags relevant to safeTeleport.
@@ -130,9 +129,12 @@ public class StrategyContext {
 	public int getModeSafeTeleportFlags() {
 		int flags = 0;
 		
-		if( isModeEnabled(StrategyMode.MODE_NO_WATER) )
-			flags |= General.getInstance().getTeleport().FLAG_NO_WATER;
-
+		for(StrategyMode mode : StrategyMode.getSafeModes()) {
+			if( isModeEnabled(mode) )
+				flags |= mode.getFlagId();
+		}
+		
+		Debug.getInstance().devDebug("getModeSafeTeleportFlags() flags=",flags);
 		return flags;
 	}
 	

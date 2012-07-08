@@ -19,6 +19,11 @@ public abstract class BaseStrategy implements Strategy {
 	protected Logger log;
 	protected String logPrefix;
 	protected final Debug debug = Debug.getInstance();
+
+	@Override
+	public String getStrategyConfigName() {
+		return this.getClass().getSimpleName();
+	}
 	
 	protected boolean isVerbose() {
 		return plugin.getConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);

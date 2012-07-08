@@ -21,7 +21,10 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 public class Teleport {
 	// class version: 1
 	
-	public final int FLAG_NO_WATER = 0x01; 
+	public static final int FLAG_NO_WATER = 0x01; 
+	public static final int FLAG_NO_LILY_PAD = 0x02; 
+	public static final int FLAG_NO_LEAVES = 0x04; 
+	public static final int FLAG_NO_ICE = 0x08; 
 	
 	private static final int[] safeIds = new int[256];
 	
@@ -93,13 +96,15 @@ public class Teleport {
 		final int bTypeId = b.getTypeId();
 		final int upTypeId = up.getTypeId();
 		final int downTypeId = down.getTypeId();
+		
 		if( safeIds[bTypeId] == 1 && safeIds[upTypeId] == 1			// block & UP are safe?
 				&& (downTypeId != 10 && down.getTypeId() != 11)		// no lava underneath
 				&& (downTypeId != 0)								// no air underneath
 				&& (downTypeId != Material.FIRE.getId())			// not fire below
-				&& (upTypeId != Material.FIRE.getId())				// not fire above
-		){
-			// if flags don't allow water, check that too
+				&& (downTypeId != Material.VINE.getId())			// not vine below, results in possible unsafe teleports (over lava, water, etc)
+			)
+		{
+			// check for water
 			if( (flags & FLAG_NO_WATER) > 0 ) {
 				if( bTypeId == Material.WATER.getId()
 						|| bTypeId == Material.STATIONARY_WATER.getId()
@@ -109,6 +114,30 @@ public class Teleport {
 					return false;
 				}
 			}
+			
+			// check for lily pads
+			if( (flags & FLAG_NO_LILY_PAD) > 0 && downTypeId == Material.WATER_LILY.getId() ) {
+				return false;
+			}
+			
+			// check for leaves
+			if( (flags & FLAG_NO_LEAVES) > 0 ) {
+				if( downTypeId == Material.LEAVES.getId() )
+					return false;
+				
+				// we check 2 blocks down for FLAG_NO_LEAVES, because often snow
+				// is on top of leaves, so we need to check 1 block lower
+				final Block down2 = down.getRelative(BlockFace.DOWN);
+				if( down2.getTypeId() == Material.LEAVES.getId() )
+					return false;
+			}
+			
+			// check for ice
+			if( (flags & FLAG_NO_ICE) > 0 && downTypeId == Material.ICE.getId() ) {
+				return false;
+			}
+
+			debug.devDebug("isSafeBlock() block is safe b=",b,", up=",up,", down=",down);
 			
 			// if we make it here, we've made it through all hazardous checks
 			// so the block is considered safe to teleport to
@@ -298,8 +327,15 @@ public class Teleport {
 	
 				// adjust by 0.5 so we teleport to the middle of the block, not
 				// the edge
-				target.setX(target.getX()+0.5);
-				target.setZ(target.getZ()+0.5);
+//				if( target.getX() > 0 )
+					target.setX(target.getX()+0.5);
+//				else
+//					target.setX(target.getX()-0.5);
+				
+//				if( target.getZ() > 0 )
+					target.setZ(target.getZ()+0.5);
+//				else
+//					target.setZ(target.getZ()-0.5);
 				debug.devDebug("adjusted coordinates to middle. x=",target.getX(),", z=",target.getZ());
 			}
 			else

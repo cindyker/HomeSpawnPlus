@@ -24,6 +24,9 @@ import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
 import org.morganm.homespawnplus.strategies.ModeHomeNormal;
 import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
+import org.morganm.homespawnplus.strategies.ModeNoIce;
+import org.morganm.homespawnplus.strategies.ModeNoLeaves;
+import org.morganm.homespawnplus.strategies.ModeNoLilyPad;
 import org.morganm.homespawnplus.strategies.ModeNoWater;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
@@ -65,6 +68,9 @@ public class StrategyFactory {
 		noArgStrategies.put(new ModeHomeNormal().getStrategyConfigName().toLowerCase(), ModeHomeNormal.class);
 		noArgStrategies.put(new ModeHomeRequiresBed().getStrategyConfigName().toLowerCase(), ModeHomeRequiresBed.class);
 		noArgStrategies.put(new ModeNoWater().getStrategyConfigName().toLowerCase(), ModeNoWater.class);
+		noArgStrategies.put(new ModeNoLilyPad().getStrategyConfigName().toLowerCase(), ModeNoLilyPad.class);
+		noArgStrategies.put(new ModeNoLeaves().getStrategyConfigName().toLowerCase(), ModeNoLeaves.class);
+		noArgStrategies.put(new ModeNoIce().getStrategyConfigName().toLowerCase(), ModeNoIce.class);
 		noArgStrategies.put(new ModeDefault().getStrategyConfigName().toLowerCase(), ModeDefault.class);
 		
 		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);

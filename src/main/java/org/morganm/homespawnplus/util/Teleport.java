@@ -23,6 +23,8 @@ public class Teleport {
 	
 	public final int FLAG_NO_WATER = 0x01; 
 	
+	private static final int[] safeIds = new int[256];
+	
 	/*
 	private final static BlockFace[] directions = new BlockFace[] {
 		BlockFace.UP,
@@ -38,6 +40,37 @@ public class Teleport {
 	private Logger log = Logger.getLogger(Teleport.class.toString());
 	private String logPrefix = "";
 	private final Debug debug = Debug.getInstance();
+	
+	static {
+		// initialize all to 0
+		for(int i=0; i < 256; i++)
+			safeIds[i] = 0;
+		
+		// now set to 1 those ids we consider safe
+		safeIds[Material.AIR.getId()] = 1;
+		safeIds[Material.YELLOW_FLOWER.getId()] = 1;
+		safeIds[Material.RED_ROSE.getId()] = 1;
+		safeIds[Material.BROWN_MUSHROOM.getId()] = 1;
+		safeIds[Material.RED_MUSHROOM.getId()] = 1;
+		safeIds[Material.LONG_GRASS.getId()] = 1;
+		safeIds[Material.DEAD_BUSH.getId()] = 1;
+		safeIds[Material.CROPS.getId()] = 1;
+		safeIds[Material.TORCH.getId()] = 1;
+		safeIds[Material.REDSTONE_WIRE.getId()] = 1;
+		safeIds[Material.REDSTONE_TORCH_ON.getId()] = 1;
+		safeIds[Material.REDSTONE_TORCH_OFF.getId()] = 1;
+		safeIds[Material.REDSTONE_LAMP_OFF.getId()] = 1;
+		safeIds[Material.REDSTONE_LAMP_ON.getId()] = 1;
+		safeIds[Material.WOOD_PLATE.getId()] = 1;
+		safeIds[Material.DIODE_BLOCK_ON.getId()] = 1;
+		safeIds[Material.DIODE_BLOCK_OFF.getId()] = 1;
+		safeIds[Material.POWERED_RAIL.getId()] = 1;
+		safeIds[Material.DETECTOR_RAIL.getId()] = 1;
+		safeIds[Material.RAILS.getId()] = 1;
+		safeIds[Material.STEP.getId()] = 1;		// half slab
+		safeIds[Material.SNOW.getId()] = 1;
+	}
+	
 	private Teleport() {
 	}
 	
@@ -60,11 +93,11 @@ public class Teleport {
 		final int bTypeId = b.getTypeId();
 		final int upTypeId = up.getTypeId();
 		final int downTypeId = down.getTypeId();
-		if( bTypeId == 0 && upTypeId == 0
-				&& (downTypeId != 10 && down.getTypeId() != 11)	// no lava underneath
+		if( safeIds[bTypeId] == 1 && safeIds[upTypeId] == 1			// block & UP are safe?
+				&& (downTypeId != 10 && down.getTypeId() != 11)		// no lava underneath
 				&& (downTypeId != 0)								// no air underneath
-				&& (bTypeId != Material.FIRE.getId())				// not fire block
-				&& (upTypeId != Material.FIRE.getId())			// not fire above
+				&& (downTypeId != Material.FIRE.getId())			// not fire below
+				&& (upTypeId != Material.FIRE.getId())				// not fire above
 		){
 			// if flags don't allow water, check that too
 			if( (flags & FLAG_NO_WATER) > 0 ) {
@@ -124,8 +157,16 @@ public class Teleport {
 					
 					Block b = w.getBlockAt(x, y, z);
 					if( isSafeBlock(b, flags) ) {
-						debug.devDebug("findSafeLocation2(): found safe block ",b);
-						return b.getLocation();
+						// if it's the original location, return it untouched so we preserve
+						// the exact coordinates, pitch, yaw, etc
+						if( level == 0 && x == 0 && y == 0 && z == 0 ) {
+							debug.devDebug("findSafeLocation2(): found safe block (original location) ",b);
+							return baseLocation;
+						}
+						else {
+							debug.devDebug("findSafeLocation2(): found safe block ",b);
+							return b.getLocation();
+						}
 					}
 					checkedBlocks++;
 				}
@@ -229,14 +270,19 @@ public class Teleport {
 	 * @param l
 	 */
 	public void safeTeleport(final Player p, final Location l, final TeleportCause cause) {
-		p.teleport(safeLocation(l), cause);
+		Location safeLocation = safeLocation(l);
+		if( safeLocation != null )
+			p.teleport(safeLocation, cause);
+		else
+			log.info(logPrefix+" safeTeleport: couldn't find safe location near location "+l);
 	}
-	
+
 	/** Given a location, find the nearest "safe" location, ie. that won't suffocate a
 	 * player, spawn them over lava, etc.
 	 * 
 	 * @param l the location to start searching from
 	 * @param minY the minimum Y distance to check
+	 * @return the safe location or null if none could be found
 	 */
 	public Location safeLocation(Location l, Bounds bounds, int flags) {
 		if( bounds == null )
@@ -244,22 +290,23 @@ public class Teleport {
 		
 		Location target = findSafeLocation2(l, 0, bounds, flags);
 		
-		// if we didn't find a safe location, then just use the original location
-		if( target == null ) {
+		if( target != null ) {
+			if( !target.equals(l) ) {
+				// preserve pitch/yaw
+				target.setPitch(l.getPitch());
+				target.setYaw(l.getYaw());
+	
+				// adjust by 0.5 so we teleport to the middle of the block, not
+				// the edge
+				target.setX(target.getX()+0.5);
+				target.setZ(target.getZ()+0.5);
+				debug.devDebug("adjusted coordinates to middle. x=",target.getX(),", z=",target.getZ());
+			}
+			else
+				debug.devDebug("safeLocation(): original location is safe");
+		}
+		else
 			log.info(logPrefix+" safeLocation: couldn't find nearby safe location, using original location "+l);
-			target = l;
-		}
-		else {
-			// preserve pitch/yaw
-			target.setPitch(l.getPitch());
-			target.setYaw(l.getYaw());
-
-			// adjust by 0.5 so we teleport to the middle of the block, not
-			// the edge
-			target.setX(target.getX()+0.5);
-			target.setZ(target.getZ()+0.5);
-			debug.devDebug("adjusted coordinates to middle. x=",target.getX(),", z=",target.getZ());
-		}
 		
 		debug.debug("safeLocation(): target=",target);
 		return target;

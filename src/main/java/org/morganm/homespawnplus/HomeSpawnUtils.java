@@ -1068,10 +1068,14 @@ public class HomeSpawnUtils {
     		cause = TeleportCause.UNKNOWN;
     	
 		if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
+			Location safeLocation = null;
 			if( context != null )
-				l = General.getInstance().getTeleport().safeLocation(l, context.getModeBounds(), context.getModeSafeTeleportFlags());
+				safeLocation = General.getInstance().getTeleport().safeLocation(l, context.getModeBounds(), context.getModeSafeTeleportFlags());
 			else
-				l = General.getInstance().getTeleport().safeLocation(l);
+				safeLocation = General.getInstance().getTeleport().safeLocation(l);
+			
+			if( safeLocation != null )
+				l = safeLocation;
 		}
 		
 		p.teleport(l, cause);

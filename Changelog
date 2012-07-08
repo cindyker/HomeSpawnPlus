@@ -6,6 +6,7 @@ v1.6.1 -
 * updated German translation (locale de) - thanks @Jobsti2!
 * new event "onNamedSpawnCommand" for controlling named spawn behavior
 * new strategies "modeNoWater" and "modeYBounds" for controlling safe spawn and random spawn behavior
+* improvements to safe teleport to reduce occurance of non-safe teleports, especially noticeable with random strategies
 
 v1.6 - Jun 30, 2012
 * added /permcheck command (alias /pc) for checking permissions

@@ -152,14 +152,17 @@ public class StrategyEngine {
 				logVerbose("Evaluation chain complete, result = ", result);
 		}
 
-		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, false) ) {
+		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
 			Location oldLocation = result.getLocation();
 			int flags = context.getModeSafeTeleportFlags();
 			Teleport.Bounds bounds = context.getModeBounds();
 
 			debug.devDebug("evaluateStrategies(): Invoking safeLocation() for event=",context.getEventType(),", current startegy result=",result);
 			debug.devDebug("evaluateStrategies(): bounds=",bounds);
-			result.setLocation(General.getInstance().getTeleport().safeLocation(oldLocation, bounds, flags));
+			Location safeLocation = General.getInstance().getTeleport().safeLocation(oldLocation, bounds, flags);
+			if( safeLocation != null )
+				result.setLocation(safeLocation);
+			
 			if( !oldLocation.equals(result.getLocation()) )
 				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
 		}

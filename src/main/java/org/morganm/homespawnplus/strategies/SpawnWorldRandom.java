@@ -22,7 +22,10 @@ import com.wimbli.WorldBorder.WorldBorder;
  *
  */
 public class SpawnWorldRandom extends BaseStrategy {
-	private static final int MAX_TRIES = 10;
+	// most commonly will find a safe location in the first few tries, but we
+	// will try up to 20 times just in case we get a random run of bad
+	// locations
+	private static final int MAX_TRIES = 20;
 	private String world;
 	
 	public SpawnWorldRandom() {}
@@ -66,19 +69,30 @@ public class SpawnWorldRandom extends BaseStrategy {
 			int tries = 0;
 			while( result == null && tries < MAX_TRIES ) {
 				tries++;
+				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
 				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
-				if( !border.insideBorder(result) )
+				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+				if( result != null && !border.insideBorder(result) )
 					result = null;
 			}
 			
-			if( tries == 10 )
+			if( tries == MAX_TRIES )
 				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
 		}
 		// no WorldBorder? just assume default min/max of +/- 1000
 		else {
 			Location min = new Location(w, -1000, yBounds.minY, -1000);
 			Location max = new Location(w, 1000, yBounds.maxY, 1000);
-			result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
+			int tries = 0;
+			while( result == null && tries < MAX_TRIES ) {
+				tries++;
+				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
+				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
+				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+			}
+
+			if( tries == MAX_TRIES )
+				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
 		}
 		
 		if( result ==  null )

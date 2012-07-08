@@ -33,6 +33,7 @@ public class Spawn extends BaseCommand
 			return true;
 
 		String cooldownName = "spawn";
+		debug.devDebug("/spawn command run by player ",p);
 		
 		Location l = null;
 		if( args.length > 0 ) {

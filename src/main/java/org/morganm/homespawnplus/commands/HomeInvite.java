@@ -87,7 +87,7 @@ public class HomeInvite extends BaseCommand {
 		
 		String invitee = args[0];
 		final Player onlinePlayer = Bukkit.getPlayer(invitee);
-		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(invitee);
+		final OfflinePlayer offlinePlayer = util.getBestMatchPlayer(invitee);
 		if( onlinePlayer == null && offlinePlayer == null ) {
 			util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
 					"player", invitee);

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.commands;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
@@ -31,20 +32,31 @@ public class SetHomeOther extends BaseCommand {
 		}
 		
 		final String setter = p.getName();
-		final String homeowner = args[0];
 		final Location l = p.getLocation();
+		
+		String homeowner = null;
+		// try player name best match
+		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		if( otherPlayer != null ) {
+			homeowner = otherPlayer.getName();
+		}
+		// no match, no point in proceeding, no online or offline player by
+		// that name exists
+		else {
+			util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+					"player", args[0]);
+			return true;
+		}
 		
 		if( args.length > 1 ) {
 			if( util.setNamedHome(homeowner, l, args[1], setter) )
 				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
 						"name", args[1], "player", homeowner);
-//				util.sendMessage(p, "Home \""+args[1]+"\" set successfully for player "+homeowner);
 		}
 		else {
 			if( util.setHome(homeowner, l, setter, true, false) )
 				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
 						"player", homeowner);
-//				util.sendMessage(p, "Home set successfully for player "+homeowner);
 		}
 		
 		return true;

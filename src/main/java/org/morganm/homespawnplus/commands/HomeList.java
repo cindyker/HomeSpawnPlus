@@ -56,12 +56,11 @@ public class HomeList extends BaseCommand {
 					*/
 
 			if( world.equals("all") || world.equals("*") )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_ALL_WORLDS);
-//				util.sendMessage(p, "Home list for all worlds: ");
+				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_ALL_WORLDS,
+						"player", player);
 			else
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_FOR_WORLD,
-						"world", world);
-//				util.sendMessage(p, "Home list on world \""+world+"\": ");
+						"world", world, "player", player);
 			
 			for(org.morganm.homespawnplus.entity.Home home : homes) {
 				String name = home.getName();
@@ -83,7 +82,7 @@ public class HomeList extends BaseCommand {
 		}
 		else
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
-					"world", world);
+					"world", world, "player", player);
 //			util.sendMessage(p, "No homes found for world \""+world+"\"");
 
 		return true;

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -694,6 +695,60 @@ public class HomeSpawnUtils {
     
     public Home getHomeByName(String playerName, String homeName) {
 		return plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
+    }
+    
+    /** Given a string, look for the best possible player match. Returned
+     * object could be of subclass Player (if the player is online).
+     * 
+     * @param playerName
+     * @return the found OfflinePlayer object (possibly class Player) or null
+     */
+    public OfflinePlayer getBestMatchPlayer(String playerName) {
+    	int onlineMatchDistance = Integer.MAX_VALUE;
+    	Player onlineMatch = plugin.getServer().getPlayer(playerName);
+    	if( onlineMatch != null )
+    		onlineMatchDistance = onlineMatch.getName().length() - playerName.length();
+    	
+    	int offlineMatchDistance = Integer.MAX_VALUE;
+    	OfflinePlayer offlineMatch = plugin.getServer().getOfflinePlayer(playerName);
+    	// if the player hasn't played before, then Bukkit just returned a bogus
+    	// object; there's no real player behind it. If so, we have to go the hard
+    	// route of looping through all "seen" offline players to look for the best
+    	// match
+    	if( !offlineMatch.hasPlayedBefore() ) {
+        	// implemented with same algorithm that Bukkit's online "getPlayer()"
+        	// routine is
+            OfflinePlayer found = null;
+            String lowerName = playerName.toLowerCase();
+            int delta = Integer.MAX_VALUE;
+        	OfflinePlayer[] offlinePlayers = plugin.getServer().getOfflinePlayers();
+        	for(OfflinePlayer offlinePlayer : offlinePlayers) {
+                if (offlinePlayer.getName().toLowerCase().startsWith(lowerName)) {
+                    int curDelta = offlinePlayer.getName().length() - lowerName.length();
+                    if (curDelta < delta) {
+                        found = offlinePlayer;
+                        delta = curDelta;
+                    }
+                    if (curDelta == 0) break;
+                }
+        	}
+        	if( found != null ) {
+        		offlineMatch = found;
+        		offlineMatchDistance = delta;
+        	}
+    	}
+    	
+    	if( onlineMatchDistance <= offlineMatchDistance ) {
+    		if( onlineMatchDistance == Integer.MAX_VALUE )
+    			debug.debug("getBestMatchPlayer() playerName=",playerName,", no online or offline player found, returning null");
+    		else
+    			debug.debug("getBestMatchPlayer() playerName=",playerName,", returning online player ",onlineMatch);
+    		return onlineMatch;
+    	}
+    	else {
+    		debug.debug("getBestMatchPlayer() playerName=",playerName,", returning offline player ",offlineMatch);
+    		return offlineMatch;
+    	}
     }
     
     /** Look for a partial name match for a home on a given world

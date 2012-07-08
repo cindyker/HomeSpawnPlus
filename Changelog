@@ -8,6 +8,7 @@ v1.6.1 -
 * new strategies "modeNoWater" and "modeYBounds" for controlling safe spawn and random spawn behavior
 * improvements to safe teleport to reduce occurance of non-safe teleports, especially noticeable with random strategies
 * added "dynmap.layer.homes.include-bed-home" and "include-named-homes" options (default home is always included)
+* implemented player name best matching for several commands (/hlo, /homeo, /hi, /sho). /dho (delete) still requires exact match as a safety measure.
 
 v1.6 - Jun 30, 2012
 * added /permcheck command (alias /pc) for checking permissions

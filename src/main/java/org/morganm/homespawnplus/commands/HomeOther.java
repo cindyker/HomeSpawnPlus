@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -31,9 +32,16 @@ public class HomeOther extends BaseCommand {
 			return false;
 		}
 		
-		final String playerName = args[0];
+		String playerName = null;
 		String worldName = null;
 		String homeName = null;
+		
+		// try player name best match
+		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		if( otherPlayer != null )
+			playerName = otherPlayer.getName();
+		else
+			playerName = args[0];
 		
 		for(int i=1; i < args.length; i++) {
 			if( args[i].startsWith("w:") ) {

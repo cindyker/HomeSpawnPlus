@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -49,7 +50,13 @@ public class HomeListOther extends BaseCommand {
 			return false;
 		}
 		
-		player = args[0];
+		// try player name best match
+		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		if( otherPlayer != null )
+			player = otherPlayer.getName();
+		else
+			player = args[0];
+
 		if( args.length > 1 )
 			world = args[1];
 		

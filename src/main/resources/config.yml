@@ -200,6 +200,10 @@ events:
   onNamedHomeCommand:
     - homeNamedHome
 
+  # strategies to use when player types "/spawn name"
+  onNamedSpawnCommand:
+    - spawnNamedHome
+
 #  example of world-specific strategy
 #  world:
 #    myworld:

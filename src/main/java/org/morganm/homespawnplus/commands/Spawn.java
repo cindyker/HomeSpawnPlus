@@ -12,6 +12,8 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 
 
 /**
@@ -36,13 +38,23 @@ public class Spawn extends BaseCommand
 		debug.devDebug("/spawn command run by player ",p);
 		
 		Location l = null;
+		StrategyResult result = null;
 		if( args.length > 0 ) {
 			boolean hasPermission = false;
 			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
+				org.morganm.homespawnplus.entity.Spawn spawn = null;
+				result = plugin.getStrategyEngine().getStrategyResult(EventType.NAMED_SPAWN_COMMAND, p, args[0]);
+				if( result != null ) {
+					l = result.getLocation();
+					spawn = result.getSpawn();
+				}
+				
+				/*
 				org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
 				cooldownName = getCooldownName("spawn-named", args[0]);
 				if( spawn != null )
 					l = spawn.getLocation();
+					*/
 				
 				if( l == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
@@ -65,8 +77,17 @@ public class Spawn extends BaseCommand
 			}
 		}
 		else {
-			l = util.getStrategyLocation(EventType.SPAWN_COMMAND, p);
+			result = util.getStrategyResult(EventType.SPAWN_COMMAND, p);
+			if( result != null ) {
+				l = result.getLocation();
+			}
 		}
+		
+		final StrategyContext context;
+		if( result != null )
+			context = result.getContext();
+		else
+			context = null;
     	
 		if( !cooldownCheck(p, cooldownName) )
 			return true;
@@ -84,7 +105,7 @@ public class Spawn extends BaseCommand
 									"name", getWarmupName(), "place", "spawn");
 //							util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to spawn");
 							if( applyCost(p, true) )
-					    		util.teleport(p, finalL, TeleportCause.COMMAND);
+					    		util.teleport(p, finalL, TeleportCause.COMMAND, context);
 						}
 					}
 
@@ -100,7 +121,7 @@ public class Spawn extends BaseCommand
 			}
 			else {
 				if( applyCost(p, true) )
-		    		util.teleport(p, l, TeleportCause.COMMAND);
+		    		util.teleport(p, l, TeleportCause.COMMAND, context);
 			}
     	}
     	else

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.dynmap;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 
 /** Interface for HSP locations.
  * 
@@ -20,4 +21,13 @@ public interface NamedLocation {
 	 * @return
 	 */
 	public String getPlayerName();
+	
+	/** Determine whether this NamedLocation is enabled and should be
+	 * shown. The ConfigurationSection is expected to be relevant
+	 * to the object type, so that it can look up any configuration
+	 * options to make decisions about whether it is enabled or not.
+	 * 
+	 * @return
+	 */
+	public boolean isEnabled(ConfigurationSection section);
 }

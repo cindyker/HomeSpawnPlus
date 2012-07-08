@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.dynmap;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.entity.Spawn;
 
 /**
@@ -38,5 +39,13 @@ public class SpawnNamedLocation implements NamedLocation {
 	@Override
 	public String getPlayerName() {
 		return null;
+	}
+	
+	/** No flags exist (yet) to control visibility of spawns; if spawns
+	 * are enabled, all of them will be shown.
+	 */
+	@Override
+	public boolean isEnabled(ConfigurationSection section) {
+		return true;
 	}
 }

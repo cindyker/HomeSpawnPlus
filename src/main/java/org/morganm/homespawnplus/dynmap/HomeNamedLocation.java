@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.dynmap;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.entity.Home;
 
 /**
@@ -41,5 +42,18 @@ public class HomeNamedLocation implements NamedLocation {
 	@Override
 	public String getPlayerName() {
 		return home.getPlayerName();
+	}
+	
+	@Override
+	public boolean isEnabled(ConfigurationSection section) {
+		if( home.isDefaultHome() )
+			return true;
+		if( home.isBedHome() && section.getBoolean("include-bed-home", true) )
+			return true;
+		if( section.getBoolean("include-named-homes", true) )
+			return true;
+
+		// if it hasn't been true yet, then we're not supposed to show it
+		return false;
 	}
 }

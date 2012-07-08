@@ -35,6 +35,7 @@ public class Layer {
 	private Set<String> hidden;
 	private Map<String, Marker> markers = new HashMap<String, Marker>();
 	private boolean online_only;
+	private ConfigurationSection cfg;
     boolean stop = false;
 	
 	public Layer(final DynmapModule module, LocationManager mgr, String id, ConfigurationSection cfg,
@@ -42,12 +43,13 @@ public class Layer {
 		this.module = module;
 		this.mgr = mgr;
 		this.markerapi = module.getMarkerAPI();
+		this.cfg = cfg;
 //		this.updperiod = updperiod;
 
-		init(id, cfg, deflabel, deficon, deflabelfmt);
+		init(id, deflabel, deficon, deflabelfmt);
 	}
 	
-	private void init(String id, ConfigurationSection cfg, String deflabel, String deficon, String deflabelfmt)
+	private void init(String id, String deflabel, String deficon, String deflabelfmt)
 	{
 		set = markerapi.getMarkerSet("hsp." + id);
 		if(set == null)
@@ -133,6 +135,10 @@ public class Layer {
 				Location loc = nl.getLocation();
 				/* Get name */
 				String name = nl.getName();
+				
+				// if this location is not enabled, skip it
+				if( !nl.isEnabled(cfg) )
+					continue;
 				
 				Debug.getInstance().devDebug("updateMarkerSet() name=",name,", loc=",loc);
 				/* If not world specific list, we may get locations for other worlds - skip them */

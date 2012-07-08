@@ -19,7 +19,6 @@ import javax.persistence.Version;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.dynmap.NamedLocation;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
@@ -36,7 +35,7 @@ import com.avaje.ebean.validation.NotNull;
 			@UniqueConstraint(columnNames={"player_name","name"})
 		}
 )
-public class Home implements EntityWithLocation, NamedLocation {
+public class Home implements EntityWithLocation {
 	static private final transient DecimalFormat decimalFormat = new DecimalFormat("#.##");
 	
     @Id

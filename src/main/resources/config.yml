@@ -406,6 +406,10 @@ dynmap:
   layer:
     homes:
       enable: true
+      # by default, HSP will render the default home. You can also tell
+      # it to render any bed homes or even all named homes
+      include-bed-home: true
+      include-named-homes: true
       name: "Homes"
       # Make home layer hidden by default
       hidebydefault: false

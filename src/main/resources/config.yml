@@ -204,6 +204,10 @@ events:
   onNamedSpawnCommand:
     - spawnNamedSpawn
 
+  # dev feature only for now, do not use
+  crossWorldTeleport:
+    - default
+
 #  example of world-specific strategy
 #  world:
 #    myworld:

@@ -356,7 +356,9 @@ public class Teleport {
 	public Location safeLocation(Location l) {
 		return safeLocation(l, defaultBounds, 0);
 	}
-	
+
+	public Bounds getDefaultBounds() { return defaultBounds; }
+
 	private final Bounds defaultBounds = new Bounds();
 	public static class Bounds {
 		// min/max Y bounds, can be used to prevent safe location from being

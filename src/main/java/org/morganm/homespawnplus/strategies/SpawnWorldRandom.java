@@ -46,7 +46,9 @@ public class SpawnWorldRandom extends BaseStrategy {
 		else
 			w = context.getLocation().getWorld();
 		
-		final Teleport.Bounds yBounds = context.getModeBounds();
+		Teleport.Bounds yBounds = context.getModeBounds();
+		if( yBounds == null )
+			yBounds = Teleport.getInstance().getDefaultBounds();
 		Debug.getInstance().devDebug("SpawnWorldRandom() minY=",yBounds.minY,", maxY=",yBounds.maxY);
 		
 		Location result = null;

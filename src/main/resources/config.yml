@@ -169,6 +169,10 @@ core:
   # instead.
   safeTeleport: true
 
+  # If true, sleeping in a bed will overwrite the default home,
+  # usually the one set by "/sethome" with no args.
+  bedHomeOverwritesDefault: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

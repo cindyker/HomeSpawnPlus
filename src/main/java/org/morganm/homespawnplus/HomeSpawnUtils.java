@@ -351,7 +351,7 @@ public class HomeSpawnUtils {
     			}
     		}
     		
-    		if( home == null ) {
+    		if( home == null && plugin.getConfig().getBoolean(ConfigOptions.BEDHOME_OVERWRITES_DEFAULT, true) ) {
     			debug.debug("setHome: bedHome flag enabled, but no bedHome found. Using default home");
             	home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
     		}

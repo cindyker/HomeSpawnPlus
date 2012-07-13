@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.dynmap;
+package org.morganm.homespawnplus.integration.dynmap;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -4,7 +4,7 @@ url: ${project.url}
 version: ${project.version}
 author: morganm
 database: true
-softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder]
+softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder, Multiverse-Core]
 commands:
   groupspawn:
     aliases: [gs]

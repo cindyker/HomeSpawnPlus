@@ -196,6 +196,13 @@ public class PlayerSpawn implements EntityWithLocation
 	}
 
 	public void setLocation(Location location) {
+    	setWorld(location.getWorld().getName());
+		setX(location.getX());
+		setY(location.getY());
+		setZ(location.getZ());
+		setYaw(location.getYaw());
+		setPitch(location.getPitch());
+		
 		this.location = location;
 	}
 	

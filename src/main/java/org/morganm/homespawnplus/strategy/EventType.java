@@ -14,7 +14,8 @@ public enum EventType {
 	NAMED_SPAWN_COMMAND("onNamedSpawnCommand"),
 	SPAWN_COMMAND("onSpawnCommand"),
 	GROUPSPAWN_COMMAND("onGroupSpawnCommand"),
-	CROSS_WORLD_TELEPORT("crossWorldTeleport");
+	CROSS_WORLD_TELEPORT("crossWorldTeleport"),
+	MULTIVERSE_TELEPORT_CROSSWORLD("multiverseCrossWorldTeleport");
 	
 	private String configOption;
 	EventType(String configOption) {

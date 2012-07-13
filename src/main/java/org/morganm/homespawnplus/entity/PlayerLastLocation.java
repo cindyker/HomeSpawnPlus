@@ -162,7 +162,23 @@ public class PlayerLastLocation implements EntityWithLocation
 	}
 
 	public void setLocation(Location location) {
+    	setWorld(location.getWorld().getName());
+		setX(location.getX());
+		setY(location.getY());
+		setZ(location.getZ());
+		setYaw(location.getYaw());
+		setPitch(location.getPitch());
+
 		this.location = location;
 	}
 	
+	public String toString() {
+		return "{id="+getId()
+			+",playerName="+getPlayerName()
+			+",world="+getWorld()
+			+",x="+getX()
+			+",y="+getY()
+			+",z="+getZ()
+			+"}";
+	}
 }

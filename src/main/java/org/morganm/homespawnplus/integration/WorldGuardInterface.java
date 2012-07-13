@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.util;
+package org.morganm.homespawnplus.integration;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.util.Debug;
 
 import com.sk89q.worldedit.Location;
 import com.sk89q.worldedit.Vector;

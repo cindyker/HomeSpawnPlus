@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>1.7-SNAPSHOT</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -20,6 +20,10 @@
     <repository>
       <id>morganm-repo</id>
       <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>onarandombox</id>
+      <url>http://repo.onarandombox.com/content/groups/public</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
@@ -92,6 +96,13 @@
       <groupId>org.dynmap</groupId>
       <artifactId>dynmap-api</artifactId>
       <version>0.39</version>
+    </dependency>
+
+    <!-- MultiVerse -->
+    <dependency>
+      <groupId>com.onarandombox.multiversecore</groupId>
+      <artifactId>Multiverse-Core</artifactId>
+      <version>2.4</version>
     </dependency>
   </dependencies>
 

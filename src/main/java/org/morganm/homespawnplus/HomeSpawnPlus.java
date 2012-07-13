@@ -25,15 +25,18 @@ import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
-import org.morganm.homespawnplus.dynmap.DynmapModule;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.entity.PlayerLastLocation;
+import org.morganm.homespawnplus.entity.PlayerSpawn;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.Locale;
 import org.morganm.homespawnplus.i18n.LocaleConfig;
 import org.morganm.homespawnplus.i18n.LocaleFactory;
+import org.morganm.homespawnplus.integration.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
@@ -47,6 +50,8 @@ import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLocation;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.util.CommandUsurper;
@@ -73,6 +78,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
 		ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
 		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
+		ConfigurationSerialization.registerClass(SerializablePlayerLastLocation.class, "PlayerLastLocation");
+		ConfigurationSerialization.registerClass(SerializablePlayerSpawn.class, "PlayerSpawn");
 	}
 	
     // singleton instance - This will always return the most recent
@@ -98,6 +105,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private Locale locale;
     private Debug debug;
     private Metrics metrics;
+    private MultiverseIntegration multiverse;
 
     public Economy vaultEconomy = null;
     
@@ -259,6 +267,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     		dynmap.init();
         	debugEndTimer("dynmap");
     	}
+    	
+    	// hook multiverse, if available
+    	multiverse = new MultiverseIntegration(this);
+    	multiverse.onEnable();
         
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
@@ -266,6 +278,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     
     @Override
     public void onDisable() {
+    	// unhook multiverse (if needed)
+    	multiverse.onDisable();
+    	
     	Player[] players = getServer().getOnlinePlayers();
     	for(int i=0; i < players.length;i++) {
     		spawnUtils.updateQuitLocation(players[i]);
@@ -467,6 +482,8 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(org.morganm.homespawnplus.entity.Player.class);
         classList.add(Version.class);
         classList.add(HomeInvite.class);
+        classList.add(PlayerSpawn.class);
+        classList.add(PlayerLastLocation.class);
         return classList;
     }
     

@@ -29,8 +29,10 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.PlayerLastLocation;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
@@ -294,6 +296,33 @@ public class HSPPlayerListener implements Listener {
     	
     	lastRespawnPlayer = e.getPlayer();
     	lastRespawnLocation = l;
+    }
+
+    /** Method to monitor successful cross-world teleports and
+     * update PlayerLastLocation accordingly.
+     * 
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void monitorPlayerTeleport(PlayerTeleportEvent event) {
+    	// cross-world teleport event?
+    	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+    		 PlayerLastLocationDAO dao = plugin.getStorage().getPlayerLastLocationDAO();
+    		 PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+    		 if( playerLastLocation == null ) {
+    			 playerLastLocation = new PlayerLastLocation();
+    			 playerLastLocation.setPlayerName(event.getPlayer().getName());
+    		 }
+			 playerLastLocation.setLocation(event.getFrom());
+
+			 try {
+				 dao.save(playerLastLocation);
+			 }
+			 catch(StorageException e) {
+				 log.log(Level.WARNING, logPrefix+" Error writing to database: "+e.getMessage(), e);
+			 }
+			 debug.debug("Saved player ",event.getPlayer()," location as ",playerLastLocation);
+    	}
     }
 
     public void onPlayerTeleport(PlayerTeleportEvent event) {

@@ -43,6 +43,8 @@ public class StorageEBeans implements Storage {
 	private SpawnDAOEBean spawnDAO;
 	private PlayerDAOEBean playerDAO;
 	private VersionDAOEBean versionDAO;
+	private PlayerSpawnDAOEBean playerSpawnDAO;
+	private PlayerLastLocationDAOEBean playerLastLocationDAO;
 
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -125,6 +127,8 @@ public class StorageEBeans implements Storage {
         spawnDAO = new SpawnDAOEBean(getDatabase());
         playerDAO = new PlayerDAOEBean(getDatabase());
         versionDAO = new VersionDAOEBean(getDatabase());
+        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
+        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
         
         try {
         	upgradeDatabase();
@@ -141,6 +145,10 @@ public class StorageEBeans implements Storage {
 	public org.morganm.homespawnplus.storage.dao.SpawnDAO getSpawnDAO() { return spawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.VersionDAO getVersionDAO() { return versionDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
 	
 	@Override
 	public void purgeCache() {
@@ -165,6 +173,12 @@ public class StorageEBeans implements Storage {
 		update = db.createSqlUpdate("delete from hsp_homeinvite");
 		update.execute();
 
+		update = db.createSqlUpdate("delete from hsp_playerspawn");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_playerlastloc");
+		update.execute();
+		
 		db.commitTransaction();
 	}
 	
@@ -216,6 +230,9 @@ public class StorageEBeans implements Storage {
 		
 		if( knownVersion < 150 )
 			updateToVersion150(db);
+		
+		if( knownVersion < 170 )
+			updateToVersion170(db);
 	}
 	
 	private void updateToVersion63(final EbeanServer db) {
@@ -403,6 +420,12 @@ public class StorageEBeans implements Storage {
 		log.info(logPrefix + " Upgrade from version 0.9.1 database to version 1.5.0 complete");
 	}
 
+	private void updateToVersion170(final EbeanServer db) {
+		log.info(logPrefix + " Upgrading from version 1.5.0 database to version 1.7.0");
+		// TODO: upgrade me
+		log.info(logPrefix + " Upgrade from version 1.5.0 database to version 1.7.0 complete");
+	}
+	
 	// Ebeans does nothing with these methods
 	@Override
 	public void setDeferredWrites(boolean deferred) {}

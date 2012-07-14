@@ -56,7 +56,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 			}
 		}
 		else
-			theWorld = context.getPlayer().getLocation().getWorld();
+			theWorld = context.getEventLocation().getWorld();
 		
 		ProtectedRegion wgRegion = wgInterface.getWorldGuardRegion(theWorld, region);
 		

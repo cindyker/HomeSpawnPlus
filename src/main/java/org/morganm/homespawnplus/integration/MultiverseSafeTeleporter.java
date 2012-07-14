@@ -111,7 +111,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	public TeleportResult safelyTeleport(CommandSender teleporter,
 			Entity teleportee, MVDestination d)
 	{
-		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport invoked");
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoked (#1)");
 		
 		Location from = null;
 		if( teleportee != null )
@@ -124,11 +124,19 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 		if( p != null )
 			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking Multiverse. teleportee=",teleportee,", p=",p);
 		// let Multiverse do it's business
 		TeleportResult result = original.safelyTeleport(teleporter, teleportee, d);
+		if( teleportee != null ) {
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-Multiverse location =",teleportee.getLocation());
+		}
 
 		// now give HSP a chance to do something else
-		hspEvent(p, from, true);
+		if( p != null ) {
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
+			hspEvent(p, from, true);
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
+		}
 		
 		return result;
 	}
@@ -137,7 +145,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	public TeleportResult safelyTeleport(CommandSender teleporter,
 			Entity teleportee, Location location, boolean safely)
 	{
-		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport invoked");
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoked (#2)");
 		
 		Location from = null;
 		if( teleportee != null )
@@ -150,11 +158,19 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 		if( p != null )
 			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking Multiverse. teleportee=",teleportee,", p=",p);
 		// let Multiverse do it's business
 		TeleportResult result = original.safelyTeleport(teleporter, teleportee, location, safely);
+		if( teleportee != null ) {
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-Multiverse location =",teleportee.getLocation());
+		}
 
 		// now give HSP a chance to do something else
-		hspEvent(p, from, true);
+		if( p != null ) {
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
+			hspEvent(p, from, true);
+			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
+		}
 		
 		return result;
 	}

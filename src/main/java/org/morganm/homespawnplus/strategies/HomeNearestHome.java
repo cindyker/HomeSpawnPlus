@@ -23,8 +23,8 @@ public class HomeNearestHome extends HomeStrategy {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of homes is relatively small (ie. not in the hundreds or thousands).
 		final Set<Home> allHomes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(
-				context.getPlayer().getWorld().getName(), context.getPlayer().getName());
-		final Location playerLoc = context.getPlayer().getLocation();
+				context.getEventLocation().getWorld().getName(), context.getPlayer().getName());
+		final Location playerLoc = context.getEventLocation();
 		
 		double shortestDistance = -1;
 		Home closestHome = null;

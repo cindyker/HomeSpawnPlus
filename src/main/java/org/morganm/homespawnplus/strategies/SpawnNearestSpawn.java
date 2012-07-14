@@ -22,7 +22,7 @@ public class SpawnNearestSpawn extends BaseStrategy {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of spawns is relatively small (ie. not in the hundreds or thousands).
 		final Set<Spawn> allSpawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
-		final Location playerLoc = context.getPlayer().getLocation();
+		final Location playerLoc = context.getEventLocation();
 		
 		final String playerWorld = playerLoc.getWorld().getName();
 		double shortestDistance = -1;

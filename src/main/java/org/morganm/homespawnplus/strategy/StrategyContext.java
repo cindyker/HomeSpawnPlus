@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.strategies.ModeDefault;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.Teleport;
 
 /** The context given to a strategy that is being evaluated.
@@ -38,6 +39,18 @@ public class StrategyContext {
 
 	public Player getPlayer() {
 		return player;
+	}
+	
+	/** Return the "location" of the event, which might be a manually passed in location
+	 * or the player location, depending on which data we have.
+	 * 
+	 * @return
+	 */
+	public Location getEventLocation() {
+		if( location != null )
+			return location;
+		else
+			return player.getLocation();
 	}
 	
 	/** The location the event is happening, which may be different than
@@ -168,5 +181,14 @@ public class StrategyContext {
 	 */
 	public void setArg(String arg) {
 		this.arg = arg;
+	}
+	
+	public String toString() {
+		return "{eventType="+eventType
+				+",player="+player
+				+",player.location="+(player != null ? General.getInstance().shortLocationString(player.getLocation()) : null)
+				+",location="+(location != null ? General.getInstance().shortLocationString(location) : null)
+				+",arg="+arg
+				+"}";
 	}
 }

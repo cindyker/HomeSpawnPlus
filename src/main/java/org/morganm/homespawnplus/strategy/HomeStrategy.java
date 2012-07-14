@@ -24,10 +24,10 @@ public abstract class HomeStrategy extends BaseStrategy {
 	protected Home getModeHome(final StrategyContext context, String worldName) {
 		final String playerName = context.getPlayer().getName();
 
-		// if worldName is null, attempt to set it from player context, if available
+		// if worldName is null, attempt to set it from context, if available
 		if( worldName == null )
-			if( context.getPlayer().getWorld() != null )
-				worldName = context.getPlayer().getWorld().getName();
+			if( context.getEventLocation().getWorld() != null )
+				worldName = context.getEventLocation().getWorld().getName();
 		
 		Home home = null;
 		

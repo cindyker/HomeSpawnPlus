@@ -44,7 +44,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 			}
 		}
 		else
-			w = context.getLocation().getWorld();
+			w = context.getEventLocation().getWorld();
 		
 		Teleport.Bounds yBounds = context.getModeBounds();
 		if( yBounds == null )

@@ -1,3 +1,8 @@
+v1.7 - 
+* database upgrade: HSP will upgrade automatically, but to be safe you should backup your database before upgrading!
+* new strategies: SpawnLastLocation and SpawnLocalPlayerSpawn
+* new modes: ModeRememberSpawn and ModeRememberLocation
+
 v1.6.2 - 
 * Ticket #118: error when using spawnWorldRandom strategy
 * cleaned up some spurious warning messages related to some missing default config settings

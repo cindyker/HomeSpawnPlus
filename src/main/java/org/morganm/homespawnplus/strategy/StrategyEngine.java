@@ -11,6 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.entity.PlayerSpawn;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.Teleport;
@@ -93,6 +96,7 @@ public class StrategyEngine {
 	 */
 	public StrategyResult evaluateStrategies(StrategyContext context) {
 		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
+		debug.debug("evaluateStrategies: context=",context);
 		StrategyResult result = null;
 		
 		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer()); 
@@ -101,13 +105,12 @@ public class StrategyEngine {
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
 		if( permStrategies != null && permStrategies.size() > 0 ) {
 			debug.debug("evaluateStrategies: evaluating ",permStrategies.size()," permission strategies");
-			LOOP:
 			for(Set<Strategy> set : permStrategies) {
 				context.resetCurrentModes();
 				
 				result = evaluateStrategies(context, set);
 				if( result != null && result.isSuccess() )
-					break LOOP;
+					break;
 			}
 		}
 		debug.debug("evaluateStrategies: permission-based strategies result = ",result);
@@ -117,9 +120,9 @@ public class StrategyEngine {
 			// is it possible for player to have a null world when they first login? not sure
 			// but lets be sure we don't blow up if it is. Only process world strategy if
 			// player is in a world.
-			if( context.getPlayer().getWorld() != null ) {
+			if( context.getEventLocation().getWorld() != null ) {
 				debug.debug("evaluateStrategies: evaluating world-based strategies");
-				Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), context.getPlayer().getWorld().getName());
+				Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), context.getEventLocation().getWorld().getName());
 				if( worldStrategies != null && worldStrategies.size() > 0 ) {
 					debug.debug("evaluateStrategies: evaluating ",worldStrategies.size()," world strategies");
 					context.resetCurrentModes();
@@ -152,6 +155,7 @@ public class StrategyEngine {
 				logVerbose("Evaluation chain complete, result = ", result);
 		}
 
+		// if we have a result, make sure it's a safe location
 		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
 			Location oldLocation = result.getLocation();
 			int flags = context.getModeSafeTeleportFlags();
@@ -165,6 +169,35 @@ public class StrategyEngine {
 			
 			if( !oldLocation.equals(result.getLocation()) )
 				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
+		}
+
+		// are we supposed to remember a spawn?
+		if( result != null && result.getSpawn() != null && context.isModeEnabled(StrategyMode.MODE_REMEMBER_SPAWN) ) {
+			PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
+			PlayerSpawn ps = dao.findByWorldAndPlayerName(result.getSpawn().getWorld(), context.getPlayer().getName());
+			if( ps == null ) {
+				ps = new PlayerSpawn();
+				ps.setPlayerName(context.getPlayer().getName());
+			}
+			ps.setSpawn(result.getSpawn());
+			try {
+				dao.save(ps);
+			} catch(StorageException e) { e.printStackTrace(); }
+			debug.debug("evaluateStrategies: recorded PlayerSpawn spawn as directed by ",StrategyMode.MODE_REMEMBER_SPAWN);
+		}
+		// no.. are we supposed to remember a location?
+		else if( result != null && result.getLocation() != null && context.isModeEnabled(StrategyMode.MODE_REMEMBER_LOCATION) ) {
+			PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
+			PlayerSpawn ps = dao.findByWorldAndPlayerName(result.getLocation().getWorld().getName(), context.getPlayer().getName());
+			if( ps == null ) {
+				ps = new PlayerSpawn();
+				ps.setPlayerName(context.getPlayer().getName());
+			}
+			ps.setLocation(result.getLocation());
+			try {
+				dao.save(ps);
+			} catch(StorageException e) { e.printStackTrace(); }
+			debug.debug("evaluateStrategies: recorded PlayerSpawn location as directed by ",StrategyMode.MODE_REMEMBER_LOCATION);
 		}
 		
 		debug.debug("evaluateStrategies: exit result = ",result);

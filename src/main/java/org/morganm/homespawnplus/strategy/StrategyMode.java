@@ -25,7 +25,9 @@ public enum StrategyMode {
 	MODE_NO_LEAVES (Teleport.FLAG_NO_LEAVES),
 	MODE_NO_ICE (Teleport.FLAG_NO_ICE),
 	MODE_YBOUNDS,
-	MODE_DEFAULT;
+	MODE_DEFAULT,
+	MODE_REMEMBER_SPAWN,
+	MODE_REMEMBER_LOCATION;
 	
 	// associated Teleport safeMode flag, if any
 	private int flagId = 0;

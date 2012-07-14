@@ -47,6 +47,28 @@ public class WorldGuardInterface {
 //		this.SPAWN_PERM = new RegionGroupFlag("spawn-group", RegionGroupFlag.RegionGroup.MEMBERS);
 	}
 	
+	public boolean isEnabled() {
+		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		if( p != null )
+			return p.isEnabled();
+		else
+			return false;
+	}
+	
+	/** Return true if the given location is located in the region.
+	 * 
+	 * @param l
+	 * @param regionName
+	 * @return
+	 */
+	public boolean isLocationInRegion(org.bukkit.Location l, String regionName) {
+		ProtectedRegion region = getWorldGuardRegion(l.getWorld(), regionName);
+		if( region != null )
+			return region.contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+		else
+			return false;
+	}
+	
 	/** This code adapted from WorldGuard class
 	 *  com.sk89q.worldguard.bukkit.WorldGuardPlayerListener, method
 	 *  onPlayerRespawn().

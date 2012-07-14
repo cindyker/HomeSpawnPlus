@@ -36,6 +36,7 @@ import org.morganm.homespawnplus.i18n.Locale;
 import org.morganm.homespawnplus.i18n.LocaleConfig;
 import org.morganm.homespawnplus.i18n.LocaleFactory;
 import org.morganm.homespawnplus.integration.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.WorldGuardInterface;
 import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
@@ -106,6 +107,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private Debug debug;
     private Metrics metrics;
     private MultiverseIntegration multiverse;
+    private WorldGuardInterface worldGuardInterface;
 
     public Economy vaultEconomy = null;
     
@@ -247,12 +249,17 @@ public class HomeSpawnPlus extends JavaPlugin {
 		} , 40);
     	debugEndTimer("commands");
     	
+    	debugStartTimer("Plugin integrations");
     	// hook multiverse, if available
     	multiverse = new MultiverseIntegration(this);
     	multiverse.onEnable();
+    	worldGuardInterface = new WorldGuardInterface(this);
+    	debugEndTimer("Plugin integrations");
         
+    	debugStartTimer("strategies");
     	processStrategyConfig();
     	detectAndWarn();
+    	debugEndTimer("strategies");
     	
     	debugStartTimer("metrics");
         // Load up the Plugin metrics
@@ -557,4 +564,5 @@ public class HomeSpawnPlus extends JavaPlugin {
     public String getPluginName() { return pluginName; }
     public JarUtils getJarUtils() { return jarUtils; }
     public MultiverseIntegration getMultiverseIntegration() { return multiverse; }
+    public WorldGuardInterface getWorldGuardInterface() { return worldGuardInterface; }
 }

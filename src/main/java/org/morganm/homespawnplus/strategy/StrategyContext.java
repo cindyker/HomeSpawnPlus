@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.strategies.ModeDefault;
+import org.morganm.homespawnplus.strategies.ModeInRegion;
 import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
 import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
@@ -203,6 +204,20 @@ public class StrategyContext {
 				if( !strategyPortalName.equals(destinationPortalName) ) {
 					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
 							"strategyPortalName=",strategyPortalName,", destinationPortalName=",destinationPortalName);
+					return false;
+				}
+			}
+		}
+		
+		if( plugin.getWorldGuardInterface().isEnabled() ) {
+			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_IN_REGION);
+			if( modeStrategy != null && modeStrategy instanceof ModeInRegion ) {
+				ModeInRegion mode = (ModeInRegion) modeStrategy;
+				String regionName = mode.getRegionName();
+				
+				if( !plugin.getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
+					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
+							"region=",regionName);
 					return false;
 				}
 			}

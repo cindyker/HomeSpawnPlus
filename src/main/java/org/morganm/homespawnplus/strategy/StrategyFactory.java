@@ -24,6 +24,7 @@ import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
 import org.morganm.homespawnplus.strategies.ModeHomeNormal;
 import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
+import org.morganm.homespawnplus.strategies.ModeInRegion;
 import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
 import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeNoIce;
@@ -119,6 +120,7 @@ public class StrategyFactory {
 		oneArgStrategies.put(new ModeYBounds().getStrategyConfigName().toLowerCase(), ModeYBounds.class);
 		oneArgStrategies.put(new ModeMultiverseSourcePortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseSourcePortal.class);
 		oneArgStrategies.put(new ModeMultiverseDestinationPortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseDestinationPortal.class);
+		oneArgStrategies.put(new ModeInRegion(null).getStrategyConfigName().toLowerCase(), ModeInRegion.class);
 	}
 	
 	

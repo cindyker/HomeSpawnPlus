@@ -212,7 +212,7 @@ events:
   onNamedSpawnCommand:
     - spawnNamedSpawn
 
-  # dev feature only for now, do not use
+  # a crossWorld teleport that didn't involve Multiverse
   crossWorldTeleport:
     - default
 

@@ -35,11 +35,17 @@ public class MultiverseIntegration {
 	
 	public boolean isMultiverseEnabled() {
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-		return p.isEnabled();
+		if( p != null )
+			return p.isEnabled();
+		else
+			return false;
 	}
 	public boolean isMultiversePortalsEnabled() {
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-		return p.isEnabled();
+		if( p != null )
+			return p.isEnabled();
+		else
+			return false;
 	}
 	
 	public void onEnable() {

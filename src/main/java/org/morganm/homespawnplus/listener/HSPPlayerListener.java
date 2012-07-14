@@ -341,30 +341,40 @@ public class HSPPlayerListener implements Listener {
 	    	int chunkz = chunk.getZ();
 	    	world.refreshChunk(chunkx, chunkz);
     	}
-    	
+
+    	EventType type = null;
     	// cross-world teleport event?
 		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
-        	final StrategyContext context = new StrategyContext(plugin);
-        	context.setPlayer(event.getPlayer());
-        	context.setLocation(event.getTo());	// location involved is the target location
-        	
     		if( event.getPlayer().getName().equals(plugin.getMultiverseIntegration().getCurrentTeleporter()) ) {
-            	context.setSpawnEventType(EventType.MULTIVERSE_TELEPORT_CROSSWORLD);
+    			type = EventType.MULTIVERSE_TELEPORT_CROSSWORLD;
             	debug.debug("multiverse crossworld teleport detected");
     		}
     		else {
-            	context.setSpawnEventType(EventType.CROSS_WORLD_TELEPORT);
+    			type = EventType.CROSS_WORLD_TELEPORT;
             	debug.debug("crossworld teleport detected");
     		}
     		
+    	}
+		// same-world multiVerse teleport?
+		else if( plugin.getMultiverseIntegration().getCurrentTeleporter() != null ) {
+			type = EventType.MULTIVERSE_TELEPORT;
+        	debug.debug("multiverse same world teleport detected");
+		}
+		
+		if( type != null ) {
+        	final StrategyContext context = new StrategyContext(plugin);
+        	context.setSpawnEventType(type);
+        	context.setPlayer(event.getPlayer());
+        	context.setLocation(event.getTo());	// location involved is the target location
+        	
     		// protect against a double-event for multiverse teleports
-    		if( context.getEventType() != EventType.MULTIVERSE_TELEPORT_CROSSWORLD ||
-    				!event.getPlayer().getName().equals(Teleport.getInstance().getCurrentTeleporter()) ) {
+//    		if( plugin.getMultiverseIntegration().getCurrentTeleporter() != null ||
+//    				!event.getPlayer().getName().equals(Teleport.getInstance().getCurrentTeleporter()) ) {
 	        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
 	        	if( result != null && result.getLocation() != null )
 	        		event.setTo(result.getLocation());
-    		}
-    	}
+//    		}
+		}
     	
     	// teleport is finished, clear current teleporter
     	plugin.getMultiverseIntegration().setCurrentTeleporter(null);

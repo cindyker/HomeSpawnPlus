@@ -29,11 +29,13 @@ public abstract class HomeStrategy extends BaseStrategy {
 			if( context.getEventLocation().getWorld() != null )
 				worldName = context.getEventLocation().getWorld().getName();
 		
+		debug.devDebug("getModeHome() worldName=",worldName,", location=",context.getEventLocation());
+		
 		Home home = null;
 		
 		// If the mode is NORMAL, DEFAULT_ONLY or NO_BED, then we start by grabbing the
 		// default home and then apply the modes based on the status of that home
-		if( context.isDefaultModeEnabled()
+		if( context.isInHomeDefaultMode()
 				|| context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY)
 				|| context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) )
 		{
@@ -53,7 +55,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 		
 		// If we haven't found a home by this point, check to see if we are in a NORMAL
 		// or BED_ONLY mode and if so, look for a bedHome to satisfy this condition
-		if( home == null && (context.isDefaultModeEnabled() ||
+		if( home == null && (context.isInHomeDefaultMode() ||
 				context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY)) &&
 				!context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) )
 		{

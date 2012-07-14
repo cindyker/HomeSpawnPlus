@@ -62,9 +62,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	 * @param teleportee
 	 * @param from
 	 */
-	public Location hspEvent(final Player teleportee, final Location from,
-			boolean doTeleport)
-	{
+	public Location hspEvent(final Player teleportee, final Location from, boolean doTeleport) {
 		if( teleportee == null )
 			return null;
 		
@@ -116,9 +114,9 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	{
 		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoked (#1)");
 		
-		Location from = null;
-		if( teleportee != null )
-			from = teleportee.getLocation();
+//		Location from = null;
+//		if( teleportee != null )
+//			from = teleportee.getLocation();
 		
 		Player p = null;
 		if( teleportee instanceof Player )
@@ -134,12 +132,14 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-Multiverse location =",teleportee.getLocation());
 		}
 
+		// no longer necessary, HSP will detect the teleport and do it's own processing based on
+		// the setup information above
 		// now give HSP a chance to do something else
-		if( p != null ) {
-			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
-			hspEvent(p, from, true);
-			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
-		}
+//		if( p != null ) {
+//			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
+//			hspEvent(p, from, true);
+//			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
+//		}
 		
 		return result;
 	}
@@ -150,9 +150,9 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	{
 		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoked (#2)");
 		
-		Location from = null;
-		if( teleportee != null )
-			from = teleportee.getLocation();
+//		Location from = null;
+//		if( teleportee != null )
+//			from = teleportee.getLocation();
 		
 		Player p = null;
 		if( teleportee instanceof Player )
@@ -168,12 +168,14 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-Multiverse location =",teleportee.getLocation());
 		}
 
+		// no longer necessary, HSP will detect the teleport and do it's own processing based on
+		// the setup information above
 		// now give HSP a chance to do something else
-		if( p != null ) {
-			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
-			hspEvent(p, from, true);
-			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
-		}
+//		if( p != null ) {
+//			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() invoking HSP strategies");
+//			hspEvent(p, from, true);
+//			Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport() post-HSP location =",p.getLocation());
+//		}
 		
 		return result;
 	}

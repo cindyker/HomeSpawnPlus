@@ -103,6 +103,27 @@ public class StrategyContext {
 			return false;
 	}
 	
+	/** Home default mode is true as long as no home exclusive modes are set
+	 * that would cancel it out.
+	 * 
+	 * @return
+	 */
+	public boolean isInHomeDefaultMode() {
+		if( isDefaultModeEnabled() )
+			return true;
+		
+		if( isModeEnabled(StrategyMode.MODE_HOME_ANY) )
+			return false;
+		if( isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) )
+			return false;
+		if( isModeEnabled(StrategyMode.MODE_HOME_NO_BED) )
+			return false;
+		if( isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) )
+			return false;
+		
+		return true;
+	}
+	
 	public boolean isDefaultModeEnabled() {
 		if( currentModes == null || currentModes.size() == 0 )
 			return true;

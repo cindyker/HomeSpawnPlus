@@ -37,6 +37,7 @@ import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.Teleport;
 
 
 /**
@@ -342,16 +343,32 @@ public class HSPPlayerListener implements Listener {
     	}
     	
     	// cross-world teleport event?
-    	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
         	final StrategyContext context = new StrategyContext();
         	context.setPlayer(event.getPlayer());
-        	context.setSpawnEventType(EventType.CROSS_WORLD_TELEPORT);
         	context.setLocation(event.getTo());	// location involved is the target location
-        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
         	
-        	if( result != null && result.getLocation() != null )
-        		event.setTo(result.getLocation());
+    		if( event.getPlayer().getName().equals(plugin.getMultiverseIntegration().getCurrentTeleporter()) ) {
+            	context.setSpawnEventType(EventType.MULTIVERSE_TELEPORT_CROSSWORLD);
+            	debug.debug("multiverse crossworld teleport detected");
+    		}
+    		else {
+            	context.setSpawnEventType(EventType.CROSS_WORLD_TELEPORT);
+            	debug.debug("crossworld teleport detected");
+    		}
+    		
+    		// protect against a double-event for multiverse teleports
+    		if( context.getEventType() != EventType.MULTIVERSE_TELEPORT_CROSSWORLD ||
+    				!event.getPlayer().getName().equals(Teleport.getInstance().getCurrentTeleporter()) ) {
+	        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
+	        	if( result != null && result.getLocation() != null )
+	        		event.setTo(result.getLocation());
+    		}
     	}
+    	
+    	// teleport is finished, clear current teleporter
+    	plugin.getMultiverseIntegration().setCurrentTeleporter(null);
+		Teleport.getInstance().setCurrentTeleporter(null);
     }
     
     @EventHandler(priority=EventPriority.MONITOR)

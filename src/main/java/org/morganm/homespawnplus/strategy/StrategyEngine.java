@@ -196,7 +196,7 @@ public class StrategyEngine {
 	}
 	
 	protected void logVerbose(final Object...args) {
-		if( isVerbose() ) {
+		if( isVerbose() || debug.isDebug() ) {
 			final StringBuilder sb = new StringBuilder(logPrefix);
 			if( !logPrefix.endsWith(" ") )
 				sb.append(" ");
@@ -205,7 +205,10 @@ public class StrategyEngine {
 				sb.append(args[i]);
 			}
 			
-			log.info(sb.toString());
+			if( isVerbose() )
+				log.info(sb.toString());
+			if( debug.isDebug() )
+				debug.debug(sb.toString());
 		}
 	}
 	

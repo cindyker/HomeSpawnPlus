@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.integration;
 
 import org.bukkit.event.Listener;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.util.Debug;
 
 import com.onarandombox.MultiverseCore.event.MVTeleportEvent;
 
@@ -23,10 +24,10 @@ public class MultiverseListener implements Listener {
 	}
 	
 	public void onMultiverseTeleport(MVTeleportEvent event) {
-//		Location to = event.getDestination().getLocation(event.getTeleportee());
-//		Location result = teleporter.hspEvent(event.getTeleportee(), event.getFrom(),to, false);
+		if(event.isCancelled())
+			return;
 		
-//		if( result != null && !result.equals(to) )
-//			; // do nothing
+		Debug.getInstance().debug("onMultiverseTeleport(): setting entity to ",event.getTeleportee());
+		plugin.getMultiverseIntegration().setCurrentTeleporter(event.getTeleportee().getName());
 	}
 }

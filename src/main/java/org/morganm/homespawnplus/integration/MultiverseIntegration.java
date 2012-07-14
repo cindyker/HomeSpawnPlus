@@ -20,6 +20,7 @@ public class MultiverseIntegration {
 	private final HomeSpawnPlus plugin;
 	private MultiverseSafeTeleporter teleporter;
 	private MultiverseListener multiverseListener;
+	private String currentTeleporter;
 	
 	public MultiverseIntegration(final HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -28,14 +29,16 @@ public class MultiverseIntegration {
 	public void onEnable() {
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
 		if( p != null ) {
-			com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
-		
-			if( multiverse != null ) {
-				Debug.getInstance().debug("Hooking Multiverse");
-				teleporter = new MultiverseSafeTeleporter(plugin, multiverse);
-				teleporter.install();
-//				multiverseListener = new MultiverseListener(plugin, teleporter);
-//				registerListener();
+			if( p.getDescription().getVersion().startsWith("2.4") ) {
+				com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
+			
+				if( multiverse != null ) {
+					Debug.getInstance().debug("Hooking Multiverse");
+					teleporter = new MultiverseSafeTeleporter(plugin, multiverse);
+					teleporter.install();
+					multiverseListener = new MultiverseListener(plugin, teleporter);
+					registerListener();
+				}
 			}
 		}
 	}
@@ -64,4 +67,11 @@ public class MultiverseIntegration {
 		        plugin);
 	}
 
+	public String getCurrentTeleporter() {
+		return currentTeleporter;
+	}
+	
+	public void setCurrentTeleporter(String name) {
+		this.currentTeleporter = name;
+	}
 }

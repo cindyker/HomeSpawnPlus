@@ -212,6 +212,9 @@ events:
   crossWorldTeleport:
     - default
 
+  multiverseCrossWorldTeleport:
+    - default
+
 #  example of world-specific strategy
 #  world:
 #    myworld:

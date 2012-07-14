@@ -556,4 +556,5 @@ public class HomeSpawnPlus extends JavaPlugin {
     public HomeInviteManager getHomeInviteManager() { return homeInviteManager; }
     public String getPluginName() { return pluginName; }
     public JarUtils getJarUtils() { return jarUtils; }
+    public MultiverseIntegration getMultiverseIntegration() { return multiverse; }
 }

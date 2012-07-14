@@ -13,12 +13,11 @@ import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.Teleport;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.MultiverseCore.api.SafeTTeleporter;
-import com.onarandombox.MultiverseCore.commands.MultiverseCommand;
-import com.onarandombox.MultiverseCore.commands.TeleportCommand;
 import com.onarandombox.MultiverseCore.enums.TeleportResult;
 
 /**
@@ -66,6 +65,9 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	public Location hspEvent(final Player teleportee, final Location from,
 			boolean doTeleport)
 	{
+		if( teleportee == null )
+			return null;
+		
 		Debug.getInstance().debug("in hspEvent");
 		
 		Location finalLoc = null;
@@ -84,13 +86,16 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 		    	context.setLocation(to);
 				StrategyResult result = hsp.getStrategyEngine().evaluateStrategies(context);
 				
-				if( result != null && result.isSuccess() ) {
+				if( result != null && result.getLocation() != null ) {
 					finalLoc = result.getLocation();
 					
 					// if HSP strategies gave us a new location, teleport the player there now
 					if( !finalLoc.equals(newLoc) ) {
-						if( doTeleport )
+						if( doTeleport ) {
+							hsp.getMultiverseIntegration().setCurrentTeleporter(null);
+							Teleport.getInstance().setCurrentTeleporter(teleportee.getName());
 							hsp.getUtil().teleport(teleportee, result.getLocation(), TeleportCause.PLUGIN, context);
+						}
 					}
 				}
 	    	}
@@ -106,16 +111,24 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	public TeleportResult safelyTeleport(CommandSender teleporter,
 			Entity teleportee, MVDestination d)
 	{
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport invoked");
+		
 		Location from = null;
 		if( teleportee != null )
 			from = teleportee.getLocation();
+		
+		Player p = null;
+		if( teleportee instanceof Player )
+			p = (Player) teleportee;
+		
+		if( p != null )
+			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
 		// let Multiverse do it's business
 		TeleportResult result = original.safelyTeleport(teleporter, teleportee, d);
 
 		// now give HSP a chance to do something else
-		if( teleportee instanceof Player )
-			hspEvent((Player) teleportee, from, true);
+		hspEvent(p, from, true);
 		
 		return result;
 	}
@@ -124,16 +137,24 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	public TeleportResult safelyTeleport(CommandSender teleporter,
 			Entity teleportee, Location location, boolean safely)
 	{
+		Debug.getInstance().debug("MultiverseSafeTeleporter() safelyTelport invoked");
+		
 		Location from = null;
 		if( teleportee != null )
 			from = teleportee.getLocation();
+		
+		Player p = null;
+		if( teleportee instanceof Player )
+			p = (Player) teleportee;
+		
+		if( p != null )
+			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
 		// let Multiverse do it's business
 		TeleportResult result = original.safelyTeleport(teleporter, teleportee, location, safely);
 
 		// now give HSP a chance to do something else
-		if( teleportee instanceof Player )
-			hspEvent((Player) teleportee, from, true);
+		hspEvent(p, from, true);
 		
 		return result;
 	}

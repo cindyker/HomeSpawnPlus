@@ -13,6 +13,7 @@ import org.morganm.homespawnplus.strategies.ModeDefault;
 import org.morganm.homespawnplus.strategies.ModeInRegion;
 import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
 import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
+import org.morganm.homespawnplus.strategies.ModeSourceWorld;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
@@ -30,6 +31,10 @@ public class StrategyContext {
 	private EventType eventType;
 	private Player player;
 	private Location location;
+	/* If there is a "fromLocation" for this action, it will be recorded here.
+	 * 
+	 */
+	private Location fromLocation;
 	private String arg;
 	
 	/** As a strategy chain is being evaluated, the current mode might change. This
@@ -74,6 +79,13 @@ public class StrategyContext {
 	}
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+	
+	public Location getFromLocation() {
+		return fromLocation;
+	}
+	public void setFromLocation(Location fromLocation) {
+		this.fromLocation = fromLocation;
 	}
 
 	public void setPlayer(Player player) {
@@ -223,6 +235,18 @@ public class StrategyContext {
 			}
 		}
 		
+		ModeStrategy modeStrategy = getMode(StrategyMode.MODE_SOURCE_WORLD);
+		if( modeStrategy != null && modeStrategy instanceof ModeInRegion ) {
+			ModeSourceWorld mode = (ModeSourceWorld) modeStrategy;
+			String sourceWorld = mode.getWorldName();
+			
+			if( getFromLocation() == null || !getFromLocation().getWorld().getName().equals(sourceWorld) ) { 
+				Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for sourceWorld. ",
+						"sourceWorld=",sourceWorld,", fromLocation=",fromLocation);
+				return false;
+			}
+		}
+
 		Debug.getInstance().debug("isStrategyProcessingAllowed() returning true");
 		return true;
 	}

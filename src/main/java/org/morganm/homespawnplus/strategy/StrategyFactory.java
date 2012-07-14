@@ -33,6 +33,7 @@ import org.morganm.homespawnplus.strategies.ModeNoLilyPad;
 import org.morganm.homespawnplus.strategies.ModeNoWater;
 import org.morganm.homespawnplus.strategies.ModeRememberLocation;
 import org.morganm.homespawnplus.strategies.ModeRememberSpawn;
+import org.morganm.homespawnplus.strategies.ModeSourceWorld;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
 import org.morganm.homespawnplus.strategies.SpawnDefaultWorld;
@@ -121,6 +122,7 @@ public class StrategyFactory {
 		oneArgStrategies.put(new ModeMultiverseSourcePortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseSourcePortal.class);
 		oneArgStrategies.put(new ModeMultiverseDestinationPortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseDestinationPortal.class);
 		oneArgStrategies.put(new ModeInRegion(null).getStrategyConfigName().toLowerCase(), ModeInRegion.class);
+		oneArgStrategies.put(new ModeSourceWorld(null).getStrategyConfigName().toLowerCase(), ModeSourceWorld.class);
 	}
 	
 	

@@ -30,7 +30,8 @@ public enum StrategyMode {
 	MODE_REMEMBER_LOCATION,
 	MODE_MULTIVERSE_SOURCE_PORTAL,
 	MODE_MULTIVERSE_DESTINATION_PORTAL,
-	MODE_IN_REGION;
+	MODE_IN_REGION,
+	MODE_SOURCE_WORLD;
 	
 	// associated Teleport safeMode flag, if any
 	private int flagId = 0;

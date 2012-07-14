@@ -27,7 +27,9 @@ public enum StrategyMode {
 	MODE_YBOUNDS,
 	MODE_DEFAULT,
 	MODE_REMEMBER_SPAWN,
-	MODE_REMEMBER_LOCATION;
+	MODE_REMEMBER_LOCATION,
+	MODE_MULTIVERSE_SOURCE_PORTAL,
+	MODE_MULTIVERSE_DESTINATION_PORTAL;
 	
 	// associated Teleport safeMode flag, if any
 	private int flagId = 0;

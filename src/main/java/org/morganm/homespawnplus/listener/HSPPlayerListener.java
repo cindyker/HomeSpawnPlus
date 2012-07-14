@@ -344,7 +344,7 @@ public class HSPPlayerListener implements Listener {
     	
     	// cross-world teleport event?
 		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
-        	final StrategyContext context = new StrategyContext();
+        	final StrategyContext context = new StrategyContext(plugin);
         	context.setPlayer(event.getPlayer());
         	context.setLocation(event.getTo());	// location involved is the target location
         	
@@ -368,6 +368,8 @@ public class HSPPlayerListener implements Listener {
     	
     	// teleport is finished, clear current teleporter
     	plugin.getMultiverseIntegration().setCurrentTeleporter(null);
+    	plugin.getMultiverseIntegration().setSourcePortalName(null);
+    	plugin.getMultiverseIntegration().setDestinationPortalName(null);
 		Teleport.getInstance().setCurrentTeleporter(null);
     }
     

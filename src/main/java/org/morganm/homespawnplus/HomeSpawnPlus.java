@@ -247,6 +247,10 @@ public class HomeSpawnPlus extends JavaPlugin {
 		} , 40);
     	debugEndTimer("commands");
     	
+    	// hook multiverse, if available
+    	multiverse = new MultiverseIntegration(this);
+    	multiverse.onEnable();
+        
     	processStrategyConfig();
     	detectAndWarn();
     	
@@ -268,10 +272,6 @@ public class HomeSpawnPlus extends JavaPlugin {
         	debugEndTimer("dynmap");
     	}
     	
-    	// hook multiverse, if available
-    	multiverse = new MultiverseIntegration(this);
-    	multiverse.onEnable();
-        
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
     }

@@ -78,27 +78,30 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 			finalLoc = newLoc;	// default finalLoc is what MV set, unless we change it below
 			Location to = teleportee.getLocation();
 
-	    	// cross-world teleport event?
-	    	if( from == null || !newLoc.getWorld().equals(from.getWorld()) ) {
-				final StrategyContext context = new StrategyContext();
-		    	context.setPlayer(teleportee);
-		    	context.setSpawnEventType(EventType.MULTIVERSE_TELEPORT_CROSSWORLD);
-		    	context.setLocation(to);
-				StrategyResult result = hsp.getStrategyEngine().evaluateStrategies(context);
+			EventType eventType = null;
+	    	if( from == null || !newLoc.getWorld().equals(from.getWorld()) )	// cross-world teleport event?
+	    		eventType = EventType.MULTIVERSE_TELEPORT_CROSSWORLD;
+    		else
+	    		eventType = EventType.MULTIVERSE_TELEPORT;
+	    	
+			final StrategyContext context = new StrategyContext(hsp);
+	    	context.setPlayer(teleportee);
+	    	context.setSpawnEventType(eventType);
+	    	context.setLocation(to);
+			StrategyResult result = hsp.getStrategyEngine().evaluateStrategies(context);
+			
+			if( result != null && result.getLocation() != null ) {
+				finalLoc = result.getLocation();
 				
-				if( result != null && result.getLocation() != null ) {
-					finalLoc = result.getLocation();
-					
-					// if HSP strategies gave us a new location, teleport the player there now
-					if( !finalLoc.equals(newLoc) ) {
-						if( doTeleport ) {
-							hsp.getMultiverseIntegration().setCurrentTeleporter(null);
-							Teleport.getInstance().setCurrentTeleporter(teleportee.getName());
-							hsp.getUtil().teleport(teleportee, result.getLocation(), TeleportCause.PLUGIN, context);
-						}
+				// if HSP strategies gave us a new location, teleport the player there now
+				if( !finalLoc.equals(newLoc) ) {
+					if( doTeleport ) {
+						hsp.getMultiverseIntegration().setCurrentTeleporter(null);
+						Teleport.getInstance().setCurrentTeleporter(teleportee.getName());
+						hsp.getUtil().teleport(teleportee, result.getLocation(), TeleportCause.PLUGIN, context);
 					}
 				}
-	    	}
+			}
 		}
 		catch(Throwable t) {
 			t.printStackTrace();

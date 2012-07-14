@@ -84,7 +84,7 @@ public class StrategyEngine {
 	}
 	
 	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
-    	final StrategyContext context = new StrategyContext();
+    	final StrategyContext context = new StrategyContext(plugin);
     	context.setPlayer(player);
     	context.setSpawnEventType(event);
 		return getStrategyResult(context, args);
@@ -215,6 +215,13 @@ public class StrategyEngine {
 		StrategyResult result = null;
 		
 		for(Strategy strat : strategies) {
+			// mode strategies are always allowed. otherwise, check to see if we are allowed
+			// to process strategies based on the current modes
+			if( !(strat instanceof ModeStrategy) && !context.isStrategyProcessingAllowed() ) {
+				logVerboseStrategy(strat, "Strategy skipped due to current mode settings");
+				continue;
+			}
+			
 			result = strat.evaluate(context);
 			logStrategyResult(strat, result);
 			if( result != null && result.isSuccess() )

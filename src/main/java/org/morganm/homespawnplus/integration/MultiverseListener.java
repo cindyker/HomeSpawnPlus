@@ -7,7 +7,11 @@ import org.bukkit.event.Listener;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.util.Debug;
 
+import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.MultiverseCore.event.MVTeleportEvent;
+import com.onarandombox.MultiversePortals.MVPortal;
+import com.onarandombox.MultiversePortals.destination.PortalDestination;
+import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 
 /** Class incomplete, may not be necessary.
  * 
@@ -29,5 +33,21 @@ public class MultiverseListener implements Listener {
 		
 		Debug.getInstance().debug("onMultiverseTeleport(): setting entity to ",event.getTeleportee());
 		plugin.getMultiverseIntegration().setCurrentTeleporter(event.getTeleportee().getName());
+	}
+	
+	public void onMultiversePortalEvent(MVPortalEvent event) {
+		if(event.isCancelled())
+			return;
+		
+		Debug.getInstance().debug("onMultiversePortalEvent(): setting entity to ",event.getTeleportee());
+		MVPortal portal = event.getSendingPortal();
+		if( portal != null )
+			plugin.getMultiverseIntegration().setSourcePortalName(portal.getName());
+		
+		MVDestination destination = event.getDestination();
+		if( destination != null && destination instanceof PortalDestination ) {
+			PortalDestination portalDestination = (PortalDestination) destination;
+			plugin.getMultiverseIntegration().setDestinationPortalName(portalDestination.getName());
+		}
 	}
 }

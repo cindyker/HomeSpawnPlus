@@ -8,7 +8,10 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.strategies.ModeDefault;
+import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
+import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
@@ -20,6 +23,9 @@ import org.morganm.homespawnplus.util.Teleport;
  *
  */
 public class StrategyContext {
+	private final static ModeStrategy defaultMode = new ModeDefault();
+	
+	private final HomeSpawnPlus plugin;
 	private EventType eventType;
 	private Player player;
 	private Location location;
@@ -29,6 +35,10 @@ public class StrategyContext {
 	 * is tracked here in the context object.
 	 */
 	private List<ModeStrategy> currentModes;
+	
+	public StrategyContext(final HomeSpawnPlus plugin) {
+		this.plugin = plugin;
+	}
 
 	public EventType getEventType() {
 		return eventType;
@@ -77,7 +87,6 @@ public class StrategyContext {
 	public List<ModeStrategy> getCurrentModes() {
 		return currentModes;
 	}
-	private final static ModeStrategy defaultMode = new ModeDefault();
 	public void resetCurrentModes() {
 		if( currentModes == null )
 			currentModes = new ArrayList<ModeStrategy>(2);
@@ -112,27 +121,74 @@ public class StrategyContext {
 	 * @return
 	 */
 	public boolean isModeEnabled(final StrategyMode mode) {
-		boolean ret = false;
-		Debug.getInstance().devDebug("Mode check for mode ",mode);
+		boolean ret = getMode(mode) != null;
+		Debug.getInstance().devDebug("isModeEnabled() mode=",mode,", ret=",ret);
+		return ret;
+	}
+	
+	/** If a mode is enabled, return the mode object.
+	 * 
+	 * @param mode
+	 * @return
+	 */
+	public ModeStrategy getMode(final StrategyMode mode) {
+		ModeStrategy ret = null;
+		Debug.getInstance().devDebug("getMode() check for mode ",mode);
 		
 		if( currentModes == null || currentModes.size() == 0 ) {
 			if( isDefaultMode(mode) )
-				ret = true;
+				ret = defaultMode;
 			
-			Debug.getInstance().devDebug("No modes defined, returning ",ret);
+			Debug.getInstance().devDebug("getMode() No modes defined, returning ",ret);
 			return ret;
 		}
 		
 		for(ModeStrategy currentMode : currentModes) {
 			StrategyMode modeType = currentMode.getMode();
 			if( modeType == mode ) {
-				ret = true;
+				ret = currentMode;
 				break;
 			}
 		}
 		
-		Debug.getInstance().devDebug("mode check returning ",ret);
+		Debug.getInstance().devDebug("getMode() returning ",ret);
 		return ret;
+	}
+	
+	/** Method for checking boolean states of any active modes to see if those
+	 * modes allow strategy processing given the current context.
+	 * 
+	 * @return
+	 */
+	public boolean isStrategyProcessingAllowed() {
+		if( plugin.getMultiverseIntegration().isEnabled() ) {
+			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_MULTIVERSE_SOURCE_PORTAL);
+			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseSourcePortal ) {
+				ModeMultiverseSourcePortal mode = (ModeMultiverseSourcePortal) modeStrategy;
+				String strategyPortalName = mode.getPortalName();
+				String sourcePortalName = plugin.getMultiverseIntegration().getSourcePortalName();
+				if( !strategyPortalName.equals(sourcePortalName) ) {
+					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for source portal check. ",
+							"strategyPortalName=",strategyPortalName,", sourcePortalName=",sourcePortalName);
+					return false;
+				}
+			}
+			
+			modeStrategy = getMode(StrategyMode.MODE_MULTIVERSE_DESTINATION_PORTAL);
+			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseDestinationPortal ) {
+				ModeMultiverseDestinationPortal mode = (ModeMultiverseDestinationPortal) modeStrategy;
+				String strategyPortalName = mode.getPortalName();
+				String destinationPortalName = plugin.getMultiverseIntegration().getDestinationPortalName();
+				if( !strategyPortalName.equals(destinationPortalName) ) {
+					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
+							"strategyPortalName=",strategyPortalName,", destinationPortalName=",destinationPortalName);
+					return false;
+				}
+			}
+		}
+		
+		Debug.getInstance().debug("isStrategyProcessingAllowed() returning true");
+		return true;
 	}
 	
 	/** Using currently set modes, return any flags relevant to safeTeleport.

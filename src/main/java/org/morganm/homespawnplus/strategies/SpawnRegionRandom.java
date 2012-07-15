@@ -44,7 +44,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		if( wgInterface == null || !wgInterface.isEnabled() )
+		if( wgInterface == null || !plugin.getWorldGuardIntegration().isEnabled() )
 			return null;
 		
 		World theWorld = null;
@@ -96,7 +96,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( p == null )
 			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
 		else {
-			wgInterface = plugin.getWorldGuardInterface();
+			wgInterface = plugin.getWorldGuardIntegration().getWorldGuardInterface();
 			
 			// look for the region and print a warning if we didn't find one, so the admin
 			// has a heads up they may have misconfigured the strategy

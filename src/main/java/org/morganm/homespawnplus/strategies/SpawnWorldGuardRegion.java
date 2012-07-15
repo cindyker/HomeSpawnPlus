@@ -18,9 +18,9 @@ public class SpawnWorldGuardRegion extends BaseStrategy {
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		if( wgInterface == null )
-			wgInterface = plugin.getWorldGuardInterface();
+			wgInterface = plugin.getWorldGuardIntegration().getWorldGuardInterface();
 		
-		if( !wgInterface.isEnabled() ) {
+		if( !plugin.getWorldGuardIntegration().isEnabled() ) {
 			log.warning("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
 			return null;
 		}

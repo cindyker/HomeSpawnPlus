@@ -23,7 +23,7 @@ public class SpawnLocalRandom extends BaseStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		Spawn spawn = null;
 		
-		String playerLocalWorld = context.getPlayer().getWorld().getName();
+		String playerLocalWorld = context.getEventLocation().getWorld().getName();
 		Set<Spawn> allSpawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
 		ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
 		for(Spawn theSpawn : allSpawns) {

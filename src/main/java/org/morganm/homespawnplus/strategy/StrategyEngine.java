@@ -245,10 +245,11 @@ public class StrategyEngine {
 				sb.append(args[i]);
 			}
 			
+			final String msg = sb.toString();
 			if( isVerbose() )
-				log.info(sb.toString());
+				log.info(msg);
 			if( debug.isDebug() )
-				debug.debug(sb.toString());
+				debug.debug(msg);
 		}
 	}
 	

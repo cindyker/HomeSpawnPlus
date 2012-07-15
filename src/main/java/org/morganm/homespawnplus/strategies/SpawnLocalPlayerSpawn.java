@@ -21,6 +21,7 @@ public class SpawnLocalPlayerSpawn extends BaseStrategy {
 		
 		Player p = context.getPlayer();
 		String worldName = context.getEventLocation().getWorld().getName();
+		debug.debug("SpawnLocalPlayerSpawn.evaluate() worldName=",worldName);
 		
 		PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
 		PlayerSpawn ps = dao.findByWorldAndPlayerName(worldName, p.getName());

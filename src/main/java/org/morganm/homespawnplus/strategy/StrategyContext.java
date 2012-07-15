@@ -221,13 +221,13 @@ public class StrategyContext {
 			}
 		}
 		
-		if( plugin.getWorldGuardInterface().isEnabled() ) {
+		if( plugin.getWorldGuardIntegration().isEnabled() ) {
 			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_IN_REGION);
 			if( modeStrategy != null && modeStrategy instanceof ModeInRegion ) {
 				ModeInRegion mode = (ModeInRegion) modeStrategy;
 				String regionName = mode.getRegionName();
 				
-				if( !plugin.getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
+				if( !plugin.getWorldGuardIntegration().getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
 					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
 							"region=",regionName);
 					return false;

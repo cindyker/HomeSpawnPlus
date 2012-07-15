@@ -3,7 +3,9 @@ v1.7 -
 * new strategies: SpawnLastLocation and SpawnLocalPlayerSpawn
 * new modes: ModeRememberSpawn and ModeRememberLocation
 * new WorldGuard mode: modeInRegion
+* Extensive direct Multiverse integration with many new modes and events
 * See http://dev.bukkit.org/server-mods/homespawnplus/pages/examples/example07/ for example of new modes in action
+
 
 v1.6.2 - 
 * Ticket #118: error when using spawnWorldRandom strategy

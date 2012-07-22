@@ -9,12 +9,19 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.command.CommandRegister;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -117,6 +124,40 @@ public class HSP extends BaseCommand {
 		else if( args[0].equals("test2") ) {
 			Set<org.morganm.homespawnplus.entity.Home> allHomes = plugin.getStorage().getHomeDAO().findAllHomes();
 			p.sendMessage("allHomes.size="+allHomes.size());
+		}
+		else if( args[0].equals("domap") ) {
+			CommandRegister register = new CommandRegister(plugin);
+			register.register(new HspTest());
+			
+//			CraftServer cs = (CraftServer) Bukkit.getServer();
+//			SimpleCommandMap commandMap = cs.getCommandMap();
+//			new GenericCommand(plugin, "hsptest", commandMap, new CommandExecutor() {
+//				public boolean onCommand(CommandSender sender, Command command,
+//						String label, String[] args) {
+//					sender.sendMessage("command "+label+" executed");
+//					return true;
+//				}
+//			});
+		}
+		else if( args[0].equals("cmdmap") ) {
+			CraftServer cs = (CraftServer) Bukkit.getServer();
+			SimpleCommandMap commandMap = cs.getCommandMap();
+			
+			for(Command cmd : commandMap.getCommands()) {
+				PluginCommand pc = null;
+				if( cmd instanceof PluginCommand )
+					pc = (PluginCommand) cmd;
+
+				String cmdName = cmd.getName();
+				
+				if( pc != null ) {
+					Plugin plugin = pc.getPlugin();
+					p.sendMessage(cmdName+": "+plugin.getName());
+				}
+//				else {
+//					p.sendMessage(cmdName+": (no plugin mapped?)");
+//				}
+			}
 		}
 		else if( args[0].startsWith("backup") ) {
 			Storage storage = plugin.getStorage();

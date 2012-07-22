@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -26,7 +28,7 @@ import org.morganm.homespawnplus.util.Debug;
  * @author morganm
  *
  */
-public abstract class BaseCommand implements Command {
+public abstract class BaseCommand implements Command, CommandExecutor {
 	protected Debug debug;
 	protected HomeSpawnPlus plugin;
 	protected HomeSpawnUtils util;
@@ -37,6 +39,10 @@ public abstract class BaseCommand implements Command {
 	private boolean enabled;
 	private String permissionNode;
 	private String commandName;
+	
+//	public BaseCommand(String name) {
+//		super(name);
+//	}
 
 	/** By default, commands do not respond to console input. They can override this if they wish
 	 * to do so.
@@ -47,6 +53,22 @@ public abstract class BaseCommand implements Command {
 		return false;
 	}
 	
+	@Override
+	public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+		if( sender instanceof Player ) {
+			Player p = (Player) sender;
+			
+			return this.execute(p, command, args);
+		}
+		else if( sender instanceof ConsoleCommandSender ) {
+			ConsoleCommandSender console = (ConsoleCommandSender) sender;
+			
+			return this.execute(console, command, args);
+		}
+		else
+			return false;
+	}
+
 	/** Returns this object for easy initialization in a command hash.
 	 * 
 	 * @param plugin

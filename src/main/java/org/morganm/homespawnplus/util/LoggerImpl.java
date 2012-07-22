@@ -14,18 +14,21 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 public class LoggerImpl implements Logger {
 	private final HomeSpawnPlus plugin;
 	private final java.util.logging.Logger log;
-	private final String logPrefix;
 	private final Debug debug;
+	private String logPrefix;
 	
 	public LoggerImpl(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
-		this.log = this.plugin.getJavaLogger();
-		
-		String prefix = this.plugin.getLogPrefix();
-		if( !prefix.endsWith(" ") )
-			prefix = prefix + " ";
-		this.logPrefix = prefix;
+		this.log = this.plugin.getLogger();
+
+		setLogPrefix(this.plugin.getLogPrefix());
 		this.debug = Debug.getInstance();
+	}
+	
+	public void setLogPrefix(String logPrefix) {
+		if( !logPrefix.endsWith(" ") )
+			logPrefix = logPrefix + " ";
+		this.logPrefix = logPrefix;
 	}
 
 	private String concatStrings(StringBuilder sb, String...strings) {
@@ -46,6 +49,13 @@ public class LoggerImpl implements Logger {
 	public void warn(String... msg) {
 		if( log.isLoggable(Level.WARNING) ) {
 			log.warning(concatStrings(new StringBuilder(logPrefix), msg));
+		}
+	}
+
+	@Override
+	public void severe(String... msg) {
+		if( log.isLoggable(Level.SEVERE) ) {
+			log.severe(concatStrings(new StringBuilder(logPrefix), msg));
 		}
 	}
 

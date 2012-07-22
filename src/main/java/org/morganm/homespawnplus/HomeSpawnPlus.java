@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -21,6 +20,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.command.CommandProcessor;
+import org.morganm.homespawnplus.command.CommandRegister;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
@@ -69,6 +69,7 @@ import org.morganm.homespawnplus.util.PermissionSystem;
 public class HomeSpawnPlus extends JavaPlugin {
     public static final Logger log = Logger.getLogger("HomeSpawnPlus");
     public static final String logPrefix = "[HomeSpawnPlus]";
+    private org.morganm.homespawnplus.util.Logger hspLogger;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
@@ -110,6 +111,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     private WorldGuardIntegration worldGuardIntegration;
 
     public Economy vaultEconomy = null;
+    
+    public HomeSpawnPlus() {
+    	this.hspLogger = new org.morganm.homespawnplus.util.LoggerImpl(this);
+    }
     
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
      * 
@@ -239,7 +244,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     	debugEndTimer("Bukkit events");
         
     	debugStartTimer("commands");
-    	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
+    	new CommandRegister(this).registerAllCommands();
+//    	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	
     	final HomeSpawnPlus pluginInstance = this;
     	getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -305,10 +311,10 @@ public class HomeSpawnPlus extends JavaPlugin {
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is disabled");
     }
     
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-    	return cmdProcessor.onCommand(sender, command, commandLabel, args);
-    }
+//    @Override
+//    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+//    	return cmdProcessor.onCommand(sender, command, commandLabel, args);
+//    }
     
     /** Returns the Config object the plugin is currently using.
      * 
@@ -554,7 +560,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     
     public StrategyEngine getStrategyEngine() { return strategyEngine; }
-    public Logger getLogger() { return log; }
+    public org.morganm.homespawnplus.util.Logger getLog() { return hspLogger; }
+    public java.util.logging.Logger getLogger() { return log; }
     public String getLogPrefix() { return logPrefix; }
     public Storage getStorage() { return storage; }
     public CooldownManager getCooldownManager() { return cooldownManager; }

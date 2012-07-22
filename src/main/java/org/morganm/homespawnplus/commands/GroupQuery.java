@@ -83,5 +83,4 @@ public class GroupQuery extends BaseCommand {
 				+ " (using perms "+plugin.getPermissionSystem().getSystemInUseString()+")");
 		return true;
 	}
-
 }

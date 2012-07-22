@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.command;
 
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -12,7 +13,7 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  * @author morganm
  *
  */
-public interface Command {
+public interface Command extends CommandExecutor {
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args);
 	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args);
 

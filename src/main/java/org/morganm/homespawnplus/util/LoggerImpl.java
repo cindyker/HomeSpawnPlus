@@ -31,31 +31,44 @@ public class LoggerImpl implements Logger {
 		this.logPrefix = logPrefix;
 	}
 
-	private String concatStrings(StringBuilder sb, String...strings) {
-		for(String s : strings) {
-			sb.append(s);
+	private String concatStrings(StringBuilder sb, Object...msgs) {
+		for(Object o : msgs) {
+			sb.append(o);
 		}
 		return sb.toString();
 	}
 	
 	@Override
-	public void info(String... msg) {
+	public void info(Object... msg) {
 		if( log.isLoggable(Level.INFO) ) {
 			log.info(concatStrings(new StringBuilder(logPrefix), msg));
 		}
 	}
 
 	@Override
-	public void warn(String... msg) {
+	public void warn(Object... msg) {
 		if( log.isLoggable(Level.WARNING) ) {
 			log.warning(concatStrings(new StringBuilder(logPrefix), msg));
 		}
 	}
+	@Override
+	public void warn(Throwable t, Object... msg) {
+		if( log.isLoggable(Level.WARNING) ) {
+			log.log(Level.WARNING, concatStrings(new StringBuilder(logPrefix), msg), t);
+		}
+	}
+	
 
 	@Override
-	public void severe(String... msg) {
+	public void severe(Object... msg) {
 		if( log.isLoggable(Level.SEVERE) ) {
 			log.severe(concatStrings(new StringBuilder(logPrefix), msg));
+		}
+	}
+	@Override
+	public void severe(Throwable t, Object... msg) {
+		if( log.isLoggable(Level.SEVERE) ) {
+			log.log(Level.SEVERE, concatStrings(new StringBuilder(logPrefix), msg), t);
 		}
 	}
 

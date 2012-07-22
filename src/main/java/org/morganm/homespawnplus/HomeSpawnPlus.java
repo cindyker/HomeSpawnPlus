@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.morganm.homespawnplus.command.CommandProcessor;
+import org.morganm.homespawnplus.command.CommandConfig;
 import org.morganm.homespawnplus.command.CommandRegister;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
@@ -96,7 +97,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HomeInviteManager homeInviteManager;
     private StrategyEngine strategyEngine;
 	private Config config;
-    private CommandProcessor cmdProcessor;
+//    private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
     private JarUtils jarUtils;
@@ -244,7 +245,12 @@ public class HomeSpawnPlus extends JavaPlugin {
     	debugEndTimer("Bukkit events");
         
     	debugStartTimer("commands");
-    	new CommandRegister(this).registerAllCommands();
+    	CommandConfig config = new CommandConfig(getLog());
+    	ConfigurationSection section = getConfig().getConfigurationSection("commands");
+    	config.loadConfig(section);
+    	CommandRegister register = new CommandRegister(this);
+    	register.setCommandConfig(config);
+    	register.registerAllCommands();
 //    	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	
     	final HomeSpawnPlus pluginInstance = this;

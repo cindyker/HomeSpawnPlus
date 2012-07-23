@@ -18,16 +18,16 @@
 
   <repositories>
     <repository>
-      <id>morganm-repo</id>
-      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
-    </repository>
-    <repository>
       <id>onarandombox</id>
       <url>http://repo.onarandombox.com/content/groups/public</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>morganm-repo</id>
+      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
     </repository>
   </repositories>
 

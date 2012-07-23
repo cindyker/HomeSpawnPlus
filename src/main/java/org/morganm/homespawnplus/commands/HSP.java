@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.command.CommandRegister;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -124,20 +123,10 @@ public class HSP extends BaseCommand {
 			Set<org.morganm.homespawnplus.entity.Home> allHomes = plugin.getStorage().getHomeDAO().findAllHomes();
 			p.sendMessage("allHomes.size="+allHomes.size());
 		}
-		else if( args[0].equals("domap") ) {
-			CommandRegister register = new CommandRegister(plugin);
-			register.register(new HspTest());
-			
-//			CraftServer cs = (CraftServer) Bukkit.getServer();
-//			SimpleCommandMap commandMap = cs.getCommandMap();
-//			new GenericCommand(plugin, "hsptest", commandMap, new CommandExecutor() {
-//				public boolean onCommand(CommandSender sender, Command command,
-//						String label, String[] args) {
-//					sender.sendMessage("command "+label+" executed");
-//					return true;
-//				}
-//			});
-		}
+//		else if( args[0].equals("domap") ) {
+//			CommandRegister register = new CommandRegister(plugin);
+//			register.register(new HspTest());
+//		}
 		else if( args[0].equals("cmdmap") ) {
 			CraftServer cs = (CraftServer) Bukkit.getServer();
 			SimpleCommandMap commandMap = cs.getCommandMap();

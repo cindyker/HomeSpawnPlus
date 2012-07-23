@@ -12,7 +12,10 @@ import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.util.Logger;
 
-/**
+/** This class is used to store state of commands configuration. This amounts to three
+ * key pieces of data: any disabled commands, all custom defined commands and all
+ * properties related to any custom defined commands.
+ * 
  * @author morganm
  *
  */
@@ -69,6 +72,17 @@ public class CommandConfig {
 		return ret;
 	}
 	
+	/** This method does the heavy lifting of processing a configuration to load
+	 * the configuration state. An example config state:
+	 * 
+	 * commands:
+	 *   disabledCommands: [home, sethome]
+	 *   randomspawn:
+	 *     class: CustomEventCommand
+	 *     event: randomspawn
+	 * 
+	 * @param section
+	 */
 	public void loadConfig(ConfigurationSection section) {
 		if( section == null ) {
 			emptyDefaults();

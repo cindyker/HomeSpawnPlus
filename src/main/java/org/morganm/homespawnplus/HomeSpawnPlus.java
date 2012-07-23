@@ -97,7 +97,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HomeInviteManager homeInviteManager;
     private StrategyEngine strategyEngine;
 	private Config config;
-//    private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
     private JarUtils jarUtils;
@@ -251,7 +250,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     	CommandRegister register = new CommandRegister(this);
     	register.setCommandConfig(config);
     	register.registerAllCommands();
-//    	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
     	
     	final HomeSpawnPlus pluginInstance = this;
     	getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {

@@ -38,7 +38,7 @@ public class CommandRegister {
 	private CommandConfig commandConfig;
 	
 	static {
-		customClassMap.put("customchaincommand", CustomChainCommand.class);
+		customClassMap.put("customeventcommand", CustomEventCommand.class);
 	}
 
 	public CommandRegister(HomeSpawnPlus plugin) {

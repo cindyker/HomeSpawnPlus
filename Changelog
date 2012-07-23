@@ -5,6 +5,9 @@ v1.7 -
 * new WorldGuard mode: modeInRegion
 * Extensive direct Multiverse integration with many new modes and events
 * See http://dev.bukkit.org/server-mods/homespawnplus/pages/examples/example07/ for example of new modes in action
+* New command system which allows HSP to map commands dynamically at runtime
+* New command system also finally fully enables "disabledCommands" feature so you can completely disable commands you don't want to use
+* Custom event commands (uses new command system)
 
 
 v1.6.2 - 

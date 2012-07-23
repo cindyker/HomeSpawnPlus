@@ -75,19 +75,25 @@ public class StrategyEngine {
 	 * @param player
 	 * @return
 	 */
-	public Location getStrategyLocation(EventType event, Player player, String...args) {
+	public Location getStrategyLocation(String event, Player player, String...args) {
 		StrategyResult result = getStrategyResult(event, player, args);
 		if( result != null )
 			return result.getLocation();
 		else
 			return null;
 	}
+	public Location getStrategyLocation(EventType event, Player player, String...args) {
+		return getStrategyLocation(event.toString(), player, args);
+	}
 	
-	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
+	public StrategyResult getStrategyResult(String event, Player player, String...args) {
     	final StrategyContext context = new StrategyContext(plugin);
     	context.setPlayer(player);
     	context.setSpawnEventType(event);
 		return getStrategyResult(context, args);
+	}
+	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
+		return getStrategyResult(event.toString(), player, args);
 	}
 	
 	/** Given a StrategyContext, evaluate the strategies for that context.

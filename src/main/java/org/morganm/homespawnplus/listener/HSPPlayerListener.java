@@ -363,7 +363,7 @@ public class HSPPlayerListener implements Listener {
 		
 		if( type != null ) {
         	final StrategyContext context = new StrategyContext(plugin);
-        	context.setSpawnEventType(type);
+        	context.setSpawnEventType(type.toString());
         	context.setPlayer(event.getPlayer());
         	context.setLocation(event.getTo());	// location involved is the target location
         	

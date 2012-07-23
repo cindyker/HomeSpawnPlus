@@ -16,8 +16,7 @@ public enum EventType {
 	GROUPSPAWN_COMMAND("onGroupSpawnCommand"),
 	CROSS_WORLD_TELEPORT("crossWorldTeleport"),
 	MULTIVERSE_TELEPORT_CROSSWORLD("multiverseCrossWorldTeleport"),
-	MULTIVERSE_TELEPORT("multiverseTeleport"),
-	CUSTOM("custom");
+	MULTIVERSE_TELEPORT("multiverseTeleport");
 	
 	private String configOption;
 	EventType(String configOption) {
@@ -25,12 +24,4 @@ public enum EventType {
 	}
 	public String getConfigOption() { return configOption; }
 	public String toString() { return getConfigOption(); }
-	
-	private String customChain = null;
-	public String getCustomChain() {
-		return customChain;
-	}
-	public void setCustomChain(String customChain) {
-		this.customChain = customChain;
-	}
 }

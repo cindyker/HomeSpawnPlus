@@ -84,7 +84,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	    	
 			final StrategyContext context = new StrategyContext(hsp);
 	    	context.setPlayer(teleportee);
-	    	context.setSpawnEventType(eventType);
+	    	context.setSpawnEventType(eventType.toString());
 	    	context.setLocation(to);
 			StrategyResult result = hsp.getStrategyEngine().evaluateStrategies(context);
 			

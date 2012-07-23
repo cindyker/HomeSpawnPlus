@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
-import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 
 /**
  * @author morganm
@@ -33,15 +33,13 @@ public class CustomChainCommand extends BaseCommand {
 			return true;
 		}
 		
-		EventType eventType = EventType.CUSTOM;
-		eventType.setCustomChain(getChain());
-		
 		// pass along an argument, if there was one
 		String arg = null;
 		if( args.length > 0 )
 			arg = args[0];
 		
-		Location l = util.getStrategyLocation(eventType, p, arg);
+		StrategyEngine engine = plugin.getStrategyEngine();
+		Location l = engine.getStrategyLocation(chain, p, arg);
 		if( l == null ) {
 			util.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
 			return true;

@@ -28,7 +28,7 @@ public class StrategyContext {
 	private final static ModeStrategy defaultMode = new ModeDefault();
 	
 	private final HomeSpawnPlus plugin;
-	private EventType eventType;
+	private String eventType;
 	private Player player;
 	private Location location;
 	/* If there is a "fromLocation" for this action, it will be recorded here.
@@ -46,10 +46,10 @@ public class StrategyContext {
 		this.plugin = plugin;
 	}
 
-	public EventType getEventType() {
+	public String getEventType() {
 		return eventType;
 	}
-	public void setSpawnEventType(EventType eventType) {
+	public void setSpawnEventType(String eventType) {
 		this.eventType = eventType;
 	}
 

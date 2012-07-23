@@ -30,7 +30,7 @@ import org.morganm.homespawnplus.util.Logger;
  */
 public class CommandRegister {
 	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
-	private static final Map<String, Class> customClassMap = new HashMap<String, Class>();
+	private static final Map<String, Class<?>> customClassMap = new HashMap<String, Class<?>>();
 	
 	private final HomeSpawnPlus plugin;
 	private final Logger log;

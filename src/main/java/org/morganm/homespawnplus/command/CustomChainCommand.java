@@ -17,8 +17,8 @@ import org.morganm.homespawnplus.strategy.StrategyEngine;
  */
 public class CustomChainCommand extends BaseCommand {
 	
-	public String getChain() {
-		return super.getStringParam("chainName");
+	public String getEvent() {
+		return super.getStringParam("event");
 	}
 	
 	@Override
@@ -26,10 +26,10 @@ public class CustomChainCommand extends BaseCommand {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
-		String chain = getChain();
-		if( chain == null ) {
+		String event = getEvent();
+		if( event == null ) {
 			util.sendMessage(p, "There was an error, please report it to your administrator");
-			log.warning("CustomChainCommand chain name is null, cannot execute");
+			log.warning("CustomChainCommand event is null, cannot execute");
 			return true;
 		}
 		
@@ -39,7 +39,7 @@ public class CustomChainCommand extends BaseCommand {
 			arg = args[0];
 		
 		StrategyEngine engine = plugin.getStrategyEngine();
-		Location l = engine.getStrategyLocation(chain, p, arg);
+		Location l = engine.getStrategyLocation(event, p, arg);
 		if( l == null ) {
 			util.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
 			return true;

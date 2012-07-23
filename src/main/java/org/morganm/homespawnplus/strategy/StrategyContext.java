@@ -49,7 +49,7 @@ public class StrategyContext {
 	public String getEventType() {
 		return eventType;
 	}
-	public void setSpawnEventType(String eventType) {
+	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
 

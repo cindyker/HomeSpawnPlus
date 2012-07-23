@@ -89,7 +89,7 @@ public class StrategyEngine {
 	public StrategyResult getStrategyResult(String event, Player player, String...args) {
     	final StrategyContext context = new StrategyContext(plugin);
     	context.setPlayer(player);
-    	context.setSpawnEventType(event);
+    	context.setEventType(event);
 		return getStrategyResult(context, args);
 	}
 	public StrategyResult getStrategyResult(EventType event, Player player, String...args) {

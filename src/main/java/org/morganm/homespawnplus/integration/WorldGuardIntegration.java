@@ -15,6 +15,7 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 public class WorldGuardIntegration {
 	private final HomeSpawnPlus plugin;
 	private WorldGuardInterface worldGuardInterface;
+	private WorldGuardRegion worldGuardRegion;
 	
 	public WorldGuardIntegration(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -27,10 +28,29 @@ public class WorldGuardIntegration {
 		else
 			return false;
 	}
+	
+	public void init() {
+		if( !isEnabled() )
+			return;
+		
+		getWorldGuardRegion().registerEvents();
+	}
 
 	public WorldGuardInterface getWorldGuardInterface() {
+		if( !isEnabled() )
+			return null;
+
 		if( worldGuardInterface == null )
 			worldGuardInterface = new WorldGuardInterface(plugin);
 		return worldGuardInterface;
+	}
+	
+	public WorldGuardRegion getWorldGuardRegion() {
+		if( !isEnabled() )
+			return null;
+
+		if( worldGuardRegion == null )
+			worldGuardRegion = new WorldGuardRegion(plugin);
+		return worldGuardRegion;
 	}
 }

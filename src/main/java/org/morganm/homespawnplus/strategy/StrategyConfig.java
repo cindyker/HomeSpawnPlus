@@ -42,6 +42,20 @@ public class StrategyConfig {
 		permissionStrategies = new LinkedHashMap<String, PermissionStrategies>();
 	}
 	
+	/** Given an eventType, check to see if it's related to a region
+	 * and if so, register interest in that region.
+	 * 
+	 * @param eventType
+	 */
+	private void checkTypeForRegion(String eventType) {
+		if( eventType.startsWith(EventType.ENTER_REGION.toString()) ) {
+			
+		}
+		else if( eventType.startsWith(EventType.EXIT_REGION.toString()) ) {
+			
+		}
+	}
+	
 	/** Called to load strategies out of the config and into run-time variables.
 	 * 
 	 */

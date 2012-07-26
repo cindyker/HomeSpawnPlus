@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -48,11 +50,29 @@ public class StrategyConfig {
 	 * @param eventType
 	 */
 	private void checkTypeForRegion(String eventType) {
-		if( eventType.startsWith(EventType.ENTER_REGION.toString()) ) {
+		eventType = eventType.toLowerCase();
+		int index = eventType.indexOf(';');
+		if( index == -1 )
+			return;
+		
+		if( eventType.startsWith(EventType.ENTER_REGION.toString())
+				|| eventType.startsWith(EventType.EXIT_REGION.toString()) )
+		{
+			String region = eventType.substring(index+1);
+			World world = null;
+			int commaIndex = region.indexOf(',');
+			if( commaIndex != -1 ) {
+				String worldName = region.substring(commaIndex+1);
+				world = Bukkit.getWorld(worldName);
+				if( world == null )
+					log.warn("eventType ",eventType," references non-existant world ",worldName);
+				region = region.substring(0, commaIndex);
+			}
 			
+			plugin.getWorldGuardIntegration().getWorldGuardRegion().registerRegion(world, region);
 		}
-		else if( eventType.startsWith(EventType.EXIT_REGION.toString()) ) {
-			
+		else {
+			// TODO: some sort of warning
 		}
 	}
 	
@@ -100,6 +120,8 @@ public class StrategyConfig {
 			
 			List<String> strategies = section.getStringList(eventType);
 			if( strategies != null && strategies.size() > 0) {
+				checkTypeForRegion(eventType);
+				
 				Set<Strategy> set = defaultStrategies.get(eventType);
 				if( set == null ) {
 					set = new LinkedHashSet<Strategy>();
@@ -155,6 +177,8 @@ public class StrategyConfig {
 					
 					List<String> strategies = section.getStringList(world+"."+eventType);
 					if( strategies != null && strategies.size() > 0 ) {
+						checkTypeForRegion(eventType);
+						
 						for(String item : strategies) {
 							try {
 								Strategy strategy = StrategyFactory.newStrategy(item);
@@ -217,6 +241,8 @@ public class StrategyConfig {
 				
 				List<String> strategies = entrySection.getStringList(eventType);
 				if( strategies != null && strategies.size() > 0 ) {
+					checkTypeForRegion(eventType);
+					
 					Set<Strategy> set = permStrat.eventStrategies.get(eventType);
 					if( set == null ) {
 						set = new LinkedHashSet<Strategy>();

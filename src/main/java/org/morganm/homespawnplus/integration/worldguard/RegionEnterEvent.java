@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
  * @author morganm
  *
  */
-public class RegionExitEvent extends RegionEvent {
+public class RegionEnterEvent extends RegionEvent {
     /**
      * 
      * @param regionName the name of the region
@@ -18,7 +18,7 @@ public class RegionExitEvent extends RegionEvent {
      * @param player the player involved in this event
      * @param to the location the player is moving to
      */
-    public RegionExitEvent(final String regionName, final String regionWorldName, final Player player, final Location to) {
+    public RegionEnterEvent(final String regionName, final String regionWorldName, final Player player, final Location to) {
     	super(regionName, regionWorldName, player, to);
     }
 }

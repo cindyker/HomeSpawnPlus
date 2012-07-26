@@ -292,11 +292,11 @@ public class HSPPlayerListener implements Listener {
 
     	// execute ON_DEATH strategy to find out where we should spawn the player
     	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_DEATH, e.getPlayer());
-    	if( l != null )
+    	if( l != null ) {
     		e.setRespawnLocation(l);
-    	
-    	lastRespawnPlayer = e.getPlayer();
-    	lastRespawnLocation = l;
+    		lastRespawnLocation = l;
+        	lastRespawnPlayer = e.getPlayer();
+    	}
     }
 
     /** Method to monitor successful cross-world teleports and

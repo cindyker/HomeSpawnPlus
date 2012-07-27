@@ -422,7 +422,64 @@ public class StorageEBeans implements Storage {
 
 	private void updateToVersion170(final EbeanServer db) {
 		log.info(logPrefix + " Upgrading from version 1.5.0 database to version 1.7.0");
-		// TODO: upgrade me
+		
+		boolean success = false;
+		if( isSqlLite() ) {
+			EBeanUtils ebu = EBeanUtils.getInstance();
+			try {
+				Connection conn = ebu.getConnection();
+				Statement stmt = conn.createStatement();
+				stmt.execute("BEGIN TRANSACTION;");
+				stmt.execute("CREATE TABLE hsp_playerspawn (id integer primary key"
+						+", player_name               varchar(32)"
+						+", world                     varchar(32)"
+						+", x                         double not null"
+						+", y                         double not null"
+						+", z                         double not null"
+						+", pitch                     float"
+						+", yaw                       float"
+						+", spawn_id                  integer"
+						+", last_modified             timestamp not null"
+						+", date_created              timestamp not null"
+						+", constraint uq_hsp_playerspawn_1 unique (world,player_name)"
+						+", constraint fk_hsp_playerspawn_spawn_2 foreign key (spawn_id) references hsp_spawn (id)"
+						+");"
+						);
+				stmt.execute("CREATE INDEX ix_hsp_playerspawn_spawn_2 on hsp_playerspawn (spawn_id);");
+
+				stmt.execute("CREATE TABLE hsp_playerlastloc (id integer primary key"
+						+", player_name               varchar(32)"
+						+", world                     varchar(32)"
+						+", x                         double not null"
+						+", y                         double not null"
+						+", z                         double not null"
+						+", pitch                     float"
+						+", yaw                       float"
+						+", last_modified             timestamp not null"
+						+", date_created              timestamp not null"
+						+", constraint uq_hsp_playerlastloc_1 unique (world,player_name)"
+						+");"
+						);
+				
+				stmt.execute("COMMIT;");
+				stmt.close();
+				conn.close();
+				
+				success = true;
+			}
+			catch(SQLException e) {
+				log.severe(logPrefix + " error attempting to update SQLite database schema!");
+				e.printStackTrace();
+			}
+		}
+		else {
+			
+		}
+
+		if( success ) {
+			SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=170");
+			update.execute();
+		}
 		log.info(logPrefix + " Upgrade from version 1.5.0 database to version 1.7.0 complete");
 	}
 	

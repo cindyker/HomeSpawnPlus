@@ -115,14 +115,16 @@ public class StrategyConfig {
 
 		Set<String> eventTypes = section.getKeys(false);
 		for(String eventType : eventTypes) {
+			// get config children, then use lowercase to make configs case-insensitive
+			List<String> strategies = section.getStringList(eventType);
+			eventType = eventType.toLowerCase();
+			
 			// skip special sections
 			if( eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_PERMBASE)
 					|| eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_WORLDBASE) )
 				continue;
 			
-			List<String> strategies = section.getStringList(eventType);
 			if( strategies != null && strategies.size() > 0) {
-				eventType = eventType.toLowerCase();
 				checkTypeForRegion(eventType);
 				
 				Set<Strategy> set = defaultStrategies.get(eventType);
@@ -172,15 +174,17 @@ public class StrategyConfig {
 			Set<String> types = worldSection.getKeys(false);
 			if( types != null && types.size() > 0 ) {
 				for(String eventType : types) {
+					// get config children, then use lowercase to make configs case-insensitive
+					List<String> strategies = section.getStringList(world+"."+eventType);
+					eventType = eventType.toLowerCase();
+					
 					Set<Strategy> set = worldStrat.eventStrategies.get(eventType);
 					if( set == null ) {
 						set = new LinkedHashSet<Strategy>();
 						worldStrat.eventStrategies.put(eventType.toString(), set);
 					}
 					
-					List<String> strategies = section.getStringList(world+"."+eventType);
 					if( strategies != null && strategies.size() > 0 ) {
-						eventType = eventType.toLowerCase();
 						checkTypeForRegion(eventType);
 						
 						for(String item : strategies) {
@@ -239,13 +243,15 @@ public class StrategyConfig {
 			Set<String> entryKeys = entrySection.getKeys(false);
 			
 			for(String eventType : entryKeys) {
+				// get config children, then use lowercase to make configs case-insensitive
+				List<String> strategies = entrySection.getStringList(eventType);
+				eventType = eventType.toLowerCase();
+
 				// skip the "permissions" entry
 				if( eventType.equals("permissions") )
 					continue;
 				
-				List<String> strategies = entrySection.getStringList(eventType);
 				if( strategies != null && strategies.size() > 0 ) {
-					eventType = eventType.toLowerCase();
 					checkTypeForRegion(eventType);
 					
 					Set<Strategy> set = permStrat.eventStrategies.get(eventType);

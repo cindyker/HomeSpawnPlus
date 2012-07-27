@@ -36,9 +36,9 @@ import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.Locale;
 import org.morganm.homespawnplus.i18n.LocaleConfig;
 import org.morganm.homespawnplus.i18n.LocaleFactory;
-import org.morganm.homespawnplus.integration.MultiverseIntegration;
-import org.morganm.homespawnplus.integration.WorldGuardIntegration;
 import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
+import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
@@ -264,6 +264,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	multiverse = new MultiverseIntegration(this);
     	multiverse.onEnable();
     	worldGuardIntegration = new WorldGuardIntegration(this);
+    	worldGuardIntegration.init();
     	debugEndTimer("Plugin integrations");
         
     	debugStartTimer("strategies");

@@ -51,6 +51,7 @@ public class StrategyConfig {
 	 */
 	private void checkTypeForRegion(String eventType) {
 		eventType = eventType.toLowerCase();
+		log.debug("checkTypeForRegion() eventType=",eventType);
 		int index = eventType.indexOf(';');
 		if( index == -1 )
 			return;
@@ -115,11 +116,13 @@ public class StrategyConfig {
 		Set<String> eventTypes = section.getKeys(false);
 		for(String eventType : eventTypes) {
 			// skip special sections
-			if( eventType.equals(ConfigOptions.SETTING_EVENTS_PERMBASE) || eventType.equals(ConfigOptions.SETTING_EVENTS_WORLDBASE) )
+			if( eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_PERMBASE)
+					|| eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_WORLDBASE) )
 				continue;
 			
 			List<String> strategies = section.getStringList(eventType);
 			if( strategies != null && strategies.size() > 0) {
+				eventType = eventType.toLowerCase();
 				checkTypeForRegion(eventType);
 				
 				Set<Strategy> set = defaultStrategies.get(eventType);
@@ -177,6 +180,7 @@ public class StrategyConfig {
 					
 					List<String> strategies = section.getStringList(world+"."+eventType);
 					if( strategies != null && strategies.size() > 0 ) {
+						eventType = eventType.toLowerCase();
 						checkTypeForRegion(eventType);
 						
 						for(String item : strategies) {
@@ -241,6 +245,7 @@ public class StrategyConfig {
 				
 				List<String> strategies = entrySection.getStringList(eventType);
 				if( strategies != null && strategies.size() > 0 ) {
+					eventType = eventType.toLowerCase();
 					checkTypeForRegion(eventType);
 					
 					Set<Strategy> set = permStrat.eventStrategies.get(eventType);

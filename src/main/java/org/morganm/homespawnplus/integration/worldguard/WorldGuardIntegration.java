@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.worldguard;
 
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;

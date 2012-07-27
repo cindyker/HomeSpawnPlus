@@ -3,7 +3,7 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.morganm.homespawnplus.integration.WorldGuardInterface;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;

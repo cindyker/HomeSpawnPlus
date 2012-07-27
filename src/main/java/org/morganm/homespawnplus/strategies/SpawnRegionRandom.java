@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.integration.WorldGuardInterface;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
@@ -19,7 +19,8 @@ import org.morganm.homespawnplus.util.Teleport;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-/**
+/** Spawn at a random point inside of a named region.
+ * 
  * @author morganm
  *
  */
@@ -67,7 +68,9 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( region == null )
 			return null;
 
-		final Teleport.Bounds yBounds = context.getModeBounds();
+		Teleport.Bounds yBounds = context.getModeBounds();
+		if( yBounds == null )
+			yBounds = Teleport.getInstance().getDefaultBounds();
 		
 		BlockVector bvMin = wgRegion.getMinimumPoint();
 		// minimum Y never goes below yBounds

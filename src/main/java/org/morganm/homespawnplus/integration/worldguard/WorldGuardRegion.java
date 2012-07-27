@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.worldguard;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,12 +19,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.integration.worldguard.RegionEnterEvent;
-import org.morganm.homespawnplus.integration.worldguard.RegionEvent;
-import org.morganm.homespawnplus.integration.worldguard.RegionExitEvent;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.Logger;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -36,6 +34,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  */
 public class WorldGuardRegion implements Listener {
 	private final HomeSpawnPlus plugin;
+	private final Logger log;
 	private final Map<String, Set<ProtectedRegion>> registered = new HashMap<String, Set<ProtectedRegion>>();
 	/* Set to keep track of any "global" registers that weren't tied to a specific world, so
 	 * we can lookup the original strategies that way.
@@ -44,9 +43,11 @@ public class WorldGuardRegion implements Listener {
 	
 	public WorldGuardRegion(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
+		this.log = this.plugin.getLog();
 	}
 	
 	public void registerRegion(World world, String regionName) {
+		log.devDebug("registerRegion(): world=",world,", region=",regionName);
 		// if world argument is null, invoke no-argument version of this method,
 		// which will register on all worlds
 		if( world == null ) {
@@ -58,6 +59,7 @@ public class WorldGuardRegion implements Listener {
 		
 		WorldGuardInterface wg = plugin.getWorldGuardIntegration().getWorldGuardInterface();
 		ProtectedRegion region = wg.getWorldGuardRegion(world, regionName);
+		log.devDebug("registerRegion(): region=",region);
 		if( region != null ) {
 			Set<ProtectedRegion> set = registered.get(worldName);
 			if( set == null ) {
@@ -100,6 +102,7 @@ public class WorldGuardRegion implements Listener {
 		Set<ProtectedRegion> set = registered.get(fromWorld);
 		if( set != null ) {
 			for(ProtectedRegion region : set) {
+//				log.devDebug("checking region ",region);
 				// are we leaving the region?
 				if( region.contains(fromVector) && !region.contains(toVector) ) {
 					RegionExitEvent regionEvent = new RegionExitEvent(region.getId(), fromWorld, event.getPlayer(), to);
@@ -130,7 +133,7 @@ public class WorldGuardRegion implements Listener {
 		if( globalRegisters.contains(regionName) )
 			worldName = "";
 		
-		String eventType = baseEventType.toString() + regionName + worldName;
+		String eventType = baseEventType.toString() + ";" + regionName + worldName;
 		StrategyContext context = new StrategyContext(plugin);
 		context.setEventType(eventType);
 		context.setPlayer(e.getPlayer());
@@ -143,6 +146,7 @@ public class WorldGuardRegion implements Listener {
 	
 	@EventHandler
 	public void onRegionExit(RegionExitEvent e) {
+		log.devDebug("onRegionExit() INVOKED, event=",e);
 		Location l = processEvent(e, EventType.EXIT_REGION);
 		if( l != null ) {
 			Log.debug("onRegionExit(): setting location to ",l);
@@ -152,6 +156,7 @@ public class WorldGuardRegion implements Listener {
 	
 	@EventHandler
 	public void onRegionEnter(RegionEnterEvent e) {
+		log.devDebug("onRegionEnter() INVOKED, event=",e);
 		Location l = processEvent(e, EventType.ENTER_REGION);
 		if( l != null ) {
 			Log.debug("onRegionEnter(): setting location to ",l);

@@ -12,7 +12,10 @@ import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
-/**
+/** Spawn at a random spawn point on the local world. For example, if
+ * you have defined "spawn1", "spawn2" and "spawn3" on the local world,
+ * this strategy will choose one of them at random.
+ * 
  * @author morganm
  *
  */

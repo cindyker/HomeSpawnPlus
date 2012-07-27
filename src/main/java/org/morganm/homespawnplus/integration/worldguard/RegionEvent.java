@@ -6,15 +6,12 @@ package org.morganm.homespawnplus.integration.worldguard;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 
 /**
  * @author morganm
  *
  */
 public abstract class RegionEvent extends Event {
-    private static final HandlerList handlers = new HandlerList();
-    
     private String regionName;
     private String regionWorldName;
     private Player player;
@@ -39,9 +36,4 @@ public abstract class RegionEvent extends Event {
     public String getRegionWorldName() { return regionWorldName; }
     public Location getTo() { return to; }
     public void setTo(Location to) { this.to = to; }
-    
-	@Override
-	public HandlerList getHandlers() {
-        return handlers;
-	}
 }

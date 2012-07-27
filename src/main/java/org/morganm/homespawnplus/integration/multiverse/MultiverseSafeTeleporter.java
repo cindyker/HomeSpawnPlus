@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;

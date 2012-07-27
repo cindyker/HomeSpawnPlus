@@ -50,7 +50,7 @@ public class StrategyContext {
 		return eventType;
 	}
 	public void setEventType(String eventType) {
-		this.eventType = eventType;
+		this.eventType = eventType.toLowerCase();
 	}
 
 	public Player getPlayer() {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.worldguard;
 
 import java.util.Iterator;
 import java.util.logging.Level;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;

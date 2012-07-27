@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.event.Listener;
 import org.morganm.homespawnplus.HomeSpawnPlus;

@@ -27,7 +27,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
 
 /** Permission abstraction class, use Vault, WEPIF, Perm2 or superperms, depending on what's available.
  * 
- * Dependencies: (to be handled through maven when I setup a repository some day..)
+ * Dependencies: (handled through maven automatically now)
  *   Vault 1.x: http://dev.bukkit.org/server-mods/vault/
  *   WorldEdit 5.x: http://build.sk89q.com/
  *   PermissionsEx: http://goo.gl/jthCz
@@ -43,7 +43,7 @@ import com.sk89q.wepif.PermissionsResolverManager;
  *
  */
 public class PermissionSystem {
-	// class version: 14
+	// class version: 15
 	public enum Type {
 		SUPERPERMS,
 		VAULT,

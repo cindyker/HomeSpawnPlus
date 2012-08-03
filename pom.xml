@@ -16,6 +16,14 @@
     <developerConnection>scm:git:git@github.com:morganm/HomeSpawnPlus.git</developerConnection>
   </scm>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>morganm-repo-snapshot</id>
+      <name>Morganmc nexus repository</name>
+      <url>http://morganmc.dyndns.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <repositories>
     <repository>
       <id>onarandombox</id>

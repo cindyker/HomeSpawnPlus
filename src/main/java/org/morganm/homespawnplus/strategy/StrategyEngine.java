@@ -55,12 +55,13 @@ public class StrategyEngine {
     		context.setArg(args[0]);
     	
     	StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
-    	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
-			log.info(logPrefix + " strategy result is null for event "+context.getEventType()+"."
-					+ " This could indicate a configuration mistake."
-					+ " Either include \"default\" as the end of your strategy chains to avoid this warning, or set "
-					+ ConfigOptions.WARN_NULL_STRATEGY + " in your config.yml to false");
-    	}
+    	// decided these warnings are just annoying and of no value. -morganm 7/26/12
+//    	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
+//			log.info(logPrefix + " strategy result is null for event "+context.getEventType()+"."
+//					+ " This could indicate a configuration mistake."
+//					+ " Either include \"default\" as the end of your strategy chains to avoid this warning, or set "
+//					+ ConfigOptions.WARN_NULL_STRATEGY + " in your config.yml to false");
+//    	}
 
     	return result;
 	}
@@ -95,7 +96,7 @@ public class StrategyEngine {
 		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
 		StrategyResult result = null;
 		
-		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer()); 
+		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer());
 		
 		debug.debug("evaluateStrategies: evaluating permission-based strategies");
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
@@ -141,8 +142,10 @@ public class StrategyEngine {
 			debug.debug("evaluateStrategies: default strategies result = ",result);
 		}
 		
-		if( result == null )
-			log.warning(logPrefix + " Warning: no event strategy defined for event "+context.getEventType()+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
+		if( result == null ) {
+	    	// decided these warnings are just annoying and of no value. -morganm 7/26/12
+//			log.warning(logPrefix + " Warning: no event strategy defined for event "+context.getEventType()+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
+		}
 		else {
 			result.setContext(context);	// associate context with the result
 			

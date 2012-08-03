@@ -398,17 +398,17 @@ public class HSPPlayerListener implements Listener {
     			return;
     		}
     		
-    		final Location currentLocation = lastRespawnPlayer.getLocation();
+    		final Location respawnLoc = e.getRespawnLocation();
 
 			// do manual world/x/y/z check instead of .equals() so that we avoid comparing
 			// pitch/yaw and also so we round to integer blocks instead of exact double loc
-			if( currentLocation.getWorld() != lastRespawnLocation.getWorld()
-					|| currentLocation.getBlockX() != lastRespawnLocation.getBlockX()
-					|| currentLocation.getBlockY() != lastRespawnLocation.getBlockY()
-					|| currentLocation.getBlockZ() != lastRespawnLocation.getBlockZ() ) {
+			if( respawnLoc.getWorld() != lastRespawnLocation.getWorld()
+					|| respawnLoc.getBlockX() != lastRespawnLocation.getBlockX()
+					|| respawnLoc.getBlockY() != lastRespawnLocation.getBlockY()
+					|| respawnLoc.getBlockZ() != lastRespawnLocation.getBlockZ() ) {
 				log.info(logPrefix + " onDeath: final player location is different than where HSP sent player, another plugin has changed the location."
 						+" Player "+lastRespawnPlayer.getName()+", HSP location "+util.shortLocationString(lastRespawnLocation)
-						+", final player location "+util.shortLocationString(currentLocation));
+						+", final player location "+util.shortLocationString(respawnLoc));
 			}
     		
     	}

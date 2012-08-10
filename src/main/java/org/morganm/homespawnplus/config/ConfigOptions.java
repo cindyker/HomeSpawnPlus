@@ -15,6 +15,7 @@ public interface ConfigOptions {
 	public static final String WARN_CONFLICTS = "core.warnConflicts";
 	public static final String WARN_NULL_STRATEGY = "core.warnNullStrategy";
 	public static final String WARN_LOCATION_CHANGE = "core.warnLocationChange";
+	public static final String WARN_PERFORMANCE = "core.warnPerformance";
 	
 	public static final String STORAGE_TYPE = "core.storage";
 	public static final String DEFAULT_PERMISSIONS = "core.defaultPermissions";

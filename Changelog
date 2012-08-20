@@ -1,4 +1,5 @@
 v1.6.3 -
+* some performance tuning
 * added Brazilian Portuguese translation (locale pt-br). Thanks Guichaguri!
 * changed core.reloadChunkOnTeleport default to false (fixes https://bukkit.atlassian.net/browse/BUKKIT-2275)
 

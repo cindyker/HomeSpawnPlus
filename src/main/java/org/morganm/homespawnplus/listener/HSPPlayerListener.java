@@ -282,7 +282,7 @@ public class HSPPlayerListener implements Listener {
      */
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
-    	long start = System.nanoTime();
+    	long start = System.currentTimeMillis();
     	if( debug.isDevDebug() ) {
     		Location bedSpawn = e.getPlayer().getBedSpawnLocation();
     		debug.devDebug("onPlayerRespawn(): isBedSpawn=",e.isBedSpawn(),", bedSpawn=",bedSpawn);
@@ -300,10 +300,9 @@ public class HSPPlayerListener implements Listener {
     	}
     	
     	if( plugin.getConfig().getBoolean(ConfigOptions.WARN_PERFORMANCE, true) ) {
-            long totalTime = System.nanoTime() - start;
-            if( totalTime > 100000000 ) {		// if we took more than 1/10th second (100 ms) to run, report it
-            	long milliseconds = totalTime / 1000000;
-            	debug.devDebug("**LONG RESPAWN** Respawn for player ",e.getPlayer()," took ",milliseconds," ms to run (",totalTime," nanoseconds)");
+            long totalTime = System.currentTimeMillis() - start;
+            if( totalTime > 100 ) {		// if we took more than 1/10th second (100 ms) to run, report it
+            	debug.devDebug("**LONG RESPAWN** Respawn for player ",e.getPlayer()," took ",totalTime," ms to run");
             }
     	}
     }

@@ -93,7 +93,7 @@ public class StrategyEngine {
 	 * @param context
 	 */
 	public StrategyResult evaluateStrategies(StrategyContext context) {
-    	long start = System.nanoTime();
+    	long start = System.currentTimeMillis();
 		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
 		StrategyResult result = null;
 		
@@ -172,10 +172,9 @@ public class StrategyEngine {
 		}
 
     	if( plugin.getConfig().getBoolean(ConfigOptions.WARN_PERFORMANCE, true) ) {
-            long totalTime = System.nanoTime() - start;
-            if( totalTime > 100000000 ) {		// if we took more than 1/10th second (100 ms) to run, report it
-            	long milliseconds = totalTime / 1000000;
-            	debug.devDebug("**LONG STRATEGY** Strategy took ",milliseconds," ms to run (",totalTime," nanoseconds). Context: ",context);
+            long totalTime = System.currentTimeMillis() - start;
+            if( totalTime > 100 ) {		// if we took more than 1/10th second (100 ms) to run, report it
+            	debug.devDebug("**LONG STRATEGY** Strategy took ",totalTime," ms to run. Context: ",context);
             }
     	}
 

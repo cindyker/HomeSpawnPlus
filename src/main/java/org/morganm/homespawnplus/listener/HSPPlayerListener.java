@@ -298,11 +298,12 @@ public class HSPPlayerListener implements Listener {
     		lastRespawnLocation = l;
         	lastRespawnPlayer = e.getPlayer();
     	}
-    	
-    	if( plugin.getConfig().getBoolean(ConfigOptions.WARN_PERFORMANCE, true) ) {
+
+    	int warnMillis = plugin.getConfig().getInt(ConfigOptions.WARN_PERFORMANCE_MILLIS, 250); 
+    	if( warnMillis > 0 ) {
             long totalTime = System.currentTimeMillis() - start;
-            if( totalTime > 100 ) {		// if we took more than 1/10th second (100 ms) to run, report it
-            	debug.devDebug("**LONG RESPAWN** Respawn for player ",e.getPlayer()," took ",totalTime," ms to run");
+            if( totalTime > warnMillis ) {
+            	log.info("**LONG RESPAWN** Respawn for player "+e.getPlayer()+" took "+totalTime+" ms to run (> warning threshold of "+warnMillis+"ms)");
             }
     	}
     }

@@ -171,10 +171,11 @@ public class StrategyEngine {
 				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
 		}
 
-    	if( plugin.getConfig().getBoolean(ConfigOptions.WARN_PERFORMANCE, true) ) {
+    	int warnMillis = plugin.getConfig().getInt(ConfigOptions.WARN_PERFORMANCE_MILLIS, 250); 
+    	if( warnMillis > 0 ) {
             long totalTime = System.currentTimeMillis() - start;
-            if( totalTime > 100 ) {		// if we took more than 1/10th second (100 ms) to run, report it
-            	debug.devDebug("**LONG STRATEGY** Strategy took ",totalTime," ms to run. Context: ",context);
+            if( totalTime > warnMillis ) {
+            	log.info("**LONG STRATEGY** Strategy took "+totalTime+" ms to run. (> warning threshold of "+warnMillis+"ms) Context: "+context);
             }
     	}
 

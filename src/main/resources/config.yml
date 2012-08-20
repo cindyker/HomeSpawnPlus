@@ -149,7 +149,7 @@ core:
   # chunk when a player teleports. This fixes "world hole" problems
   # on teleport (exactly the same as BananaChunk plugin does).
   # This option does nothing if BananaChunk is already installed.
-  reloadChunkOnTeleport: true
+  reloadChunkOnTeleport: false
 
   # Define the strategy HSP uses to determine if a player is new.
   #   BUKKIT: use Bukkit Player.hasPlayedBefore() method

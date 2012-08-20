@@ -303,7 +303,7 @@ public class HSPPlayerListener implements Listener {
     	// implement "chunk refresh" if enabled
         // Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
         // to refresh the chunk the player is teleporting into.
-    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, true) ) {
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, false) ) {
 	    	Player player = event.getPlayer();
 	    	World world = player.getWorld();
 	    	Chunk chunk = world.getChunkAt(event.getTo());

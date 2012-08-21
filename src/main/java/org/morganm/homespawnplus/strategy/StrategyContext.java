@@ -140,7 +140,7 @@ public class StrategyContext {
 	public boolean isDefaultModeEnabled() {
 		if( currentModes == null || currentModes.size() == 0 )
 			return true;
-		if( currentModes.size() > 1 ) {
+		if( currentModes.size() >= 1 ) {
 			StrategyMode mode = currentModes.get(0).getMode();
 			return isDefaultMode(mode);
 		}

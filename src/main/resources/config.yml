@@ -65,6 +65,11 @@ core:
   # that you don't intend.
   warnLocationChange: true
 
+  # if any strategy takes longer than this many millis to execute
+  # (1000 millis = 1 second), then print a performance warning.
+  # Set to 0 to disable.
+  warnPerformanceMillis: 250
+
   # this is ONLY used when "ops" is used in the "permissions" section
   # above.
   # In that case, any permissions listed here are given to everyone by
@@ -149,7 +154,7 @@ core:
   # chunk when a player teleports. This fixes "world hole" problems
   # on teleport (exactly the same as BananaChunk plugin does).
   # This option does nothing if BananaChunk is already installed.
-  reloadChunkOnTeleport: true
+  reloadChunkOnTeleport: false
 
   # Define the strategy HSP uses to determine if a player is new.
   #   BUKKIT: use Bukkit Player.hasPlayedBefore() method

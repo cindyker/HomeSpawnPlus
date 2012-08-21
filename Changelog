@@ -10,6 +10,13 @@ v1.7 -
 * Custom event commands (uses new command system)
 * Implemented new events "onRegionEnter" and "onRegionExit"
 
+v1.6.3 -
+* some performance tuning
+* added built-in performance monitoring, tunable via core.warnPerformanceMillis config option
+* added Brazilian Portuguese translation (locale pt-br). Thanks Guichaguri!
+* changed core.reloadChunkOnTeleport default to false (fixes https://bukkit.atlassian.net/browse/BUKKIT-2275)
+* Ticket #131: modeRequiresBed not working
+
 v1.6.2 - Aug 2, 2012
 * Ticket #118: error when using spawnWorldRandom strategy
 * cleaned up some spurious warning messages related to some missing default config settings

@@ -76,9 +76,14 @@ public class HSPPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-    	debug.devDebug("onPlayerInteract: invoked");
+//    	debug.devDebug("onPlayerInteract: invoked");
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
+
+        Block b = event.getClickedBlock();
+		// did they click on a bed? short-circuit this method if not (fail-fast)
+        if( b.getTypeId() != 26 )
+        	return;
 
         // config option needs to be enabled in order to use this feature
         if( !plugin.getConfig().getBoolean(ConfigOptions.ENABLE_HOME_BEDS, false) )
@@ -98,18 +103,16 @@ public class HSPPlayerListener implements Listener {
         if( event.getPlayer().isSneaking() )
         	return;
 
-        Block b = event.getClickedBlock();
-		// did they click on a bed?
-        if( b.getTypeId() == 26 ) {
-        	debug.debug("onPlayerInteract: calling doBedSet for player ",event.getPlayer());
-        	
-        	if( doBedSet(event.getPlayer(), b) )
-        		event.setCancelled(canCancel);
-        	// if we're never supposed to display "You can only sleep at night" message, then
-        	// cancel the event to avoid the message
-        	else if( plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_NEVER_DISPLAY_NIGHT_MSG, false) )
-        		event.setCancelled(true);
-        }
+		// if we get here, we know they clicked on a bed and configs are enabled for us
+        // to something with that click
+    	debug.debug("onPlayerInteract: calling doBedSet for player ",event.getPlayer());
+    	
+    	if( doBedSet(event.getPlayer(), b) )
+    		event.setCancelled(canCancel);
+    	// if we're never supposed to display "You can only sleep at night" message, then
+    	// cancel the event to avoid the message
+    	else if( plugin.getConfig().getBoolean(ConfigOptions.BED_HOME_NEVER_DISPLAY_NIGHT_MSG, false) )
+    		event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
@@ -282,6 +285,7 @@ public class HSPPlayerListener implements Listener {
      */
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
+    	long start = System.currentTimeMillis();
     	if( debug.isDevDebug() ) {
     		Location bedSpawn = e.getPlayer().getBedSpawnLocation();
     		debug.devDebug("onPlayerRespawn(): isBedSpawn=",e.isBedSpawn(),", bedSpawn=",bedSpawn);
@@ -296,6 +300,14 @@ public class HSPPlayerListener implements Listener {
     		e.setRespawnLocation(l);
     		lastRespawnLocation = l;
         	lastRespawnPlayer = e.getPlayer();
+    	}
+
+    	int warnMillis = plugin.getConfig().getInt(ConfigOptions.WARN_PERFORMANCE_MILLIS, 250); 
+    	if( warnMillis > 0 ) {
+            long totalTime = System.currentTimeMillis() - start;
+            if( totalTime > warnMillis ) {
+            	log.info("**LONG RESPAWN** Respawn for player "+e.getPlayer()+" took "+totalTime+" ms to run (> warning threshold of "+warnMillis+"ms)");
+            }
     	}
     }
 
@@ -333,7 +345,7 @@ public class HSPPlayerListener implements Listener {
     	// implement "chunk refresh" if enabled
         // Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
         // to refresh the chunk the player is teleporting into.
-    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, true) ) {
+    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, false) ) {
 	    	Player player = event.getPlayer();
 	    	World world = player.getWorld();
 	    	Chunk chunk = world.getChunkAt(event.getTo());

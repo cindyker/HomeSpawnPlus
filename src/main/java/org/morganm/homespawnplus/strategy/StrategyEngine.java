@@ -102,6 +102,7 @@ public class StrategyEngine {
 	 * @param context
 	 */
 	public StrategyResult evaluateStrategies(StrategyContext context) {
+    	long start = System.currentTimeMillis();
 		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
 		debug.debug("evaluateStrategies: context=",context);
 		StrategyResult result = null;
@@ -209,6 +210,14 @@ public class StrategyEngine {
 			debug.debug("evaluateStrategies: recorded PlayerSpawn location as directed by ",StrategyMode.MODE_REMEMBER_LOCATION);
 		}
 		
+    	int warnMillis = plugin.getConfig().getInt(ConfigOptions.WARN_PERFORMANCE_MILLIS, 250); 
+    	if( warnMillis > 0 ) {
+            long totalTime = System.currentTimeMillis() - start;
+            if( totalTime > warnMillis ) {
+            	log.info("**LONG STRATEGY** Strategy took "+totalTime+" ms to run. (> warning threshold of "+warnMillis+"ms) Context: "+context);
+            }
+    	}
+
 		debug.debug("evaluateStrategies: exit result = ",result);
 		return result;
 	}

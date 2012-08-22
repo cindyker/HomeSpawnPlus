@@ -1,4 +1,4 @@
-v1.6.3 -
+v1.6.3 - Aug 22, 2012
 * some performance tuning
 * added built-in performance monitoring, tunable via core.warnPerformanceMillis config option
 * added Brazilian Portuguese translation (locale pt-br). Thanks Guichaguri!

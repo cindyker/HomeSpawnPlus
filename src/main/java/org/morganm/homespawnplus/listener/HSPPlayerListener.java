@@ -218,8 +218,8 @@ public class HSPPlayerListener implements Listener {
     {
     	final Player p = event.getPlayer();
     	
-		// Is this a new player?
-    	if( util.isNewPlayer(p) ) {
+    	boolean isNewPlayer = util.isNewPlayer(p);
+    	if( isNewPlayer ) {
     		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected.");
     	}
@@ -238,13 +238,23 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	
-    	// execute ON_JOIN strategy to find out where we should put the player
-    	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_JOIN, p);
-    	if( l != null ) {
-    		util.delayedTeleport(p, l);
+    	StrategyResult result = null;
+    	// execute NEW_PLAYER strategy if player is new. If no results are returned, this
+    	// will fall through to the ON_JOIN strategy instead.
+    	if( isNewPlayer )
+    		result = plugin.getStrategyEngine().getStrategyResult(EventType.NEW_PLAYER, p);
+    	
+    	// execute ON_JOIN strategy to find out where we should put the player, but only
+    	// if there was no result from newPlayer checks
+    	if( result == null || (result != null && !result.isExplicitDefault()) )
+    		result = plugin.getStrategyEngine().getStrategyResult(EventType.ON_JOIN, p);
+    	
+    	Location joinLocation = result.getLocation();
+    	if( joinLocation != null ) {
+    		util.delayedTeleport(p, joinLocation);
     		
-    		// verify they ended up where we sent them by checking 1 second (20 tics) later
-    		final Location hspLocation = l;
+    		// verify they ended up where we sent them by checking 5 tics later
+    		final Location hspLocation = joinLocation;
         	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
 					Location currentLocation = p.getLocation();
@@ -260,7 +270,7 @@ public class HSPPlayerListener implements Listener {
 								+", final player location "+util.shortLocationString(currentLocation));
 					}
 				}
-			}, 20); 
+			}, 5); 
     	}
     }
     

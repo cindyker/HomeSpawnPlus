@@ -18,7 +18,8 @@ public enum EventType {
 	MULTIVERSE_TELEPORT_CROSSWORLD("multiverseCrossWorldTeleport"),
 	MULTIVERSE_TELEPORT("multiverseTeleport"),
 	ENTER_REGION("onregionenter"),
-	EXIT_REGION("onregionexit");
+	EXIT_REGION("onregionexit"),
+	NEW_PLAYER("onNewPlayer");
 	
 	private String configOption;
 	EventType(String configOption) {

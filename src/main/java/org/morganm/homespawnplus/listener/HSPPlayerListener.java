@@ -354,6 +354,7 @@ public class HSPPlayerListener implements Listener {
 //	    	world.refreshChunk(chunkx, chunkz);
 //    	}
     	
+    	EventType type = null;
     	// cross-world teleport event?
 		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
     		if( event.getPlayer().getName().equals(plugin.getMultiverseIntegration().getCurrentTeleporter()) ) {

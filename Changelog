@@ -10,6 +10,9 @@ v1.7 -
 * Custom event commands (uses new command system)
 * Implemented new events "onRegionEnter" and "onRegionExit"
 * added "onNewPlayer" event for new players. If no result is returned, HSP will fall through to "onJoin" which maintains backwards compatibility
+* added Spanish locale (thanks Consalvo!)
+* Ticket #123: added modeExcludeNewPlayerSpawn 
+* Ticket #125: fix for Essentials conversion
 
 v1.6.3 - Aug 22, 2012
 * some performance tuning

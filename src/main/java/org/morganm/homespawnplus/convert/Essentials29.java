@@ -4,12 +4,15 @@
 package org.morganm.homespawnplus.convert;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,6 +35,7 @@ public class Essentials29 implements Runnable {
 	private final String logPrefix;
 	private HomeSpawnPlus plugin;
 	private CommandSender initiatingPlayer;
+	final private Map<String, String> offlinePlayers = new HashMap<String,String>();
 	
 	public Essentials29(HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
 		this.plugin = plugin;
@@ -49,6 +53,8 @@ public class Essentials29 implements Runnable {
 			log.warning(logPrefix + " No essentials user directory found, skipping Home import");
 			return 0;
 		}
+		
+		loadOfflinePlayers();
 		
 		HomeDAO dao = plugin.getStorage().getHomeDAO();
 		
@@ -80,8 +86,15 @@ public class Essentials29 implements Runnable {
 					Double yaw = userData.getDouble("homes."+home+".yaw", 0);
 					Double pitch = userData.getDouble("homes."+home+".pitch", 0);
 					
-					String playerName = file.getName();
-					playerName = playerName.substring(0, playerName.lastIndexOf('.'));
+					String lowerCaseName = file.getName();
+					lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
+					
+					// Essentials stores names in lowercase, HSP keeps proper case. So we
+					// try to lookup the proper case name from the Bukkit offlinePlayers
+					// map. If one doesn't exist, then we just use the lowercase name.
+					String playerName = offlinePlayers.get(lowerCaseName);
+					if( playerName == null )
+						playerName = lowerCaseName;
 					
 					Location l = new Location(world, x.doubleValue(), y.doubleValue(),
 							z.doubleValue(), yaw.floatValue(), pitch.floatValue());
@@ -109,6 +122,17 @@ public class Essentials29 implements Runnable {
 		}
 		
 		return convertedCount;
+	}
+	
+	/** Load Bukkit offline players into offlinePlayers hash, store key as
+	 * lowercase name and value as proper case name.
+	 * 
+	 */
+	private void loadOfflinePlayers() {
+		OfflinePlayer[] players = Bukkit.getOfflinePlayers();
+		for(OfflinePlayer player : players) {
+			offlinePlayers.put(player.getName().toLowerCase(), player.getName());
+		}
 	}
 	
 	public void run() {

@@ -250,14 +250,14 @@ events:
 #        - homeMultiWorld
 #        - homeAnyWorld
 
-# you can globally disable individual commands here, if needed
-disabledCommands:
-  home: false
-  sethome: false
-  spawn: false
-  setspawn: false
-  groupspawn: false
-  setgroupspawn: false
+# you can define your own custom commands. Refer
+# to documentation on web: http://goo.gl/wCMM7
+commands:
+  # you can disable individual built-in commands here
+#  disabledCommands:
+#    - home
+#    - sethome
+#    - spawn
 
 # cooldowns for various commands can be defined here
 # A cooldown of 0 is no cooldown at all.

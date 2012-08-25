@@ -131,9 +131,47 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findAllSpawns()
 	 */
+	/*
 	@Override
 	public Set<Spawn> findAllSpawns() {
 		return super.findAllObjects();
+	}
+	*/
+	
+	/** While a YAML file is loading, super.findAllObjects() will fail since
+	 * it's not yet loaded. Yet if that YAML file has PlayerSpawn objects in it,
+	 * PlayerSpawn has a @ManyToOne mapping to Spawn, so it needs to be able
+	 * to find Spawns in order to load. So this temporaryAllObjects works around
+	 * the problem by holding Spawn objects as they are loaded so that
+	 * PlayerSpawn can find them.
+	 */
+	private Set<Spawn> temporaryAllObjects;
+	@Override
+	public Set<Spawn> findAllSpawns() {
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			if( StorageYaml.getCurrentlyInitializingInstance().getSpawnDAO() == this ) {
+				return temporaryAllObjects;
+			}
+		}
+		// if there is no intializing going on, then erase the temporary set
+		// and fall through to findAllObjects
+		else if( temporaryAllObjects != null ) {
+			temporaryAllObjects.clear();
+			temporaryAllObjects = null;
+		}
+		
+		return super.findAllObjects();
+	}
+	
+	public void spawnLoaded(Spawn spawn) {
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			if( StorageYaml.getCurrentlyInitializingInstance().getSpawnDAO() == this ) {
+				if( temporaryAllObjects == null )
+					temporaryAllObjects = new HashSet<Spawn>(50);
+				
+				temporaryAllObjects.add(spawn);
+			}
+		}
 	}
 
 	/* (non-Javadoc)

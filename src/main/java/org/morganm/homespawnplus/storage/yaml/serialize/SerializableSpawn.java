@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 import org.morganm.homespawnplus.util.Debug;
 
 /**
@@ -39,6 +40,11 @@ implements SerializableYamlObject<Spawn>
 		o = map.get(ATTR_UPDATED_BY);
 		if( o instanceof String )
 			getObject().setUpdatedBy((String) o);
+
+		// tell the currently loading StorageYaml that this object has been loaded
+		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
+			StorageYaml.getCurrentlyInitializingInstance().spawnLoaded(getObject());
+		}
 	}
 
 	@Override

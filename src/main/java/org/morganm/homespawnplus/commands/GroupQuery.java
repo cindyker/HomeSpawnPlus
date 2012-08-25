@@ -4,9 +4,7 @@
 package org.morganm.homespawnplus.commands;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 
@@ -22,19 +20,7 @@ public class GroupQuery extends BaseCommand {
 	public String[] getCommandAliases() { return new String[] {"gq"}; }
 	
 	@Override
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
-		return executePrivate(console, command, args);
-	}
-
-	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		return executePrivate(p, command, args);
-	}
-	
-	private boolean executePrivate(CommandSender sender, Command command, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) {
 		String playerName = null;
 		String playerWorld = null;
 		boolean playerOffline = false;
@@ -83,5 +69,4 @@ public class GroupQuery extends BaseCommand {
 				+ " (using perms "+plugin.getPermissionSystem().getSystemInUseString()+")");
 		return true;
 	}
-
 }

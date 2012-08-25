@@ -110,7 +110,7 @@ public class Home implements EntityWithLocation {
     
     public Location getLocation() {
     	if( location == null ) {
-	    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(getWorld());
+	    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(world);
 	    	location = new Location(w, getX(), getY(), getZ(), getYaw(), getPitch());
     	}
     	

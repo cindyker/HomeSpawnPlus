@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -28,47 +28,109 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StrategyConfig {
-	private final Logger log;
-	private final String logPrefix;
+	private final org.morganm.homespawnplus.util.Logger log;
 	private final HomeSpawnPlus plugin;
 	private final Debug debug = Debug.getInstance();
-	private final Map<EventType, Set<Strategy>> defaultStrategies;
+	private final Map<String, Set<Strategy>> defaultStrategies;
 	private final Map<String, WorldStrategies> worldStrategies;
 	private final Map<String, PermissionStrategies> permissionStrategies;
 	
 	public StrategyConfig(final HomeSpawnPlus plugin) {
 		this.plugin = plugin;
-		this.log = plugin.getLogger();
-		this.logPrefix = plugin.getLogPrefix();
+		this.log = plugin.getLog();
 		
-		defaultStrategies = new HashMap<EventType, Set<Strategy>>();
+		defaultStrategies = new HashMap<String, Set<Strategy>>();
 		worldStrategies = new HashMap<String, WorldStrategies>();
 		permissionStrategies = new LinkedHashMap<String, PermissionStrategies>();
+	}
+	
+	/** Given an eventType, check to see if it's related to a region
+	 * and if so, register interest in that region.
+	 * 
+	 * @param eventType
+	 */
+	private void checkTypeForRegion(String eventType) {
+		eventType = eventType.toLowerCase();
+		log.debug("checkTypeForRegion() eventType=",eventType);
+		int index = eventType.indexOf(';');
+		if( index == -1 )
+			return;
+		
+		if( eventType.startsWith(EventType.ENTER_REGION.toString())
+				|| eventType.startsWith(EventType.EXIT_REGION.toString()) )
+		{
+			String region = eventType.substring(index+1);
+			World world = null;
+			int commaIndex = region.indexOf(',');
+			if( commaIndex != -1 ) {
+				String worldName = region.substring(commaIndex+1);
+				world = Bukkit.getWorld(worldName);
+				if( world == null )
+					log.warn("eventType ",eventType," references non-existant world ",worldName);
+				region = region.substring(0, commaIndex);
+			}
+			
+			plugin.getWorldGuardIntegration().getWorldGuardRegion().registerRegion(world, region);
+		}
+		else {
+			// TODO: some sort of warning
+		}
 	}
 	
 	/** Called to load strategies out of the config and into run-time variables.
 	 * 
 	 */
 	public void loadConfig() {
+		debug.debug("loadConfig() enter");
+
 		// clear out any existing data before loading from the config
 		defaultStrategies.clear();
 		worldStrategies.clear();
 		permissionStrategies.clear();
 		
 		final FileConfiguration config = plugin.getConfig();
-		final EventType[] eventTypes = EventType.values();
+
+		ConfigurationSection section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE);
+		loadDefaultStrategies(section);
 		
-		debug.debug("loadConfig() loading default strategies");
-		// load default strategies
+		section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE
+				+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE);
+		loadWorldStrategies(section);
+		
+		section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE
+				+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE);
+		loadPermissionStrategies(section);
+
+		debug.debug("loadConfig() finished loading");
+	}
+	
+	private void loadDefaultStrategies(ConfigurationSection section) {
+		if( section == null ) {
+			debug.debug("loadDefaultStrategies() default section is null, skipping");
+			return;
+		}
+		
 		int count=0;
-		for(int i=0; i < eventTypes.length; i++) {
-			List<String> strategies = config.getStringList(ConfigOptions.SETTING_EVENTS_BASE + "." + eventTypes[i].getConfigOption());
+		debug.debug("loadDefaultStrategies() loading default strategies");
+
+		Set<String> eventTypes = section.getKeys(false);
+		for(String eventType : eventTypes) {
+			// get config children, then use lowercase to make configs case-insensitive
+			List<String> strategies = section.getStringList(eventType);
+			eventType = eventType.toLowerCase();
+			
+			// skip special sections
+			if( eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_PERMBASE)
+					|| eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_WORLDBASE) )
+				continue;
 			
 			if( strategies != null && strategies.size() > 0) {
-				Set<Strategy> set = defaultStrategies.get(eventTypes[i]);
+				checkTypeForRegion(eventType);
+				
+				Set<Strategy> set = defaultStrategies.get(eventType);
 				if( set == null ) {
 					set = new LinkedHashSet<Strategy>();
-					defaultStrategies.put(eventTypes[i], set);
+					defaultStrategies.put(eventType, set);
 				}
 
 				for(String item : strategies) {
@@ -77,116 +139,141 @@ public class StrategyConfig {
 						set.add(strategy);
 						count++;
 					} catch (StrategyException e) {
-						log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
+						log.warn(e, "Error loading strategy", e);
 					}
 				}
 			}
 		}
-		debug.debug("loadConfig() loaded ",count," total default strategy objects");
-		count=0;
 		
-		debug.debug("loadConfig() loading world-specific strategies");
-		// now load world-specific strategies
-		ConfigurationSection worldSection = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE + "." + ConfigOptions.SETTING_EVENTS_WORLDBASE);
-		Set<String> eventWorlds = null;
-		if( worldSection != null )
-			eventWorlds = worldSection.getKeys(false);
-		if( eventWorlds != null ) {
-			for(String world : eventWorlds) {
-				for(int i=0; i < eventTypes.length; i++) {
-					List<String> strategies = config.getStringList(ConfigOptions.SETTING_EVENTS_BASE
-							+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE
-							+ "." + world
-							+ "." + eventTypes[i].getConfigOption());
-					
-					if( strategies != null && strategies.size() > 0 ) {
-						WorldStrategies worldStrat = worldStrategies.get(world);
-						if( worldStrat == null ) {
-							worldStrat = new WorldStrategies();
-							worldStrategies.put(world, worldStrat);
-						}
-						
-						Set<Strategy> set = worldStrat.eventStrategies.get(eventTypes[i]);
-						if( set == null ) {
-							set = new LinkedHashSet<Strategy>();
-							worldStrat.eventStrategies.put(eventTypes[i], set);
-						}
-
-						for(String item : strategies) {
-							try {
-								Strategy strategy = StrategyFactory.newStrategy(item);
-								set.add(strategy);
-								count++;
-							} catch (StrategyException e) {
-								log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
-							}
-						}
-					}
-				}
-			}
+		debug.debug("loadDefaultStrategies() loaded ",count," total default strategy objects");
+	}
+	
+	private void loadWorldStrategies(ConfigurationSection section) {
+		if( section == null ) {
+			debug.debug("loadWorldStrategies() world section is null, skipping");
+			return;
 		}
-		debug.debug("loadConfig() loaded ",count," total world strategy objects");
-		count=0;
 		
-		debug.debug("loadConfig() loading permission-specific strategies");
-		// now load permission-specific strategies
-		ConfigurationSection permSection = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE
-				+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE);
-		Set<String> permEntries = null;
-		if( permSection != null )
-			permEntries = permSection.getKeys(false);
-		if( permEntries != null ) {
-			for(String entry : permEntries) {
-				
-				List<String> perms = config.getStringList(ConfigOptions.SETTING_EVENTS_BASE
-						+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE
-						+ "." + entry
-						+ ".permissions");
-				
-				// if no permissions are defined, we're done with this entry
-				if( perms == null || perms.size() == 0 )
-					continue;
-				
-				PermissionStrategies permStrat = permissionStrategies.get(entry);
-				if( permStrat == null ) {
-					permStrat = new PermissionStrategies();
-					permissionStrategies.put(entry, permStrat);
-				}
+		int count=0;
+		debug.debug("loadWorldStrategies() loading world-specific strategies");
+		
+		Set<String> eventWorlds = section.getKeys(false);
+		if( eventWorlds == null ) {
+			debug.debug("loadWorldStrategies() world section keys are null, skipping");
+			return;
+		}
 
-				// assign defined permissions to this entry
-				permStrat.permissions = perms;
-				
-				// now loop for each event type to load event strategies
-				for(int i=0; i < eventTypes.length; i++) {
-					List<String> strategies = config.getStringList(ConfigOptions.SETTING_EVENTS_BASE
-							+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE
-							+ "." + entry
-							+ "." + eventTypes[i].getConfigOption());
-					if( strategies != null && strategies.size() > 0 ) {
-						Set<Strategy> set = permStrat.eventStrategies.get(eventTypes[i]);
-						if( set == null ) {
-							set = new LinkedHashSet<Strategy>();
-							permStrat.eventStrategies.put(eventTypes[i], set);
-						}
-
-						for(String item : strategies) {
-							try {
-								Strategy strategy = StrategyFactory.newStrategy(item);
-								set.add(strategy);
-								count++;
-							} catch (StrategyException e) {
-								log.log(Level.WARNING, logPrefix+" Error loading strategy", e);
-							}
-						}
-					}
-				}
+		for(String world : eventWorlds) {
+			WorldStrategies worldStrat = worldStrategies.get(world);
+			if( worldStrat == null ) {
+				worldStrat = new WorldStrategies();
+				worldStrategies.put(world, worldStrat);
 			}
 			
+			ConfigurationSection worldSection = section.getConfigurationSection(world);
+			Set<String> types = worldSection.getKeys(false);
+			if( types != null && types.size() > 0 ) {
+				for(String eventType : types) {
+					// get config children, then use lowercase to make configs case-insensitive
+					List<String> strategies = section.getStringList(world+"."+eventType);
+					eventType = eventType.toLowerCase();
+					
+					Set<Strategy> set = worldStrat.eventStrategies.get(eventType);
+					if( set == null ) {
+						set = new LinkedHashSet<Strategy>();
+						worldStrat.eventStrategies.put(eventType.toString(), set);
+					}
+					
+					if( strategies != null && strategies.size() > 0 ) {
+						checkTypeForRegion(eventType);
+						
+						for(String item : strategies) {
+							try {
+								Strategy strategy = StrategyFactory.newStrategy(item);
+								set.add(strategy);
+								count++;
+							} catch (StrategyException e) {
+								log.warn(e, "Error loading strategy", e);
+							}
+						}
+					}
+				}
+			}
 		}
-		debug.debug("loadConfig() loaded ",count," total permission strategy objects");
-		count=0;
+			
+		debug.debug("loadWorldStrategies() loaded ",count," total world strategy objects");
+	}
+	
+	/** Load permission strategies.
+	 * 
+	 * @return
+	 */
+	private void loadPermissionStrategies(ConfigurationSection section) {
+		if( section == null ) {
+			debug.debug("loadPermissionStrategies() permission section is null, skipping");
+			return;
+		}
+		
+		int count=0;
+		debug.debug("loadPermissionStrategies() loading permission-specific strategies");
+		
+		Set<String> permEntries = section.getKeys(false);
+		if( permEntries == null ) {
+			debug.debug("loadPermissionStrategies() permission section keys are null, skipping");
+			return;
+		}
 
-		debug.debug("loadConfig() finished loading");
+		for(String entry : permEntries) {
+			List<String> perms = section.getStringList(entry+".permissions");
+
+			// if no permissions are defined, we're done with this entry
+			if( perms == null || perms.size() == 0 )
+				continue;
+
+			PermissionStrategies permStrat = permissionStrategies.get(entry);
+			if( permStrat == null ) {
+				permStrat = new PermissionStrategies();
+				permissionStrategies.put(entry, permStrat);
+			}
+
+			// assign defined permissions to this entry
+			permStrat.permissions = perms;
+
+			ConfigurationSection entrySection = section.getConfigurationSection(entry);
+			Set<String> entryKeys = entrySection.getKeys(false);
+			
+			for(String eventType : entryKeys) {
+				// get config children, then use lowercase to make configs case-insensitive
+				List<String> strategies = entrySection.getStringList(eventType);
+				eventType = eventType.toLowerCase();
+
+				// skip the "permissions" entry
+				if( eventType.equals("permissions") )
+					continue;
+				
+				if( strategies != null && strategies.size() > 0 ) {
+					checkTypeForRegion(eventType);
+					
+					Set<Strategy> set = permStrat.eventStrategies.get(eventType);
+					if( set == null ) {
+						set = new LinkedHashSet<Strategy>();
+						permStrat.eventStrategies.put(eventType, set);
+					}
+
+					for(String item : strategies) {
+						try {
+							Strategy strategy = StrategyFactory.newStrategy(item);
+							set.add(strategy);
+							count++;
+						} catch (StrategyException e) {
+							log.warn(e, "Error loading strategy", e);
+						}
+					}
+				}
+			}
+		}
+
+		debug.debug("loadPermissionStrategies() loaded ",count," total permission strategy objects");
 	}
 	
 	/** Given a specific event type, return the default strategy chain associated with
@@ -197,7 +284,7 @@ public class StrategyConfig {
 	 * @param event
 	 * @return
 	 */
-	public Set<Strategy> getDefaultStrategies(final EventType event) {
+	public Set<Strategy> getDefaultStrategies(final String event) {
 		return defaultStrategies.get(event);
 	}
 	
@@ -209,7 +296,7 @@ public class StrategyConfig {
 	 * @param player
 	 * @return guaranteed to not be null
 	 */
-	public List<Set<Strategy>> getPermissionStrategies(final EventType event, final Player player) {
+	public List<Set<Strategy>> getPermissionStrategies(final String event, final Player player) {
 		List<Set<Strategy>> strategies = new ArrayList<Set<Strategy>>();
 		
 		for(PermissionStrategies strat : permissionStrategies.values()) {
@@ -235,7 +322,7 @@ public class StrategyConfig {
 	 * @param player
 	 * @return null if no world strategies exist for the world
 	 */
-	public Set<Strategy> getWorldStrategies(final EventType event, final String world) {
+	public Set<Strategy> getWorldStrategies(final String event, final String world) {
 		WorldStrategies worldStrats = worldStrategies.get(world);
 		if( worldStrats != null )
 			return worldStrats.eventStrategies.get(event);
@@ -340,12 +427,12 @@ public class StrategyConfig {
 	
 	private class WorldStrategies {
 //		String worldName;
-		Map<EventType, Set<Strategy>> eventStrategies = new HashMap<EventType, Set<Strategy>>();
+		Map<String, Set<Strategy>> eventStrategies = new HashMap<String, Set<Strategy>>();
 	}
 	
 	private class PermissionStrategies {
 //		String configNode;
 		List<String> permissions;
-		Map<EventType, Set<Strategy>> eventStrategies = new HashMap<EventType, Set<Strategy>>();
+		Map<String, Set<Strategy>> eventStrategies = new HashMap<String, Set<Strategy>>();
 	}
 }

@@ -27,12 +27,15 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.PlayerLastLocation;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.util.Teleport;
 
 
 /**
@@ -215,8 +218,8 @@ public class HSPPlayerListener implements Listener {
     {
     	final Player p = event.getPlayer();
     	
-		// Is this a new player?
-    	if( util.isNewPlayer(p) ) {
+    	boolean isNewPlayer = util.isNewPlayer(p);
+    	if( isNewPlayer ) {
     		if( util.isVerboseLogging() )
     			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " New player "+p.getName()+" detected.");
     	}
@@ -235,13 +238,23 @@ public class HSPPlayerListener implements Listener {
     	if( util.isVerboseLogging() )
     		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Attempting to respawn player "+p.getName()+" (joining).");
     	
-    	// execute ON_JOIN strategy to find out where we should put the player
-    	Location l = plugin.getStrategyEngine().getStrategyLocation(EventType.ON_JOIN, p);
-    	if( l != null ) {
-    		util.delayedTeleport(p, l);
+    	StrategyResult result = null;
+    	// execute NEW_PLAYER strategy if player is new. If no results are returned, this
+    	// will fall through to the ON_JOIN strategy instead.
+    	if( isNewPlayer )
+    		result = plugin.getStrategyEngine().getStrategyResult(EventType.NEW_PLAYER, p);
+    	
+    	// execute ON_JOIN strategy to find out where we should put the player, but only
+    	// if there was no result from newPlayer checks
+    	if( result == null || (result != null && !result.isExplicitDefault()) )
+    		result = plugin.getStrategyEngine().getStrategyResult(EventType.ON_JOIN, p);
+    	
+    	Location joinLocation = result.getLocation();
+    	if( joinLocation != null ) {
+    		util.delayedTeleport(p, joinLocation);
     		
-    		// verify they ended up where we sent them by checking 1 second (20 tics) later
-    		final Location hspLocation = l;
+    		// verify they ended up where we sent them by checking 5 tics later
+    		final Location hspLocation = joinLocation;
         	plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
 					Location currentLocation = p.getLocation();
@@ -257,7 +270,7 @@ public class HSPPlayerListener implements Listener {
 								+", final player location "+util.shortLocationString(currentLocation));
 					}
 				}
-			}, 20); 
+			}, 5); 
     	}
     }
     
@@ -306,6 +319,33 @@ public class HSPPlayerListener implements Listener {
     	}
     }
 
+    /** Method to monitor successful cross-world teleports and
+     * update PlayerLastLocation accordingly.
+     * 
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void monitorPlayerTeleport(PlayerTeleportEvent event) {
+    	// cross-world teleport event?
+    	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+    		 PlayerLastLocationDAO dao = plugin.getStorage().getPlayerLastLocationDAO();
+    		 PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+    		 if( playerLastLocation == null ) {
+    			 playerLastLocation = new PlayerLastLocation();
+    			 playerLastLocation.setPlayerName(event.getPlayer().getName());
+    		 }
+			 playerLastLocation.setLocation(event.getFrom());
+
+			 try {
+				 dao.save(playerLastLocation);
+			 }
+			 catch(StorageException e) {
+				 log.log(Level.WARNING, logPrefix+" Error writing to database: "+e.getMessage(), e);
+			 }
+			 debug.debug("Saved player ",event.getPlayer()," location as ",playerLastLocation);
+    	}
+    }
+
     public void onPlayerTeleport(PlayerTeleportEvent event) {
     	if( event.isCancelled() )
     		return;
@@ -324,17 +364,45 @@ public class HSPPlayerListener implements Listener {
 //	    	world.refreshChunk(chunkx, chunkz);
 //    	}
     	
+    	EventType type = null;
     	// cross-world teleport event?
-    	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
-        	final StrategyContext context = new StrategyContext();
-        	context.setPlayer(event.getPlayer());
-        	context.setSpawnEventType(EventType.CROSS_WORLD_TELEPORT);
-        	context.setLocation(event.getTo());	// location involved is the target location
-        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
-        	
-        	if( result != null && result.getLocation() != null )
-        		event.setTo(result.getLocation());
+		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+    		if( event.getPlayer().getName().equals(plugin.getMultiverseIntegration().getCurrentTeleporter()) ) {
+    			type = EventType.MULTIVERSE_TELEPORT_CROSSWORLD;
+            	debug.debug("multiverse crossworld teleport detected");
+    		}
+    		else {
+    			type = EventType.CROSS_WORLD_TELEPORT;
+            	debug.debug("crossworld teleport detected");
+    		}
+    		
     	}
+		// same-world multiVerse teleport?
+		else if( plugin.getMultiverseIntegration().getCurrentTeleporter() != null ) {
+			type = EventType.MULTIVERSE_TELEPORT;
+        	debug.debug("multiverse same world teleport detected");
+		}
+		
+		if( type != null ) {
+        	final StrategyContext context = new StrategyContext(plugin);
+        	context.setEventType(type.toString());
+        	context.setPlayer(event.getPlayer());
+        	context.setLocation(event.getTo());	// location involved is the target location
+        	
+    		// protect against a double-event for multiverse teleports
+//    		if( plugin.getMultiverseIntegration().getCurrentTeleporter() != null ||
+//    				!event.getPlayer().getName().equals(Teleport.getInstance().getCurrentTeleporter()) ) {
+	        	StrategyResult result = plugin.getStrategyEngine().getStrategyResult(context);
+	        	if( result != null && result.getLocation() != null )
+	        		event.setTo(result.getLocation());
+//    		}
+		}
+    	
+    	// teleport is finished, clear current teleporter
+    	plugin.getMultiverseIntegration().setCurrentTeleporter(null);
+    	plugin.getMultiverseIntegration().setSourcePortalName(null);
+    	plugin.getMultiverseIntegration().setDestinationPortalName(null);
+		Teleport.getInstance().setCurrentTeleporter(null);
     }
     
     @EventHandler(priority=EventPriority.MONITOR)

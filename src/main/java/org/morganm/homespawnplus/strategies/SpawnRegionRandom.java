@@ -9,17 +9,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Teleport;
-import org.morganm.homespawnplus.util.WorldGuardInterface;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-/**
+/** Spawn at a random point inside of a named region.
+ * 
  * @author morganm
  *
  */
@@ -44,7 +45,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		if( wgInterface == null )
+		if( wgInterface == null || !plugin.getWorldGuardIntegration().isEnabled() )
 			return null;
 		
 		World theWorld = null;
@@ -56,7 +57,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 			}
 		}
 		else
-			theWorld = context.getPlayer().getLocation().getWorld();
+			theWorld = context.getEventLocation().getWorld();
 		
 		ProtectedRegion wgRegion = wgInterface.getWorldGuardRegion(theWorld, region);
 		
@@ -67,7 +68,9 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( region == null )
 			return null;
 
-		final Teleport.Bounds yBounds = context.getModeBounds();
+		Teleport.Bounds yBounds = context.getModeBounds();
+		if( yBounds == null )
+			yBounds = Teleport.getInstance().getDefaultBounds();
 		
 		BlockVector bvMin = wgRegion.getMinimumPoint();
 		// minimum Y never goes below yBounds
@@ -96,7 +99,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( p == null )
 			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
 		else {
-			wgInterface = new WorldGuardInterface(plugin);
+			wgInterface = plugin.getWorldGuardIntegration().getWorldGuardInterface();
 			
 			// look for the region and print a warning if we didn't find one, so the admin
 			// has a heads up they may have misconfigured the strategy

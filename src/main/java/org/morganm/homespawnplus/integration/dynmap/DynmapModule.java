@@ -1,4 +1,4 @@
-package org.morganm.homespawnplus.dynmap;
+package org.morganm.homespawnplus.integration.dynmap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

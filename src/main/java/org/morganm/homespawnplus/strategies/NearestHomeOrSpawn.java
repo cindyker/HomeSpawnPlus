@@ -48,8 +48,8 @@ public class NearestHomeOrSpawn extends BaseStrategy {
 				return homeResult;
 		}
 
-		double homeDistance = context.getPlayer().getLocation().distance(homeLocation);
-		double spawnDistance = context.getPlayer().getLocation().distance(spawnLocation);
+		double homeDistance = context.getEventLocation().distance(homeLocation);
+		double spawnDistance = context.getEventLocation().distance(spawnLocation);
 		
 		// otherwise, compare the results and return the closer one
 		if( homeDistance < spawnDistance )

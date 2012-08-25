@@ -1133,7 +1133,9 @@ public class HomeSpawnUtils {
 				l = safeLocation;
 		}
 		
+		Teleport.getInstance().setCurrentTeleporter(p.getName());
 		p.teleport(l, cause);
+		Teleport.getInstance().setCurrentTeleporter(null);
     }
     public void teleport(Player p, Location l, TeleportCause cause) {
     	teleport(p, l, cause, null);
@@ -1160,7 +1162,9 @@ public class HomeSpawnUtils {
     	
     	public void run() {
     		debug.debug(logPrefix+" delayed teleporting "+p+" to "+l);
+    		Teleport.getInstance().setCurrentTeleporter(p.getName());
     		teleport(p, l, TeleportCause.PLUGIN);
+    		Teleport.getInstance().setCurrentTeleporter(null);
     	}
     }
 }

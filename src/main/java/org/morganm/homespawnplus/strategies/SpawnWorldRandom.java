@@ -17,7 +17,9 @@ import org.morganm.homespawnplus.util.Teleport;
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.WorldBorder;
 
-/**
+/** Spawn at a completely random spot on the local world, obeying WorldBorder
+ * limits, if any.
+ * 
  * @author morganm
  *
  */
@@ -44,7 +46,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 			}
 		}
 		else
-			w = context.getLocation().getWorld();
+			w = context.getEventLocation().getWorld();
 		
 		Teleport.Bounds yBounds = context.getModeBounds();
 		if( yBounds == null )

@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
@@ -20,20 +20,25 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.morganm.homespawnplus.command.CommandProcessor;
+import org.morganm.homespawnplus.command.CommandConfig;
+import org.morganm.homespawnplus.command.CommandRegister;
 import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.config.ConfigFactory;
 import org.morganm.homespawnplus.config.ConfigOptions;
-import org.morganm.homespawnplus.dynmap.DynmapModule;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.entity.PlayerLastLocation;
+import org.morganm.homespawnplus.entity.PlayerSpawn;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.Locale;
 import org.morganm.homespawnplus.i18n.LocaleConfig;
 import org.morganm.homespawnplus.i18n.LocaleFactory;
+import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
+import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
 import org.morganm.homespawnplus.listener.HSPEntityListener;
 import org.morganm.homespawnplus.listener.HSPPlayerListener;
 import org.morganm.homespawnplus.listener.HSPWorldListener;
@@ -47,6 +52,8 @@ import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLocation;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.util.CommandUsurper;
@@ -63,6 +70,7 @@ import org.morganm.homespawnplus.util.PermissionSystem;
 public class HomeSpawnPlus extends JavaPlugin {
     public static final Logger log = Logger.getLogger("HomeSpawnPlus");
     public static final String logPrefix = "[HomeSpawnPlus]";
+    private org.morganm.homespawnplus.util.Logger hspLogger;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
@@ -73,6 +81,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
 		ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
 		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
+		ConfigurationSerialization.registerClass(SerializablePlayerLastLocation.class, "PlayerLastLocation");
+		ConfigurationSerialization.registerClass(SerializablePlayerSpawn.class, "PlayerSpawn");
 	}
 	
     // singleton instance - This will always return the most recent
@@ -87,7 +97,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HomeInviteManager homeInviteManager;
     private StrategyEngine strategyEngine;
 	private Config config;
-    private CommandProcessor cmdProcessor;
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
     private JarUtils jarUtils;
@@ -98,8 +107,14 @@ public class HomeSpawnPlus extends JavaPlugin {
     private Locale locale;
     private Debug debug;
     private Metrics metrics;
+    private MultiverseIntegration multiverse;
+    private WorldGuardIntegration worldGuardIntegration;
 
     public Economy vaultEconomy = null;
+    
+    public HomeSpawnPlus() {
+    	this.hspLogger = new org.morganm.homespawnplus.util.LoggerImpl(this);
+    }
     
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
      * 
@@ -229,7 +244,12 @@ public class HomeSpawnPlus extends JavaPlugin {
     	debugEndTimer("Bukkit events");
         
     	debugStartTimer("commands");
-    	cmdProcessor = new CommandProcessor(HomeSpawnPlus.getInstance());
+    	CommandConfig config = new CommandConfig(getLog());
+    	ConfigurationSection section = getConfig().getConfigurationSection("commands");
+    	config.loadConfig(section);
+    	CommandRegister register = new CommandRegister(this);
+    	register.setCommandConfig(config);
+    	register.registerAllCommands();
     	
     	final HomeSpawnPlus pluginInstance = this;
     	getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -239,8 +259,18 @@ public class HomeSpawnPlus extends JavaPlugin {
 		} , 40);
     	debugEndTimer("commands");
     	
+    	debugStartTimer("Plugin integrations");
+    	// hook multiverse, if available
+    	multiverse = new MultiverseIntegration(this);
+    	multiverse.onEnable();
+    	worldGuardIntegration = new WorldGuardIntegration(this);
+    	worldGuardIntegration.init();
+    	debugEndTimer("Plugin integrations");
+        
+    	debugStartTimer("strategies");
     	processStrategyConfig();
     	detectAndWarn();
+    	debugEndTimer("strategies");
     	
     	debugStartTimer("metrics");
         // Load up the Plugin metrics
@@ -259,13 +289,16 @@ public class HomeSpawnPlus extends JavaPlugin {
     		dynmap.init();
         	debugEndTimer("dynmap");
     	}
-        
+    	
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
     }
     
     @Override
     public void onDisable() {
+    	// unhook multiverse (if needed)
+    	multiverse.onDisable();
+    	
     	Player[] players = getServer().getOnlinePlayers();
     	for(int i=0; i < players.length;i++) {
     		spawnUtils.updateQuitLocation(players[i]);
@@ -283,10 +316,10 @@ public class HomeSpawnPlus extends JavaPlugin {
 		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is disabled");
     }
     
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-    	return cmdProcessor.onCommand(sender, command, commandLabel, args);
-    }
+//    @Override
+//    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+//    	return cmdProcessor.onCommand(sender, command, commandLabel, args);
+//    }
     
     /** Returns the Config object the plugin is currently using.
      * 
@@ -467,6 +500,8 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(org.morganm.homespawnplus.entity.Player.class);
         classList.add(Version.class);
         classList.add(HomeInvite.class);
+        classList.add(PlayerSpawn.class);
+        classList.add(PlayerLastLocation.class);
         return classList;
     }
     
@@ -530,7 +565,8 @@ public class HomeSpawnPlus extends JavaPlugin {
     public ClassLoader getClassLoader() { return super.getClassLoader(); }
     
     public StrategyEngine getStrategyEngine() { return strategyEngine; }
-    public Logger getLogger() { return log; }
+    public org.morganm.homespawnplus.util.Logger getLog() { return hspLogger; }
+    public java.util.logging.Logger getLogger() { return log; }
     public String getLogPrefix() { return logPrefix; }
     public Storage getStorage() { return storage; }
     public CooldownManager getCooldownManager() { return cooldownManager; }
@@ -539,4 +575,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     public HomeInviteManager getHomeInviteManager() { return homeInviteManager; }
     public String getPluginName() { return pluginName; }
     public JarUtils getJarUtils() { return jarUtils; }
+    public MultiverseIntegration getMultiverseIntegration() { return multiverse; }
+    public WorldGuardIntegration getWorldGuardIntegration() { return worldGuardIntegration; }
 }

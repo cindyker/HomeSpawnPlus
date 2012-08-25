@@ -54,7 +54,7 @@ implements SerializableYamlObject<Home>
 		// tell the currently loading StorageYaml that this object has been
 		// loaded. @see org.morganm.homespawnplus.storage.yaml.HomeDAYYaml.temporaryAllObjects
 		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
-			StorageYaml.getCurrentlyInitializingInstance().objectLoaded(getObject());
+			StorageYaml.getCurrentlyInitializingInstance().homeLoaded(getObject());
 		}
 	}
 

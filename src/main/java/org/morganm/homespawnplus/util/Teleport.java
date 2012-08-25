@@ -43,6 +43,7 @@ public class Teleport {
 	private Logger log = Logger.getLogger(Teleport.class.toString());
 	private String logPrefix = "";
 	private final Debug debug = Debug.getInstance();
+	private String currentTeleporter;
 	
 	static {
 		// initialize all to 0
@@ -89,6 +90,11 @@ public class Teleport {
 	public void setLogPrefix(String logPrefix) {
 		this.logPrefix = logPrefix;
 	}
+	
+	public void setCurrentTeleporter(String name) {
+		this.currentTeleporter = name;
+	}
+	public String getCurrentTeleporter() { return currentTeleporter; }
 	
 	private boolean isSafeBlock(Block b, int flags) {
 		final Block up = b.getRelative(BlockFace.UP);
@@ -300,8 +306,11 @@ public class Teleport {
 	 */
 	public void safeTeleport(final Player p, final Location l, final TeleportCause cause) {
 		Location safeLocation = safeLocation(l);
-		if( safeLocation != null )
+		if( safeLocation != null ) {
+			setCurrentTeleporter(p.getName());
 			p.teleport(safeLocation, cause);
+			setCurrentTeleporter(null);
+		}
 		else
 			log.info(logPrefix+" safeTeleport: couldn't find safe location near location "+l);
 	}

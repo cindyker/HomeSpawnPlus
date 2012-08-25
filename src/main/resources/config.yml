@@ -178,6 +178,10 @@ core:
   # usually the one set by "/sethome" with no args.
   bedHomeOverwritesDefault: true
 
+  # Set to true if you use Multiverse and want to take advantage
+  # of HSP's event integration with it
+  multiverseEnabled: false
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #
@@ -213,8 +217,16 @@ events:
   onNamedSpawnCommand:
     - spawnNamedSpawn
 
-  # dev feature only for now, do not use
+  # a crossWorld teleport that didn't involve Multiverse
   crossWorldTeleport:
+    - default
+
+  # a crossWorld teleport by Multiverse
+  multiverseCrossWorldTeleport:
+    - default
+
+  # a non-crossWorld teleport by Multiverse
+  multiverseTeleport:
     - default
 
 #  example of world-specific strategy

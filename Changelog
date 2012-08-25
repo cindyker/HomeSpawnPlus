@@ -1,3 +1,19 @@
+v1.7 - 
+* database upgrade: HSP will upgrade automatically, but to be safe you should backup your database before upgrading!
+* new strategies: SpawnLastLocation and SpawnLocalPlayerSpawn
+* new modes: ModeRememberSpawn and ModeRememberLocation
+* new WorldGuard mode: modeInRegion
+* Extensive direct Multiverse integration with many new modes and events
+* See http://dev.bukkit.org/server-mods/homespawnplus/pages/examples/example07/ for example of new modes in action
+* New command system which allows HSP to map commands dynamically at runtime
+* New command system also finally fully enables "disabledCommands" feature so you can completely disable commands you don't want to use
+* Custom event commands (uses new command system)
+* Implemented new events "onRegionEnter" and "onRegionExit"
+* added "onNewPlayer" event for new players. If no result is returned, HSP will fall through to "onJoin" which maintains backwards compatibility
+* added Spanish locale (thanks Consalvo!)
+* Ticket #123: added modeExcludeNewPlayerSpawn 
+* Ticket #125: fix for Essentials conversion
+
 v1.6.3 - Aug 22, 2012
 * some performance tuning
 * added built-in performance monitoring, tunable via core.warnPerformanceMillis config option

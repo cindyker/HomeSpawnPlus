@@ -30,7 +30,7 @@ import com.avaje.ebean.SqlUpdate;
  *
  */
 public class StorageEBeans implements Storage {
-	private static final int CURRENT_VERSION = 150;
+	private static final int CURRENT_VERSION = 170;
     private static final Logger log = HomeSpawnPlus.log;
 
 	private final HomeSpawnPlus plugin;
@@ -43,6 +43,8 @@ public class StorageEBeans implements Storage {
 	private SpawnDAOEBean spawnDAO;
 	private PlayerDAOEBean playerDAO;
 	private VersionDAOEBean versionDAO;
+	private PlayerSpawnDAOEBean playerSpawnDAO;
+	private PlayerLastLocationDAOEBean playerLastLocationDAO;
 
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -125,6 +127,8 @@ public class StorageEBeans implements Storage {
         spawnDAO = new SpawnDAOEBean(getDatabase());
         playerDAO = new PlayerDAOEBean(getDatabase());
         versionDAO = new VersionDAOEBean(getDatabase());
+        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
+        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
         
         try {
         	upgradeDatabase();
@@ -141,6 +145,10 @@ public class StorageEBeans implements Storage {
 	public org.morganm.homespawnplus.storage.dao.SpawnDAO getSpawnDAO() { return spawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.VersionDAO getVersionDAO() { return versionDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
 	
 	@Override
 	public void purgeCache() {
@@ -165,6 +173,12 @@ public class StorageEBeans implements Storage {
 		update = db.createSqlUpdate("delete from hsp_homeinvite");
 		update.execute();
 
+		update = db.createSqlUpdate("delete from hsp_playerspawn");
+		update.execute();
+		
+		update = db.createSqlUpdate("delete from hsp_playerlastloc");
+		update.execute();
+		
 		db.commitTransaction();
 	}
 	
@@ -179,7 +193,13 @@ public class StorageEBeans implements Storage {
 	private void upgradeDatabase() {
 		int knownVersion = CURRENT_VERSION;		// assume current version to start
 		final EbeanServer db = getDatabase();
-		final Version versionObject = getVersionDAO().getVersionObject();
+		Version versionObject = null;
+		try {
+			versionObject = getVersionDAO().getVersionObject();
+		}
+		catch(PersistenceException e) {
+			// ignore exception
+		}
 		
 		if( versionObject == null ) {
 			try {
@@ -216,6 +236,9 @@ public class StorageEBeans implements Storage {
 		
 		if( knownVersion < 150 )
 			updateToVersion150(db);
+		
+		if( knownVersion < 170 )
+			updateToVersion170(db);
 	}
 	
 	private void updateToVersion63(final EbeanServer db) {
@@ -388,8 +411,8 @@ public class StorageEBeans implements Storage {
 							+"`date_created` datetime NOT NULL,"
 							+"PRIMARY KEY (`id`),"
 							+"UNIQUE KEY `uq_hsp_homeinvite_1` (`home_id`,`invited_player`),"
-							+"KEY `ix_hsp_homeinvite_home_1` (`home_id`),"
-							+"CONSTRAINT `fk_hsp_homeinvite_home_1` FOREIGN KEY (`home_id`) REFERENCES `hsp_home` (`id`)"
+							+"KEY `ix_hsp_homeinvite_home_1` (`home_id`)"
+//							+",CONSTRAINT `fk_hsp_homeinvite_home_1` FOREIGN KEY (`home_id`) REFERENCES `hsp_home` (`id`)"
 							+")"
 					);
 			update.execute();
@@ -403,6 +426,107 @@ public class StorageEBeans implements Storage {
 		log.info(logPrefix + " Upgrade from version 0.9.1 database to version 1.5.0 complete");
 	}
 
+	private void updateToVersion170(final EbeanServer db) {
+		log.info(logPrefix + " Upgrading from version 1.5.0 database to version 1.7.0");
+		
+		boolean success = false;
+		if( isSqlLite() ) {
+			EBeanUtils ebu = EBeanUtils.getInstance();
+			try {
+				Connection conn = ebu.getConnection();
+				Statement stmt = conn.createStatement();
+				stmt.execute("BEGIN TRANSACTION;");
+				stmt.execute("CREATE TABLE hsp_playerspawn (id integer primary key"
+						+", player_name               varchar(32)"
+						+", world                     varchar(32)"
+						+", x                         double not null"
+						+", y                         double not null"
+						+", z                         double not null"
+						+", pitch                     float"
+						+", yaw                       float"
+						+", spawn_id                  integer"
+						+", last_modified             timestamp not null"
+						+", date_created              timestamp not null"
+						+", constraint uq_hsp_playerspawn_1 unique (world,player_name)"
+						+", constraint fk_hsp_playerspawn_spawn_2 foreign key (spawn_id) references hsp_spawn (id)"
+						+");"
+						);
+				stmt.execute("CREATE INDEX ix_hsp_playerspawn_spawn_2 on hsp_playerspawn (spawn_id);");
+
+				stmt.execute("CREATE TABLE hsp_playerlastloc (id integer primary key"
+						+", player_name               varchar(32)"
+						+", world                     varchar(32)"
+						+", x                         double not null"
+						+", y                         double not null"
+						+", z                         double not null"
+						+", pitch                     float"
+						+", yaw                       float"
+						+", last_modified             timestamp not null"
+						+", date_created              timestamp not null"
+						+", constraint uq_hsp_playerlastloc_1 unique (world,player_name)"
+						+");"
+						);
+				
+				stmt.execute("COMMIT;");
+				stmt.close();
+				conn.close();
+				
+				success = true;
+			}
+			catch(SQLException e) {
+				log.severe(logPrefix + " error attempting to update SQLite database schema!");
+				e.printStackTrace();
+			}
+		}
+		else {
+			SqlUpdate update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_playerlastloc` ("
+					+"`id` int(11) NOT NULL AUTO_INCREMENT,"
+					+"`player_name` varchar(32) DEFAULT NULL,"
+					+"`world` varchar(32) DEFAULT NULL,"
+					+"`x` double NOT NULL,"
+					+"`y` double NOT NULL,"
+					+"`z` double NOT NULL,"
+					+"`pitch` float DEFAULT NULL,"
+					+"`yaw` float DEFAULT NULL,"
+					+"`last_modified` datetime NOT NULL,"
+					+"`date_created` datetime NOT NULL,"
+					+"PRIMARY KEY (`id`),"
+					+"UNIQUE KEY `uq_hsp_playerlastloc_1` (`world`,`player_name`)"
+					+")"
+				);
+			update.execute();
+			
+			update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_playerspawn` ("
+					+"`id` int(11) NOT NULL AUTO_INCREMENT,"
+					+"`player_name` varchar(32) DEFAULT NULL,"
+					+"`world` varchar(32) DEFAULT NULL,"
+					+"`x` double NOT NULL,"
+					+"`y` double NOT NULL,"
+					+"`z` double NOT NULL,"
+					+"`pitch` float DEFAULT NULL,"
+					+"`yaw` float DEFAULT NULL,"
+					+"`spawn_id` int(11) DEFAULT NULL,"
+					+"`last_modified` datetime NOT NULL,"
+					+"`date_created` datetime NOT NULL,"
+					+"PRIMARY KEY (`id`),"
+					+"UNIQUE KEY `uq_hsp_playerspawn_1` (`world`,`player_name`),"
+					+"KEY `ix_hsp_playerspawn_spawn_2` (`spawn_id`)"
+					+")"
+				);
+			update.execute();
+			
+			success = true;
+		}
+
+		if( success ) {
+			SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=170");
+			update.execute();
+		}
+		log.info(logPrefix + " Upgrade from version 1.5.0 database to version 1.7.0 complete");
+	}
+	
 	// Ebeans does nothing with these methods
 	@Override
 	public void setDeferredWrites(boolean deferred) {}

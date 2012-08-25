@@ -119,4 +119,7 @@ public enum HSPMessages {
 	// v1.5.6
 	CMD_PERM_CHECK_TRUE,
 	CMD_PERM_CHECK_FALSE,
+	
+	// v1.7
+	NO_LOCATION_FOUND,
 }

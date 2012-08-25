@@ -8,6 +8,7 @@ import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.util.Debug;
@@ -35,6 +36,8 @@ public class StorageYaml implements Storage {
 	private PlayerDAOYaml playerDAO;
 	private VersionDAOYaml versionDAO;
 	private YamlDAOInterface[] allDAOs;
+	private PlayerSpawnDAOYaml playerSpawnDAO;
+	private PlayerLastLocationDAOYaml playerLastLocationDAO;
 
 	/**
 	 * 
@@ -83,6 +86,8 @@ public class StorageYaml implements Storage {
 				spawnDAO = new SpawnDAOYaml(singleFile, yaml);
 				playerDAO = new PlayerDAOYaml(singleFile, yaml);
 				versionDAO = new VersionDAOYaml(singleFile, yaml);
+				playerSpawnDAO = new PlayerSpawnDAOYaml(singleFile, yaml);
+				playerLastLocationDAO = new PlayerLastLocationDAOYaml(singleFile, yaml);
 
 				// only need one load because all DAOs are using the same YamlConfiguration object
 				yamlLoadQueue = new YamlDAOInterface[] { homeDAO };
@@ -98,12 +103,17 @@ public class StorageYaml implements Storage {
 				playerDAO = new PlayerDAOYaml(file);
 				file = new File(dataDirectory, "version.yml");
 				versionDAO = new VersionDAOYaml(file);
+				file = new File(dataDirectory, "playerSpawns.yml");
+				playerSpawnDAO = new PlayerSpawnDAOYaml(file);
+				file = new File(dataDirectory, "playerLastLocations.yml");
+				playerLastLocationDAO = new PlayerLastLocationDAOYaml(file);
 
-				yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
-
+				yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO,
+						playerDAO, versionDAO, playerSpawnDAO, playerLastLocationDAO };
 			}
 
-			allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO, versionDAO };
+			allDAOs = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO, playerDAO,
+					versionDAO, playerSpawnDAO, playerLastLocationDAO };
 
 			// now load the YAML data into memory so it's ready to go when we need it
 			for(int i=0; i < yamlLoadQueue.length; i++) {
@@ -134,8 +144,15 @@ public class StorageYaml implements Storage {
 	 * 
 	 * @param home
 	 */
-	public void objectLoaded(Home home) {
+	public void homeLoaded(Home home) {
 		homeDAO.homeLoaded(home);
+	}
+	/** Keep track of spawns as they are loading, same as homeLoaded() above.
+	 * 
+	 * @param home
+	 */
+	public void spawnLoaded(Spawn spawn) {
+		spawnDAO.spawnLoaded(spawn);
 	}
 	
 	@Override
@@ -148,6 +165,10 @@ public class StorageYaml implements Storage {
 	public org.morganm.homespawnplus.storage.dao.SpawnDAO getSpawnDAO() { return spawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.VersionDAO getVersionDAO() { return versionDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
+	@Override
+	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
 	
 	@Override
 	public void purgeCache() {

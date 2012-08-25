@@ -3,11 +3,14 @@
  */
 package org.morganm.homespawnplus.command;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -26,7 +29,7 @@ import org.morganm.homespawnplus.util.Debug;
  * @author morganm
  *
  */
-public abstract class BaseCommand implements Command {
+public abstract class BaseCommand implements Command, CommandExecutor {
 	protected Debug debug;
 	protected HomeSpawnPlus plugin;
 	protected HomeSpawnUtils util;
@@ -37,16 +40,98 @@ public abstract class BaseCommand implements Command {
 	private boolean enabled;
 	private String permissionNode;
 	private String commandName;
+	private Map<String, Object> commandParams;
+	
+//	public BaseCommand(String name) {
+//		super(name);
+//	}
 
 	/** By default, commands do not respond to console input. They can override this if they wish
 	 * to do so.
-	 * 
+	 * @deprecated use execute(CommandSender sender, String[] args)
 	 */
 	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args)
 	{
+		return this.execute(console, args);
+	}
+	/** By default, we do nothing. This is a legacy method that will be phased out.
+	 * @deprecated use execute(CommandSender sender, String[] args)
+	 * 
+	 */
+	public boolean execute(Player p, org.bukkit.command.Command command, String[] args)
+	{
+		return this.execute(p, args);
+	}
+	/** This is the new preferred method for commands to override.
+	 * 
+	 */
+	public boolean execute(CommandSender sender, String[] args) {
 		return false;
+		
+		/*
+		// support legacy Command mode by calling those methods first
+		if( sender instanceof Player ) {
+			Player p = (Player) sender;
+			
+			return this.execute(p, null, args);
+		}
+		else if( sender instanceof ConsoleCommandSender ) {
+			ConsoleCommandSender console = (ConsoleCommandSender) sender;
+			
+			return this.execute(console, null, args);
+		}
+		// no legacy methods? Call the preferred one
+		else
+			return execute(sender, args);
+			*/
 	}
 	
+	@Override
+	public final boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+		debug.debug("onCommand() label=",label);
+		// support legacy Command mode by calling those methods first
+		if( sender instanceof Player ) {
+			Player p = (Player) sender;
+			
+			debug.debug("onCommand() invoking Player execute");
+			return this.execute(p, command, args);
+		}
+		else if( sender instanceof ConsoleCommandSender ) {
+			ConsoleCommandSender console = (ConsoleCommandSender) sender;
+			
+			debug.debug("onCommand() invoking Console execute");
+			return this.execute(console, command, args);
+		}
+		// no legacy methods? Call the preferred one
+		else {
+			debug.debug("onCommand() invoking preferred execute");
+			return execute(sender, args);
+		}
+	}
+	
+	public void setCommandParameters(Map<String, Object> params) {
+		this.commandParams = params;
+	}
+	protected Object getParam(String param) {
+		if( commandParams != null )
+			return commandParams.get(param);
+		else
+			return null;
+	}
+	/** Return a given parameter as a string. If the parameter doesn't exist
+	 * or it is not a string, null is returned.
+	 * 
+	 * @param param
+	 * @return
+	 */
+	protected String getStringParam(String param) {
+		Object v = getParam(param);
+		if( v != null && v instanceof String)
+			return (String) v;
+		else
+			return null;
+	}
+
 	/** Returns this object for easy initialization in a command hash.
 	 * 
 	 * @param plugin
@@ -234,6 +319,11 @@ public abstract class BaseCommand implements Command {
 		return true;
 	}
 	
+	@Override
+	public void setCommandName(String name) {
+		commandName = name;
+	}
+	
 	/** Can be overridden, but default implementation just applies the command name
 	 * as the lower case version of the class name of the implemented command.
 	 */
@@ -312,9 +402,15 @@ public abstract class BaseCommand implements Command {
 			return baseName;
 	}
 
-	public String getCommandPermissionNode() {
-		if( permissionNode == null )
-			permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
+	public final String getCommandPermissionNode() {
+		if( permissionNode == null ) {
+			// set permission node from config params, if set
+			permissionNode = getStringParam("permission");
+			
+			// otherwise use default permission node
+			if( permissionNode == null )
+				permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
+		}
 		
 		return permissionNode;
 	}

@@ -24,15 +24,23 @@ import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
 import org.morganm.homespawnplus.strategies.ModeHomeNormal;
 import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
+import org.morganm.homespawnplus.strategies.ModeInRegion;
+import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
+import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeNoIce;
 import org.morganm.homespawnplus.strategies.ModeNoLeaves;
 import org.morganm.homespawnplus.strategies.ModeNoLilyPad;
 import org.morganm.homespawnplus.strategies.ModeNoWater;
+import org.morganm.homespawnplus.strategies.ModeRememberLocation;
+import org.morganm.homespawnplus.strategies.ModeRememberSpawn;
+import org.morganm.homespawnplus.strategies.ModeSourceWorld;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
 import org.morganm.homespawnplus.strategies.SpawnDefaultWorld;
 import org.morganm.homespawnplus.strategies.SpawnGroup;
 import org.morganm.homespawnplus.strategies.SpawnGroupSpecificWorld;
+import org.morganm.homespawnplus.strategies.SpawnLastLocation;
+import org.morganm.homespawnplus.strategies.SpawnLocalPlayerSpawn;
 import org.morganm.homespawnplus.strategies.SpawnLocalRandom;
 import org.morganm.homespawnplus.strategies.SpawnLocalWorld;
 import org.morganm.homespawnplus.strategies.SpawnNamedSpawn;
@@ -72,6 +80,8 @@ public class StrategyFactory {
 		noArgStrategies.put(new ModeNoLeaves().getStrategyConfigName().toLowerCase(), ModeNoLeaves.class);
 		noArgStrategies.put(new ModeNoIce().getStrategyConfigName().toLowerCase(), ModeNoIce.class);
 		noArgStrategies.put(new ModeDefault().getStrategyConfigName().toLowerCase(), ModeDefault.class);
+		noArgStrategies.put(new ModeRememberSpawn().getStrategyConfigName().toLowerCase(), ModeRememberSpawn.class);
+		noArgStrategies.put(new ModeRememberLocation().getStrategyConfigName().toLowerCase(), ModeRememberLocation.class);
 		
 		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);
 		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName().toLowerCase(), SpawnLocalRandom.class);
@@ -79,6 +89,8 @@ public class StrategyFactory {
 		noArgStrategies.put(new SpawnNearestSpawn().getStrategyConfigName().toLowerCase(), SpawnNearestSpawn.class);
 		noArgStrategies.put(new SpawnNewPlayer().getStrategyConfigName().toLowerCase(), SpawnNewPlayer.class);
 		noArgStrategies.put(new SpawnWorldGuardRegion().getStrategyConfigName().toLowerCase(), SpawnWorldGuardRegion.class);
+		noArgStrategies.put(new SpawnLocalPlayerSpawn().getStrategyConfigName().toLowerCase(), SpawnLocalPlayerSpawn.class);
+		noArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
 		noArgStrategies.put(new Default().getStrategyConfigName().toLowerCase(), Default.class);
 		try {
 			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName().toLowerCase(), HomeMultiWorld.class);
@@ -107,6 +119,10 @@ public class StrategyFactory {
 		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName().toLowerCase(), SpawnRegionRandom.class);
 		
 		oneArgStrategies.put(new ModeYBounds().getStrategyConfigName().toLowerCase(), ModeYBounds.class);
+		oneArgStrategies.put(new ModeMultiverseSourcePortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseSourcePortal.class);
+		oneArgStrategies.put(new ModeMultiverseDestinationPortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseDestinationPortal.class);
+		oneArgStrategies.put(new ModeInRegion(null).getStrategyConfigName().toLowerCase(), ModeInRegion.class);
+		oneArgStrategies.put(new ModeSourceWorld(null).getStrategyConfigName().toLowerCase(), ModeSourceWorld.class);
 	}
 	
 	

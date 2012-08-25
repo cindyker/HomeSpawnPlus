@@ -30,7 +30,7 @@ import com.avaje.ebean.SqlUpdate;
  *
  */
 public class StorageEBeans implements Storage {
-	private static final int CURRENT_VERSION = 150;
+	private static final int CURRENT_VERSION = 170;
     private static final Logger log = HomeSpawnPlus.log;
 
 	private final HomeSpawnPlus plugin;
@@ -193,7 +193,13 @@ public class StorageEBeans implements Storage {
 	private void upgradeDatabase() {
 		int knownVersion = CURRENT_VERSION;		// assume current version to start
 		final EbeanServer db = getDatabase();
-		final Version versionObject = getVersionDAO().getVersionObject();
+		Version versionObject = null;
+		try {
+			versionObject = getVersionDAO().getVersionObject();
+		}
+		catch(PersistenceException e) {
+			// ignore exception
+		}
 		
 		if( versionObject == null ) {
 			try {
@@ -405,8 +411,8 @@ public class StorageEBeans implements Storage {
 							+"`date_created` datetime NOT NULL,"
 							+"PRIMARY KEY (`id`),"
 							+"UNIQUE KEY `uq_hsp_homeinvite_1` (`home_id`,`invited_player`),"
-							+"KEY `ix_hsp_homeinvite_home_1` (`home_id`),"
-							+"CONSTRAINT `fk_hsp_homeinvite_home_1` FOREIGN KEY (`home_id`) REFERENCES `hsp_home` (`id`)"
+							+"KEY `ix_hsp_homeinvite_home_1` (`home_id`)"
+//							+",CONSTRAINT `fk_hsp_homeinvite_home_1` FOREIGN KEY (`home_id`) REFERENCES `hsp_home` (`id`)"
 							+")"
 					);
 			update.execute();
@@ -473,7 +479,45 @@ public class StorageEBeans implements Storage {
 			}
 		}
 		else {
+			SqlUpdate update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_playerlastloc` ("
+					+"`id` int(11) NOT NULL AUTO_INCREMENT,"
+					+"`player_name` varchar(32) DEFAULT NULL,"
+					+"`world` varchar(32) DEFAULT NULL,"
+					+"`x` double NOT NULL,"
+					+"`y` double NOT NULL,"
+					+"`z` double NOT NULL,"
+					+"`pitch` float DEFAULT NULL,"
+					+"`yaw` float DEFAULT NULL,"
+					+"`last_modified` datetime NOT NULL,"
+					+"`date_created` datetime NOT NULL,"
+					+"PRIMARY KEY (`id`),"
+					+"UNIQUE KEY `uq_hsp_playerlastloc_1` (`world`,`player_name`)"
+					+")"
+				);
+			update.execute();
 			
+			update = db.createSqlUpdate(
+					"CREATE TABLE `hsp_playerspawn` ("
+					+"`id` int(11) NOT NULL AUTO_INCREMENT,"
+					+"`player_name` varchar(32) DEFAULT NULL,"
+					+"`world` varchar(32) DEFAULT NULL,"
+					+"`x` double NOT NULL,"
+					+"`y` double NOT NULL,"
+					+"`z` double NOT NULL,"
+					+"`pitch` float DEFAULT NULL,"
+					+"`yaw` float DEFAULT NULL,"
+					+"`spawn_id` int(11) DEFAULT NULL,"
+					+"`last_modified` datetime NOT NULL,"
+					+"`date_created` datetime NOT NULL,"
+					+"PRIMARY KEY (`id`),"
+					+"UNIQUE KEY `uq_hsp_playerspawn_1` (`world`,`player_name`),"
+					+"KEY `ix_hsp_playerspawn_spawn_2` (`spawn_id`)"
+					+")"
+				);
+			update.execute();
+			
+			success = true;
 		}
 
 		if( success ) {

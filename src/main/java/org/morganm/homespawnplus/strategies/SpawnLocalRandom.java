@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
 
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /** Spawn at a random spawn point on the local world. For example, if
@@ -26,10 +28,18 @@ public class SpawnLocalRandom extends BaseStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		Spawn spawn = null;
 		
+		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
+		
 		String playerLocalWorld = context.getEventLocation().getWorld().getName();
 		Set<Spawn> allSpawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
 		ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
 		for(Spawn theSpawn : allSpawns) {
+			// skip newPlayerSpawn if so directed
+			if( excludeNewPlayerSpawn && ConfigOptions.VALUE_NEW_PLAYER_SPAWN.equals(theSpawn.getName()) ) {
+				debug.debug("Skipped spawn choice ",theSpawn," because mode ",StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN," is enabled");
+				continue;
+			}
+			
 			if( playerLocalWorld.equals(theSpawn.getWorld()) ) {
 				spawnChoices.add(theSpawn);
 			}

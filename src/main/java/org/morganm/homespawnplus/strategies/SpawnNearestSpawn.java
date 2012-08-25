@@ -6,9 +6,11 @@ package org.morganm.homespawnplus.strategies;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /**
@@ -24,6 +26,8 @@ public class SpawnNearestSpawn extends BaseStrategy {
 		final Set<Spawn> allSpawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
 		final Location playerLoc = context.getEventLocation();
 		
+		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
+		
 		final String playerWorld = playerLoc.getWorld().getName();
 		double shortestDistance = -1;
 		Spawn closestSpawn = null;
@@ -34,6 +38,12 @@ public class SpawnNearestSpawn extends BaseStrategy {
 			// player is not on.
 			if( !playerWorld.equals(theSpawn.getWorld()) )
 				continue;
+			
+			// skip newPlayerSpawn if so directed
+			if( excludeNewPlayerSpawn && ConfigOptions.VALUE_NEW_PLAYER_SPAWN.equals(theSpawn.getName()) ) {
+				debug.debug("Skipped spawn choice ",theSpawn," because mode ",StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN," is enabled");
+				continue;
+			}
 			
 			final Location theLocation = theSpawn.getLocation();
 			if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world

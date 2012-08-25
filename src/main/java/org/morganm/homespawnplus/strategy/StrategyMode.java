@@ -31,7 +31,8 @@ public enum StrategyMode {
 	MODE_MULTIVERSE_SOURCE_PORTAL,
 	MODE_MULTIVERSE_DESTINATION_PORTAL,
 	MODE_IN_REGION,
-	MODE_SOURCE_WORLD;
+	MODE_SOURCE_WORLD,
+	MODE_EXCLUDE_NEW_PLAYER_SPAWN;
 	
 	// associated Teleport safeMode flag, if any
 	private int flagId = 0;

@@ -7,9 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -345,16 +343,17 @@ public class HSPPlayerListener implements Listener {
     	// implement "chunk refresh" if enabled
         // Code taken from codename_B's excellent BananaChunk plugin: this forces Bukkit
         // to refresh the chunk the player is teleporting into.
-    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, false) ) {
-	    	Player player = event.getPlayer();
-	    	World world = player.getWorld();
-	    	Chunk chunk = world.getChunkAt(event.getTo());
-	    	int chunkx = chunk.getX();
-	    	int chunkz = chunk.getZ();
-	    	world.refreshChunk(chunkx, chunkz);
-    	}
-
-    	EventType type = null;
+    	// commented out to prevent triggering Bukkit 1.3.1 refreshChunk() bug.
+    	// https://bukkit.atlassian.net/browse/BUKKIT-2275
+//    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.RELOAD_CHUNK_ON_TELEPORT, false) ) {
+//	    	Player player = event.getPlayer();
+//	    	World world = player.getWorld();
+//	    	Chunk chunk = world.getChunkAt(event.getTo());
+//	    	int chunkx = chunk.getX();
+//	    	int chunkz = chunk.getZ();
+//	    	world.refreshChunk(chunkx, chunkz);
+//    	}
+    	
     	// cross-world teleport event?
 		if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
     		if( event.getPlayer().getName().equals(plugin.getMultiverseIntegration().getCurrentTeleporter()) ) {

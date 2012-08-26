@@ -55,6 +55,10 @@ public class CommandUsurper {
 	    	for(String command : commands) {
 	        	PluginCommand cmd = plugin.getServer().getPluginCommand(command);
 	        	if( cmd != null ) {
+	        		// don't remap our own commands
+	        		if( cmd.getPlugin().getName().equals("HomeSpawnPlus") )
+	        			continue;
+	        		
 		        	cmd.setExecutor(usurp);
 	        		log.info(logPrefix + " command "+command+" usurped as specified by usurpCommands config option");
 	        	}
@@ -75,6 +79,7 @@ public class CommandUsurper {
      */
 	@SuppressWarnings("unchecked")
     private void removeCommand(String command) {
+		Debug.getInstance().debug("removeCommand(): command=",command);
 		CraftServer cs = (CraftServer) Bukkit.getServer();
 		SimpleCommandMap commandMap = cs.getCommandMap();
 		try {

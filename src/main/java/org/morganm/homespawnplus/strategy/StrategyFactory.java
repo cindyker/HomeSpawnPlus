@@ -18,6 +18,7 @@ import org.morganm.homespawnplus.strategies.HomeNamedHome;
 import org.morganm.homespawnplus.strategies.HomeNearestHome;
 import org.morganm.homespawnplus.strategies.HomeSpecificWorld;
 import org.morganm.homespawnplus.strategies.ModeDefault;
+import org.morganm.homespawnplus.strategies.ModeExcludeNewPlayerSpawn;
 import org.morganm.homespawnplus.strategies.ModeHomeAny;
 import org.morganm.homespawnplus.strategies.ModeHomeBedOnly;
 import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
@@ -82,6 +83,7 @@ public class StrategyFactory {
 		noArgStrategies.put(new ModeDefault().getStrategyConfigName().toLowerCase(), ModeDefault.class);
 		noArgStrategies.put(new ModeRememberSpawn().getStrategyConfigName().toLowerCase(), ModeRememberSpawn.class);
 		noArgStrategies.put(new ModeRememberLocation().getStrategyConfigName().toLowerCase(), ModeRememberLocation.class);
+		noArgStrategies.put(new ModeExcludeNewPlayerSpawn().getStrategyConfigName().toLowerCase(), ModeExcludeNewPlayerSpawn.class);
 		
 		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);
 		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName().toLowerCase(), SpawnLocalRandom.class);

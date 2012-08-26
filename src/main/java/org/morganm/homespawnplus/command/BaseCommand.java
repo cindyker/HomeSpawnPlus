@@ -128,6 +128,8 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 		Object v = getParam(param);
 		if( v != null && v instanceof String)
 			return (String) v;
+		else if( v != null )
+			return v.toString();
 		else
 			return null;
 	}

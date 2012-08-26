@@ -249,7 +249,10 @@ public class HSPPlayerListener implements Listener {
     	if( result == null || (result != null && !result.isExplicitDefault()) )
     		result = plugin.getStrategyEngine().getStrategyResult(EventType.ON_JOIN, p);
     	
-    	Location joinLocation = result.getLocation();
+    	Location joinLocation = null;
+    	if( result != null )
+    		joinLocation = result.getLocation();
+    	
     	if( joinLocation != null ) {
     		util.delayedTeleport(p, joinLocation);
     		

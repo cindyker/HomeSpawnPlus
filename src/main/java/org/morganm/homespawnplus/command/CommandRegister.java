@@ -62,11 +62,6 @@ public class CommandRegister {
 		if( cmdParams.containsKey("name") )
 			cmdName = (String) cmdParams.get("name");
 		
-		// do nothing if the command is disabled
-		if( commandConfig.isDisabledCommand(cmdName) ) {
-			log.debug("register() skipping ",cmdName," because it is flagged as disabled");
-			return;
-		}
 		// we never load the same command twice
 		if( loadedCommands.contains(cmdName) )
 			return;
@@ -247,6 +242,14 @@ public class CommandRegister {
 			if( BaseCommand.class.equals(superClass) ) {
 				Debug.getInstance().devDebug("registering command class ",clazz);
 				Command cmd = (Command) clazz.newInstance();
+				
+				String cmdName = cmd.getCommandName();
+				// do nothing if the command is disabled
+				if( commandConfig.isDisabledCommand(cmdName) ) {
+					log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
+					return;
+				}
+				
 				register(cmd);
 			}
 			// implements our Command interface?
@@ -256,6 +259,14 @@ public class CommandRegister {
 					if( iface.equals(Command.class) ) {
 						Debug.getInstance().devDebug("registering command interface ",clazz);
 						Command cmd = (Command) clazz.newInstance();
+						
+						String cmdName = cmd.getCommandName();
+						// do nothing if the command is disabled
+						if( commandConfig.isDisabledCommand(cmdName) ) {
+							log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
+							return;
+						}
+						
 						register(cmd);
 					}
 				}

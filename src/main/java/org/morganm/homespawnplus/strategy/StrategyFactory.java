@@ -92,7 +92,6 @@ public class StrategyFactory {
 		noArgStrategies.put(new SpawnNewPlayer().getStrategyConfigName().toLowerCase(), SpawnNewPlayer.class);
 		noArgStrategies.put(new SpawnWorldGuardRegion().getStrategyConfigName().toLowerCase(), SpawnWorldGuardRegion.class);
 		noArgStrategies.put(new SpawnLocalPlayerSpawn().getStrategyConfigName().toLowerCase(), SpawnLocalPlayerSpawn.class);
-		noArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
 		noArgStrategies.put(new Default().getStrategyConfigName().toLowerCase(), Default.class);
 		try {
 			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName().toLowerCase(), HomeMultiWorld.class);
@@ -112,6 +111,8 @@ public class StrategyFactory {
 		oneArgStrategies.put(new SpawnNamedSpawn().getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
 		noArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
 		oneArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
+		noArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
+		oneArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
 
 		// 1-arg Strategies
 		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName().toLowerCase(), HomeSpecificWorld.class);

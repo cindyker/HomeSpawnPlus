@@ -21,6 +21,14 @@ public class CustomEventCommand extends BaseCommand {
 		return super.getStringParam("event");
 	}
 	
+	public boolean getNoArg() {
+		Object o = super.getParam("noArg");
+		if( o instanceof Boolean )
+			return (Boolean) o;
+		else
+			return false;		// default is false
+	}
+
 	@Override
 	public boolean execute(final Player p, final Command command, final String[] args) {
 		if( !defaultCommandChecks(p) )
@@ -33,9 +41,9 @@ public class CustomEventCommand extends BaseCommand {
 			return true;
 		}
 		
-		// pass along an argument, if there was one
+		// pass along an argument, if there was one (if allowed)
 		String arg = null;
-		if( args.length > 0 )
+		if( args.length > 0 && !getNoArg() )
 			arg = args[0];
 		
 		StrategyEngine engine = plugin.getStrategyEngine();

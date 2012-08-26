@@ -15,13 +15,29 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class SpawnLastLocation extends BaseStrategy {
+	private String world;
+	
+	public SpawnLastLocation() {}
+	public SpawnLastLocation(final String world) {
+		this.world = world;
+	}
+	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		StrategyResult result = null;
+		final Player p = context.getPlayer();
 		
-		Player p = context.getPlayer();
-		String worldName = context.getEventLocation().getWorld().getName();
-		
+		// take the world from the argument, if given
+		String worldName = context.getArg();
+		// otherwise use the name given at instantiation
+		if( worldName == null )
+			worldName = this.world;
+
+		// if no arg was given at runtime or instantiation, use location
+		// of the player to determine the world
+		if( worldName == null )
+			worldName = context.getEventLocation().getWorld().getName();
+
 		PlayerLastLocationDAO dao = plugin.getStorage().getPlayerLastLocationDAO();
 		PlayerLastLocation	 pll = dao.findByWorldAndPlayerName(worldName, p.getName());
 		

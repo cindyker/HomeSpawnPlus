@@ -1,4 +1,7 @@
-v1.7 - 
+v1.7.1 -
+* fixed issue with new modeExcludeNewPlayerSpawn not being usable
+
+v1.7 - Aug 25, 2012
 * database upgrade: HSP will upgrade automatically, but to be safe you should backup your database before upgrading!
 * new strategies: SpawnLastLocation and SpawnLocalPlayerSpawn
 * new modes: ModeRememberSpawn and ModeRememberLocation

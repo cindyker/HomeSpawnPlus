@@ -48,8 +48,9 @@ public class StrategyConfig {
 	 * and if so, register interest in that region.
 	 * 
 	 * @param eventType
+	 * @param worldContext the world context, if any (can be null)
 	 */
-	private void checkTypeForRegion(String eventType) {
+	private void checkTypeForRegion(String eventType, String worldContext) {
 		eventType = eventType.toLowerCase();
 		log.debug("checkTypeForRegion() eventType=",eventType);
 		int index = eventType.indexOf(';');
@@ -68,6 +69,9 @@ public class StrategyConfig {
 				if( world == null )
 					log.warn("eventType ",eventType," references non-existant world ",worldName);
 				region = region.substring(0, commaIndex);
+			}
+			else if( worldContext != null ) {
+				world = Bukkit.getWorld(worldContext);
 			}
 			
 			if( plugin.getWorldGuardIntegration().isEnabled() ) {
@@ -130,7 +134,7 @@ public class StrategyConfig {
 				continue;
 			
 			if( strategies != null && strategies.size() > 0) {
-				checkTypeForRegion(eventType);
+				checkTypeForRegion(eventType, null);
 				
 				Set<Strategy> set = defaultStrategies.get(eventType);
 				if( set == null ) {
@@ -190,7 +194,7 @@ public class StrategyConfig {
 					}
 					
 					if( strategies != null && strategies.size() > 0 ) {
-						checkTypeForRegion(eventType);
+						checkTypeForRegion(eventType, world);
 						
 						for(String item : strategies) {
 							try {
@@ -257,7 +261,7 @@ public class StrategyConfig {
 					continue;
 				
 				if( strategies != null && strategies.size() > 0 ) {
-					checkTypeForRegion(eventType);
+					checkTypeForRegion(eventType, null);
 					
 					Set<Strategy> set = permStrat.eventStrategies.get(eventType);
 					if( set == null ) {

@@ -77,7 +77,10 @@ public class CommandRegister {
 			PluginCommand pc = constructor.newInstance(cmdName, plugin);
 			pc.setExecutor(command);
 			pc.setLabel(cmdName);
-			pc.setPermission(command.getCommandPermissionNode());
+			
+			// don't set Permission node, not all permission plugins behave
+			// with superperms command permissions nicely.
+//			pc.setPermission(command.getCommandPermissionNode());
 			
 			// check for aliases defined in the configuration
 			Object o = cmdParams.get("aliases");

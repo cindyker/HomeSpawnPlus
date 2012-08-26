@@ -1,5 +1,11 @@
-v1.7.1 -
+v1.7.1 - Aug 26, 2012
 * fixed issue with new modeExcludeNewPlayerSpawn not being usable
+* fixed issue with command usurping and CommandBook
+* made onRegionEnter/Exit pick up world context automatically for world-specific rules
+* additions to spawnLastLocation strategy to allow it to respond better to custom events
+* added '*' as an option for commands.disabledCommands to turn off all default HSP commands
+* disabled setting of Permission on PluginCommand objects, not all Permission systems play nice with this Bukkit superperms feature
+* fix issue with default event chains not being found
 
 v1.7 - Aug 25, 2012
 * database upgrade: HSP will upgrade automatically, but to be safe you should backup your database before upgrading!

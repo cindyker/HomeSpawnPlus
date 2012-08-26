@@ -40,7 +40,10 @@ public class CommandConfig {
 	}
 	
 	public boolean isDisabledCommand(String command) {
-		return disabledCommands.contains(command.toLowerCase());
+		if( disabledCommands.contains("*") )
+			return true;
+		else
+			return disabledCommands.contains(command.toLowerCase());
 	}
 	
 	public Set<String> getDisabledCommands() {

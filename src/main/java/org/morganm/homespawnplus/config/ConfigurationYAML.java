@@ -84,6 +84,7 @@ public class ConfigurationYAML extends YamlConfiguration implements Config {
 	        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 	 
 	        setDefaults(defConfig);
+	        options().copyDefaults(true);
 	    }
 	}
 	

@@ -203,6 +203,7 @@ public class StrategyEngine {
 				ps = new PlayerSpawn();
 				ps.setPlayerName(context.getPlayer().getName());
 			}
+			ps.setSpawn(null);	// be sure to clear out spawn so this new location is used instead
 			ps.setLocation(result.getLocation());
 			try {
 				dao.save(ps);

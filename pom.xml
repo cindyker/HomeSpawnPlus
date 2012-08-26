@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.7</version>
+  <version>1.7.1</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -26,16 +26,16 @@
 
   <repositories>
     <repository>
+      <id>morganm-repo</id>
+      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
+    </repository>
+    <repository>
       <id>onarandombox</id>
       <url>http://repo.onarandombox.com/content/groups/public</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public/</url>
-    </repository>
-    <repository>
-      <id>morganm-repo</id>
-      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
     </repository>
   </repositories>
 
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
-      <version>5.3</version>
+      <version>5.4.2</version>
       <exclusions>
         <exclusion>
           <groupId>org.spout</groupId>
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
-      <version>5.5.2-build579</version>
+      <version>5.5.3</version>
       <exclusions>
         <exclusion>
           <groupId>org.spout</groupId>

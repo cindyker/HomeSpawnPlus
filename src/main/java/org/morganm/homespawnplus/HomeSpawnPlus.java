@@ -256,7 +256,7 @@ public class HomeSpawnPlus extends JavaPlugin {
 			public void run() {
 		    	new CommandUsurper(pluginInstance, log, logPrefix).usurpCommands();
 			}
-		} , 40);
+		} , 25);
     	debugEndTimer("commands");
     	
     	debugStartTimer("Plugin integrations");

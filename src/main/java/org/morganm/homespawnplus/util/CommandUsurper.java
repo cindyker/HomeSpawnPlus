@@ -3,14 +3,22 @@
  */
 package org.morganm.homespawnplus.util;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.command.CommandRegister;
 
 /** Class that implements the ability to take over commands from other plugins
  * at the direction of the server admin via the "usurpCommands" config setting.
@@ -19,11 +27,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  */
 public class CommandUsurper {
-	private final JavaPlugin plugin;
+	private final HomeSpawnPlus plugin;
 	private final Logger log;
 	private final String logPrefix;
 	
-	public CommandUsurper(JavaPlugin plugin, Logger log, String logPrefix) {
+	public CommandUsurper(HomeSpawnPlus plugin, Logger log, String logPrefix) {
 		this.plugin = plugin;
 		if( log != null )
 			this.log = log;
@@ -35,7 +43,7 @@ public class CommandUsurper {
 		else
 			this.logPrefix = "["+plugin.getDescription().getName()+"] ";
 	}
-	public CommandUsurper(JavaPlugin plugin) {
+	public CommandUsurper(HomeSpawnPlus plugin) {
 		this(plugin, null, null);
 	}
 	
@@ -47,17 +55,37 @@ public class CommandUsurper {
 	    	for(String command : commands) {
 	        	PluginCommand cmd = plugin.getServer().getPluginCommand(command);
 	        	if( cmd != null ) {
-	        		log.info(logPrefix + " usurping command "+command+" as specified by usurpCommands config option");
-		        	// TODO: "being nice" might be best to keep track of the "old" executor
-		        	// and restore that if this plugin is unloaded. At this point, restoring
-		        	// the old executor requires turning off the usurp config option and
-		        	// restarting the server.
 		        	cmd.setExecutor(usurp);
+	        		log.info(logPrefix + " command "+command+" usurped as specified by usurpCommands config option");
 	        	}
-	        	else
-	        		Debug.getInstance().debug("usurpCommands() tried to usurp \"",command,"\", but no registered command was found");
+	        	else {
+	        		removeCommand(command);
+	            	CommandRegister register = new CommandRegister(plugin);
+	            	register.registerCommand(command);
+	        		log.info(logPrefix + " command "+command+" usurped as specified by usurpCommands config option");
+	        	}
 	    	}
     	}
+    }
+
+    /** Use reflection voodoo to reach into CraftBukkit command implementation
+     * and remove a command from the active command map.
+     * 
+     * @param command
+     */
+	@SuppressWarnings("unchecked")
+    private void removeCommand(String command) {
+		CraftServer cs = (CraftServer) Bukkit.getServer();
+		SimpleCommandMap commandMap = cs.getCommandMap();
+		try {
+			Field field = commandMap.getClass().getDeclaredField("knownCommands");
+			field.setAccessible(true);
+			Map<String, Command> knownCommands = (Map<String, Command>) field.get(commandMap);
+			knownCommands.remove(command);
+		}
+		catch(Exception e) {
+			log.log(Level.WARNING, "Could not remove command (usurp): "+command, e);
+		}
     }
     
     /** Private class which is used to re-route commands being processed by other plugins

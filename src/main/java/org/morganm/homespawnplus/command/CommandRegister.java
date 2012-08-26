@@ -142,116 +142,202 @@ public class CommandRegister {
 		return null;
 	}
 	
+	/** Given a specific commandName, find the matching command and
+	 * register it. This is useful in command usurping.
+	 * 
+	 * @param commandName
+	 */
+	public boolean registerCommand(String commandName) {
+		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
+
+		if( isDefinedConfigCommand(commandName) ) {
+			registerConfigCommand(commandName, classes);
+			return true;
+		}
+		else {
+			Class<?> clazz = findDefaultCommand(commandName);
+			if( clazz != null ) {
+				registerDefaultCommand(clazz);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Return true if the given command is defined as a custom command
+	 * by the admin in the config file.
+	 * 
+	 * @param cmd
+	 * @return
+	 */
+	private boolean isDefinedConfigCommand(String cmd) {
+		return commandConfig.getDefinedCommands().contains(cmd);
+	}
+	
+	/** Given a command name, look for and register that command from
+	 * the admin-configured command definitions.
+	 * 
+	 * @param cmd
+	 * @param classes
+	 */
+	private void registerConfigCommand(String cmd, Class<?>[] classes) {
+		log.devDebug("processing config defined command ",cmd);
+		Map<String, Object> cmdParams = commandConfig.getCommandParameters(cmd);
+		
+		Class<?> cmdClass = null;
+		String className = null;
+		Object clazz = cmdParams.get("class");
+		
+		// if no class given, just assume the name of the commmand
+		if( clazz == null )
+			clazz = cmd;
+		
+		if( clazz != null && clazz instanceof String ) {
+			className = (String) clazz;
+			
+			// if class given, but no package given, assume default package
+			if( className.indexOf('.') == -1 ) {
+				String firstChar = className.substring(0, 1);
+				String theRest = className.substring(1);
+				className = firstChar.toUpperCase() + theRest;
+				cmdClass = findCommandClass(classes, className);
+			}
+		}
+		
+		// if we have no commandClass yet, but we do have a className, then
+		// try to find that className.
+		if( cmdClass == null && className != null ) {
+			try {
+				cmdClass = Class.forName(className);
+			}
+			catch(ClassNotFoundException e) {
+				log.warn(e, "class ",className," not found");
+				return;
+			}
+		}
+		
+		if( cmdClass == null ) {
+			log.warn("No class defined or found for command ",cmd);
+			return;
+		}
+		
+		try {
+			Command command = (Command) cmdClass.newInstance();
+			command.setCommandName(cmd.toLowerCase());	// default to name of instance key
+			register(command, cmdParams);
+		}
+		catch(ClassCastException e) {
+			log.warn("class "+cmdClass+" does not implement Command interface");
+		}
+		catch(Exception e) {
+			log.warn(e, "error loading class "+cmdClass);
+		}
+	}
+	
+	/** Given a class file (which must be of our Command interface),
+	 * register that Command with Bukkit.
+	 * 
+	 * @param clazz
+	 */
+	private void registerDefaultCommand(Class<?> clazz) {
+		try {
+			Class<?> superClass = clazz.getSuperclass();
+			
+			if( BaseCommand.class.equals(superClass) ) {
+				Debug.getInstance().devDebug("registering command class ",clazz);
+				Command cmd = (Command) clazz.newInstance();
+				register(cmd);
+			}
+			// implements our Command interface?
+			else {
+				Class<?>[] interfaces = clazz.getInterfaces();
+				for(Class<?> iface : interfaces) {
+					if( iface.equals(Command.class) ) {
+						Debug.getInstance().devDebug("registering command interface ",clazz);
+						Command cmd = (Command) clazz.newInstance();
+						register(cmd);
+					}
+				}
+			}
+		}
+		catch(Exception e) {
+			log.severe(e, "error trying to load command class "+clazz);
+		}
+	}
+	
+	/** Given a commandName, find the default command which matches.
+	 * 
+	 * @param cmdName
+	 * @return
+	 */
+	private Class<?> findDefaultCommand(String cmdName) {
+		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
+		for(int i=0; i < classes.length; i++) {
+			Class<?> clazz = classes[i];
+			
+			try {
+				Class<?> superClass = clazz.getSuperclass();
+				
+				if( BaseCommand.class.equals(superClass) ) {
+					Command cmd = (Command) clazz.newInstance();
+					if( cmd.getCommandName().equals(cmdName) )
+						return clazz;
+					
+					String[] aliases = cmd.getCommandAliases();
+					if( aliases != null && aliases.length > 0 ) {
+						for(String alias : aliases) {
+							if( alias.equals(cmdName) )
+								return clazz;
+						}
+					}
+				}
+				// implements our Command interface?
+				else {
+					Class<?>[] interfaces = clazz.getInterfaces();
+					for(Class<?> iface : interfaces) {
+						if( iface.equals(Command.class) ) {
+							Command cmd = (Command) clazz.newInstance();
+							if( cmd.getCommandName().equals(cmdName) )
+								return clazz;
+							
+							String[] aliases = cmd.getCommandAliases();
+							if( aliases != null && aliases.length > 0 ) {
+								for(String alias : aliases) {
+									if( alias.equals(cmdName) )
+										return clazz;
+								}
+							}
+						}
+					}
+				}
+			}
+			catch(Exception e) {
+				log.severe(e, "Caught exception in findDefaultCommand for command "+cmdName);
+			}
+		}
+		
+		return null;
+	}
+	
+	/** Register all known HSP commands. This includes those defined by
+	 * the admin in the config file as well as all commands found
+	 * automatically on the command path.
+	 * 
+	 */
 	public void registerAllCommands() {
 		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
 		
 		// loop through all config-defined command and load them up
 		Set<String> commands = commandConfig.getDefinedCommands();
 		for(String cmd : commands) {
-			log.devDebug("processing config defined command ",cmd);
-			Map<String, Object> cmdParams = commandConfig.getCommandParameters(cmd);
-			
-			Class<?> cmdClass = null;
-			String className = null;
-			Object clazz = cmdParams.get("class");
-			
-			// if no class given, just assume the name of the commmand
-			if( clazz == null )
-				clazz = cmd;
-			
-			if( clazz != null && clazz instanceof String ) {
-				className = (String) clazz;
-				
-				// if class given, but no package given, assume default package
-				if( className.indexOf('.') == -1 ) {
-					String firstChar = className.substring(0, 1);
-					String theRest = className.substring(1);
-					className = firstChar.toUpperCase() + theRest;
-					cmdClass = findCommandClass(classes, className);
-				}
-			}
-			
-			// if we have no commandClass yet, but we do have a className, then
-			// try to find that className.
-			if( cmdClass == null && className != null ) {
-				try {
-					cmdClass = Class.forName(className);
-				}
-				catch(ClassNotFoundException e) {
-					log.warn(e, "class ",className," not found");
-					continue;
-				}
-			}
-			
-			if( cmdClass == null ) {
-				log.warn("No class defined or found for command ",cmd);
-				continue;
-			}
-			
-			try {
-				Command command = (Command) cmdClass.newInstance();
-				command.setCommandName(cmd.toLowerCase());	// default to name of instance key
-				register(command, cmdParams);
-			}
-			catch(ClassCastException e) {
-				log.warn("class "+cmdClass+" does not implement Command interface");
-			}
-			catch(Exception e) {
-				log.warn(e, "error loading class "+cmdClass);
-			}
+			registerConfigCommand(cmd, classes);
 		}
 		
 		// now loop through all normal commands in the class path
 		for(int i=0; i < classes.length; i++) {
 			log.devDebug("checking found class ",classes[i]);
-			try {
-				Class<?> superClass = classes[i].getSuperclass();
-				
-				if( BaseCommand.class.equals(superClass) ) {
-					Debug.getInstance().devDebug("registering command class ",classes[i]);
-					Command cmd = (Command) classes[i].newInstance();
-					register(cmd);
-				}
-				// implements our Command interface?
-				else {
-					Class<?>[] interfaces = classes[i].getInterfaces();
-					for(Class<?> iface : interfaces) {
-						if( iface.equals(Command.class) ) {
-							Debug.getInstance().devDebug("registering command interface ",classes[i]);
-							Command cmd = (Command) classes[i].newInstance();
-							register(cmd);
-						}
-					}
-				}
-			}
-			catch(Exception e) {
-				log.severe(e, "error trying to load command class "+classes[i]);
-			}
+			registerDefaultCommand(classes[i]);
 		}
 	}
-	
-	/* NOTUSED
-	public void registerBukkitCommand(org.bukkit.command.Command command, CommandExecutor executor) {
-		CraftServer cs = (CraftServer) Bukkit.getServer();
-		SimpleCommandMap commandMap = cs.getCommandMap();
-		
-		try {
-			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
-			constructor.setAccessible(true);
-			
-			// construct a new PluginCommand object
-			PluginCommand pc = constructor.newInstance(command.getName(), plugin);
-			pc.setExecutor(executor);
-			pc.setAliases(command.getAliases());
-			pc.setLabel(command.getName());
-			pc.setPermission(command.getPermission());
-			
-			// register it
-			commandMap.register("hsp", pc);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	*/
 }

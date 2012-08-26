@@ -70,7 +70,12 @@ public class StrategyConfig {
 				region = region.substring(0, commaIndex);
 			}
 			
-			plugin.getWorldGuardIntegration().getWorldGuardRegion().registerRegion(world, region);
+			if( plugin.getWorldGuardIntegration().isEnabled() ) {
+				plugin.getWorldGuardIntegration().getWorldGuardRegion().registerRegion(world, region);
+			}
+			else {
+				log.warn("eventType ",eventType," depends on WorldGuard which is not present or enabled. Skipping.");
+			}
 		}
 		else {
 			// TODO: some sort of warning

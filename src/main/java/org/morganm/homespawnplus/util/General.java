@@ -243,6 +243,11 @@ public final class General {
     public String displayTimeString(final long millis, boolean useShortHand, String mostSignificant) throws NumberFormatException {
     	final StringBuffer sb = new StringBuffer();
     	long seconds = millis / 1000;		// chop down to seconds
+    	// if mostSignificant arg is passed and we are below the threshold, this
+    	// boolean allows us to print one less only. Example: lets say mostSignificant
+    	// is set to "h" (hour). If we are below 1 hour, then the next mostSignificant
+    	// ONLY will be shown: ie. "55m"
+    	boolean mostSignificantCheck=true;
     	
     	if( seconds >= (86400 * 31) ) {
     		long months = seconds / (86400 * 31);
@@ -263,8 +268,12 @@ public final class General {
     	}
     	// "mostSignificant" is only passed in code (no user input) so this string
     	// is not localized.
-    	if( mostSignificant != null && mostSignificant.startsWith("mo") )
-    		return sb.toString();
+    	if( mostSignificant != null && mostSignificant.startsWith("mo") || !mostSignificantCheck ) {
+    		if( sb.length() > 0 )
+    			return sb.toString();
+    		else
+    			mostSignificantCheck=false;
+    	}
 
     	if( seconds >= (86400 * 7) ) {
     		long weeks = seconds / (86400 * 7);
@@ -289,8 +298,12 @@ public final class General {
 	    	seconds -= weeks * (86400 * 7);
     	}
     	Debug.getInstance().devDebug("week remaining seconds=",seconds);
-    	if( mostSignificant != null && mostSignificant.startsWith("w") )
-    		return sb.toString();
+    	if( mostSignificant != null && mostSignificant.startsWith("w") || !mostSignificantCheck ) {
+    		if( sb.length() > 0 )
+    			return sb.toString();
+    		else
+    			mostSignificantCheck=false;
+    	}
     	
     	if( seconds >= 86400 ) {
     		long days = seconds / 86400;
@@ -313,8 +326,12 @@ public final class General {
 	    	}
 	    	seconds -= days * 86400;
     	}
-    	if( mostSignificant != null && mostSignificant.startsWith("d") )
-    		return sb.toString();
+    	if( mostSignificant != null && mostSignificant.startsWith("d") || !mostSignificantCheck ) {
+    		if( sb.length() > 0 )
+    			return sb.toString();
+    		else
+    			mostSignificantCheck=false;
+    	}
     	
     	if( seconds >= 3600 ) {
     		long hours = seconds / 3600;
@@ -337,8 +354,12 @@ public final class General {
 	    	}    	
 	    	seconds -= hours * 3600;
     	}
-    	if( mostSignificant != null && mostSignificant.startsWith("h") )
-    		return sb.toString();
+    	if( mostSignificant != null && mostSignificant.startsWith("h") || !mostSignificantCheck ) {
+    		if( sb.length() > 0 )
+    			return sb.toString();
+    		else
+    			mostSignificantCheck=false;
+    	}
     	
     	if( seconds >= 60 ) {
     		long minutes = seconds / 60;
@@ -361,8 +382,12 @@ public final class General {
 	    	}    	
 	    	seconds -= minutes * 60;
     	}
-    	if( mostSignificant != null && mostSignificant.startsWith("m") )
-    		return sb.toString();
+    	if( mostSignificant != null && mostSignificant.startsWith("m") || !mostSignificantCheck ) {
+    		if( sb.length() > 0 )
+    			return sb.toString();
+    		else
+    			mostSignificantCheck=false;
+    	}
     	
     	if( seconds > 0 ) {
     		if( sb.length() > 0 ) {

@@ -37,7 +37,7 @@ public class HomeInvite implements BasicEntity {
     private int id;
 
     @NotNull
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @Column(name="home_id")
     private Home home;
     

@@ -15,6 +15,7 @@ import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 import org.morganm.homespawnplus.util.General;
 
 /**
@@ -157,10 +158,18 @@ public class HomeInvite extends BaseCommand {
 			return true;
 		}
 		
-		org.morganm.homespawnplus.entity.HomeInvite homeInvite = new org.morganm.homespawnplus.entity.HomeInvite();
-		homeInvite.setHome(home);
-		homeInvite.setInvitedPlayer(invitee);
-		if( expiresTime > System.currentTimeMillis() )
+		// check for existing HomeInvite that we can overwrite
+		final HomeInviteDAO dao = plugin.getStorage().getHomeInviteDAO();
+		org.morganm.homespawnplus.entity.HomeInvite homeInvite = dao.findInviteByHomeAndInvitee(home, invitee);
+		
+		// if an existing invites doesn't exist, create a new one
+		if( homeInvite == null ) {
+			homeInvite = new org.morganm.homespawnplus.entity.HomeInvite();
+			homeInvite.setHome(home);
+			homeInvite.setInvitedPlayer(invitee);
+		}
+		
+		if( expiresTime > System.currentTimeMillis() || expiresTime == 0 )
 			homeInvite.setExpires(new Date(expiresTime));
 		
 		// if there is a cost and we don't have the money, do not pass go

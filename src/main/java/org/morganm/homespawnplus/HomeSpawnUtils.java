@@ -704,6 +704,7 @@ public class HomeSpawnUtils {
      * @return the found OfflinePlayer object (possibly class Player) or null
      */
     public OfflinePlayer getBestMatchPlayer(String playerName) {
+        final String lowerName = playerName.toLowerCase();
     	int onlineMatchDistance = Integer.MAX_VALUE;
     	Player onlineMatch = plugin.getServer().getPlayer(playerName);
     	if( onlineMatch != null )
@@ -719,7 +720,6 @@ public class HomeSpawnUtils {
         	// implemented with same algorithm that Bukkit's online "getPlayer()"
         	// routine is
             OfflinePlayer found = null;
-            String lowerName = playerName.toLowerCase();
             int delta = Integer.MAX_VALUE;
         	OfflinePlayer[] offlinePlayers = plugin.getServer().getOfflinePlayers();
         	for(OfflinePlayer offlinePlayer : offlinePlayers) {
@@ -736,6 +736,12 @@ public class HomeSpawnUtils {
         		offlineMatch = found;
         		offlineMatchDistance = delta;
         	}
+    	}
+    	// offlineplayer HAS played before, calculate string distance
+    	else {
+            if (offlineMatch.getName().toLowerCase().startsWith(lowerName)) {
+                offlineMatchDistance = offlineMatch.getName().length() - lowerName.length();
+            }
     	}
     	
     	if( onlineMatchDistance <= offlineMatchDistance ) {

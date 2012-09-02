@@ -165,11 +165,14 @@ public class HomeInvite extends BaseCommand {
 		// if an existing invites doesn't exist, create a new one
 		if( homeInvite == null ) {
 			homeInvite = new org.morganm.homespawnplus.entity.HomeInvite();
-			homeInvite.setHome(home);
-			homeInvite.setInvitedPlayer(invitee);
 		}
+
+		homeInvite.setHome(home);
+		homeInvite.setInvitedPlayer(invitee);
 		
-		if( expiresTime > System.currentTimeMillis() || expiresTime == 0 )
+		if( expiresTime == 0 )
+			homeInvite.setExpires(null);
+		else if( expiresTime > System.currentTimeMillis() )
 			homeInvite.setExpires(new Date(expiresTime));
 		
 		// if there is a cost and we don't have the money, do not pass go
@@ -177,6 +180,7 @@ public class HomeInvite extends BaseCommand {
 			return true;
 		
 		try {
+			debug.debug("saving homeinvite object ",homeInvite,", homeInvite.home=",homeInvite.getHome());
 			plugin.getStorage().getHomeInviteDAO().saveHomeInvite(homeInvite);
 			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
 					"player", invitee, "home", home.getName());

@@ -14,6 +14,7 @@ import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.Transaction;
 
 /**
  * @author morganm
@@ -92,12 +93,17 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 
 	@Override
 	public void saveHomeInvite(HomeInvite homeInvite) {
-        ebean.save(homeInvite);
+		Transaction tx = ebean.beginTransaction();
+        ebean.save(homeInvite, tx);
+        tx.commit();
 	}
 
 	@Override
 	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
-		ebean.delete(homeInvite);
+		Transaction tx = ebean.beginTransaction();
+		tx.setPersistCascade(false);
+		ebean.delete(homeInvite, tx);
+		tx.commit();
 	}
 
 	@Override

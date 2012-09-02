@@ -80,6 +80,18 @@ public class HomeInviteTeleport extends BaseCommand {
 		}
 		
 		if( homeInvite != null ) {
+			final org.morganm.homespawnplus.entity.Home home = homeInvite.getHome();
+			if( home == null
+					|| (home.getPlayerName() == null && home.getWorld() == null) ) {
+				util.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
+				try {
+					plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(homeInvite);
+				} catch(Exception e) {
+					log.log(Level.INFO, "Error deleting homeInvite", e);
+				}
+				return true;
+			}
+			
 			// if we're not the invited player, we can't use this invite id
 			if( !p.getName().equals(homeInvite.getInvitedPlayer()) )
 				homeInvite = null;

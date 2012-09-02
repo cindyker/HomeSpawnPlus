@@ -85,6 +85,14 @@ public class HomeInviteList extends BaseCommand {
 	private boolean isExpired(final HomeInvite homeInvite) {
 		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
 		
+		final org.morganm.homespawnplus.entity.Home home = homeInvite.getHome();
+		// if the home no longer exists, clean up the invite
+		if( home == null
+				|| (home.getPlayerName() == null && home.getWorld() == null) ) {
+			deleteHomeInvite(homeInvite);
+			return true;
+		}
+		
 		Date expires = homeInvite.getExpires();
 		if( expires != null && expires.compareTo(new Date()) < 0 ) {
 			deleteHomeInvite(homeInvite);

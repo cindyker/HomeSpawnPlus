@@ -11,6 +11,7 @@ import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlUpdate;
+import com.avaje.ebean.Transaction;
 
 /**
  * @author morganm
@@ -113,7 +114,9 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public void saveHome(Home home) {
-		ebean.beginTransaction();
+		final int homeId = home.getId();
+		
+		Transaction tx = ebean.beginTransaction();
 		// We should only have one "BedHome" per player per world. So if this update is setting
 		// BedHome to true, then we make sure to clear out all others for this player/world combo
 		if( home.isBedHome() ) {
@@ -121,7 +124,7 @@ public class HomeDAOEBean implements HomeDAO {
 					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
-			update.setParameter("id", home.getId());
+			update.setParameter("id", homeId);
 			update.execute();
 		}
 		
@@ -132,12 +135,20 @@ public class HomeDAOEBean implements HomeDAO {
 					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
-			update.setParameter("id", home.getId());
+			update.setParameter("id", homeId);
 			update.execute();
 		}
-		ebean.commitTransaction();
+		tx.commit();
 		
 		ebean.save(home);
+		
+		// clean up any related home invites as well
+		tx = ebean.beginTransaction();
+		SqlUpdate update = ebean.createSqlUpdate("delete from hsp_homeinvite"
+				+" where home_id = :id");
+		update.setParameter("id", homeId);
+		update.execute();
+		tx.commit();
 	}
 
 	@Override

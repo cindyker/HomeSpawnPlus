@@ -12,7 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -37,7 +37,7 @@ public class HomeInvite implements BasicEntity {
     private int id;
 
     @NotNull
-    @OneToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @Column(name="home_id")
     private Home home;
     

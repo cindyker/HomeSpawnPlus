@@ -21,6 +21,9 @@ public class GroupQuery extends BaseCommand {
 	
 	@Override
 	public boolean execute(CommandSender sender, String[] args) {
+		if( !defaultCommandChecks(sender) )
+			return true;
+		
 		String playerName = null;
 		String playerWorld = null;
 		boolean playerOffline = false;

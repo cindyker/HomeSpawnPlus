@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.Logger;
+import org.reflections.Reflections;
 
 /** Class whose job is to register all of HSP commands with Bukkit dynamically,
  * as opposed to through static plugin.yml configurations. This is used by HSP
@@ -29,12 +30,13 @@ import org.morganm.homespawnplus.util.Logger;
  *
  */
 public class CommandRegister {
-	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
-	private static final Map<String, Class<?>> customClassMap = new HashMap<String, Class<?>>();
+//	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
+	private static final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
 	
 	private final HomeSpawnPlus plugin;
 	private final Logger log;
 	private final Set<String> loadedCommands = new HashSet<String>(25);
+	private final Reflections reflections;
 	private CommandConfig commandConfig;
 	
 	static {
@@ -45,6 +47,9 @@ public class CommandRegister {
 		this.plugin = plugin;
 		this.log = plugin.getLog();
 		this.commandConfig = new CommandConfig(plugin.getLog());
+		
+//    	reflections = new Reflections(COMMANDS_PACKAGE);
+    	reflections = Reflections.collect();
 	}
 	
 	public void setCommandConfig(CommandConfig commandConfig) {
@@ -123,17 +128,18 @@ public class CommandRegister {
 	 * @param cmd
 	 * @return
 	 */
-	private Class<?> findCommandClass(Class<?>[] classes, String cmd) {
+	private Class<? extends Command> findCommandClass(String cmd) {
 		cmd = cmd.toLowerCase();
 		
-		Class<?> clazz = null;
-		if( (clazz = customClassMap.get(cmd)) != null )
-			return clazz;
-					
-		for(int i=0; i < classes.length; i++) {
-			String shortName = classes[i].getSimpleName();
+		Class<? extends Command> customClass = null;
+		if( (customClass = customClassMap.get(cmd)) != null )
+			return customClass;
+
+		// now loop through all normal commands in the class path
+		for(Class<? extends Command> clazz : commandClasses) {
+			String shortName = clazz.getSimpleName();
 			if( shortName.equalsIgnoreCase(cmd) ) {
-				return classes[i];
+				return clazz;
 			}
 		}
 		
@@ -146,14 +152,12 @@ public class CommandRegister {
 	 * @param commandName
 	 */
 	public boolean registerCommand(String commandName) {
-		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
-
 		if( isDefinedConfigCommand(commandName) ) {
-			registerConfigCommand(commandName, classes);
+			registerConfigCommand(commandName);
 			return true;
 		}
 		else {
-			Class<?> clazz = findDefaultCommand(commandName);
+			Class<? extends Command> clazz = findDefaultCommand(commandName);
 			if( clazz != null ) {
 				registerDefaultCommand(clazz);
 				return true;
@@ -179,11 +183,11 @@ public class CommandRegister {
 	 * @param cmd
 	 * @param classes
 	 */
-	private void registerConfigCommand(String cmd, Class<?>[] classes) {
+	private void registerConfigCommand(String cmd) {
 		log.devDebug("processing config defined command ",cmd);
 		Map<String, Object> cmdParams = commandConfig.getCommandParameters(cmd);
 		
-		Class<?> cmdClass = null;
+		Class<? extends Command> cmdClass = null;
 		String className = null;
 		Object clazz = cmdParams.get("class");
 		
@@ -199,20 +203,14 @@ public class CommandRegister {
 				String firstChar = className.substring(0, 1);
 				String theRest = className.substring(1);
 				className = firstChar.toUpperCase() + theRest;
-				cmdClass = findCommandClass(classes, className);
+				cmdClass = findCommandClass(className);
 			}
 		}
 		
 		// if we have no commandClass yet, but we do have a className, then
 		// try to find that className.
 		if( cmdClass == null && className != null ) {
-			try {
-				cmdClass = Class.forName(className);
-			}
-			catch(ClassNotFoundException e) {
-				log.warn(e, "class ",className," not found");
-				return;
-			}
+			cmdClass = findCommandClass(className);
 		}
 		
 		if( cmdClass == null ) {
@@ -238,42 +236,19 @@ public class CommandRegister {
 	 * 
 	 * @param clazz
 	 */
-	private void registerDefaultCommand(Class<?> clazz) {
+	private void registerDefaultCommand(Class<? extends Command> clazz) {
 		try {
-			Class<?> superClass = clazz.getSuperclass();
+			Debug.getInstance().devDebug("registering command class ",clazz);
+			Command cmd = (Command) clazz.newInstance();
 			
-			if( BaseCommand.class.equals(superClass) ) {
-				Debug.getInstance().devDebug("registering command class ",clazz);
-				Command cmd = (Command) clazz.newInstance();
-				
-				String cmdName = cmd.getCommandName();
-				// do nothing if the command is disabled
-				if( commandConfig.isDisabledCommand(cmdName) ) {
-					log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
-					return;
-				}
-				
-				register(cmd);
+			String cmdName = cmd.getCommandName();
+			// do nothing if the command is disabled
+			if( commandConfig.isDisabledCommand(cmdName) ) {
+				log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
+				return;
 			}
-			// implements our Command interface?
-			else {
-				Class<?>[] interfaces = clazz.getInterfaces();
-				for(Class<?> iface : interfaces) {
-					if( iface.equals(Command.class) ) {
-						Debug.getInstance().devDebug("registering command interface ",clazz);
-						Command cmd = (Command) clazz.newInstance();
-						
-						String cmdName = cmd.getCommandName();
-						// do nothing if the command is disabled
-						if( commandConfig.isDisabledCommand(cmdName) ) {
-							log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
-							return;
-						}
-						
-						register(cmd);
-					}
-				}
-			}
+			
+			register(cmd);
 		}
 		catch(Exception e) {
 			log.severe(e, "error trying to load command class "+clazz);
@@ -285,44 +260,20 @@ public class CommandRegister {
 	 * @param cmdName
 	 * @return
 	 */
-	private Class<?> findDefaultCommand(String cmdName) {
-		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
-		for(int i=0; i < classes.length; i++) {
-			Class<?> clazz = classes[i];
-			
+	private Class<? extends Command> findDefaultCommand(String cmdName) {
+		Set<Class<? extends Command>> classes = getCommandClasses();
+		
+		for(Class<? extends Command> clazz : classes) {
 			try {
-				Class<?> superClass = clazz.getSuperclass();
+				Command cmd = (Command) clazz.newInstance();
+				if( cmd.getCommandName().equals(cmdName) )
+					return clazz;
 				
-				if( BaseCommand.class.equals(superClass) ) {
-					Command cmd = (Command) clazz.newInstance();
-					if( cmd.getCommandName().equals(cmdName) )
-						return clazz;
-					
-					String[] aliases = cmd.getCommandAliases();
-					if( aliases != null && aliases.length > 0 ) {
-						for(String alias : aliases) {
-							if( alias.equals(cmdName) )
-								return clazz;
-						}
-					}
-				}
-				// implements our Command interface?
-				else {
-					Class<?>[] interfaces = clazz.getInterfaces();
-					for(Class<?> iface : interfaces) {
-						if( iface.equals(Command.class) ) {
-							Command cmd = (Command) clazz.newInstance();
-							if( cmd.getCommandName().equals(cmdName) )
-								return clazz;
-							
-							String[] aliases = cmd.getCommandAliases();
-							if( aliases != null && aliases.length > 0 ) {
-								for(String alias : aliases) {
-									if( alias.equals(cmdName) )
-										return clazz;
-								}
-							}
-						}
+				String[] aliases = cmd.getCommandAliases();
+				if( aliases != null && aliases.length > 0 ) {
+					for(String alias : aliases) {
+						if( alias.equals(cmdName) )
+							return clazz;
 					}
 				}
 			}
@@ -340,18 +291,41 @@ public class CommandRegister {
 	 * 
 	 */
 	public void registerAllCommands() {
-		Class<?>[] classes = plugin.getJarUtils().getClasses(COMMANDS_PACKAGE);
-		
 		// loop through all config-defined command and load them up
 		Set<String> commands = commandConfig.getDefinedCommands();
 		for(String cmd : commands) {
-			registerConfigCommand(cmd, classes);
+			registerConfigCommand(cmd);
 		}
 		
+		Set<Class<? extends Command>> commandClasses = getCommandClasses();
 		// now loop through all normal commands in the class path
-		for(int i=0; i < classes.length; i++) {
-			log.devDebug("checking found class ",classes[i]);
-			registerDefaultCommand(classes[i]);
+		for(Class<? extends Command> clazz : commandClasses) {
+			log.devDebug("checking found class ",clazz);
+			registerDefaultCommand(clazz);
 		}
+	}
+	
+	/* cache object only, always use getCommandClasses() 
+	 */
+	private Set<Class<? extends Command>> commandClasses;
+	/** Return all classes which extend our Command interface.
+	 * 
+	 * @return
+	 */
+	private Set<Class<? extends Command>> getCommandClasses() {
+		if( commandClasses != null )
+			return commandClasses;
+		
+		commandClasses = reflections.getSubTypesOf(Command.class);
+		Set<Class<? extends BaseCommand>> baseCommandClasses = reflections.getSubTypesOf(BaseCommand.class);
+		for(Class<? extends BaseCommand> bc : baseCommandClasses) {
+			commandClasses.add((Class<? extends Command>) bc);
+		}
+
+    	if( commandClasses == null || commandClasses.size() == 0 ) {
+    		log.severe("No command classes found, HSP will not be able to register commands!");
+    	}
+    	
+    	return commandClasses;
 	}
 }

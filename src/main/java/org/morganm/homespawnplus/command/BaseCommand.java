@@ -320,6 +320,14 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 		debug.devDebug("defaultCommandChecks() all defaultCommandChecks return true");
 		return true;
 	}
+	protected boolean defaultCommandChecks(CommandSender sender) {
+		if( sender instanceof Player ) {
+			return defaultCommandChecks((Player) sender);
+		}
+		else {		// it's a local or remote console
+			return true;
+		}
+	}
 	
 	@Override
 	public void setCommandName(String name) {

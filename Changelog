@@ -1,3 +1,9 @@
+v1.7.2 -
+* fixed a bug when using /homeinvite to the same player/home created an exception
+* fixed unreported bug where an expiring HomeInvite would delete the associated Home also
+* fixed unreported bug that prevented /homeinvite working for an offline player if the exact name was used
+* fixed homeInvite NPE when associated home was deleted
+
 v1.7.1 - Aug 26, 2012
 * fixed issue with new modeExcludeNewPlayerSpawn not being usable
 * fixed issue with command usurping and CommandBook

@@ -61,4 +61,11 @@ public interface Command extends CommandExecutor {
 	 * @param params
 	 */
 	public void setCommandParameters(Map<String, Object> params);
+	
+	/** The usage string, which will be passed through to Bukkit PluginCommand so
+	 * can use the Bukkit convention of <command> and newlines.
+	 * 
+	 * @return
+	 */
+	public String getUsage();
 }

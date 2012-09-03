@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.i18n;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** Implementation of locale strings that includes Bukkit color and string
  * parameter replacement.
@@ -15,10 +16,11 @@ import java.util.Map;
  *
  */
 public class LocaleStringReplacerImpl implements Locale {
+	private static final String EMPTY_STRING = "%EMPTY%";
+	private static final Pattern newLinePattern = Pattern.compile("%NL%");
 	private static final Map<String, String> predefinedReplacements = new HashMap<String,String>();
 	static {
-		// newline didn't work like I'd hoped.  So no predefinedReplacements for now ..
-//		predefinedReplacements.put("%newline%", "\n");
+		predefinedReplacements.put("%NL%", "");		// Strips out %NL%
 	}
 	
 	private final MessageLibrary msgLib;
@@ -34,22 +36,28 @@ public class LocaleStringReplacerImpl implements Locale {
 		return localeString;
 	}
 	
-	@Override
-	public String getMessage(String key, final Object... args) {
-        key = key.replaceAll(" ", "_");
-
-        if (!msgLib.getResourceBundle().containsKey(key)) {
-            return "UNKNOWN_LOCALE_" + key;
-        }
-
-        Map<String, Object> bind = parseBinds(args);
-        String value = msgLib.getResourceBundle().getString(key);
-        
+	/** Process a string and do all replacements. If processing multi-line
+	 * strings with the %NL% string, be sure to split before calling this
+	 * method as %NL% will be stripped out here.
+	 * 
+	 * Better implementation using pre-compiled Patterns exists in
+	 * mBukkitLib, I will be migrating HSP to use that in the future.
+	 * 
+	 * @param s the string to process
+	 * @param binds the bind parameters
+	 * @param localizedKey the lookup key (such as "HSP_COMMAND_HOME"). Can be null,
+	 * it is used only to give admin good error messages if we have a problem
+	 * @return
+	 */
+	private String parseString(String value, Map<String, Object> binds, String localizedKey) {
         if( value == null )
-        	throw new NullPointerException("localized string for key "+key+" is null");
-
+        	throw new NullPointerException("localized string for key "+localizedKey+" is null");
+        
+        if( value.equals(EMPTY_STRING) )
+        	return "";
+        
         // simple optimization: if no % symbol is present at all in the value
-        // string, then we can skip color/arg replacement entirely. -morganm
+        // string, then we can skip color/arg replacement entirely.
         if( value.indexOf('%') != -1 ) {
 	        // apply colors
 	        for (String colorKey : Colors.localeColors.keySet()) {
@@ -68,11 +76,11 @@ public class LocaleStringReplacerImpl implements Locale {
 	        }
 
 	        // apply binds
-	        for (String bindKey : bind.keySet()) {
+	        for (String bindKey : binds.keySet()) {
 	        	if( bindKey == null )
-	        		throw new NullPointerException("bindKey for localized string "+key+" is null, localized string = "+value);
+	        		throw new NullPointerException("bindKey for localized string "+localizedKey+" is null, localized string = "+value);
 	        	
-	            Object object = bind.get(bindKey);
+	            Object object = binds.get(bindKey);
 	            String bindVal = (object != null ? object.toString() : "null");
 	
 	            value = value.replaceAll("%" + bindKey + "%", bindVal);
@@ -80,6 +88,42 @@ public class LocaleStringReplacerImpl implements Locale {
         }
 
         return value;
+	}
+	
+	@Override
+	public String getMessage(String key, final Object... args) {
+        key = key.replaceAll(" ", "_");
+
+        if (!msgLib.getResourceBundle().containsKey(key)) {
+            return "UNKNOWN_LOCALE_" + key;
+        }
+
+        Map<String, Object> bind = parseBinds(args);
+        String value = msgLib.getResourceBundle().getString(key);
+        
+        return parseString(value, bind, key);
+	}
+	
+	@Override
+	public String[] getMessages(String key, final Object... args) {
+        key = key.replaceAll(" ", "_");
+
+        if (!msgLib.getResourceBundle().containsKey(key)) {
+            return new String[] {"UNKNOWN_LOCALE_" + key};
+        }
+
+        Map<String, Object> bind = parseBinds(args);
+        String value = msgLib.getResourceBundle().getString(key);
+        
+        if( value == null )
+        	throw new NullPointerException("localized string for key "+key+" is null");
+        
+        String[] values = newLinePattern.split(value);
+        for(int i=0; i < values.length; i++) {
+        	values[i] = parseString(value, bind, key);
+        }
+        
+        return values;
 	}
 
     /**

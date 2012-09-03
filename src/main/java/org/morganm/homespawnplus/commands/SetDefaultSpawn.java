@@ -16,6 +16,11 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
 public class SetDefaultSpawn extends BaseCommand {
 
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTSPAWN_USAGE);
+	}
+
+	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;

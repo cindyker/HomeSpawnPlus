@@ -23,6 +23,11 @@ public class SetHome extends BaseCommand
 	public String[] getCommandAliases() { return new String[] {"homeset"}; }
 	
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SETHOME_USAGE);
+	}
+
+	@Override
 	public boolean execute(final Player p, final Command command, final String[] args) {
 		debug.debug("sethome invoked. player=",p,"args=",args);
 		if( !isEnabled() || !hasPermission(p) )

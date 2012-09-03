@@ -20,6 +20,11 @@ public class SetSpawn extends BaseCommand
 	public String[] getCommandAliases() { return new String[] {"setglobalspawn"}; }
 
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_USAGE);
+	}
+
+	@Override
 	public boolean execute(Player p, org.bukkit.command.Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;

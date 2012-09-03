@@ -33,6 +33,11 @@ public class SpawnList extends BaseCommand {
 	}
 
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SPAWNLIST_USAGE);
+	}
+
+	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;

@@ -21,6 +21,11 @@ public class SpawnDelete extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"spawnd", "deletespawn", "rmspawn"}; }
 	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SPAWNDELETE_USAGE);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */

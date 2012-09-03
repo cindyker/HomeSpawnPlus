@@ -20,6 +20,11 @@ public class HomeInviteDelete extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hid"}; }
 
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_DELETE_USAGE);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */

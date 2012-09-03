@@ -36,6 +36,11 @@ public class HSP extends BaseCommand {
 	private String logPrefix;
 	
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HSP_USAGE);
+	}
+
+	@Override
 	public org.morganm.homespawnplus.command.Command setPlugin(HomeSpawnPlus plugin) {
 		this.logPrefix = HomeSpawnPlus.logPrefix;
 		return super.setPlugin(plugin);

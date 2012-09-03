@@ -20,6 +20,11 @@ public class SetDefaultHome extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"sdh"}; }
 	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTHOME_USAGE);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */

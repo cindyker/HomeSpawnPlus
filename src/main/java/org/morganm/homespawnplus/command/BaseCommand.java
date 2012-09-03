@@ -47,7 +47,9 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 //	}
 
 	public String getDescription() { return null; }
-	public String getUsage() { return null; }
+	public String getUsage() {
+		return "/<command>";
+	}
 	
 	/** By default, commands do not respond to console input. They can override this if they wish
 	 * to do so.

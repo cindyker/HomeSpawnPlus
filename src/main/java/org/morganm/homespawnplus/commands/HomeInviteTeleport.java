@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -44,6 +45,7 @@ public class HomeInviteTeleport extends BaseCommand {
 		
 		Location l = null;
 		org.morganm.homespawnplus.entity.HomeInvite homeInvite = null;
+		Home theHome = null;
 		
 		if( args.length == 1 ) {
 			try {
@@ -80,9 +82,11 @@ public class HomeInviteTeleport extends BaseCommand {
 		}
 		
 		if( homeInvite != null ) {
-			final org.morganm.homespawnplus.entity.Home home = homeInvite.getHome();
-			if( home == null
-					|| (home.getPlayerName() == null && home.getWorld() == null) ) {
+			// store home for future use in player messages
+			theHome = homeInvite.getHome();
+			
+			if( theHome == null
+					|| (theHome.getPlayerName() == null && theHome.getWorld() == null) ) {
 				util.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
 				try {
 					plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(homeInvite);
@@ -143,6 +147,7 @@ public class HomeInviteTeleport extends BaseCommand {
     		
 			if( hasWarmup(p, warmupName) ) {
 	    		final Location finalL = l;
+	    		final Home finalHome = theHome;
 	    		final String placeString = "home of "+ homeInvite.getHome().getPlayerName();
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
@@ -153,8 +158,7 @@ public class HomeInviteTeleport extends BaseCommand {
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", placeString);
-							if( applyCost(p, true, cdName) )
-								util.teleport(p, finalL, TeleportCause.COMMAND);
+							doHomeTeleport(p, finalL, cdName, finalHome);
 						}
 					}
 
@@ -170,8 +174,7 @@ public class HomeInviteTeleport extends BaseCommand {
 				}.setCooldownName(cooldownName).setWarmupName(warmupName));
 			}
 			else {
-				if( applyCost(p, true, cooldownName) )
-					util.teleport(p, l, TeleportCause.COMMAND);
+				doHomeTeleport(p, l, cooldownName, theHome);
 			}
     	}
     	else
@@ -180,6 +183,38 @@ public class HomeInviteTeleport extends BaseCommand {
 		return true;
 	}
 	
+	/** Do a teleport to the home including costs, cooldowns and printing
+	 * departure and arrival messages. Is used from both warmups and sync /home.
+	 * 
+	 * @param p
+	 * @param l
+	 */
+	private void doHomeTeleport(Player p, Location l, String cooldownName,
+			org.morganm.homespawnplus.entity.Home home)
+	{
+		String homeName = "default";
+		String playerName = "unknown";
+		if( home != null ) {
+			if( home.getName() != null )
+				homeName = home.getName();
+			playerName = home.getPlayerName();
+		}
+		
+		if( applyCost(p, true, cooldownName) ) {
+    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_DEPARTING_TO,
+    					"home", homeName,
+    					"player", playerName);
+    		
+    		util.teleport(p, l, TeleportCause.COMMAND);
+    		
+    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_ARRIVED_AT,
+    					"home", homeName,
+    					"player", playerName);
+		}
+	}
+
 	private void deleteHomeInvite(final org.morganm.homespawnplus.entity.HomeInvite hi) {
 		// it's expired, so delete it. we ignore any error here since it doesn't
 		// affect the outcome of the rest of the command.

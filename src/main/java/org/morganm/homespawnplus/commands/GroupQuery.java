@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /** Command to return the group HSP thinks a player is in, based on the underlying
  * Permission system in use.
@@ -19,6 +20,11 @@ public class GroupQuery extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"gq"}; }
 	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_GROUPQUERY_USAGE);
+	}
+
 	@Override
 	public boolean execute(CommandSender sender, String[] args) {
 		if( !defaultCommandChecks(sender) )

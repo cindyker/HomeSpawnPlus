@@ -21,6 +21,11 @@ public class PermCheck extends BaseCommand {
 	public String[] getCommandAliases() { return new String[] {"pc"}; }
 
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_PERMCHECK_USAGE);
+	}
+
+	@Override
 	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
 		return executePrivate(console, command, args);
 	}

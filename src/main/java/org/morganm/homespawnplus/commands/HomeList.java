@@ -21,6 +21,11 @@ public class HomeList extends BaseCommand {
 	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl", "homes"}; }
 	
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
+	}
+
+	@Override
 	public boolean execute(Player p, Command command, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;

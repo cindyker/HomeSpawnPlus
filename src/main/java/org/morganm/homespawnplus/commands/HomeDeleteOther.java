@@ -20,6 +20,11 @@ public class HomeDeleteOther extends BaseCommand {
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hdo"}; }
 	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_USAGE);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */

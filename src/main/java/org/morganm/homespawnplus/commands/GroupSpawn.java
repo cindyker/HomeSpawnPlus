@@ -26,6 +26,11 @@ public class GroupSpawn extends BaseCommand
 	public String[] getCommandAliases() { return new String[] {"gs"}; }
 	
 	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_USAGE);
+	}
+
+	@Override
 	public boolean execute(final Player p, final Command command, final String[] args) {
 		if( !isEnabled() || !hasPermission(p) )
 			return true;

@@ -10,6 +10,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 
 /**
  * @author morganm
@@ -20,6 +21,11 @@ public class HomeListOther extends BaseCommand {
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hlo"}; }
+
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOMELISTOTHER_USAGE);
+	}
 
 	@Override
 	public org.morganm.homespawnplus.command.Command setPlugin(HomeSpawnPlus plugin) {

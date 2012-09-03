@@ -182,16 +182,10 @@ core:
   # of HSP's event integration with it
   multiverseEnabled: false
 
-  # set to true if you want arrival messages to be printed when
-  # a player arrives at a home/spawn. See web docs for how to
-  # customize these messages.
-  arrivalMessages: false
-
-  # same as arrival, but for departure. Generally only makes
-  # sense to use one or the other, choose the one you like best.
-  # (arrival = message after teleport, departure = message
-  # before teleport)
-  departureMessages: false
+  # set to true if you want to display teleporting messages
+  # when a player types /home or /spawn. See web docs for how
+  # to customize these messages: http://goo.gl/qhYmZ
+  teleportingMessages: false
 
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/

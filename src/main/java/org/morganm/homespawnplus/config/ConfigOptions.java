@@ -36,8 +36,7 @@ public interface ConfigOptions {
 	public static final String SPAWN_NAMED_PERMISSIONS = "core.spawnNamedPermissions";
 	public static final String BEDHOME_OVERWRITES_DEFAULT = "core.bedHomeOverwritesDefault";
 	public static final String MULTIVERSE_INTEGRATION_ENABLED = "core.multiverseEnabled";
-	public static final String DEPARTURE_MESSAGES = "core.departureMessages";
-	public static final String ARRIVAL_MESSAGES = "core.arrivalMessages";
+	public static final String TELEPORT_MESSAGES = "core.teleportMessages";
 
 	public static final String DYNMAP_INTEGRATION_ENABLED = "dynmap.enabled";
 	public static final String DYNMAP_INTEGRATION_UPDATE_PERIOD = "dynmap.update.period";

@@ -9,9 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 
 
 /**
@@ -37,31 +40,33 @@ public class GroupSpawn extends BaseCommand
 
 		String cooldownName = "groupspawn";
 		
+		String groupName = plugin.getPlayerGroup(p.getWorld().getName(), p.getName());
+		
+		StrategyResult result = null;
 		Location l = null;
 		if( args.length > 0 ) {
+			groupName = args[0];
+			
 			if( plugin.hasPermission(p, OTHER_GROUPSPAWN_PERMISSION) ) {
-				org.morganm.homespawnplus.entity.Spawn spawn = util.getGroupSpawn(args[0], p.getWorld().getName());
-				cooldownName = getCooldownName("groupspawn-named", args[0]);
+				org.morganm.homespawnplus.entity.Spawn spawn = util.getGroupSpawn(groupName, p.getWorld().getName());
+				cooldownName = getCooldownName("groupspawn-named", groupName);
 				if( spawn != null )
 					l = spawn.getLocation();
 				
 				if( l == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
 							"group", args[0]);
-//					util.sendMessage(p,  "No spawn \""+args[0]+"\" found.");
 					return true;
 				}
 			}
 			else {
 				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
-//				util.sendMessage(p,  "No permission");
 			}
 		}
 		else {
-			l = plugin.getStrategyEngine().getStrategyLocation(EventType.GROUPSPAWN_COMMAND, p);
-//			StrategyInfo spawnInfo = new StrategyInfo();
-//			spawnInfo.spawnEventType = ConfigOptions.SETTING_GROUPSPAWN_CMD_BEHAVIOR;
-//			l = util.getStrategyLocation(p, spawnInfo);
+			result = plugin.getStrategyEngine().getStrategyResult(EventType.GROUPSPAWN_COMMAND, p);
+			if( result != null )
+				l = result.getLocation();
 		}
 
 		if( !cooldownCheck(p, cooldownName) )
@@ -71,12 +76,18 @@ public class GroupSpawn extends BaseCommand
 			util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
 					"group", plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
 			
-//			util.sendMessage(p, "No groupSpawn found for your group: "+plugin.getPlayerGroup(p.getWorld().getName(), p.getName()));
 			return true;
 		}
+		
+		final StrategyContext context;
+		if( result != null )
+			context = result.getContext();
+		else
+			context = null;
 
 		if( hasWarmup(p) ) {
     		final Location finalL = l;
+    		final String finalGroupName = groupName;
 			doWarmup(p, new WarmupRunner() {
 				private boolean canceled = false;
 				private String wuName = getCommandName();
@@ -85,9 +96,7 @@ public class GroupSpawn extends BaseCommand
 					if( !canceled ) {
 						util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 								"name", getWarmupName(), "place", "group spawn");
-//						util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to group spawn");
-						if( applyCost(p, true) )
-				    		util.teleport(p, finalL, TeleportCause.COMMAND);
+						doTeleport(p, finalL, context, finalGroupName);
 					}
 				}
 
@@ -102,11 +111,27 @@ public class GroupSpawn extends BaseCommand
 			});
 		}
 		else {
-			if( applyCost(p, true) )
-	    		util.teleport(p, l, TeleportCause.COMMAND);
+			doTeleport(p, l, context, groupName);
 		}
 		
 		return true;
 	}
 
+	/** Do the teleport including costs, cooldowns and displaying teleport
+	 * messages. Is used from both warmups and sync call.
+	 * 
+	 * @param p
+	 * @param l
+	 */
+	private void doTeleport(Player p, Location l, StrategyContext context,
+			String groupName) {
+		if( applyCost(p, true) ) {
+    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) ) {
+				util.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_TELEPORTING,
+						"group", groupName);
+    		}
+    		
+    		util.teleport(p, l, TeleportCause.COMMAND, context);
+		}
+	}
 }

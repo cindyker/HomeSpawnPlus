@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  *
  */
 public class LocaleStringReplacerImpl implements Locale {
-	private static final String EMPTY_STRING = "%EMPTY%";
+	private static final String EMPTY_STRING = "%NO_MESSAGE%";
 	private static final Pattern newLinePattern = Pattern.compile("%NL%");
 	private static final Map<String, String> predefinedReplacements = new HashMap<String,String>();
 	static {

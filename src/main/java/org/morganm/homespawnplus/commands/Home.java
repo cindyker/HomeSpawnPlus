@@ -108,11 +108,6 @@ public class Home extends BaseCommand
 			context = null;
 		
     	if( l != null ) {
-    		// get homeName for use in arrival/departure messages
-    		String homeName = "default";
-    		if( theHome != null )
-    			homeName = theHome.getName();
-    		
     		// make sure it's on the same world, or if not, that we have
     		// cross-world home perms. We only evaluate this check if the
     		// player gave input for another world; admin-directed strategies
@@ -125,7 +120,8 @@ public class Home extends BaseCommand
     		
 			if( hasWarmup(p, warmupName) ) {
 	    		final Location finalL = l;
-	    		final String finalHomeName = homeName;
+	    		final org.morganm.homespawnplus.entity.Home finalHome = theHome;
+	    		final boolean finalIsNamedHome = playerDirectedArg;
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
 					private String cdName;
@@ -135,7 +131,8 @@ public class Home extends BaseCommand
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", "home");
-							doHomeTeleport(p, finalL, cdName, context, finalHomeName);
+							doHomeTeleport(p, finalL, cdName, context,
+									finalHome, finalIsNamedHome);
 						}
 					}
 
@@ -151,7 +148,7 @@ public class Home extends BaseCommand
 				}.setCooldownName(cooldownName).setWarmupName(warmupName));
 			}
 			else {
-				doHomeTeleport(p, l, cooldownName, context, homeName);
+				doHomeTeleport(p, l, cooldownName, context, theHome, playerDirectedArg);
 			}
     	}
     	else
@@ -167,17 +164,27 @@ public class Home extends BaseCommand
 	 * @param l
 	 */
 	private void doHomeTeleport(Player p, Location l, String cooldownName,
-			StrategyContext context, String homeName) {
+			StrategyContext context, org.morganm.homespawnplus.entity.Home home,
+			boolean isNamedHome)
+	{
+		String homeName = null;
+		if( home != null )
+			homeName = home.getName();
+		
 		if( applyCost(p, true, cooldownName) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.HOME_DEPARTING_TO,
-    					"home", homeName);
+    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) ) {
+    			if( home != null && home.isBedHome() )
+	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_BED_TELEPORTING,
+	    					"home", homeName);
+    			else if( isNamedHome )
+	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NAMED_TELEPORTING,
+	    					"home", homeName);
+    			else
+	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_TELEPORTING,
+	    					"home", homeName);
+    		}
     		
     		util.teleport(p, l, TeleportCause.COMMAND, context);
-    		
-    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.HOME_ARRIVED_AT,
-    					"home", homeName);
 		}
 	}
 	

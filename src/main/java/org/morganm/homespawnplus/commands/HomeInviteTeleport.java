@@ -206,17 +206,12 @@ public class HomeInviteTeleport extends BaseCommand {
 		}
 		
 		if( applyCost(p, true, cooldownName) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_DEPARTING_TO,
+    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_TELEPORTING,
     					"home", homeName,
     					"player", playerName);
     		
     		util.teleport(p, l, TeleportCause.COMMAND);
-    		
-    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_ARRIVED_AT,
-    					"home", homeName,
-    					"player", playerName);
 		}
 	}
 

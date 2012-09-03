@@ -26,17 +26,13 @@ public class SetGroupSpawn extends BaseCommand
 		if( !defaultCommandChecks(p) )
 			return true;
 
-		String group = null;
-
-		if(!(args.length > 0)) {
-			p.sendMessage("Command format: /"+getCommandName()+" [group]");
-		}
-		else {
-			group = args[0];
-			HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Setting group spawn for '"+group+"'.");
-			util.setGroupSpawn(group, p.getLocation(), p.getName());
-			p.sendMessage("Group spawn for "+group+" set successfully!");
-		}
+		if( args.length < 1 )
+			return false;
+		
+		String group = args[0];
+		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Setting group spawn for '"+group+"'.");
+		util.setGroupSpawn(group, p.getLocation(), p.getName());
+		util.sendMessage(p, "Group spawn for "+group+" set successfully!");
 		
 		return true;
 	}

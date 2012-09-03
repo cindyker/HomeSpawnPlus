@@ -37,11 +37,13 @@ public class Spawn extends BaseCommand
 		String cooldownName = "spawn";
 		debug.devDebug("/spawn command run by player ",p);
 		
+		boolean isNamedSpawn=false;
 		Location l = null;
 		StrategyResult result = null;
 		if( args.length > 0 ) {
 			boolean hasPermission = false;
 			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
+				isNamedSpawn = true;
 				org.morganm.homespawnplus.entity.Spawn spawn = null;
 				result = plugin.getStrategyEngine().getStrategyResult(EventType.NAMED_SPAWN_COMMAND, p, args[0]);
 				if( result != null ) {
@@ -93,6 +95,7 @@ public class Spawn extends BaseCommand
 			if( hasWarmup(p) ) {
 	    		final Location finalL = l;
 	    		final String finalSpawnName = spawnName;
+	    		final boolean finalIsNamedSpawn = isNamedSpawn;
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
 					private String wuName = getCommandName();
@@ -101,7 +104,7 @@ public class Spawn extends BaseCommand
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", "spawn");
-							doSpawnTeleport(p, finalL, context, finalSpawnName);
+							doSpawnTeleport(p, finalL, context, finalSpawnName, finalIsNamedSpawn);
 						}
 					}
 
@@ -116,7 +119,7 @@ public class Spawn extends BaseCommand
 				});
 			}
 			else {
-				doSpawnTeleport(p, l, context, spawnName);
+				doSpawnTeleport(p, l, context, spawnName, isNamedSpawn);
 			}
     	}
     	else
@@ -131,17 +134,19 @@ public class Spawn extends BaseCommand
 	 * @param p
 	 * @param l
 	 */
-	private void doSpawnTeleport(Player p, Location l, StrategyContext context, String spawnName) {
+	private void doSpawnTeleport(Player p, Location l, StrategyContext context,
+			String spawnName, boolean isNamedSpawn) {
 		if( applyCost(p, true) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.SPAWN_DEPARTING_TO,
-    					"spawn", spawnName);
+    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) ) {
+    			if( isNamedSpawn )
+        			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NAMED_TELEPORTING,
+        					"spawn", spawnName);
+    			else
+    				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_TELEPORTING,
+    						"spawn", spawnName);
+    		}
     		
     		util.teleport(p, l, TeleportCause.COMMAND, context);
-    		
-    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.SPAWN_ARRIVED_AT,
-    					"spawn", spawnName);
 		}
 	}
 }

@@ -26,6 +26,11 @@ public class HomeInvite extends BaseCommand {
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hi"}; }
+	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEINVITE_USAGE);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])

@@ -8,9 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 
 
 /**
@@ -19,10 +21,13 @@ import org.morganm.homespawnplus.strategy.EventType;
  */
 public class Home extends BaseCommand
 {
-//	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
-//	private static final String DELETE_OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.delete.others";
 	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.otherworld";
 	private static final String NAMED_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.named";
+	
+	@Override
+	public String getUsage() {
+		return	util.getLocalizedMessage(HSPMessages.CMD_HOME_USAGE);
+ 	}
 	
 	@Override
 	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
@@ -38,41 +43,41 @@ public class Home extends BaseCommand
 		boolean playerDirectedArg = false;
 		final String warmupName = getWarmupName(null);
 		String cooldownName = null;
+		org.morganm.homespawnplus.entity.Home theHome = null;
 		
 		Location l = null;
 		if( args.length > 0 ) {
 			playerDirectedArg = true;
-			org.morganm.homespawnplus.entity.Home home = null;
 			String homeName = null;
 			
 			if( args[0].startsWith("w:") ) {
 				if( !plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
-//	    			util.sendMessage(p, "No permission to go to homes in other worlds.");
 	    			return true;
 				}
 				
 				String worldName = args[0].substring(2);
-				home = util.getDefaultHome(p.getName(), worldName);
-				if( home == null ) {
+				theHome = util.getDefaultHome(p.getName(), worldName);
+				if( theHome == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
-//					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
 					return true;
 				}
 			}
 			else {
 				if( !plugin.hasPermission(p, NAMED_HOME_PERMISSION) ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_PERMISSION);
-//	    			util.sendMessage(p, "No permission to go to named homes");
 					return true;
 				}
 				
-				l = util.getStrategyLocation(EventType.NAMED_HOME_COMMAND, p, args[0]);
+				StrategyResult result = util.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
+				theHome = result.getHome();
+				l = result.getLocation();
 			}
-				
-			if( home != null ) {
-				l = home.getLocation();
-				homeName = home.getName();
+
+			// no location yet but we have a Home object? grab it from there
+			if( l == null && theHome != null ) {
+				l = theHome.getLocation();
+				homeName = theHome.getName();
 			}
 			else
 				homeName = args[0];
@@ -81,12 +86,13 @@ public class Home extends BaseCommand
 			
 			if( l == null ) {
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND, "name", homeName);
-//				util.sendMessage(p,  "No home named \""+homeName+"\" found.");
 				return true;
 			}
 		}
 		else {
-			l = util.getStrategyLocation(EventType.HOME_COMMAND, p);
+			StrategyResult result = util.getStrategyResult(EventType.HOME_COMMAND, p);
+			theHome = result.getHome();
+			l = result.getLocation();
 		}
 		
 		debug.debug("home command running cooldown check, cooldownName=",cooldownName);
@@ -94,18 +100,24 @@ public class Home extends BaseCommand
 			return true;
 		
     	if( l != null ) {
-    		// make sure it's on the same world, or if not, that we have cross-world home perms
-    		// we only evaluate this check if the player gave input for another world; admin-directed
-    		// strategies always allow cross-world locations regardless of permissions.
+    		// get homeName for use in arrival/departure messages
+    		String homeName = "default";
+    		if( theHome != null )
+    			homeName = theHome.getName();
+    		
+    		// make sure it's on the same world, or if not, that we have
+    		// cross-world home perms. We only evaluate this check if the
+    		// player gave input for another world; admin-directed strategies
+    		// always allow cross-world locations regardless of permissions.
     		if( playerDirectedArg && !p.getWorld().getName().equals(l.getWorld().getName()) &&
     				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
-//    			util.sendMessage(p, "No permission to go to homes in other worlds.");
     			return true;
     		}
     		
 			if( hasWarmup(p, warmupName) ) {
 	    		final Location finalL = l;
+	    		final String finalHomeName = homeName;
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
 					private String cdName;
@@ -115,9 +127,7 @@ public class Home extends BaseCommand
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", "home");
-//							util.sendMessage(p, "Warmup \""+wuName+"\" finished, teleporting to home");
-							if( applyCost(p, true, cdName) )
-					    		util.teleport(p, finalL, TeleportCause.COMMAND);
+							doHomeTeleport(p, finalL, cdName, finalHomeName);
 						}
 					}
 
@@ -133,15 +143,33 @@ public class Home extends BaseCommand
 				}.setCooldownName(cooldownName).setWarmupName(warmupName));
 			}
 			else {
-				if( applyCost(p, true, cooldownName) )
-		    		util.teleport(p, l, TeleportCause.COMMAND);
+				doHomeTeleport(p, l, cooldownName, homeName);
 			}
     	}
     	else
 			util.sendLocalizedMessage(p, HSPMessages.NO_HOME_FOUND);
-//    		util.sendMessage(p, "No home found");
     	
 		return true;
+	}
+	
+	/** Do a teleport to the home including costs, cooldowns and printing
+	 * departure and arrival messages. Is used from both warmups and sync /home.
+	 * 
+	 * @param p
+	 * @param l
+	 */
+	private void doHomeTeleport(Player p, Location l, String cooldownName, String homeName) {
+		if( applyCost(p, true, cooldownName) ) {
+    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.HOME_DEPARTING_TO,
+    					"home", homeName);
+    		
+    		util.teleport(p, l, TeleportCause.COMMAND);
+    		
+    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.HOME_ARRIVED_AT,
+    					"home", homeName);
+		}
 	}
 	
 	private String getWarmupName(String homeName) {

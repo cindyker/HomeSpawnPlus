@@ -185,7 +185,7 @@ core:
   # set to true if you want to display teleporting messages
   # when a player types /home or /spawn. See web docs for how
   # to customize these messages: http://goo.gl/qhYmZ
-  teleportingMessages: false
+  teleportMessages: false
 
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/

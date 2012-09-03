@@ -49,13 +49,6 @@ public class Spawn extends BaseCommand
 					spawn = result.getSpawn();
 				}
 				
-				/*
-				org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(args[0]);
-				cooldownName = getCooldownName("spawn-named", args[0]);
-				if( spawn != null )
-					l = spawn.getLocation();
-					*/
-				
 				if( l == null ) {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
 					return true;
@@ -93,8 +86,13 @@ public class Spawn extends BaseCommand
 			return true;
     	
     	if( l != null ) {
+    		String spawnName = null;
+    		if( result != null && result.getSpawn() != null )
+    			spawnName = result.getSpawn().getName();
+    		
 			if( hasWarmup(p) ) {
 	    		final Location finalL = l;
+	    		final String finalSpawnName = spawnName;
 				doWarmup(p, new WarmupRunner() {
 					private boolean canceled = false;
 					private String wuName = getCommandName();
@@ -103,9 +101,7 @@ public class Spawn extends BaseCommand
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", "spawn");
-//							util.sendMessage(p, "Warmup \""+getWarmupName()+"\" finished, teleporting to spawn");
-							if( applyCost(p, true) )
-					    		util.teleport(p, finalL, TeleportCause.COMMAND, context);
+							doSpawnTeleport(p, finalL, context, finalSpawnName);
 						}
 					}
 
@@ -120,13 +116,32 @@ public class Spawn extends BaseCommand
 				});
 			}
 			else {
-				if( applyCost(p, true) )
-		    		util.teleport(p, l, TeleportCause.COMMAND, context);
+				doSpawnTeleport(p, l, context, spawnName);
 			}
     	}
     	else
     		HomeSpawnPlus.log.warning(HomeSpawnPlus.logPrefix + " ERROR; not able to find a spawn location");
     	
 		return true;
+	}
+	
+	/** Do a teleport to the spawns including costs, cooldowns and printing
+	 * departure and arrival messages. Is used from both warmups and sync /spawn.
+	 * 
+	 * @param p
+	 * @param l
+	 */
+	private void doSpawnTeleport(Player p, Location l, StrategyContext context, String spawnName) {
+		if( applyCost(p, true) ) {
+    		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.SPAWN_DEPARTING_TO,
+    					"spawn", spawnName);
+    		
+    		util.teleport(p, l, TeleportCause.COMMAND, context);
+    		
+    		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
+    			util.sendLocalizedMessage(p, HSPMessages.SPAWN_ARRIVED_AT,
+    					"spawn", spawnName);
+		}
 	}
 }

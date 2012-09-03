@@ -6,6 +6,7 @@ v1.7.2 -
 * added robust reflections implementation for dyanmic Command Registration
 * fixed NFE when /homeinvitedelete was given non-numeric input
 * added command usages back (they were lost in the dynamic command conversion with 1.7). Bonus: they are now localizable
+* Ticket #116: added customizable arrival/departure messages
 
 v1.7.1 - Aug 26, 2012
 * fixed issue with new modeExcludeNewPlayerSpawn not being usable

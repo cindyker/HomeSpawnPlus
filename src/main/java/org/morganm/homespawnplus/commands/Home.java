@@ -12,6 +12,7 @@ import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.strategy.EventType;
+import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 
@@ -45,6 +46,7 @@ public class Home extends BaseCommand
 		String cooldownName = null;
 		org.morganm.homespawnplus.entity.Home theHome = null;
 		
+		StrategyResult result = null;
 		Location l = null;
 		if( args.length > 0 ) {
 			playerDirectedArg = true;
@@ -69,7 +71,7 @@ public class Home extends BaseCommand
 					return true;
 				}
 				
-				StrategyResult result = util.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
+				result = util.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
 				theHome = result.getHome();
 				l = result.getLocation();
 			}
@@ -90,7 +92,7 @@ public class Home extends BaseCommand
 			}
 		}
 		else {
-			StrategyResult result = util.getStrategyResult(EventType.HOME_COMMAND, p);
+			result = util.getStrategyResult(EventType.HOME_COMMAND, p);
 			theHome = result.getHome();
 			l = result.getLocation();
 		}
@@ -98,6 +100,12 @@ public class Home extends BaseCommand
 		debug.debug("home command running cooldown check, cooldownName=",cooldownName);
 		if( !cooldownCheck(p, cooldownName) )
 			return true;
+		
+		final StrategyContext context;
+		if( result != null )
+			context = result.getContext();
+		else
+			context = null;
 		
     	if( l != null ) {
     		// get homeName for use in arrival/departure messages
@@ -127,7 +135,7 @@ public class Home extends BaseCommand
 						if( !canceled ) {
 							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", "home");
-							doHomeTeleport(p, finalL, cdName, finalHomeName);
+							doHomeTeleport(p, finalL, cdName, context, finalHomeName);
 						}
 					}
 
@@ -143,7 +151,7 @@ public class Home extends BaseCommand
 				}.setCooldownName(cooldownName).setWarmupName(warmupName));
 			}
 			else {
-				doHomeTeleport(p, l, cooldownName, homeName);
+				doHomeTeleport(p, l, cooldownName, context, homeName);
 			}
     	}
     	else
@@ -158,13 +166,14 @@ public class Home extends BaseCommand
 	 * @param p
 	 * @param l
 	 */
-	private void doHomeTeleport(Player p, Location l, String cooldownName, String homeName) {
+	private void doHomeTeleport(Player p, Location l, String cooldownName,
+			StrategyContext context, String homeName) {
 		if( applyCost(p, true, cooldownName) ) {
     		if( plugin.getConfig().getBoolean(ConfigOptions.DEPARTURE_MESSAGES, false) )
     			util.sendLocalizedMessage(p, HSPMessages.HOME_DEPARTING_TO,
     					"home", homeName);
     		
-    		util.teleport(p, l, TeleportCause.COMMAND);
+    		util.teleport(p, l, TeleportCause.COMMAND, context);
     		
     		if( plugin.getConfig().getBoolean(ConfigOptions.ARRIVAL_MESSAGES, false) )
     			util.sendLocalizedMessage(p, HSPMessages.HOME_ARRIVED_AT,

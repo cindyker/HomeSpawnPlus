@@ -81,7 +81,7 @@ public class LocaleStringReplacerImpl implements Locale {
 	        		throw new NullPointerException("bindKey for localized string "+localizedKey+" is null, localized string = "+value);
 	        	
 	            Object object = binds.get(bindKey);
-	            String bindVal = (object != null ? object.toString() : "null");
+	            String bindVal = (object != null ? object.toString() : "");
 	
 	            value = value.replaceAll("%" + bindKey + "%", bindVal);
 	        }

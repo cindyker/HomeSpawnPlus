@@ -92,7 +92,9 @@ public class HomeSpawnUtils {
 	 * @param args
 	 */
 	public void sendLocalizedMessage(final CommandSender target, final HSPMessages msgKey, final Object...args) {
-		target.sendMessage(getDefaultColor() + getLocalizedMessage(msgKey, args));
+		final String msg = getLocalizedMessage(msgKey, args);
+		if( msg != null && msg.length() > 0 )
+			target.sendMessage(getDefaultColor() + msg);
 	}
 	
 	// convenience method proxy

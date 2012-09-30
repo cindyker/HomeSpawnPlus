@@ -113,6 +113,11 @@ public class LocaleStringReplacerImpl implements Locale {
 	            Object object = binds.get(bindKey);
 	            String bindVal = (object != null ? object.toString() : "");
 	
+	            // strip any trailing \ since it will SIOBE the below .replaceAll()
+	            while( bindVal.length() > 0 && bindVal.charAt(bindVal.length()-1) == '\\' ) {
+	                bindVal = bindVal.substring(0, bindVal.length()-1);
+	            }
+	            
 	            value = value.replaceAll("%" + bindKey + "%", bindVal);
 	        }
         }

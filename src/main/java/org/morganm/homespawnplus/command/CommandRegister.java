@@ -168,7 +168,7 @@ public class CommandRegister {
 			return customClass;
 
 		// now loop through all normal commands in the class path
-		for(Class<? extends Command> clazz : commandClasses) {
+		for(Class<? extends Command> clazz : getCommandClasses()) {
 			String shortName = clazz.getSimpleName();
 			if( shortName.equalsIgnoreCase(cmd) ) {
 				return clazz;

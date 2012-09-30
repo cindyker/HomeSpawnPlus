@@ -161,7 +161,6 @@ public class DynmapModule {
     }
 
     private class OurServerListener implements Listener {
-        @SuppressWarnings("unused")
         @EventHandler(priority=EventPriority.MONITOR)
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin p = event.getPlugin();

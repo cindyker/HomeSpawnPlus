@@ -62,8 +62,6 @@ public class WorldGuardIntegration {
 	public void init() {
 		if( !isEnabled() )
 			return;
-		
-		getWorldGuardRegion().registerEvents();
 	}
 
 	public WorldGuardInterface getWorldGuardInterface() {

@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jline.internal.Log;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -70,6 +68,7 @@ public class WorldGuardRegion implements Listener {
 	 * we can lookup the original strategies that way.
 	 */
 	private final Set<String> globalRegisters = new HashSet<String>();
+	private boolean eventsRegistered = false;
 	
 	public WorldGuardRegion(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -77,6 +76,9 @@ public class WorldGuardRegion implements Listener {
 	}
 	
 	public void registerRegion(World world, String regionName) {
+	    if( !eventsRegistered )
+	        registerEvents();
+	    
 		log.devDebug("registerRegion(): world=",world,", region=",regionName);
 		// if world argument is null, invoke no-argument version of this method,
 		// which will register on all worlds
@@ -179,7 +181,7 @@ public class WorldGuardRegion implements Listener {
 		log.devDebug("onRegionExit() INVOKED, event=",e);
 		Location l = processEvent(e, EventType.EXIT_REGION);
 		if( l != null ) {
-			Log.debug("onRegionExit(): setting location to ",l);
+			log.debug("onRegionExit(): setting location to ",l);
 			e.setTo(l);
 		}
 	}
@@ -189,7 +191,7 @@ public class WorldGuardRegion implements Listener {
 		log.devDebug("onRegionEnter() INVOKED, event=",e);
 		Location l = processEvent(e, EventType.ENTER_REGION);
 		if( l != null ) {
-			Log.debug("onRegionEnter(): setting location to ",l);
+			log.debug("onRegionEnter(): setting location to ",l);
 			e.setTo(l);
 		}
 	}
@@ -197,6 +199,8 @@ public class WorldGuardRegion implements Listener {
     public void registerEvents() {
     	PluginManager pm = plugin.getServer().getPluginManager();
     	pm.registerEvents(this, plugin);
+    	
+    	eventsRegistered = true;
 
     	/*
         pm.registerEvent(PlayerRespawnEvent.class,

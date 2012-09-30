@@ -132,6 +132,7 @@ public class CommandBook implements Runnable {
 				log.log(Level.WARNING, "StorageException attempting to convert CommandBook home", e);
 			}
 		}
+		br.close();
 		
 		return convertedCount;
 	}

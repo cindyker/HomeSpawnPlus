@@ -4,7 +4,7 @@ url: ${project.url}
 version: ${project.version}
 author: morganm
 database: true
-softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder, Multiverse-Core]
+softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
 permissions:
     hsp.*:
         description: Gives access to all HomeSpawnPlus permissions

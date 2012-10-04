@@ -1,3 +1,7 @@
+v1.7.3 - 
+* Ticket #140: fixed Exception when using trailing \ on commands
+* added "hsp" prefixed alias for all commands (/hsphome, /hspspawn, /hsphomelist, etc)
+
 v1.7.2 - Sep 29, 2012
 * fixed a bug when using /homeinvite to the same player/home created an exception
 * fixed unreported bug where an expiring HomeInvite would delete the associated Home also

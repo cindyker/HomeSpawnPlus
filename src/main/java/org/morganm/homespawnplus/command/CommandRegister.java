@@ -35,7 +35,6 @@ package org.morganm.homespawnplus.command;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -122,20 +121,35 @@ public class CommandRegister {
 			// check for aliases defined in the configuration
 			Object o = cmdParams.get("aliases");
 			if( o != null ) {
+				List<String> aliases = null;
 				if( o instanceof List ) {
-					pc.setAliases((List<String>) o);
+					aliases = (List<String>) o;
 				}
 				else if( o instanceof String ) {
-					List<String> list = new ArrayList<String>(1);
-					list.add((String) o);
-					pc.setAliases(list);
+					aliases = new ArrayList<String>(2);
+					aliases.add((String) o);
 				}
 				else
 					log.warn("invalid aliases defined for command ",cmdName,": ",o);
+				
+				if( aliases == null )
+					aliases = new ArrayList<String>(1);
+				
+				aliases.add("hsp"+command.getCommandName());	// all commands have "hsp" prefix alias
+				pc.setAliases(aliases);
 			}
-			// otherwise set whatever the command has defined, if anything
-			else if( command.getCommandAliases() != null )
-				pc.setAliases(Arrays.asList(command.getCommandAliases()));
+			// otherwise set whatever the command has defined
+			else {
+				List<String> aliases = new ArrayList<String>(5);
+				String[] strAliases = command.getCommandAliases();
+				if( strAliases != null ) {
+					for(String alias : strAliases) {
+						aliases.add(alias);
+					}
+				}
+				aliases.add("hsp"+command.getCommandName());	// all commands have "hsp" prefix alias
+				pc.setAliases(aliases);
+			}
 			
 			// register it
 			commandMap.register("hsp", pc);

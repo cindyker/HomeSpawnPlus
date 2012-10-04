@@ -266,7 +266,7 @@ public class StrategyContext {
 		}
 		
 		ModeStrategy modeStrategy = getMode(StrategyMode.MODE_SOURCE_WORLD);
-		if( modeStrategy != null && modeStrategy instanceof ModeInRegion ) {
+		if( modeStrategy instanceof ModeSourceWorld ) {
 			ModeSourceWorld mode = (ModeSourceWorld) modeStrategy;
 			String sourceWorld = mode.getWorldName();
 			

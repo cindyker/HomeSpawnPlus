@@ -255,6 +255,10 @@ public class PermissionSystem {
     	
     	if( p == null )
     		return false;
+
+    	// ops have full access. You shouldn't use op anyway, use permissions instead.
+    	if( p.isOp() )
+    	    return true;
     	
     	boolean permAllowed = false;
     	switch(systemInUse) {

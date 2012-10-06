@@ -9,17 +9,6 @@
 # default values. Copy any sections you want here into your config.yml
 # to make changes.
 
-# If you're having problems with other plugins that have registered
-# commands that you want to use with HSP (for example, CommandBook has
-# /home, /spawn and loads first alphabetically), you can uncomment the
-# below lines and HSP will then take over those commands for it's own
-# use when it loads.
-#usurpCommands:
-#  - home
-#  - sethome
-#  - spawn
-#  - setspawn
-
 # This defines which permission system HSP uses. Vault and WEPIF
 # (WEPIF is built into WorldEdit) are preferred, they both provide
 # a nice interface to all other permission systems. If you don't have

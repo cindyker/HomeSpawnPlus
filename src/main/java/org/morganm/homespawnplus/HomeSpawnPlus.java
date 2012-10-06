@@ -86,7 +86,6 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLo
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
-import org.morganm.homespawnplus.util.CommandUsurper;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.JarUtils;
@@ -165,8 +164,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	if( getServer().getPluginManager().getPlugin("Essentials") != null ) {
     		log.warning(logPrefix+" Essentials found. It is likely your HSP /home and /spawn commands will"
-    				+ " end up going to Essentials instead. Please either use the HSP config.yml"
-    				+ " \"usurpCommands\" option to enable HSP commands or consider disabling Essentials.");
+    				+ " end up going to Essentials instead.");
     		log.warning(logPrefix+" Also note that HSP can convert your homes from Essentials for you. Just"
     				+ " run the command \"/hspconvert essentials\" (must have hsp.command.admin permission)");
     		log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
@@ -175,8 +173,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	
     	if( getServer().getPluginManager().getPlugin("CommandBook") != null ) {
     		log.warning(logPrefix+" CommandBook found. It is likely your HSP /home and /spawn commands will"
-    				+ " end up going to CommandBook instead. Please either use the HSP config.yml"
-    				+ " \"usurpCommands\" option to enable HSP commands or add \"homes\" and"
+    				+ " end up going to CommandBook instead. Please add \"homes\" and"
     				+ " \"spawn-locations\" to your CommandBook config.yml \"components.disabled\" section.");
     		log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
     				+ " this warning.");
@@ -280,13 +277,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     	CommandRegister register = new CommandRegister(this);
     	register.setCommandConfig(config);
     	register.registerAllCommands();
-    	
-    	final HomeSpawnPlus pluginInstance = this;
-    	getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-		    	new CommandUsurper(pluginInstance, log, logPrefix).usurpCommands();
-			}
-		} , 25);
     	debugEndTimer("commands");
     	
     	debugStartTimer("Plugin integrations");

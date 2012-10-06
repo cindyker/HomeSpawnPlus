@@ -272,6 +272,12 @@ public class StrategyEngine {
 			}
 			
 			result = strat.evaluate(context);
+			
+            if( result != null && !context.checkDistance(result.getLocation()) ) {
+                logVerbose("Result ",result," skipped because MODE_DISTANCE_LIMITS is enabled and result is not within distance bounds");
+                result = null;
+            }
+
 			logStrategyResult(strat, result);
 			if( result != null && result.isSuccess() )
 				break;

@@ -62,6 +62,8 @@ public abstract class HomeStrategy extends BaseStrategy {
 		debug.devDebug("getModeHome() worldName=",worldName,", location=",context.getEventLocation());
 		
 		Home home = null;
+		// cache whether or not we are checking distance for efficiency
+		final boolean distanceCheckEnabled = context.isModeEnabled(StrategyMode.MODE_DISTANCE_LIMITS);
 		
 		// If the mode is NORMAL, DEFAULT_ONLY or NO_BED, then we start by grabbing the
 		// default home and then apply the modes based on the status of that home
@@ -81,6 +83,11 @@ public abstract class HomeStrategy extends BaseStrategy {
 				logVerbose("Home ",home," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
 				home = null;
 			}
+			
+			if( home != null && distanceCheckEnabled && !context.checkDistance(home.getLocation()) ) {
+                logVerbose("Home ",home," skipped because MODE_DISTANCE_LIMITS is enabled and home is not within distance bounds");
+                home = null;
+			}
 		}
 		
 		// If we haven't found a home by this point, check to see if we are in a NORMAL
@@ -95,6 +102,11 @@ public abstract class HomeStrategy extends BaseStrategy {
 				logVerbose("Home ",home," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
 				home = null;
 			}
+			
+            if( home != null && distanceCheckEnabled && !context.checkDistance(home.getLocation()) ) {
+                logVerbose("Home ",home," skipped because MODE_DISTANCE_LIMITS is enabled and home is not within distance bounds");
+                home = null;
+            }
 		}
 		
 		// If we haven't found a home by this point and we are in MODE_ANY, then just
@@ -111,6 +123,11 @@ public abstract class HomeStrategy extends BaseStrategy {
 					logVerbose("Home ",home," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
 					home = null;
 				}
+				
+	            if( distanceCheckEnabled && !context.checkDistance(home.getLocation()) ) {
+	                logVerbose("Home ",home," skipped because MODE_DISTANCE_LIMITS is enabled and home is not within distance bounds");
+	                home = null;
+	            }
 			}
 		}
 		

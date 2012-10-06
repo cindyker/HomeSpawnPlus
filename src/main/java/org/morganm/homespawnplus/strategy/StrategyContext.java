@@ -40,6 +40,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.strategies.ModeDefault;
+import org.morganm.homespawnplus.strategies.ModeDistanceLimits;
 import org.morganm.homespawnplus.strategies.ModeInRegion;
 import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
 import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
@@ -66,6 +67,7 @@ public class StrategyContext {
 	 */
 	private Location fromLocation;
 	private String arg;
+	private transient boolean isDistanceCheckEnabled = false;
 	
 	/** As a strategy chain is being evaluated, the current mode might change. This
 	 * is tracked here in the context object.
@@ -130,6 +132,14 @@ public class StrategyContext {
 	public List<ModeStrategy> getCurrentModes() {
 		return currentModes;
 	}
+	public void addMode(ModeStrategy mode) {
+        // if it's not an additive mode, then clear modes to "switch" to new mode
+        if( !mode.isAdditive() )
+            currentModes.clear();
+        
+        currentModes.add(mode);
+        isDistanceCheckEnabled = isModeEnabled(StrategyMode.MODE_DISTANCE_LIMITS);
+	}
 	public void resetCurrentModes() {
 		if( currentModes == null )
 			currentModes = new ArrayList<ModeStrategy>(2);
@@ -137,6 +147,7 @@ public class StrategyContext {
 			currentModes.clear();
 
 		currentModes.add(defaultMode);
+		isDistanceCheckEnabled = false;
 	}
 	
 	private boolean isDefaultMode(final StrategyMode mode) {
@@ -317,6 +328,45 @@ public class StrategyContext {
 		return null;
 	}
 	
+    
+    /** Validate the locations meet any distance limit criteria specified in the current
+     * context. The context "getEventLocation()" is the anchor location (usually the
+     * player location).
+     * 
+     * @param newLoation the location being compared
+     * @return true if the location is within the distance bounds, false if not
+     */
+    public boolean checkDistance(final Location newLocation) {
+        // no ModeDistanceLimits specified, so check is true regardless of locations
+        if( !isDistanceCheckEnabled )
+            return true;
+        
+        final ModeStrategy mode = getMode(StrategyMode.MODE_DISTANCE_LIMITS);
+        if( mode != null ) {
+            final Location anchor = getEventLocation();
+            // if either location is null, distance is infinite. Fail check.
+            if( anchor == null || newLocation == null )
+                return false;
+            
+            // different worlds? doesn't meet bounds limits, must be same-world. Also prevents
+            // exception from Location.distance()
+            if( anchor.getWorld() != newLocation.getWorld() )
+                return false;
+            
+            ModeDistanceLimits limits = (ModeDistanceLimits) mode;
+            double distance = anchor.distance(newLocation);
+            if( distance >= limits.getMinDistance() && distance <= limits.getMaxDistance() )
+                return true;
+            else
+                return false;
+        }
+        // shouldn't ever get here since we do isDistanceCheckEnabled above, but in case we
+        // do, this is same effect; return true since distance check is not enabled.
+        else {
+            return true;
+        }
+    }
+
 	public String getArg() {
 		return arg;
 	}

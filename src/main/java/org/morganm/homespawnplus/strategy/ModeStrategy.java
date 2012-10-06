@@ -45,11 +45,7 @@ public abstract class ModeStrategy extends BaseStrategy {
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		// if it's not an additive mode, then clear modes to "switch" to new mode
-		if( !isAdditive() )
-			context.getCurrentModes().clear();
-		
-		context.getCurrentModes().add(this);
+	    context.addMode(this);
 		logVerbose("Evaluated mode change strategy, new mode = "+context.getCurrentModes().toString());
 		return null;
 	}

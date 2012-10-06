@@ -48,6 +48,7 @@ import org.morganm.homespawnplus.strategies.HomeNamedHome;
 import org.morganm.homespawnplus.strategies.HomeNearestHome;
 import org.morganm.homespawnplus.strategies.HomeSpecificWorld;
 import org.morganm.homespawnplus.strategies.ModeDefault;
+import org.morganm.homespawnplus.strategies.ModeDistanceLimits;
 import org.morganm.homespawnplus.strategies.ModeExcludeNewPlayerSpawn;
 import org.morganm.homespawnplus.strategies.ModeHomeAny;
 import org.morganm.homespawnplus.strategies.ModeHomeBedOnly;
@@ -156,6 +157,7 @@ public class StrategyFactory {
 		oneArgStrategies.put(new ModeMultiverseDestinationPortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseDestinationPortal.class);
 		oneArgStrategies.put(new ModeInRegion(null).getStrategyConfigName().toLowerCase(), ModeInRegion.class);
 		oneArgStrategies.put(new ModeSourceWorld(null).getStrategyConfigName().toLowerCase(), ModeSourceWorld.class);
+        oneArgStrategies.put(new ModeDistanceLimits(null).getStrategyConfigName().toLowerCase(), ModeDistanceLimits.class);
 	}
 	
 	

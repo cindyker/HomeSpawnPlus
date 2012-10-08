@@ -3,6 +3,7 @@ v1.7.3 -
 * added "hsp" prefixed alias for all commands (/hsphome, /hspspawn, /hsphomelist, etc)
 * removed usurpCommands config option, use Bukkit aliases instead <link here>
 * Ticket #138: added ModeDistanceLimits strategy. Specific support for home distance limits, might generically work with other strategies too.
+* fixed issue in localized messages when using $ in substitute values (most commonly a result of economy price messages)
 
 v1.7.2 - Sep 29, 2012
 * fixed a bug when using /homeinvite to the same player/home created an exception

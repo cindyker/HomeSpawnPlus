@@ -118,6 +118,13 @@ public class LocaleStringReplacerImpl implements Locale {
 	                bindVal = bindVal.substring(0, bindVal.length()-1);
 	            }
 	            
+	            // escape any $ character so it can pass through the value
+	            // replaceAll without being interpreted as a regex grouping
+//                Debug.getInstance().devDebug("parseString() pre bindVal=",bindVal);
+	            if( bindVal.indexOf('$') != 1 )
+	                bindVal = bindVal.replaceAll("\\$", "\\\\\\$");
+//	            Debug.getInstance().devDebug("parseString() post bindVal=",bindVal);
+	            
 	            value = value.replaceAll("%" + bindKey + "%", bindVal);
 	        }
         }

@@ -97,14 +97,22 @@ import org.morganm.homespawnplus.util.PermissionSystem;
  * @author morganm
  */
 public class HomeSpawnPlus extends JavaPlugin {
-    public static final Logger log = Logger.getLogger("HomeSpawnPlus");
-    public static final String logPrefix = "[HomeSpawnPlus]";
+	// I hate these public static fields, they are a carryover from old code
+	// and should be cleaned up. Lots of references, I will cleanup when I refactor
+	// the code to use IoC.
+    public static final String logPrefix = "";
+    public static Logger log = Logger.getLogger("HomeSpawnPlus");
+    
+    // this is an abstract logger implementation, so that I have a consistent logger
+    // and don't have to change when Bukkit changes or new Mojang API is out. Unfortunately
+    // this is new and not used everywhere yet.
     private org.morganm.homespawnplus.util.Logger hspLogger;
     
     public final static String YAML_CONFIG_ROOT_PATH = "plugins/HomeSpawnPlus/";
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
+	// These registrations are required for Bukkit's YAML serialization to work
 	static {
 		ConfigurationSerialization.registerClass(SerializableHome.class, "Home");
 		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
@@ -142,7 +150,6 @@ public class HomeSpawnPlus extends JavaPlugin {
     public Economy vaultEconomy = null;
     
     public HomeSpawnPlus() {
-    	this.hspLogger = new org.morganm.homespawnplus.util.LoggerImpl(this);
     }
     
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
@@ -200,6 +207,9 @@ public class HomeSpawnPlus extends JavaPlugin {
     
     @Override
     public void onEnable() {
+    	log = getLogger();	// use Bukkit's logger now, includes automatic prefix
+    	this.hspLogger = new org.morganm.homespawnplus.util.LoggerImpl(this);
+    	
     	startupBegin = System.currentTimeMillis();
     	boolean loadError = false;
     	instance = this;
@@ -581,12 +591,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 	
 	public PermissionSystem getPermissionSystem() { return perms; }
 
-    @Override
-    public ClassLoader getClassLoader() { return super.getClassLoader(); }
-    
     public StrategyEngine getStrategyEngine() { return strategyEngine; }
     public org.morganm.homespawnplus.util.Logger getLog() { return hspLogger; }
-    public java.util.logging.Logger getLogger() { return log; }
     public String getLogPrefix() { return logPrefix; }
     public Storage getStorage() { return storage; }
     public CooldownManager getCooldownManager() { return cooldownManager; }

@@ -189,6 +189,11 @@ public class Teleport {
 	{
 		debug.devDebug("findSafeLocation2(): level=",level,", baseLocation=",baseLocation,", flags=",flags);
 		final World w = baseLocation.getWorld();
+		if( w == null ) {
+			log.info("Warning: location refers to non-existant world: "+baseLocation);
+			return null;
+		}
+
 		final int baseX = baseLocation.getBlockX();
 		final int baseY = baseLocation.getBlockY();
 		final int baseZ = baseLocation.getBlockZ();

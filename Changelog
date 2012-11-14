@@ -5,7 +5,7 @@ v1.7.3 - Nov 14, 2012
 * Ticket #138: added ModeDistanceLimits strategy. Specific support for home distance limits, might generically work with other strategies too.
 * fixed issue in localized messages when using $ in substitute values (most commonly a result of economy price messages)
 * Ticket #148: NPE due to deleted worlds. This only fixes the specific stack trace, no additional work was done at this time to test this scenario, it's entirely possible deleted worlds will break elsewhere in HSP.
-* Bukkit 1.4.2 compatibility: Bukkit 1.4.2 changed some methods to final that HSP had used prior to Bukkit ever having them in the API. Made HSP compatible with these new changes.
+* Bukkit 1.4.4 compatibility: Bukkit 1.4.4 changed some methods to final that HSP had used prior to Bukkit ever having them in the API. Made HSP compatible with these new changes.
 
 v1.7.2 - Sep 29, 2012
 * fixed a bug when using /homeinvite to the same player/home created an exception

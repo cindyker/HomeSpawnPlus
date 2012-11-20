@@ -44,7 +44,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.MarkerAPI;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.util.Debug;
 
 /** Dynmap module for HSP, code heavily borrowed from Mike Primm's

@@ -35,18 +35,21 @@ package org.morganm.homespawnplus.strategy;
 
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.PlayerSpawn;
+import org.morganm.homespawnplus.server.api.Factory;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
+import org.morganm.homespawnplus.server.api.TeleportOptions;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
-import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.General;
-import org.morganm.homespawnplus.util.Teleport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Class responsible for processing strategies at run-time.
  * 
@@ -54,17 +57,22 @@ import org.morganm.homespawnplus.util.Teleport;
  *
  */
 public class StrategyEngine {
-	private static final Debug debug = Debug.getInstance();
-	private final HomeSpawnPlus plugin;
+    private final Logger log = LoggerFactory.getLogger(StrategyEngine.class);
+    private final ConfigCore config;
 	private final StrategyConfig strategyConfig;
-	private final Logger log;
-	private final String logPrefix;
+	private final Storage storage;
+	private final Teleport teleport;
+	private final Factory factory;
 	
-	public StrategyEngine(final HomeSpawnPlus plugin) {
-		this.plugin = plugin;
-		this.log = plugin.getLogger();
-		this.logPrefix = plugin.getLogPrefix();
-		this.strategyConfig = new StrategyConfig(this.plugin);
+	@Inject
+	public StrategyEngine(ConfigCore config, StrategyConfig strategyConfig, Storage storage,
+	        Teleport teleport, Factory factory)
+	{
+	    this.config = config;
+		this.strategyConfig = strategyConfig;
+		this.storage = storage;
+		this.teleport = teleport;
+		this.factory = factory;
 	}
 	
 	public StrategyConfig getStrategyConfig() {
@@ -80,14 +88,14 @@ public class StrategyEngine {
 	 */
 	public StrategyResult getStrategyResult(StrategyContext context, String...args) {
 		if( context == null ) {
-			log.warning(logPrefix+" null context received, doing nothing");
+			log.warn("null context received, doing nothing");
 			return null;
 		}
 		
     	if( args != null && args.length > 0 )
     		context.setArg(args[0]);
     	
-    	StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
+    	StrategyResult result = evaluateStrategies(context);
     	// decided these warnings are just annoying and of no value. -morganm 7/26/12
 //    	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
 //			log.info(logPrefix + " strategy result is null for event "+context.getEventType()+"."
@@ -118,7 +126,7 @@ public class StrategyEngine {
 	}
 	
 	public StrategyResult getStrategyResult(String event, Player player, String...args) {
-    	final StrategyContext context = new StrategyContext(plugin);
+	    final StrategyContext context = factory.newStrategyContext();
     	context.setPlayer(player);
     	context.setEventType(event);
 		return getStrategyResult(context, args);
@@ -133,16 +141,16 @@ public class StrategyEngine {
 	 */
 	public StrategyResult evaluateStrategies(StrategyContext context) {
     	long start = System.currentTimeMillis();
-		debug.debug("evaluateStrategies: INVOKED. type=",context.getEventType()," player=",context.getPlayer());
-		debug.debug("evaluateStrategies: context=",context);
+    	log.debug("evaluateStrategies: INVOKED. type={} player={}",context.getEventType(), context.getPlayer());
+		log.debug("evaluateStrategies: context={}",context);
 		StrategyResult result = null;
 		
 		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer());
 		
-		debug.debug("evaluateStrategies: evaluating permission-based strategies");
+		log.debug("evaluateStrategies: evaluating permission-based strategies");
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
 		if( permStrategies != null && permStrategies.size() > 0 ) {
-			debug.debug("evaluateStrategies: evaluating ",permStrategies.size()," permission strategies");
+			log.debug("evaluateStrategies: evaluating {} permission strategies", permStrategies.size());
 			for(Set<Strategy> set : permStrategies) {
 				context.resetCurrentModes();
 				
@@ -151,7 +159,7 @@ public class StrategyEngine {
 					break;
 			}
 		}
-		debug.debug("evaluateStrategies: permission-based strategies result = ",result);
+		log.debug("evaluateStrategies: permission-based strategies result = {}",result);
 
 		// need to check world strategies if we don't yet have a successful result
 		if( result == null || (result != null && !result.isSuccess()) ) {
@@ -159,27 +167,27 @@ public class StrategyEngine {
 			// but lets be sure we don't blow up if it is. Only process world strategy if
 			// player is in a world.
 			if( context.getEventLocation().getWorld() != null ) {
-				debug.debug("evaluateStrategies: evaluating world-based strategies");
+				log.debug("evaluateStrategies: evaluating world-based strategies");
 				Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), context.getEventLocation().getWorld().getName());
 				if( worldStrategies != null && worldStrategies.size() > 0 ) {
-					debug.debug("evaluateStrategies: evaluating ",worldStrategies.size()," world strategies");
+					log.debug("evaluateStrategies: evaluating {} world strategies", worldStrategies.size());
 					context.resetCurrentModes();
 					result = evaluateStrategies(context, worldStrategies);
 				}
-				debug.debug("evaluateStrategies: world-based strategies result = ",result);
+				log.debug("evaluateStrategies: world-based strategies result = {}",result);
 			}
 		}
 		
 		// need to check default strategies if we don't yet have a successful result
 		if( result == null || (result != null && !result.isSuccess()) ) {
-			debug.debug("evaluateStrategies: evaluating default strategies");
+			log.debug("evaluateStrategies: evaluating default strategies");
 			Set<Strategy> defaultStrategies = strategyConfig.getDefaultStrategies(context.getEventType());
 			if( defaultStrategies != null && defaultStrategies.size() > 0 ) {
-				debug.debug("evaluateStrategies: evaluating ",defaultStrategies.size()," default strategies");
+				log.debug("evaluateStrategies: evaluating {} default strategies", defaultStrategies.size());
 				context.resetCurrentModes();
 				result = evaluateStrategies(context, defaultStrategies);
 			}
-			debug.debug("evaluateStrategies: default strategies result = ",result);
+			log.debug("evaluateStrategies: default strategies result = {}",result);
 		}
 		
 		if( result == null ) {
@@ -196,24 +204,23 @@ public class StrategyEngine {
 		}
 
 		// if we have a result, make sure it's a safe location
-		if( result != null && result.getLocation() != null && plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
+		if( result != null && result.getLocation() != null && config.isSafeTeleport() ) {
 			Location oldLocation = result.getLocation();
-			int flags = context.getModeSafeTeleportFlags();
-			Teleport.Bounds bounds = context.getModeBounds();
+			TeleportOptions options = context.getTeleportOptions();
 
-			debug.devDebug("evaluateStrategies(): Invoking safeLocation() for event=",context.getEventType(),", current startegy result=",result);
-			debug.devDebug("evaluateStrategies(): bounds=",bounds);
-			Location safeLocation = General.getInstance().getTeleport().safeLocation(oldLocation, bounds, flags);
+			log.debug("evaluateStrategies(): Invoking safeLocation() for event={}, current startegy result={}",context.getEventType(), result);
+			log.debug("evaluateStrategies(): options={}",options);
+			Location safeLocation = teleport.safeLocation(oldLocation, options);
 			if( safeLocation != null )
 				result.setLocation(safeLocation);
 			
 			if( !oldLocation.equals(result.getLocation()) )
-				debug.debug("evaluateStrategies: safeLocation changed to ",result.getLocation()," from ",oldLocation);
+				log.debug("evaluateStrategies: safeLocation changed to {} from {}",result.getLocation(), oldLocation);
 		}
 
 		// are we supposed to remember a spawn?
 		if( result != null && result.getSpawn() != null && context.isModeEnabled(StrategyMode.MODE_REMEMBER_SPAWN) ) {
-			PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
+			PlayerSpawnDAO dao = storage.getPlayerSpawnDAO();
 			PlayerSpawn ps = dao.findByWorldAndPlayerName(result.getSpawn().getWorld(), context.getPlayer().getName());
 			if( ps == null ) {
 				ps = new PlayerSpawn();
@@ -223,11 +230,11 @@ public class StrategyEngine {
 			try {
 				dao.save(ps);
 			} catch(StorageException e) { e.printStackTrace(); }
-			debug.debug("evaluateStrategies: recorded PlayerSpawn spawn as directed by ",StrategyMode.MODE_REMEMBER_SPAWN);
+			log.debug("evaluateStrategies: recorded PlayerSpawn spawn as directed by {}",StrategyMode.MODE_REMEMBER_SPAWN);
 		}
 		// no.. are we supposed to remember a location?
 		else if( result != null && result.getLocation() != null && context.isModeEnabled(StrategyMode.MODE_REMEMBER_LOCATION) ) {
-			PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
+			PlayerSpawnDAO dao = storage.getPlayerSpawnDAO();
 			PlayerSpawn ps = dao.findByWorldAndPlayerName(result.getLocation().getWorld().getName(), context.getPlayer().getName());
 			if( ps == null ) {
 				ps = new PlayerSpawn();
@@ -238,10 +245,10 @@ public class StrategyEngine {
 			try {
 				dao.save(ps);
 			} catch(StorageException e) { e.printStackTrace(); }
-			debug.debug("evaluateStrategies: recorded PlayerSpawn location as directed by ",StrategyMode.MODE_REMEMBER_LOCATION);
+			log.debug("evaluateStrategies: recorded PlayerSpawn location as directed by {}",StrategyMode.MODE_REMEMBER_LOCATION);
 		}
 		
-    	int warnMillis = plugin.getConfig().getInt(ConfigOptions.WARN_PERFORMANCE_MILLIS, 250); 
+    	int warnMillis = config.getPerformanceWarnMillis(); 
     	if( warnMillis > 0 ) {
             long totalTime = System.currentTimeMillis() - start;
             if( totalTime > warnMillis ) {
@@ -249,7 +256,7 @@ public class StrategyEngine {
             }
     	}
 
-		debug.debug("evaluateStrategies: exit result = ",result);
+		log.debug("evaluateStrategies: exit result = {}",result);
 		return result;
 	}
 	
@@ -287,24 +294,21 @@ public class StrategyEngine {
 	}
 	
 	protected boolean isVerbose() {
-		return plugin.getConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+		return config.isVerboseStrategyLogging();
 	}
 	
 	protected void logVerbose(final Object...args) {
-		if( isVerbose() || debug.isDebug() ) {
-			final StringBuilder sb = new StringBuilder(logPrefix);
-			if( !logPrefix.endsWith(" ") )
-				sb.append(" ");
-			
+		if( isVerbose() || log.isDebugEnabled() ) {
+			final StringBuilder sb = new StringBuilder();
 			for(int i=0; i<args.length;i++) {
 				sb.append(args[i]);
 			}
-			
 			final String msg = sb.toString();
+			
 			if( isVerbose() )
 				log.info(msg);
-			if( debug.isDebug() )
-				debug.debug(msg);
+			
+			log.debug(msg);
 		}
 	}
 	

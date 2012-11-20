@@ -33,7 +33,9 @@
  */
 package org.morganm.homespawnplus.config;
 
-/**
+/** Generic configuration error, usually thrown as a result of an
+ * invalid configuration.
+ * 
  * @author morganm
  *
  */

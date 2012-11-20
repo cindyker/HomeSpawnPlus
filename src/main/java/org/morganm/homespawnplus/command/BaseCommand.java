@@ -34,23 +34,24 @@
 package org.morganm.homespawnplus.command;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
+import javax.inject.Inject;
 
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.HomeSpawnUtils;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.Permissions;
+import org.morganm.homespawnplus.config.ConfigEconomy;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.CooldownManager;
 import org.morganm.homespawnplus.manager.WarmupManager;
 import org.morganm.homespawnplus.manager.WarmupRunner;
-import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.Economy;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.storage.Storage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /** Abstract class that takes care of some routine tasks for commands, to keep those
@@ -59,89 +60,54 @@ import org.morganm.homespawnplus.util.Debug;
  * @author morganm
  *
  */
-public abstract class BaseCommand implements Command, CommandExecutor {
-	protected Debug debug;
-	protected HomeSpawnPlus plugin;
-	protected HomeSpawnUtils util;
+public abstract class BaseCommand implements Command {
+    protected final Logger log = LoggerFactory.getLogger(BaseCommand.class);
+    
+    protected Server server;
+	protected Plugin plugin;
 	protected CooldownManager cooldownManager;
 	protected WarmupManager warmupManager;
-	protected Logger log;
-	protected String logPrefix;
-	private boolean enabled;
+    protected Permissions permissions;
+    protected Storage storage;
+    
 	private String permissionNode;
 	private String commandName;
 	private Map<String, Object> commandParams;
+	private Economy economy;
+	private ConfigEconomy configEconomy;
 	
-//	public BaseCommand(String name) {
-//		super(name);
-//	}
-
 	public String getDescription() { return null; }
 	public String getUsage() {
 		return "/<command>";
 	}
-	
-	/** By default, commands do not respond to console input. They can override this if they wish
-	 * to do so.
-	 * @deprecated use execute(CommandSender sender, String[] args)
-	 */
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args)
-	{
-		return this.execute(console, args);
-	}
-	/** By default, we do nothing. This is a legacy method that will be phased out.
-	 * @deprecated use execute(CommandSender sender, String[] args)
-	 * 
-	 */
-	public boolean execute(Player p, org.bukkit.command.Command command, String[] args)
-	{
-		return this.execute(p, args);
-	}
-	/** This is the new preferred method for commands to override.
-	 * 
+
+    /** For convenience, BaseCommand detects if a command is executed by a player and
+     * invokes this method if so. This allows subclasses to deal with Player class directly
+     * rather than every command having to check for Console.
+     * 
+     * If a command can respond to Console input, it should override the
+     * {@link #execute(CommandSender, String[])} method instead.
+     * 
+     * Note this method does nothing, it's simply a stub to be overridden by a subclass.
+     */
+    public boolean execute(Player player, String[] args) {
+        return false;
+    }
+    
+    /** By default, commands do not respond to console input. They can override this method
+     * if they wish to do so.
 	 */
 	public boolean execute(CommandSender sender, String[] args) {
-		return false;
-		
-		/*
-		// support legacy Command mode by calling those methods first
-		if( sender instanceof Player ) {
-			Player p = (Player) sender;
-			
-			return this.execute(p, null, args);
-		}
-		else if( sender instanceof ConsoleCommandSender ) {
-			ConsoleCommandSender console = (ConsoleCommandSender) sender;
-			
-			return this.execute(console, null, args);
-		}
-		// no legacy methods? Call the preferred one
-		else
-			return execute(sender, args);
-			*/
-	}
-	
-	@Override
-	public final boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-		debug.debug("onCommand() label=",label);
-		// support legacy Command mode by calling those methods first
-		if( sender instanceof Player ) {
-			Player p = (Player) sender;
-			
-			debug.debug("onCommand() invoking Player execute");
-			return this.execute(p, command, args);
-		}
-		else if( sender instanceof ConsoleCommandSender ) {
-			ConsoleCommandSender console = (ConsoleCommandSender) sender;
-			
-			debug.debug("onCommand() invoking Console execute");
-			return this.execute(console, command, args);
-		}
-		// no legacy methods? Call the preferred one
-		else {
-			debug.debug("onCommand() invoking preferred execute");
-			return execute(sender, args);
-		}
+	    if( sender instanceof Player ) {
+	        Player p = (Player) sender;
+	        
+	        if( !hasPermission(p) )
+	            return true;
+	        
+	        return this.execute(p, args);
+	    }
+	    else
+	        return false;
 	}
 	
 	public void setCommandParameters(Map<String, Object> params) {
@@ -169,33 +135,44 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 			return null;
 	}
 
-	/** Returns this object for easy initialization in a command hash.
-	 * 
-	 * @param plugin
-	 * @return
-	 */
-	public Command setPlugin(HomeSpawnPlus plugin) {
-		this.debug = Debug.getInstance();
-		this.plugin = plugin;
-		this.util = plugin.getUtil();
-		this.cooldownManager = plugin.getCooldownManager();
-		this.warmupManager = plugin.getWarmupmanager();
-		this.log = HomeSpawnPlus.log;
-		this.logPrefix = HomeSpawnPlus.logPrefix;
-		enabled = !plugin.getHSPConfig().getBoolean(getDisabledConfigFlag(), Boolean.FALSE);
-		return this;
+    @Inject
+    public void setSerer(Server server) {
+        this.server = server;
+    }
+    
+	@Inject
+	public void setPlugin(Plugin plugin) {
+	    this.plugin = plugin;
 	}
 	
-	/** Return true if the command is enabled, false if it is not.
-	 * 
-	 */
-	public boolean isEnabled() {
-		return enabled;
+	@Inject
+	public void setCooldownManager(CooldownManager cooldownManager) {
+	    this.cooldownManager = cooldownManager;
 	}
 	
-	protected String getDisabledConfigFlag() {
-		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
+	@Inject
+	public void setWarmupManager(WarmupManager warmupManager) {
+	    this.warmupManager = warmupManager;
 	}
+	
+	@Inject
+	public void setEconomy(Economy economy) {
+	    this.economy = economy;
+	}
+	
+	@Inject
+	public void setPermissions(Permissions permissions) {
+	    this.permissions = permissions;
+	}
+
+    @Inject
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+//	protected String getDisabledConfigFlag() {
+//		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
+//	}
 	
 	/** Check to see if player has sufficient money to pay for this command.
 	 * 
@@ -205,11 +182,10 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 	protected boolean costCheck(Player p) {
 		boolean returnValue = false;
 		
-		Economy economy = plugin.getEconomy();
 		if( economy == null )
 			returnValue = true;
 		
-		if( !returnValue && plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+		if( !returnValue && p.hasPermission(HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
 			returnValue = true;
 
 		if( !returnValue ) {
@@ -227,18 +203,14 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 	}
 	
 	protected int getPrice(Player p) {
-		return util.getCommandCost(p, getCommandName());
+		return economy.getCommandCost(p.getName(), getCommandName());
 	}
 	
 	protected void printInsufficientFundsMessage(Player p) {
-		Economy economy = plugin.getEconomy();
 		if( economy != null )
-			util.sendLocalizedMessage(p, HSPMessages.COST_INSUFFICIENT_FUNDS,
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_INSUFFICIENT_FUNDS,
 					"price", economy.format(getPrice(p)),
-					"balance", economy.format(economy.getBalance(p.getName())));
-//			util.sendMessage(p, "Insufficient funds, you need at least "+economy.format(getPrice(p))
-//					+ " (you only have "+economy.format(economy.getBalance(p.getName()))+")"
-//				);
+					"balance", economy.format(economy.getBalance(p.getName()))) );
 	}
 	
 	/**
@@ -249,14 +221,15 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 	protected boolean applyCost(Player p, boolean applyCooldown, String cooldownName) {
 		boolean returnValue = false;
 		
-		Economy economy = plugin.getEconomy();
-		if( economy == null )
+		if( economy == null || configEconomy.isEnabled() == false )
 			returnValue = true;
 		
 		final String perm = HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName();
-		if( !returnValue && plugin.hasPermission(p, perm) )
-			returnValue = true;
-		debug.debug("applyCost: player=",p,", exempt permissionChecked=",perm,", exempt returnValue=",returnValue);
+		if( !returnValue && p.hasPermission(perm) )
+		    returnValue = true;
+		
+		log.debug("applyCost: player={}, exempt permissionChecked={}, exempt returnValue={}",
+		        p, perm, returnValue);
 
 		if( !costCheck(p) ) {
 			printInsufficientFundsMessage(p);
@@ -265,10 +238,10 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 		else if( !returnValue ) {
 			int price = getPrice(p);
 			if( price > 0 ) {
-				EconomyResponse response = economy.withdrawPlayer(p.getName(), price);
+				String error = economy.withdrawPlayer(p.getName(), price);
 				
-				if( response.transactionSuccess() ) {
-					if( plugin.getHSPConfig().getBoolean(ConfigOptions.COST_VERBOSE, true) ) {
+				if( error == null ) {   // SUCCESS
+					if( configEconomy.isVerboseOnCharge() ) {
 						// had an error report that might have been related to a null value
 						// being returned from economy.format(price), so let's check for that
 						// and protect against any error.
@@ -276,19 +249,17 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 						if( priceString == null )
 							priceString = ""+price;
 						
-						util.sendLocalizedMessage(p, HSPMessages.COST_CHARGED,
+						p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_CHARGED,
 								"price", priceString,
-								"command", getCommandName());
-//						util.sendMessage(p, economy.format(price) + " charged for use of the " + getCommandName() + " command.");
+								"command", getCommandName()) );
 					}
 					
 					returnValue = true;
 				}
 				else {
-					util.sendLocalizedMessage(p, HSPMessages.COST_ERROR,
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_ERROR,
 							"price", economy.format(price),
-							"errorMessage", response.errorMessage);
-//					util.sendMessage(p, "Error subtracting "+price+" from your account: "+response.errorMessage);
+							"errorMessage", error) );
 					returnValue = false;
 				}
 			}
@@ -313,15 +284,12 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 		if ( !isWarmupPending(p, wr.getWarmupName()) ) {
 			warmupManager.startWarmup(p.getName(), wr);
 			
-			util.sendLocalizedMessage(p, HSPMessages.WARMUP_STARTED,
+			p.sendMessage( server.getLocalizedMessage(HSPMessages.WARMUP_STARTED,
 					"name", wr.getWarmupName(),
-					"seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime);
-//			util.sendMessage(p, "Warmup "+wr.getWarmupName()+" started, you must wait "+
-//					warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime+" seconds.");
+					"seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime) );
 		}
 		else
-			util.sendLocalizedMessage(p, HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName());
-//			util.sendMessage(p, "Warmup already pending for "+wr.getWarmupName());
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName()) );
 		
 	}
 	
@@ -338,21 +306,19 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 	 * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
 	 */
 	protected boolean defaultCommandChecks(Player p) {
-		debug.devDebug("defaultCommandChecks() enabled=",enabled);
-		if( !enabled )
-			return false;
+		log.trace("defaultCommandChecks()");
 
 		final boolean hasP = hasPermission(p);
-		debug.devDebug("defaultCommandChecks() hasPermission =",hasP);
+		log.debug("defaultCommandChecks() hasPermission = {}",hasP);
 		if( !hasP )
 			return false;
 
 		final boolean cd = cooldownCheck(p);
-		debug.devDebug("defaultCommandChecks() cooldownCheck = ",cd);
+		log.debug("defaultCommandChecks() cooldownCheck = {}",cd);
 		if( !cd )
 			return false;
 		
-		debug.devDebug("defaultCommandChecks() all defaultCommandChecks return true");
+		log.debug("defaultCommandChecks() all defaultCommandChecks return true");
 		return true;
 	}
 	protected boolean defaultCommandChecks(CommandSender sender) {
@@ -467,9 +433,8 @@ public abstract class BaseCommand implements Command, CommandExecutor {
 	 * @return
 	 */
 	protected boolean hasPermission(Player p) {
-		if( !plugin.hasPermission(p, getCommandPermissionNode()) ) {
-			util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
-//			p.sendMessage("You don't have permission to do that.");
+	    if( permissions.hasCommandPermission(p, getCommandName()) ) {
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 			return false;
 		}
 		else

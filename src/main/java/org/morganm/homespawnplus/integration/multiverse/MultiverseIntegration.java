@@ -40,7 +40,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.util.Debug;
 
 /**

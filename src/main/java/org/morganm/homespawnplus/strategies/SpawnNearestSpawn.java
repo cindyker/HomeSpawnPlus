@@ -36,7 +36,7 @@ package org.morganm.homespawnplus.strategies;
 import java.util.Set;
 
 import org.bukkit.Location;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;

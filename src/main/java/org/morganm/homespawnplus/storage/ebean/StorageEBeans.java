@@ -46,7 +46,6 @@ import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.MyDatabase;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlQuery;

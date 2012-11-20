@@ -36,11 +36,18 @@ package org.morganm.homespawnplus.storage.yaml;
 import java.io.File;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLocation;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
+import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.util.Debug;
 
 /** Yaml storage back end.
@@ -51,6 +58,16 @@ import org.morganm.homespawnplus.util.Debug;
 public class StorageYaml implements Storage {
 	private static StorageYaml currentlyInitializingInstance = null;
 	
+    // These registrations are required for Bukkit's YAML serialization to work
+    static {
+        ConfigurationSerialization.registerClass(SerializableHome.class, "Home");
+        ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
+        ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
+        ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
+        ConfigurationSerialization.registerClass(SerializablePlayerLastLocation.class, "PlayerLastLocation");
+        ConfigurationSerialization.registerClass(SerializablePlayerSpawn.class, "PlayerSpawn");
+    }
+
 	@SuppressWarnings("unused")
 	private final HomeSpawnPlus plugin;
 	private final Debug debug;

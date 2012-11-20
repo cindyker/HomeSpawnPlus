@@ -55,7 +55,7 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.HomeSpawnUtils;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
 import org.morganm.homespawnplus.i18n.HSPMessages;

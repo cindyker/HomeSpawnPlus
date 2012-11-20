@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <id>bin</id>
+  <formats>
+<!--
+    <format>tar.gz</format>
+    <format>tar.bz2</format>
+-->
+    <format>zip</format>
+  </formats>
+  <files>
+    <file>
+      <source>${project.build.directory}/${artifactId}.jar</source>
+      <destName>HomeSpawnPlus.jar</destName>
+      <outputDirectory>/plugins</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+  </files>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <includes>
+        <include>com.google.inject:guice</include>
+        <include>com.google.inject.extensions:guice-assistedinject</include>
+        <include>org.slf4j:slf4j-api</include>
+        <include>org.slf4j:slf4j-jdk14</include>
+        <include>org.morganm.mBukkitLib:mBukkitLib</include>
+        <include>org.reflections:reflections</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <outputDirectory>/plugins/HomeSpawnPlus</outputDirectory>
+      <includes>
+        <include>LICENSE.txt</include>
+        <include>README.txt</include>
+        <include>Changelog.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

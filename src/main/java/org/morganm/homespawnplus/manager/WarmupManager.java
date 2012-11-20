@@ -38,45 +38,53 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import javax.inject.Inject;
+
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.Permissions;
+import org.morganm.homespawnplus.config.ConfigWarmup;
 import org.morganm.homespawnplus.i18n.HSPMessages;
-import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Scheduler;
+import org.morganm.homespawnplus.server.api.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
  *
  */
 public class WarmupManager {
-	private static final Logger log = HomeSpawnPlus.log;
-	private final String logPrefix;
+	private static final Logger log = LoggerFactory.getLogger(WarmupManager.class);
 	
 	private static int uniqueWarmupId = 0;
 	
 	private final HashMap<Integer, PendingWarmup> warmupsPending;
 	private final HashMap<String, List<PendingWarmup>> warmupsPendingByPlayerName;
 	
-	private final HomeSpawnPlus plugin;
-	private final Debug debug;
+	private final Server server;
+	private final Permissions permissions;
+	private final ConfigWarmup configWarmups;
+	private final Scheduler scheduler;
 	
-	public WarmupManager(HomeSpawnPlus plugin) {
-		this.plugin = plugin;
-		this.logPrefix = HomeSpawnPlus.logPrefix;
-    	this.debug = Debug.getInstance();
+	@Inject
+	public WarmupManager(Server server, Permissions permissions, ConfigWarmup configWarmups,
+	        Scheduler scheduler)
+	{
+	    this.server = server;
+	    this.permissions = permissions;
+	    this.configWarmups = configWarmups;
+	    this.scheduler = scheduler;
 		
 		warmupsPending = new HashMap<Integer, PendingWarmup>();
 		warmupsPendingByPlayerName = new HashMap<String, List<PendingWarmup>>();
 	}
 	
     private boolean isExemptFromWarmup(Player p, String warmup) {
-    	if( plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".WarmupExempt."+warmup) )
+    	if( permissions.isWarmupExempt(p, warmup) )
     		return true;
     	else
     		return false;
@@ -89,7 +97,7 @@ public class WarmupManager {
 	 * @return true if warmup should be enforced, flase if not
 	 */
 	public boolean hasWarmup(Player p, String warmupName) {
-		if( plugin.getConfig().getBoolean(ConfigOptions.USE_WARMUPS, false) &&
+		if( configWarmups.isEnabled() &&
 			getWarmupTime(p, warmupName).warmupTime > 0 &&
 			!isExemptFromWarmup(p, warmupName) )
 		{
@@ -128,65 +136,43 @@ public class WarmupManager {
     	final WarmupTime wut = new WarmupTime();
     	wut.warmupName = warmup;	// default to existing warmup name
     	
-    	debug.debug("getWarmupTime(): warmup=",warmup);
+    	log.debug("getWarmupTime(): warmup={}",warmup);
     	
-    	if( wut.warmupTime == 0 ) {
-	    	ConfigurationSection cs = plugin.getHSPConfig().getConfigurationSection(ConfigOptions.WARMUP_BASE
-	    			+ ConfigOptions.SETTING_EVENTS_PERMBASE);
-	    	if( cs != null ) {
-	    		Set<String> keys = cs.getKeys(false);
-	    		if( keys != null ) 
-	    			for(String entry : keys) {
-						debug.debug("getWarmupTime(): checking entry ",entry);
-	    				// stop looping once we find a non-zero warmupTime
-	    				if( wut.warmupTime != 0 )
-	    					break;
-	    				
-	    				int entryWarmup = plugin.getHSPConfig().getInt(ConfigOptions.WARMUP_BASE
-	    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "." + entry + "." + warmup, 0);
-	    				
-	    				if( entryWarmup > 0 ) {
-		    				List<String> perms = plugin.getHSPConfig().getStringList(ConfigOptions.WARMUP_BASE
-		    						+ ConfigOptions.SETTING_EVENTS_PERMBASE + "."
-		    						+ entry + ".permissions", null);
-		
-		    				for(String perm : perms) {
-		    					debug.debug("getWarmupTime(): checking permission ",perm," for entry ",entry);
-		
-		    					if( plugin.hasPermission(player, perm) ) {
-		    						wut.warmupTime = entryWarmup;
-	    	    					wut.warmupName = warmup + "." + perm;
-		    						break;
-		    					}
-		    				}
-	    				}// end if( entryWarmup > 0 )
-	    			}// end for(String entry : keys)
-	    	}// end if( cs != null )
-	    	
-        	debug.debug("getWarmupTime(): post-permission warmup=",wut.warmupTime,", name=",wut.warmupName);
+        if( wut.warmupTime <= 0 ) {
+    	    Set<String> perms = configWarmups.getPerPermissionWarmups(warmup);
+            for(String perm : perms) {
+                log.debug("getWarmupTime(): checking permission {}", perm);
+
+                if( player.hasPermission(perm) ) {
+                    wut.warmupTime = configWarmups.getPerPermissionWarmup(warmup, perm);
+                    if( wut.warmupTime > 0 ) {
+                        wut.warmupName = warmup + "." + perm;
+                        break;
+                    }
+                }
+            }
+    	    
+        	log.debug("getWarmupTime(): post-permission warmup={}, name={}", wut.warmupTime, wut.warmupName);
     	}
     	
     	// if warmupTime is still 0, then check for world-specific warmup
-    	if( wut.warmupTime == 0 ) {
-    		final String worldName = player.getWorld().getName();
-    		wut.warmupTime = plugin.getHSPConfig().getInt(ConfigOptions.WARMUP_BASE
-					+ ConfigOptions.SETTING_EVENTS_WORLDBASE + "."
-					+ worldName + "." + warmup, 0);
+    	if( wut.warmupTime <= 0 ) {
+            final String worldName = player.getWorld().getName();
+    	    wut.warmupTime = configWarmups.getPerWorldWarmup(warmup, worldName);
 			wut.warmupName = warmup + "." + worldName;
 			
-	    	debug.debug("getWarmupTime(): post-world world=",worldName,", warmup=",wut.warmupTime,", name=",wut.warmupName);
+	    	log.debug("getWarmupTime(): post-world world={}, warmup={}, name={}",
+	    	        worldName, wut.warmupTime, wut.warmupName);
     	}
     	
     	// if warmupTime is still 0, then check global warmup setting
     	if( wut.warmupTime == 0 ) {
-    		wut.warmupTime = plugin.getHSPConfig().getInt(ConfigOptions.WARMUP_BASE + warmup, 0);
+    		wut.warmupTime = configWarmups.getGlobalWarmup(warmup);
 			wut.warmupName = warmup;
-        	debug.debug("getWarmupTime(): post-global warmup=",wut.warmupTime,", name=",wut.warmupName);
+        	log.debug("getWarmupTime(): post-global warmup={}, name={}", wut.warmupTime, wut.warmupName);
     	}
     	
     	return wut;
-
-//    	return plugin.getHSPConfig().getInt(ConfigOptions.WARMUP_BASE + warmupName, 0);
 	}
 	
 	/** Start a given warmup.  Return true if the warmup was started successfully, false if not.
@@ -197,9 +183,9 @@ public class WarmupManager {
 	 * @return
 	 */
 	public boolean startWarmup(String playerName, WarmupRunner warmupRunnable) {
-		Player p = plugin.getServer().getPlayer(playerName);
+		Player p = server.getPlayer(playerName);
 		if( p == null ) {
-			log.warning(logPrefix + " startWarmup() found null player object for name "+playerName);
+			log.warn("startWarmup() found null player object for name {}"+playerName);
 			return false;
 		}
 		
@@ -245,7 +231,7 @@ public class WarmupManager {
 		// be pretty close to that even on a server running at only 10 TPS.
 		// and B) it allows us to cancelOnMove close to the player move event
 		// without having to hook the expensive onPlayerMove() event.
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, warmup, 20);
+		scheduler.scheduleSyncDelayedTask(warmup, 20);
 		
 		return true;
 	}
@@ -274,7 +260,7 @@ public class WarmupManager {
 			return;
 		
 		// if we aren't supposed to cancel on damage, no further processing required
-		if( !plugin.getConfig().getBoolean(ConfigOptions.WARMUPS_ON_DAMAGE_CANCEL, false) )
+		if( !configWarmups.isCanceledOnDamage() )
 			return;
 
 		// don't do any extra processing if there are no pending warmups
@@ -302,8 +288,7 @@ public class WarmupManager {
 					
 					warmup.cancel();
 					
-					plugin.getUtil().sendLocalizedMessage(p, HSPMessages.WARMUP_CANCELLED_DAMAGE, "name", warmup.warmupName);
-//					p.sendMessage("You took damage! Warmup "+warmup.warmupName+" cancelled.");
+					p.sendMessage( server.getLocalizedMessage(HSPMessages.WARMUP_CANCELLED_DAMAGE, "name", warmup.warmupName) );
 				}
 			}
 		}
@@ -338,7 +323,7 @@ public class WarmupManager {
 		}
 		
 		public void run() {
-			Player p = plugin.getServer().getPlayer(playerName);
+			Player p = server.getPlayer(playerName);
 			// this can happen if the player logs out before the warmup fires.  So just cleanup and exit.
 			if( p == null ) {
 				cleanup();
@@ -357,22 +342,21 @@ public class WarmupManager {
 				boolean scheduleNext = true;
 				
 				// do movement checks to see if player has moved since the warmup started
-				if( plugin.getConfig().getBoolean(ConfigOptions.WARMUPS_ON_MOVE_CANCEL, false) ) {
+				if( configWarmups.isCanceledOnMovement() ) {
 					Location currentLoc = p.getLocation();
 					if( playerLocation.getBlockX() != currentLoc.getBlockX() ||
 						playerLocation.getBlockY() != currentLoc.getBlockY() ||
 						playerLocation.getBlockZ() != currentLoc.getBlockZ() ||
 						!playerLocation.getWorld().getName().equals(currentLoc.getWorld().getName()) )
 					{
-						plugin.getUtil().sendLocalizedMessage(p, HSPMessages.WARMUP_CANCELLED_YOU_MOVED, "name", warmupName);
-//						p.sendMessage("You moved! Warmup "+warmupName+" cancelled.");
+					    p.sendMessage( server.getLocalizedMessage( HSPMessages.WARMUP_CANCELLED_YOU_MOVED, "name", warmupName) );
 						cleanup();
 						scheduleNext = false;
 					}
 				}
 				
 				if( scheduleNext )
-					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, 20);
+					scheduler.scheduleSyncDelayedTask(this, 20);
 			}
 		}
 	}

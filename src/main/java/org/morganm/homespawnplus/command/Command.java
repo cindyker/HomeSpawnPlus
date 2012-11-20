@@ -35,20 +35,24 @@ package org.morganm.homespawnplus.command;
 
 import java.util.Map;
 
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.server.api.CommandSender;
 
 
 /**
  * @author morganm
  *
  */
-public interface Command extends CommandExecutor {
-	public boolean execute(Player p, org.bukkit.command.Command command, String[] args);
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args);
+public interface Command {
+
+    /**
+     * Execute this command.
+     * 
+     * @param sender the command sender (can be Console or Player)
+     * @param args the arguments that were passed to the command
+     * 
+     * @return true if the command executed successfully, false if command execution should
+     * continue looking for another command.
+     */
 	public boolean execute(CommandSender sender, String[] args);
 
 	/** If the command allows it's name to be set by external configuration, it
@@ -76,9 +80,9 @@ public interface Command extends CommandExecutor {
 	 * 
 	 * @return
 	 */
-	public boolean isEnabled();
+//	public boolean isEnabled();
 	
-	public Command setPlugin(HomeSpawnPlus plugin);
+//	public void setPlugin(Plugin plugin);
 	
 	/** Return the permission node name required to use this command (if any).
 	 * 

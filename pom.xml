@@ -26,7 +26,7 @@
   <repositories>
     <repository>
       <id>morganm-repo</id>
-      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
+      <url>http://morganmc.org/nexus/content/groups/public/</url>
     </repository>
     <repository>
       <id>onarandombox</id>
@@ -43,17 +43,35 @@
   </repositories>
 
   <dependencies>
-    <!-- Required component -->
+    <!-- Dependency Injection (guice) -->
     <dependency>
-      <groupId>com.nijiko</groupId>
-      <artifactId>permissions</artifactId>
-      <version>2.7</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
+      <version>3.0</version>
     </dependency>
 
+    <!-- SLF4J Logging API -->
     <dependency>
-      <groupId>ru.tehkode</groupId>
-      <artifactId>PermissionsEx</artifactId>
-      <version>1.19.1</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+
+    <!-- Common library -->
+    <dependency>
+      <groupId>org.morganm.mBukkitLib</groupId>
+      <artifactId>mBukkitLib</artifactId>
+      <version>0.3-SNAPSHOT</version>
     </dependency>
 
     <!-- WorldEdit/WEPIF -->
@@ -131,6 +149,42 @@
       <artifactId>reflections</artifactId>
       <version>0.9.8</version>
     </dependency>
+
+    <!-- Start of Test Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>1.4.9</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-easymock</artifactId>
+      <version>1.4.9</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>1.4.9</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- End of Test Dependencies -->
   </dependencies>
 
   <build>
@@ -206,11 +260,15 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <outputFile>${project.build.directory}/${artifactId}-uber.jar</outputFile>
               <artifactSet>
                 <includes>
                   <include>org.reflections:reflections</include>
                   <!-- <include>javassist:javassist</include> -->
                   <include>dom4j:dom4j</include>
+                  <include>com.google.inject:guice</include>
+                  <include>com.google.inject.extensions:guice-assistedinject</include>
+                  <include>org.morganm.mBukkitLib:mBukkitLib</include>
                 </includes>
               </artifactSet>
 
@@ -224,6 +282,10 @@
                 <relocation>
                   <pattern>dom4j</pattern>
                   <shadedPattern>${project.groupId}.dom4j</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.google.inject</pattern>
+                  <shadedPattern>${project.groupId}.guice</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -275,15 +337,30 @@
       </plugin>
 
       <!-- Assembly -->
-      <!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> <version>2.2-beta-2</version> 
-        <configuration> <descriptor>${basedir}/src/main/assembly/default.xml</descriptor> 
-        </configuration> </plugin> -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <finalName>${artifactId}-with-dependencies</finalName>
+          <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
+          <appendAssemblyId>false</appendAssemblyId> 
+        </configuration>
+        <executions>
+          <execution>
+            <id>release</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- Release -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.2.2</version><!--$NO-MVN-MAN-VER$ -->
+        <version>2.3.2</version><!--$NO-MVN-MAN-VER$ -->
         <configuration>
           <preparationGoals>assembly:assembly</preparationGoals>
           <goals>assembly:assembly</goals>

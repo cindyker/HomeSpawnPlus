@@ -34,10 +34,10 @@
 package org.morganm.homespawnplus.commands;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.Player;
 
 /** Command to return the group HSP thinks a player is in, based on the underlying
  * Permission system in use.
@@ -52,7 +52,7 @@ public class GroupQuery extends BaseCommand {
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_GROUPQUERY_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_GROUPQUERY_USAGE);
 	}
 
 	@Override
@@ -65,14 +65,14 @@ public class GroupQuery extends BaseCommand {
 		boolean playerOffline = false;
 		
 		if( args.length > 0 ) {
-			Player p = plugin.getServer().getPlayer(args[0]);
+			Player p = server.getPlayer(args[0]);
 			if( p != null ) {
 				playerName = p.getName();
 				playerWorld = p.getWorld().getName();
 			}
 			else {
 				// look for an OfflinePlayer by that name
-				OfflinePlayer offline = plugin.getServer().getOfflinePlayer(args[0]);
+				OfflinePlayer offline = server.getOfflinePlayer(args[0]);
 				if( offline.hasPlayedBefore() ) {
 					playerOffline = true;
 					playerName = offline.getName();

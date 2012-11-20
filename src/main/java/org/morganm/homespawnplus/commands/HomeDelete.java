@@ -34,33 +34,40 @@
 package org.morganm.homespawnplus.commands;
 
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /**
  * @author morganm
  *
  */
 public class HomeDelete extends BaseCommand {
+    private HomeUtil homeUtil;
+    
+    @Inject
+    public void setHomeUtil(HomeUtil homeUtil) {
+        this.homeUtil = homeUtil;
+    }
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"homed", "deletehome", "rmhome"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
+	public boolean execute(Player p, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
@@ -77,7 +84,7 @@ public class HomeDelete extends BaseCommand {
 			catch(NumberFormatException e) {}
 			
 			if( id != -1 ) {
-				home = plugin.getStorage().getHomeDAO().findHomeById(id);
+				home = storage.getHomeDAO().findHomeById(id);
 				// make sure it belongs to this player
 				if( home != null && !p.getName().equals(home.getPlayerName()) )
 					home = null;
@@ -88,16 +95,15 @@ public class HomeDelete extends BaseCommand {
 			}
 			else if( args[0].startsWith("w:") ) {
 				String worldName = homeName.substring(2);
-				home = util.getDefaultHome(p.getName(), worldName);
+				home = homeUtil.getDefaultHome(p.getName(), worldName);
 				if( home == null ) {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
-//					util.sendMessage(p,  "No home on world \""+worldName+"\" found.");
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName) );
 					return true;
 				}
 			}
 			else if( homeName.equals("<noname>") ) {
-				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage()
-						.getHomeDAO().findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
+				Set<org.morganm.homespawnplus.entity.Home> homes = storage.getHomeDAO()
+						.findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
 				if( homes != null ) {
 					for(org.morganm.homespawnplus.entity.Home h : homes) {
 						if( h.getName() == null ) {
@@ -110,40 +116,38 @@ public class HomeDelete extends BaseCommand {
 			
 			// if home is still null here, then just do a regular lookup
 			if( home == null )
-				home = util.getHomeByName(p.getName(), homeName);
+			    home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
 		}
 		else
-			home = util.getDefaultHome(p.getName(), p.getWorld().getName());
+			home = homeUtil.getDefaultHome(p.getName(), p.getWorld().getName());
 
 		if( home != null ) {
 			// safety check to be sure we aren't deleting someone else's home with this command
 			// (this shouldn't be possible since all checks are keyed to this player's name, but
 			// let's be paranoid anyway)
 			if( !p.getName().equals(home.getPlayerName()) ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME);
-//				util.sendMessage(p, "ERROR: tried to delete another player's home; action not allowed.");
-				log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to delete home for player "+home.getPlayerName());
+			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME) );
+				log.warn("ERROR: Shouldn't be possible! Player {} tried to delete home for player {}",
+				        p.getName(), home.getPlayerName());
 			}
 			else {
 				try {
-					plugin.getStorage().getHomeDAO().deleteHome(home);
+					storage.getHomeDAO().deleteHome(home);
 					if( homeName != null )
-						util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName);
+					    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName) );
 					else
-						util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED);
+					    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED) );
 				}
 				catch(StorageException e) {
-					util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-					log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.GENERIC_ERROR) );
+					log.warn("Error caught in /"+getCommandName(), e);
 				}
 			}
 		}
 		else if( homeName != null )
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_NO_HOME_FOUND, "name", homeName);
-//			util.sendMessage(p, "No home with name "+homeName+ " found to delete.");
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_HOME_FOUND, "name", homeName) );
 		else
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_NO_DEFAULT_HOME_FOUND);
-//			util.sendMessage(p, "No default home found to delete on current world");
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_DEFAULT_HOME_FOUND) );
 		
 		return true;
 	}

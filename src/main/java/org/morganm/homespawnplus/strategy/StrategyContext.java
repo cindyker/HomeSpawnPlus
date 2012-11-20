@@ -36,9 +36,12 @@ package org.morganm.homespawnplus.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.server.api.Factory;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.TeleportOptions;
 import org.morganm.homespawnplus.strategies.ModeDefault;
 import org.morganm.homespawnplus.strategies.ModeDistanceLimits;
 import org.morganm.homespawnplus.strategies.ModeInRegion;
@@ -47,8 +50,6 @@ import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeSourceWorld;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
 import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.General;
-import org.morganm.homespawnplus.util.Teleport;
 
 /** The context given to a strategy that is being evaluated.
  * 
@@ -57,8 +58,8 @@ import org.morganm.homespawnplus.util.Teleport;
  */
 public class StrategyContext {
 	private final static ModeStrategy defaultMode = new ModeDefault();
+	private final Factory factory;
 	
-	private final HomeSpawnPlus plugin;
 	private String eventType;
 	private Player player;
 	private Location location;
@@ -74,8 +75,9 @@ public class StrategyContext {
 	 */
 	private List<ModeStrategy> currentModes;
 	
-	public StrategyContext(final HomeSpawnPlus plugin) {
-		this.plugin = plugin;
+	@Inject
+	public StrategyContext(Factory factory) {
+	    this.factory = factory;
 	}
 
 	public String getEventType() {
@@ -292,36 +294,26 @@ public class StrategyContext {
 		return true;
 	}
 	
-	/** Using currently set modes, return any flags relevant to safeTeleport.
-	 * 
-	 * @return
-	 */
-	public int getModeSafeTeleportFlags() {
-		int flags = 0;
-		
-		for(StrategyMode mode : StrategyMode.getSafeModes()) {
-			if( isModeEnabled(mode) )
-				flags |= mode.getFlagId();
-		}
-		
-		Debug.getInstance().devDebug("getModeSafeTeleportFlags() flags=",flags);
-		return flags;
-	}
-	
-	
 	/** Using currently set modes, return the current bounds (if any).
 	 * 
 	 * @return current bounds or null if no bounds are set
 	 */
-	public Teleport.Bounds getModeBounds() {
+	public TeleportOptions getTeleportOptions() {
 		List<ModeStrategy> modes = getCurrentModes();
 		for(ModeStrategy mode : modes) {
 			if( mode.getMode() == StrategyMode.MODE_YBOUNDS ) {
-				ModeYBounds modeYBounds = (ModeYBounds) mode;
-				Teleport.Bounds bounds = new Teleport.Bounds();
-				bounds.minY = modeYBounds.getMinY();
-				bounds.maxY = modeYBounds.getMaxY();
-				return bounds;
+                ModeYBounds modeYBounds = (ModeYBounds) mode;
+                
+			    TeleportOptions options = factory.newTeleportOptions();
+			    options.setMinY(modeYBounds.getMinY());
+			    options.setMaxY(modeYBounds.getMaxY());
+			    
+		        options.setNoTeleportOverWater( isModeEnabled(StrategyMode.MODE_NO_WATER) );
+                options.setNoTeleportOverIce( isModeEnabled(StrategyMode.MODE_NO_ICE) );
+                options.setNoTeleportOverLeaves( isModeEnabled(StrategyMode.MODE_NO_LEAVES) );
+                options.setNoTeleportOverLilyPad( isModeEnabled(StrategyMode.MODE_NO_LILY_PAD) );
+                
+				return options;
 			}
 		}
 		
@@ -382,8 +374,8 @@ public class StrategyContext {
 	public String toString() {
 		return "{eventType="+eventType
 				+",player="+player
-				+",player.location="+(player != null ? General.getInstance().shortLocationString(player.getLocation()) : null)
-				+",location="+(location != null ? General.getInstance().shortLocationString(location) : null)
+				+",player.location="+(player != null && player.getLocation() != null ? player.getLocation().shortLocationString() : null)
+				+",location="+(location != null ? location.shortLocationString() : null)
 				+",arg="+arg
 				+"}";
 	}

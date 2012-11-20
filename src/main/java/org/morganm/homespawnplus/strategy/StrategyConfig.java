@@ -42,14 +42,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import javax.inject.Inject;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Class which processes the config file and loads strategy info into memory
  * for use when evaluating strategies at runtime.
@@ -58,16 +61,16 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StrategyConfig {
-	private final org.morganm.homespawnplus.util.Logger log;
-	private final HomeSpawnPlus plugin;
+    private final Logger log = LoggerFactory.getLogger(StrategyConfig.class);
 	private final Debug debug = Debug.getInstance();
 	private final Map<String, Set<Strategy>> defaultStrategies;
 	private final Map<String, WorldStrategies> worldStrategies;
 	private final Map<String, PermissionStrategies> permissionStrategies;
+	private final Server server;
 	
-	public StrategyConfig(final HomeSpawnPlus plugin) {
-		this.plugin = plugin;
-		this.log = plugin.getLog();
+	@Inject
+	public StrategyConfig(final Server server) {
+		this.server = server;
 		
 		defaultStrategies = new HashMap<String, Set<Strategy>>();
 		worldStrategies = new HashMap<String, WorldStrategies>();
@@ -95,13 +98,13 @@ public class StrategyConfig {
 			int commaIndex = region.indexOf(',');
 			if( commaIndex != -1 ) {
 				String worldName = region.substring(commaIndex+1);
-				world = Bukkit.getWorld(worldName);
+				world = server.getWorld(worldName);
 				if( world == null )
 					log.warn("eventType ",eventType," references non-existant world ",worldName);
 				region = region.substring(0, commaIndex);
 			}
 			else if( worldContext != null ) {
-				world = Bukkit.getWorld(worldContext);
+				world = server.getWorld(worldContext);
 			}
 			
 			if( plugin.getWorldGuardIntegration().isEnabled() ) {
@@ -178,7 +181,7 @@ public class StrategyConfig {
 						set.add(strategy);
 						count++;
 					} catch (StrategyException e) {
-						log.warn(e, "Error loading strategy", e);
+						log.warn("Error loading strategy", e);
 					}
 				}
 			}
@@ -232,7 +235,7 @@ public class StrategyConfig {
 								set.add(strategy);
 								count++;
 							} catch (StrategyException e) {
-								log.warn(e, "Error loading strategy", e);
+								log.warn("Error loading strategy", e);
 							}
 						}
 					}
@@ -305,7 +308,7 @@ public class StrategyConfig {
 							set.add(strategy);
 							count++;
 						} catch (StrategyException e) {
-							log.warn(e, "Error loading strategy", e);
+							log.warn("Error loading strategy", e);
 						}
 					}
 				}
@@ -341,7 +344,7 @@ public class StrategyConfig {
 		for(PermissionStrategies strat : permissionStrategies.values()) {
 			for(String perm : strat.permissions) {
 				debug.debug("checking permission ",perm);
-				if( plugin.hasPermission(player, perm) ) {
+				if( player.hasPermission(perm) ) {
 					debug.debug("player ",player," does have perm ",perm,", looking up strategies");
 					Set<Strategy> set = strat.eventStrategies.get(event);
 					if( set != null )

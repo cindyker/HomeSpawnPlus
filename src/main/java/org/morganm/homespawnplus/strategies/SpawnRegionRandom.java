@@ -98,7 +98,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( region == null )
 			return null;
 
-		Teleport.Bounds yBounds = context.getModeBounds();
+		Teleport.Bounds yBounds = context.getTeleportOptions();
 		if( yBounds == null )
 			yBounds = Teleport.getInstance().getDefaultBounds();
 		

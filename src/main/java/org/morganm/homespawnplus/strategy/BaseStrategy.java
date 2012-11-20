@@ -36,7 +36,7 @@ package org.morganm.homespawnplus.strategy;
 import java.util.logging.Logger;
 
 import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.util.Debug;
 
 /** Basic routines common/useful to most all strategies.

@@ -33,12 +33,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 
 /**
@@ -47,42 +48,41 @@ import org.morganm.homespawnplus.storage.Storage;
  */
 public class SetHome extends BaseCommand
 {
-	private static final String SETHOME_NAMED_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.sethome.named";
-	
+    private HomeUtil util;
+    
+    @Inject
+    public void setHomeUtil(HomeUtil util) {
+        this.util = util;
+    }
+    
 	@Override
 	public String[] getCommandAliases() { return new String[] {"homeset"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SETHOME_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SETHOME_USAGE);
 	}
 
 	@Override
-	public boolean execute(final Player p, final Command command, final String[] args) {
-		debug.debug("sethome invoked. player=",p,"args=",args);
-		if( !isEnabled() || !hasPermission(p) )
-			return true;
-//		if( !defaultCommandChecks(p) )
-//			return true;
+	public boolean execute(final Player p, final String[] args) {
+		log.debug("sethome invoked. player={}, args={}", p, args);
 		
 		String cooldownName = null;
 		String homeName = null;
 
 		if( args.length > 0 ) {
-			if( plugin.hasPermission(p, SETHOME_NAMED_PERMISSION) ) {
+		    if( permissions.hasSetHomeNamed(p) ) {
 				if( !args[0].equals(Storage.HSP_BED_RESERVED_NAME) && !args[0].endsWith("_" + Storage.HSP_BED_RESERVED_NAME )) {
 					homeName = args[0];
 					cooldownName = getCooldownName("sethome-named", homeName);
 				}
 				else {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]);
-//					util.sendMessage(p, "Cannot used reserved name "+args[0]);
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]) );
 					return true;
 				}
 			}
 			else {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION);
-//				util.sendMessage(p, "You do not have permission to set named homes");
+			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION) );
 				return true;
 			}
 		}
@@ -95,20 +95,24 @@ public class SetHome extends BaseCommand
 			return true;
 		}
 
+        String errorMsg = null;
 		if( homeName != null ) {
-			if( util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName()) ) {
+			errorMsg = util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName());
+			if( errorMsg == null ) {     // success
 				if( applyCost(p, true, cooldownName) )
-					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName);
-//					util.sendMessage(p, "Home \""+homeName+"\" set successfully.");
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName) );
 			}
 		}
 		else {
-			if( util.setHome(p.getName(), p.getLocation(), p.getName(), true, false) ) {
+			errorMsg = util.setHome(p.getName(), p.getLocation(), p.getName(), true, false);
+            if( errorMsg == null ) {        // success
 				if( applyCost(p, true, cooldownName) )
-					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET);
-//					util.sendMessage(p, "Default home set successfully.");
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET) );
 			}
 		}
+		
+		if( errorMsg != null )
+		    p.sendMessage(errorMsg);
 
 		return true;
 	}

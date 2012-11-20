@@ -36,6 +36,7 @@ package org.morganm.homespawnplus.entity;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
+import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,9 +47,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.server.api.Factory;
+import org.morganm.homespawnplus.server.api.Location;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
@@ -114,6 +114,9 @@ public class Home implements EntityWithLocation {
     @Transient
     private transient Location location;
     
+    @Transient
+    private transient Factory factory;
+    
     public Home() {}
     
     /** Create a new Home object given the player and location.
@@ -138,10 +141,20 @@ public class Home implements EntityWithLocation {
 		location = l;
     }
     
+    /**
+     *  Allow IoC container to inject factory instance, for use when creating Location
+     *  objects after we've been loaded from the DB by ORM layer.
+     *  
+     * @param server the server object
+     */
+    @Inject
+    public void setFactory(Factory factory) {
+        this.factory = factory;
+    }
+
     public Location getLocation() {
     	if( location == null ) {
-	    	World w = HomeSpawnPlus.getInstance().getServer().getWorld(world);
-	    	location = new Location(w, getX(), getY(), getZ(), getYaw(), getPitch());
+            location = factory.newLocation(world, x, y, z, yaw, pitch);
     	}
     	
     	return location;

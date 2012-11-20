@@ -42,7 +42,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
@@ -50,12 +49,10 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.morganm.homespawnplus.command.CommandConfig;
-import org.morganm.homespawnplus.command.CommandRegister;
-import org.morganm.homespawnplus.config.Config;
 import org.morganm.homespawnplus.config.ConfigException;
-import org.morganm.homespawnplus.config.ConfigFactory;
-import org.morganm.homespawnplus.config.ConfigOptions;
+import org.morganm.homespawnplus.config.old.Config;
+import org.morganm.homespawnplus.config.old.ConfigFactory;
+import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
@@ -75,16 +72,13 @@ import org.morganm.homespawnplus.listener.HSPWorldListener;
 import org.morganm.homespawnplus.manager.CooldownManager;
 import org.morganm.homespawnplus.manager.HomeInviteManager;
 import org.morganm.homespawnplus.manager.WarmupManager;
+import org.morganm.homespawnplus.server.api.command.CommandConfig;
+import org.morganm.homespawnplus.server.api.command.CommandRegister;
+import org.morganm.homespawnplus.server.bukkit.command.BukkitCommandConfig;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.StorageFactory;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHomeInvite;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLocation;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
-import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.General;
@@ -112,15 +106,10 @@ public class HomeSpawnPlus extends JavaPlugin {
     public final static String YAML_BACKUP_FILE = YAML_CONFIG_ROOT_PATH + "backup.yml";
 	public final static String BASE_PERMISSION_NODE = "hsp";
     
-	// These registrations are required for Bukkit's YAML serialization to work
-	static {
-		ConfigurationSerialization.registerClass(SerializableHome.class, "Home");
-		ConfigurationSerialization.registerClass(SerializableSpawn.class, "Spawn");
-		ConfigurationSerialization.registerClass(SerializablePlayer.class, "Player");
-		ConfigurationSerialization.registerClass(SerializableHomeInvite.class, "HomeInvite");
-		ConfigurationSerialization.registerClass(SerializablePlayerLastLocation.class, "PlayerLastLocation");
-		ConfigurationSerialization.registerClass(SerializablePlayerSpawn.class, "PlayerSpawn");
-	}
+	// The Bukkit plugin object. We try to minimize where this is passed to in order to
+	// avoid unnecessary dependencies on Bukkit that we'll just have to clean up later
+	// when we migrate to mcAPI.
+	private final Plugin bukkitPlugin;
 	
     // singleton instance - This will always return the most recent
 	// plugin object that was loaded.
@@ -149,7 +138,8 @@ public class HomeSpawnPlus extends JavaPlugin {
 
     public Economy vaultEconomy = null;
     
-    public HomeSpawnPlus() {
+    public HomeSpawnPlus(Plugin plugin) {
+        bukkitPlugin = plugin;
     }
     
     /** Not your typical singleton pattern - this CAN return null in the event the plugin is unloaded. 
@@ -281,7 +271,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     	debugEndTimer("Bukkit events");
         
     	debugStartTimer("commands");
-    	CommandConfig config = new CommandConfig(getLog());
+    	BukkitCommandConfig config = new BukkitCommandConfig(getLog());
     	ConfigurationSection section = getConfig().getConfigurationSection("commands");
     	config.loadConfig(section);
     	CommandRegister register = new CommandRegister(this);

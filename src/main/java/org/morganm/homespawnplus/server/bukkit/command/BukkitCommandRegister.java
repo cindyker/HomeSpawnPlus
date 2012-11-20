@@ -31,7 +31,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.command;
+package org.morganm.homespawnplus.server.bukkit.command;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -41,15 +41,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.Logger;
+import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.command.Command;
+import org.morganm.homespawnplus.command.CustomEventCommand;
+import org.morganm.homespawnplus.server.api.command.CommandConfig;
+import org.morganm.homespawnplus.server.api.command.CommandRegister;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Class whose job is to register all of HSP commands with Bukkit dynamically,
  * as opposed to through static plugin.yml configurations. This is used by HSP
@@ -58,38 +64,33 @@ import org.reflections.Reflections;
  * @author morganm
  *
  */
-public class CommandRegister {
+public class BukkitCommandRegister implements CommandRegister {
+    private final Logger log = LoggerFactory.getLogger(BukkitCommandRegister.class);
+
 //	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
-	private static final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
+	private final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
 	
-	private final HomeSpawnPlus plugin;
-	private final Logger log;
+	private final Plugin plugin;
 	private final Set<String> loadedCommands = new HashSet<String>(25);
 	private final Reflections reflections;
-	private CommandConfig commandConfig;
+	private final CommandConfig commandConfig;
 	
-	static {
-		customClassMap.put("customeventcommand", CustomEventCommand.class);
-	}
-
-	public CommandRegister(HomeSpawnPlus plugin) {
+	@Inject
+	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig) {
 		this.plugin = plugin;
-		this.log = plugin.getLog();
-		this.commandConfig = new CommandConfig(plugin.getLog());
+		this.commandConfig = commandConfig;
 		
+        customClassMap.put("customeventcommand", CustomEventCommand.class);
+
 //    	reflections = new Reflections(COMMANDS_PACKAGE);
     	reflections = Reflections.collect();
 	}
 	
-	public void setCommandConfig(CommandConfig commandConfig) {
-		this.commandConfig = commandConfig;
-	}
-	
 	@SuppressWarnings("unchecked")
-	public void register(Command command, Map<String, Object> cmdParams) {
+	private void register(Command command, Map<String, Object> cmdParams) {
 		String cmdName = command.getCommandName();
 		
-		log.devDebug("register() command=",command,",cmdParams=",cmdParams);
+		log.debug("register() command={},cmdParams={}", command, cmdParams);
 		command.setPlugin(plugin);
 		command.setCommandParameters(cmdParams);
 		
@@ -155,13 +156,13 @@ public class CommandRegister {
 			commandMap.register("hsp", pc);
 			loadedCommands.add(cmdName);
 			
-			Debug.getInstance().devDebug("register() command ",command," registered");
+			log.debug("register() command {} registered", command);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void register(Command command) {
+	private void register(Command command) {
 		Map<String, Object> cmdParams = commandConfig.getCommandParameters(command.getCommandName());
 		register(command, cmdParams);
 	}
@@ -192,37 +193,6 @@ public class CommandRegister {
 		return null;
 	}
 	
-	/** Given a specific commandName, find the matching command and
-	 * register it. This is useful in command usurping.
-	 * 
-	 * @param commandName
-	 */
-	public boolean registerCommand(String commandName) {
-		if( isDefinedConfigCommand(commandName) ) {
-			registerConfigCommand(commandName);
-			return true;
-		}
-		else {
-			Class<? extends Command> clazz = findDefaultCommand(commandName);
-			if( clazz != null ) {
-				registerDefaultCommand(clazz);
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/** Return true if the given command is defined as a custom command
-	 * by the admin in the config file.
-	 * 
-	 * @param cmd
-	 * @return
-	 */
-	private boolean isDefinedConfigCommand(String cmd) {
-		return commandConfig.getDefinedCommands().contains(cmd);
-	}
-	
 	/** Given a command name, look for and register that command from
 	 * the admin-configured command definitions.
 	 * 
@@ -230,7 +200,7 @@ public class CommandRegister {
 	 * @param classes
 	 */
 	private void registerConfigCommand(String cmd) {
-		log.devDebug("processing config defined command ",cmd);
+		log.debug("processing config defined command {}",cmd);
 		Map<String, Object> cmdParams = commandConfig.getCommandParameters(cmd);
 		
 		Class<? extends Command> cmdClass = null;
@@ -273,7 +243,7 @@ public class CommandRegister {
 			log.warn("class "+cmdClass+" does not implement Command interface");
 		}
 		catch(Exception e) {
-			log.warn(e, "error loading class "+cmdClass);
+			log.warn("error loading class {}", cmdClass, e);
 		}
 	}
 	
@@ -284,59 +254,28 @@ public class CommandRegister {
 	 */
 	private void registerDefaultCommand(Class<? extends Command> clazz) {
 		try {
-			Debug.getInstance().devDebug("registering command class ",clazz);
+			log.debug("registering command class {}",clazz);
 			Command cmd = (Command) clazz.newInstance();
 			
 			String cmdName = cmd.getCommandName();
 			// do nothing if the command is disabled
 			if( commandConfig.isDisabledCommand(cmdName) ) {
-				log.debug("registerDefaultCommand() skipping ",cmdName," because it is flagged as disabled");
+				log.debug("registerDefaultCommand() skipping {} because it is flagged as disabled", cmdName);
 				return;
 			}
 			
 			register(cmd);
 		}
 		catch(Exception e) {
-			log.severe(e, "error trying to load command class "+clazz);
+		    log.error("error trying to load command class {}", clazz, e);
 		}
 	}
 	
-	/** Given a commandName, find the default command which matches.
-	 * 
-	 * @param cmdName
-	 * @return
-	 */
-	private Class<? extends Command> findDefaultCommand(String cmdName) {
-		Set<Class<? extends Command>> classes = getCommandClasses();
-		
-		for(Class<? extends Command> clazz : classes) {
-			try {
-				Command cmd = (Command) clazz.newInstance();
-				if( cmd.getCommandName().equals(cmdName) )
-					return clazz;
-				
-				String[] aliases = cmd.getCommandAliases();
-				if( aliases != null && aliases.length > 0 ) {
-					for(String alias : aliases) {
-						if( alias.equals(cmdName) )
-							return clazz;
-					}
-				}
-			}
-			catch(Exception e) {
-				log.severe(e, "Caught exception in findDefaultCommand for command "+cmdName);
-			}
-		}
-		
-		return null;
-	}
-	
-	/** Register all known HSP commands. This includes those defined by
-	 * the admin in the config file as well as all commands found
-	 * automatically on the command path.
-	 * 
-	 */
-	public void registerAllCommands() {
+	/* (non-Javadoc)
+     * @see org.morganm.homespawnplus.command.CommandRegisterInterface#registerAllCommands()
+     */
+	@Override
+    public void registerAllCommands() {
 		// loop through all config-defined command and load them up
 		Set<String> commands = commandConfig.getDefinedCommands();
 		for(String cmd : commands) {
@@ -346,7 +285,7 @@ public class CommandRegister {
 		Set<Class<? extends Command>> commandClasses = getCommandClasses();
 		// now loop through all normal commands in the class path
 		for(Class<? extends Command> clazz : commandClasses) {
-			log.devDebug("checking found class ",clazz);
+			log.debug("checking found class {}",clazz);
 			registerDefaultCommand(clazz);
 		}
 	}
@@ -369,9 +308,78 @@ public class CommandRegister {
 		}
 
     	if( commandClasses == null || commandClasses.size() == 0 ) {
-    		log.severe("No command classes found, HSP will not be able to register commands!");
+    		log.error("No command classes found, HSP will not be able to register commands!");
     	}
     	
     	return commandClasses;
 	}
+
+    /** Given a specific commandName, find the matching command and
+     * register it. This is useful in command usurping.
+     * 
+     * No longer used since command usurping is no longer used. -11/16/12 morganm
+     * 
+     * @param commandName
+     */
+    /*
+    private boolean registerCommand(String commandName) {
+        if( isDefinedConfigCommand(commandName) ) {
+            registerConfigCommand(commandName);
+            return true;
+        }
+        else {
+            Class<? extends Command> clazz = findDefaultCommand(commandName);
+            if( clazz != null ) {
+                registerDefaultCommand(clazz);
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    */
+
+    /** Given a commandName, find the default command which matches.
+     * 
+     * @param cmdName
+     * @return
+     */
+    /*
+    private Class<? extends Command> findDefaultCommand(String cmdName) {
+        Set<Class<? extends Command>> classes = getCommandClasses();
+        
+        for(Class<? extends Command> clazz : classes) {
+            try {
+                Command cmd = (Command) clazz.newInstance();
+                if( cmd.getCommandName().equals(cmdName) )
+                    return clazz;
+                
+                String[] aliases = cmd.getCommandAliases();
+                if( aliases != null && aliases.length > 0 ) {
+                    for(String alias : aliases) {
+                        if( alias.equals(cmdName) )
+                            return clazz;
+                    }
+                }
+            }
+            catch(Exception e) {
+                log.severe(e, "Caught exception in findDefaultCommand for command "+cmdName);
+            }
+        }
+        
+        return null;
+    }
+    */
+    
+    /** Return true if the given command is defined as a custom command
+     * by the admin in the config file.
+     * 
+     * @param cmd
+     * @return
+     */
+    /*
+    private boolean isDefinedConfigCommand(String cmd) {
+        return commandConfig.getDefinedCommands().contains(cmd);
+    }
+    */
 }

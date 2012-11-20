@@ -87,7 +87,7 @@ public class Player implements EntityWithLocation {
 	private Timestamp dateCreated;
 	
     public Player() {}
-    public Player(org.bukkit.entity.Player player) {
+    public Player(org.morganm.homespawnplus.server.api.Player player) {
     	this.name = player.getName();
     }
     

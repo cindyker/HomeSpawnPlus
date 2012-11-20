@@ -33,10 +33,9 @@
  */
 package org.morganm.homespawnplus.strategy;
 
-import org.bukkit.Location;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.server.api.Location;
 
 /** Class to store result data from strategy evaluation.
  * 
@@ -112,7 +111,7 @@ public class StrategyResult {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[loc={");
-		sb.append(HomeSpawnPlus.getInstance().getUtil().shortLocationString(getLocation()));
+		sb.append(getLocation() != null ? getLocation().shortLocationString() : "null");
 		sb.append("}, home=");
 		sb.append(getHome());
 		sb.append(", spawn={");

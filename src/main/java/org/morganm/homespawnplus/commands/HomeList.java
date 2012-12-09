@@ -35,49 +35,51 @@ package org.morganm.homespawnplus.commands;
 
 import java.util.Set;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.storage.Storage;
 
 /**
  * @author morganm
  *
  */
 public class HomeList extends BaseCommand {
+    @Inject private Storage storage;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl", "homes"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
 	}
 
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
+    public boolean execute(CommandSender sender, String[] args) {
+		if( !defaultCommandChecks(sender) )
 			return true;
 		
 		String world = "all";
 		if( args.length > 0 )
 			world = args[0];
 		
-		return executeCommand(p, p.getName(), world);
+		return executeCommand(sender, sender.getName(), world);
 	}
 
 	/** Package visibility, code is reused by HomeListOther.
 	 * 
-	 * @param p
+	 * @param sender
 	 * @param command
 	 * @param args
 	 * @return
 	 */
-	boolean executeCommand(CommandSender p, String player, String world) {
+	boolean executeCommand(CommandSender sender, String player, String world) {
 		Set<org.morganm.homespawnplus.entity.Home> homes;
 		
-		homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(world, player);
+		homes = storage.getHomeDAO().findHomesByWorldAndPlayer(world, player);
 		
 		if( homes != null && homes.size() > 0 ) {
 			/*
@@ -91,34 +93,25 @@ public class HomeList extends BaseCommand {
 					*/
 
 			if( world.equals("all") || world.equals("*") )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_ALL_WORLDS,
-						"player", player);
+                sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_ALL_WORLDS,
+						"player", player) );
 			else
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_FOR_WORLD,
-						"world", world, "player", player);
+                sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_FOR_WORLD,
+						"world", world, "player", player) );
 			
 			for(org.morganm.homespawnplus.entity.Home home : homes) {
 				String name = home.getName();
 				if( name == null )
 					name = "<noname>";
-				util.sendMessage(p, name+" [id:"+home.getId()+"]: "+ util.shortLocationString(home)
+				sender.sendMessage( server.getLocalizedMessage( name+" [id:"+home.getId()+"]: "+ util.shortLocationString(home)
 						+ (home.isDefaultHome()
-								? " ("+util.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
-								: ""));
-				/*
-				util.sendMessage(p, String.format("%-16s %12s/%6d/%6d/%6d %-8s",
-						home.getName(),
-						home.getWorld().trim(),
-						(int) home.getX(), (int) home.getY(), (int) home.getZ(),
-						home.isDefaultHome() ? "yes" : "no"
-					));
-					*/
+								? " ("+server.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
+								: "")) );
 			}
 		}
 		else
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
-					"world", world, "player", player);
-//			util.sendMessage(p, "No homes found for world \""+world+"\"");
+		    sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
+					"world", world, "player", player) );
 
 		return true;
 	}

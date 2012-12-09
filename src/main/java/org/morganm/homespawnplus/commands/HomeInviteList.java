@@ -35,13 +35,13 @@ package org.morganm.homespawnplus.commands;
 
 import java.util.Date;
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigHomeInvites;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 import org.morganm.homespawnplus.util.General;
@@ -51,25 +51,23 @@ import org.morganm.homespawnplus.util.General;
  *
  */
 public class HomeInviteList extends BaseCommand {
-
+    @Inject private ConfigHomeInvites config;
+    
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hil"}; }
 	
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-
-		HomeInviteDAO dao = plugin.getStorage().getHomeInviteDAO();
+	public boolean execute(Player p, String[] args) {
+		HomeInviteDAO dao = storage.getHomeInviteDAO();
 		
 		Set<HomeInvite> invites = dao.findAllOpenInvites(p.getName());
 		if( invites != null && invites.size() > 0 ) {
-			util.sendMessage(p, "Open invites for your homes:");
+			p.sendMessage("Open invites for your homes:");
 			for(HomeInvite invite : invites) {
 				if( isExpired(invite) )
 					continue;
 				String homeName = invite.getHome().getName();
-				util.sendMessage(p, "(id "+invite.getId()+") -> Invite for home "+homeName
+				p.sendMessage("(id "+invite.getId()+") -> Invite for home "+homeName
 						+" to player "+invite.getInvitedPlayer()
 						+" [expires: "+(invite.getExpires() != null ?
 								General.getInstance().displayTimeString(
@@ -80,17 +78,17 @@ public class HomeInviteList extends BaseCommand {
 			}
 		}
 		else
-			util.sendMessage(p, "You have no open invites to your homes");
+			p.sendMessage("You have no open invites to your homes");
 		
 		invites = dao.findAllAvailableInvites(p.getName());
 		if( invites != null && invites.size() > 0 ) {
-			util.sendMessage(p, "Open invites extended to you:");
+			p.sendMessage("Open invites extended to you:");
 			for(HomeInvite invite : invites) {
 				if( isExpired(invite) )
 					continue;
 				String homeName = invite.getHome().getName();
 				String playerName = invite.getHome().getPlayerName();
-				util.sendMessage(p, "(id "+invite.getId()+") -> Invite to home "+homeName
+				p.sendMessage("(id "+invite.getId()+") -> Invite to home "+homeName
 						+" from player "+playerName
 						+" [expires: "+(invite.getExpires() != null ?
 								General.getInstance().displayTimeString(
@@ -101,7 +99,7 @@ public class HomeInviteList extends BaseCommand {
 			}
 		}
 		else
-			util.sendMessage(p, "You have no invites to other players homes");
+			p.sendMessage("You have no invites to other players homes");
 
 		return true;
 	}
@@ -113,8 +111,6 @@ public class HomeInviteList extends BaseCommand {
 	 * @return true if the invite is expired, false if not
 	 */
 	private boolean isExpired(final HomeInvite homeInvite) {
-		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
-		
 		final org.morganm.homespawnplus.entity.Home home = homeInvite.getHome();
 		// if the home no longer exists, clean up the invite
 		if( home == null
@@ -129,7 +125,7 @@ public class HomeInviteList extends BaseCommand {
 			return true;	// expired
 		}
 		// also check if it's a bedhome and we're not allowed to teleport to bedhomes
-		else if( !allowBedHomeInvites && homeInvite.getHome().isBedHome() ) {
+		else if( !config.allowBedHomeInvites() && homeInvite.getHome().isBedHome() ) {
 			deleteHomeInvite(homeInvite);
 			return true;
 		}
@@ -141,10 +137,10 @@ public class HomeInviteList extends BaseCommand {
 		// it's expired, so delete it. we ignore any error here since it doesn't
 		// affect the outcome of the rest of the command.
 		try {
-			plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(hi);
+			storage.getHomeInviteDAO().deleteHomeInvite(hi);
 		}
 		catch(StorageException e) {
-			log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
+			log.warn("Caught exception", e);
 		}
 	}
 }

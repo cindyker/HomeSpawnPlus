@@ -33,12 +33,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
-import org.morganm.homespawnplus.i18n.HSPMessages;
+import javax.inject.Inject;
 
+import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigCore;
+import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
 
 /**
  * @author morganm
@@ -46,34 +47,33 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
  */
 public class SetSpawn extends BaseCommand
 {
+    @Inject private ConfigCore config;
+    
 	@Override
 	public String[] getCommandAliases() { return new String[] {"setglobalspawn"}; }
 
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_USAGE);
 	}
 
 	@Override
-	public boolean execute(Player p, org.bukkit.command.Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-
+	public boolean execute(Player p, String[] args) {
 		if( args.length > 0 ) {
 			util.setSpawn(args[0], p.getLocation(), p.getName());
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]);
+			p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]) );
 		}
 		else {
 			util.setSpawn(p.getLocation(), p.getName());
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SETSPAWN_SET_SUCCESS);
+			p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
 			
 			// also set map spawn if configured to do so
-	    	if( plugin.getConfig().getBoolean(ConfigOptions.SETTING_WORLD_OVERRIDE, false) ) {
+	    	if( config.isOverrideWorld() ) {
 	    		final Location l = p.getLocation();
 	    		l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETSPAWN_SET_SUCCESS);
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
-						"world", l.getWorld().getName(), "location", util.shortLocationString(l));
+				p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
+				p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
+						"world", l.getWorld().getName(), "location", l.shortLocationString()) );
 	    	}
 		}
 		

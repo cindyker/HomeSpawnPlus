@@ -33,35 +33,35 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /**
  * @author morganm
  *
  */
 public class SetHomeOther extends BaseCommand {
+    @Inject private HomeUtil util;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"sethomeo", "sho"}; }
 
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SETHOMEOTHER_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SETHOMEOTHER_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(final Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
+	public boolean execute(final Player p, String[] args) {
 		if(args.length < 1) {
 			return false;
 		}
@@ -71,26 +71,32 @@ public class SetHomeOther extends BaseCommand {
 		
 		String homeowner = null;
 		// try player name best match
-		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
 		if( otherPlayer != null ) {
 			homeowner = otherPlayer.getName();
 		}
 		// no match, no point in proceeding, no online or offline player by
 		// that name exists
 		else {
-			util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
 					"player", args[0]);
 			return true;
 		}
 		
 		if( args.length > 1 ) {
-			if( util.setNamedHome(homeowner, l, args[1], setter) )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
+		    String errorMsg = util.setNamedHome(homeowner, l, args[1], setter);
+			if( errorMsg != null)
+			    p.sendMessage(errorMsg);
+			else
+			    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
 						"name", args[1], "player", homeowner);
 		}
 		else {
-			if( util.setHome(homeowner, l, setter, true, false) )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
+		    String errorMsg = util.setHome(homeowner, l, setter, true, false);
+            if( errorMsg != null)
+                p.sendMessage(errorMsg);
+            else
+			    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
 						"player", homeowner);
 		}
 		

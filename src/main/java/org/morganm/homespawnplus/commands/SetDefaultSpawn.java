@@ -33,11 +33,10 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
 
 /**
  * @author morganm
@@ -47,19 +46,14 @@ public class SetDefaultSpawn extends BaseCommand {
 
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTSPAWN_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTSPAWN_USAGE);
 	}
 
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-//		boolean localOnlyFlag = false;
+	public boolean execute(Player p, String[] args) {
 		
 		if( args.length < 1 ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
-//			util.sendMessage(p, "You must specify the spawnName to set as default.");
+			server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
 		}
 		else {
 			String spawnName = args[0];
@@ -79,12 +73,12 @@ public class SetDefaultSpawn extends BaseCommand {
 			}
 			*/
 			
-			org.morganm.homespawnplus.entity.Spawn spawn = util.getSpawnByName(spawnName);
+			org.morganm.homespawnplus.entity.Spawn spawn = storage.getSpawnDAO().findSpawnByName(spawnName);
 			if( spawn != null ) {
 				Location l = spawn.getLocation();
 				util.setSpawn(l, p.getName());
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
-						"name", spawn.getName(), "location", util.shortLocationString(l));
+				server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
+						"name", spawn.getName(), "location", l.shortLocationString());
 				
 //				util.sendMessage(p, "Default spawn changed to "+spawn.getName()+" at location ["+util.shortLocationString(l)+"]");
 				

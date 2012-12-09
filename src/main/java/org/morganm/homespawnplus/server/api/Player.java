@@ -3,13 +3,11 @@
  */
 package org.morganm.homespawnplus.server.api;
 
-import org.bukkit.World;
-
 /**
  * @author morganm
  *
  */
-public interface Player extends CommandSender {
+public interface Player extends CommandSender, OfflinePlayer {
     /**
      * Determine if this player is a newly joined player (just logged in for the first time ever).
      * 
@@ -62,4 +60,11 @@ public interface Player extends CommandSender {
      * @param location where to set the respawn location
      */
     public void setBedSpawnLocation(Location location);
+    
+    /**
+     * Send a player to a location.
+     * 
+     * @param location
+     */
+    public void teleport(Location location);
 }

@@ -33,18 +33,20 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-
 
 /**
  * @author morganm
@@ -52,43 +54,37 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  */
 public class Spawn extends BaseCommand
 {
-	private static final String OTHER_SPAWN_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.spawn.named";
+    @Inject private StrategyEngine engine;
+    @Inject private ConfigCore configCore;
+    @Inject private Teleport teleport;
 	
-	/*
 	@Override
-	public String[] getCommandAliases() { return new String[] {"globalspawn"}; }
-	*/
-
-	@Override
-	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args) {
-		if( !isEnabled() || !hasPermission(p) )
-			return true;
-
+	public boolean execute(final Player p, String[] args) {
 		String cooldownName = "spawn";
-		debug.devDebug("/spawn command run by player ",p);
+		log.debug("/spawn command run by player {}", p);
 		
 		boolean isNamedSpawn=false;
 		Location l = null;
 		StrategyResult result = null;
 		if( args.length > 0 ) {
 			boolean hasPermission = false;
-			if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION) ) {
+			if( permissions.hasSpawnNamed(p, null) ) {
 				isNamedSpawn = true;
 				org.morganm.homespawnplus.entity.Spawn spawn = null;
-				result = plugin.getStrategyEngine().getStrategyResult(EventType.NAMED_SPAWN_COMMAND, p, args[0]);
+				result = engine.getStrategyResult(EventType.NAMED_SPAWN_COMMAND, p, args[0]);
 				if( result != null ) {
 					l = result.getLocation();
 					spawn = result.getSpawn();
 				}
 				
 				if( l == null ) {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
+					p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]) );
 					return true;
 				}
 				
 				// if we check named permissions individually, then check now
-				if( plugin.getConfig().getBoolean(ConfigOptions.SPAWN_NAMED_PERMISSIONS, false) ) {
-					if( plugin.hasPermission(p, OTHER_SPAWN_PERMISSION + "." + spawn.getName().toLowerCase()) )
+				if( configCore.isSpawnNamedPermissions() ) {
+					if( permissions.hasSpawnNamed(p, spawn.getName().toLowerCase()) )
 							hasPermission = true;
 				}
 				// otherwise they have permission since we already checked the base permission above
@@ -97,12 +93,12 @@ public class Spawn extends BaseCommand
 			}
 			
 			if( !hasPermission ) {
-				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+				p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 				return true;
 			}
 		}
 		else {
-			result = util.getStrategyResult(EventType.SPAWN_COMMAND, p);
+			result = engine.getStrategyResult(EventType.SPAWN_COMMAND, p);
 			if( result != null ) {
 				l = result.getLocation();
 			}
@@ -132,8 +128,8 @@ public class Spawn extends BaseCommand
 
 					public void run() {
 						if( !canceled ) {
-							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
-									"name", getWarmupName(), "place", "spawn");
+							p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_WARMUP_FINISHED,
+									"name", getWarmupName(), "place", "spawn") );
 							doSpawnTeleport(p, finalL, context, finalSpawnName, finalIsNamedSpawn);
 						}
 					}
@@ -167,16 +163,16 @@ public class Spawn extends BaseCommand
 	private void doSpawnTeleport(Player p, Location l, StrategyContext context,
 			String spawnName, boolean isNamedSpawn) {
 		if( applyCost(p, true) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) ) {
+		    if( configCore.isTeleportMessages() ) {
     			if( isNamedSpawn )
-        			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_NAMED_TELEPORTING,
-        					"spawn", spawnName);
+        			p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SPAWN_NAMED_TELEPORTING,
+        					"spawn", spawnName) );
     			else
-    				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWN_TELEPORTING,
-    						"spawn", spawnName);
+    				p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SPAWN_TELEPORTING,
+    						"spawn", spawnName) );
     		}
     		
-    		util.teleport(p, l, TeleportCause.COMMAND, context);
+		    teleport.teleport(p, l, context.getTeleportOptions());
 		}
 	}
 }

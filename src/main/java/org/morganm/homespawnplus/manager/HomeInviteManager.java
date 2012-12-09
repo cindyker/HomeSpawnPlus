@@ -37,33 +37,44 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.morganm.homespawnplus.config.ConfigHomeInvites;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.storage.Storage;
 
 /** Class to manage temporary home invites (those that don't hit the database).
  * 
  * @author morganm
  *
  */
+@Singleton
 public class HomeInviteManager {
-	private final HomeSpawnPlus plugin;
 	/* Data structure will support multiple invites to a single person, but
 	 * right now we enforce only a single invite per person.
 	 */
 	private final Map<String, Map<String, Long>> tmpHomeInvites = new HashMap<String, Map<String, Long>>(10);
 	
-	public HomeInviteManager(HomeSpawnPlus plugin) {
-		this.plugin = plugin;
+	private final ConfigHomeInvites config;
+	private final Server server;
+	private final Storage storage;
+	
+	@Inject
+	public HomeInviteManager(ConfigHomeInvites config, Server server, Storage storage) {
+	    this.config = config;
+	    this.server = server;
+	    this.storage = storage;
 	}
 	
 	/** Return the invite timeout in milliseconds (ie. 30 seconds would return 30000)
 	 * 
 	 */
 	public int getInviteTimeout() {
-		return plugin.getConfig().getInt(ConfigOptions.HOME_INVITE_TIMEOUT) * 1000;
+		return config.getTimeout() * 1000;
 	}
 	
 	/** Send a home invite to a player
@@ -90,10 +101,10 @@ public class HomeInviteManager {
 
 		String homeName = home.getName();
 		if( homeName == null )
-			homeName = "loc "+plugin.getUtil().shortLocationString(home);
+			homeName = "loc "+home.getLocation().shortLocationString();
 		
-		plugin.getUtil().sendLocalizedMessage(to, HSPMessages.TEMP_HOMEINVITE_RECEIVED,
-				"who", from.getName(), "home", homeName, "time", getInviteTimeout()/1000);
+		to.sendMessage( server.getLocalizedMessage(HSPMessages.TEMP_HOMEINVITE_RECEIVED,
+				"who", from.getName(), "home", homeName, "time", getInviteTimeout()/1000) );
 		
 		return true;
 	}
@@ -127,7 +138,7 @@ public class HomeInviteManager {
 		// it to blow up as a significant error condition.
 		int id = Integer.valueOf(idString);
 		
-		return plugin.getStorage().getHomeDAO().findHomeById(id);
+		return storage.getHomeDAO().findHomeById(id);
 	}
 	
 	public void removeInvite(Player to) {

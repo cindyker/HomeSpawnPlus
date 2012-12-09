@@ -35,46 +35,44 @@ package org.morganm.homespawnplus.commands;
 
 import java.util.Date;
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigHomeInvites;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.manager.HomeInviteManager;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 import org.morganm.homespawnplus.util.General;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /**
  * @author morganm
  *
  */
 public class HomeInvite extends BaseCommand {
+    @Inject private HomeUtil homeUtil;
+    @Inject private HomeInviteManager homeInviteManager;
+    @Inject private ConfigHomeInvites config;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hi"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEINVITE_USAGE);
+		return	server.getLocalizedMessage(HSPMessages.CMD_HOMEINVITE_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(final Player p, final Command command, final String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		if( args.length < 1 ) {
-//			util.sendLocalizedMessage(p, HSPMessages.CMDHELP_HOME_INVITE, "command", "hi");
-//			util.sendMessage(p, command.getUsage());
-			return false;
-		}
+	public boolean execute(final Player p, final String[] args) {
+		if( args.length < 1 )
+			return false;    // let server print usage message
 		
 		org.morganm.homespawnplus.entity.Home home = null;
 		if( args.length > 1 ) {
@@ -83,7 +81,7 @@ public class HomeInvite extends BaseCommand {
 			// try id # first
 			try {
 				int id = Integer.parseInt(homeName);
-				home = plugin.getStorage().getHomeDAO().findHomeById(id);
+				home = storage.getHomeDAO().findHomeById(id);
 				// the name on the home and this player's name must match, else we ignore it
 				if( !p.getName().equals(home.getPlayerName()) )
 					home = null;
@@ -94,11 +92,11 @@ public class HomeInvite extends BaseCommand {
 			
 			// then try by name
 			if( home == null )
-				home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
+				home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
 			
 			// if we didn't find a home, report error message to player
 			if( home == null ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_HOME_NOT_FOUND,
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_HOME_NOT_FOUND,
 						"home", homeName);
 				return true;
 			}
@@ -106,26 +104,26 @@ public class HomeInvite extends BaseCommand {
 		// if they didn't pass a 2nd arg, then we try some assumptions to find a home
 		else {
 			// try the default home on the world the player is in
-			home = util.getDefaultHome(p.getName(), p.getWorld());
+			home = homeUtil.getDefaultHome(p.getName(), p.getWorld().getName());
 			
 			// if that didn't work, try to see if they only have 1 total home, and if so, use that one
 			if( home == null ) {
-				Set<org.morganm.homespawnplus.entity.Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(p.getName());
+				Set<org.morganm.homespawnplus.entity.Home> homes = storage.getHomeDAO().findHomesByPlayer(p.getName());
 				if( homes.size() == 1 )
 					home = homes.iterator().next();
 			}
 			
 			if( home == null ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NO_HOME_SPECIFIED);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NO_HOME_SPECIFIED);
 				return true;
 			}
 		}
 		
 		String invitee = args[0];
-		final Player onlinePlayer = Bukkit.getPlayer(invitee);
-		final OfflinePlayer offlinePlayer = util.getBestMatchPlayer(invitee);
+		final Player onlinePlayer = server.getPlayer(invitee);
+		final OfflinePlayer offlinePlayer = server.getBestMatchPlayer(invitee);
 		if( onlinePlayer == null && offlinePlayer == null ) {
-			util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
 					"player", invitee);
 			return true;
 		}
@@ -134,9 +132,8 @@ public class HomeInvite extends BaseCommand {
 		else if( offlinePlayer != null )
 			invitee = offlinePlayer.getName();
 		
-		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
-		if( !allowBedHomeInvites && home.isBedHome() ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NOT_ALLOWED,
+		if( !config.allowBedHomeInvites() && home.isBedHome() ) {
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NOT_ALLOWED,
 					"home", home.getName());
 			return true;
 		}
@@ -155,7 +152,7 @@ public class HomeInvite extends BaseCommand {
 				}
 				long timeInMilliseconds = General.getInstance().parseTimeInput(lengthOfTime.toString());
 				if( timeInMilliseconds < 60000 ) {		// minimum time is 1 minute
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_BAD_TIME,
+				    server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_BAD_TIME,
 							"badTime", lengthOfTime.toString());
 					return true;
 				}
@@ -168,7 +165,7 @@ public class HomeInvite extends BaseCommand {
 		// it's just a temporary invite
 		else {
 			if( onlinePlayer == null ) {
-				util.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+			    server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
 						"player", invitee);
 				return true;
 			}
@@ -179,22 +176,22 @@ public class HomeInvite extends BaseCommand {
 
 			String homeName = home.getName();
 			if( homeName == null )
-				homeName = "loc "+plugin.getUtil().shortLocationString(home);
+				homeName = "loc "+home.getLocation().shortLocationString();
 			
-			plugin.getHomeInviteManager().sendHomeInvite(onlinePlayer, p, home);
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
+			homeInviteManager.sendHomeInvite(onlinePlayer, p, home);
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
 					"player", invitee, "home", homeName);
 			return true;
 		}
 		
 		// if we get here, this is not a temporary invite, so we need to check permissions
-		if( !plugin.hasPermission(p, getCommandPermissionNode()+".permanent") ) {
-			util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+		if( !permissions.hasPermanentHomeInvite(p) ) {
+		    server.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
 			return true;
 		}
 		
 		// check for existing HomeInvite that we can overwrite
-		final HomeInviteDAO dao = plugin.getStorage().getHomeInviteDAO();
+		final HomeInviteDAO dao = storage.getHomeInviteDAO();
 		org.morganm.homespawnplus.entity.HomeInvite homeInvite = dao.findInviteByHomeAndInvitee(home, invitee);
 		
 		// if an existing invites doesn't exist, create a new one
@@ -215,21 +212,21 @@ public class HomeInvite extends BaseCommand {
 			return true;
 		
 		try {
-			debug.debug("saving homeinvite object ",homeInvite,", homeInvite.home=",homeInvite.getHome());
-			plugin.getStorage().getHomeInviteDAO().saveHomeInvite(homeInvite);
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
+			log.debug("saving homeinvite object {}, homeInvite.home={}", homeInvite, homeInvite.getHome());
+			storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_INVITE_SENT,
 					"player", invitee, "home", home.getName());
 			if( expiresTime > 0 && expireTimeAsString != null )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_EXPIRE_TIME_SET,
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_EXPIRE_TIME_SET,
 						"expire", expireTimeAsString);
 			
 			if( onlinePlayer != null )
-				util.sendLocalizedMessage(onlinePlayer, HSPMessages.CMD_HOME_INVITE_INVITE_RECEIVED,
+			    server.sendLocalizedMessage(onlinePlayer, HSPMessages.CMD_HOME_INVITE_INVITE_RECEIVED,
 						"player", p.getName());
 		}
 		catch(StorageException e) {
-			log.log(Level.WARNING, "Caught exception in command /homeinvite: "+e.getMessage(), e);
-			util.sendLocalizedMessage(onlinePlayer, HSPMessages.GENERIC_ERROR);
+			log.warn("Caught exception in command /homeinvite", e);
+			server.sendLocalizedMessage(onlinePlayer, HSPMessages.GENERIC_ERROR);
 		}
 		
 		return true;

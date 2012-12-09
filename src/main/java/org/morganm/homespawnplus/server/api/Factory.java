@@ -5,7 +5,9 @@ package org.morganm.homespawnplus.server.api;
 
 import org.morganm.homespawnplus.strategy.StrategyContext;
 
-/** Factory for creating various implementation-specific objects.
+/** Factory for creating various implementation-specific objects. These
+ * objects will be created by the specific server implementation as well
+ * as be fully injected by the IoC container.
  * 
  * @author morganm
  *

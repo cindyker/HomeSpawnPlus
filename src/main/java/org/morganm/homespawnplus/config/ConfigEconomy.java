@@ -46,7 +46,9 @@ public class ConfigEconomy implements ConfigInterface {
      * 
      * @return true if verbose messages should be used
      */
-    public boolean isVerboseOnCharge();
+    public boolean isVerboseOnCharge() {
+        return yaml.getBoolean("verbose");
+    }
     
     /**
      * Return a list of worlds that have world-specific costs.

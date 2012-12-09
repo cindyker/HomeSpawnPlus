@@ -33,18 +33,23 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /**
  * @author morganm
  *
  */
 public class HomeOther extends BaseCommand {
+    @Inject private Teleport teleport;
+    @Inject private HomeUtil homeUtil;
+    
 //	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
 
 	@Override
@@ -52,17 +57,14 @@ public class HomeOther extends BaseCommand {
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEOTHER_USAGE);
+		return	server.getLocalizedMessage(HSPMessages.CMD_HOMEOTHER_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
+	public boolean execute(Player p, String[] args) {
 		if( args.length < 1 ) {
 			return false;
 		}
@@ -72,7 +74,7 @@ public class HomeOther extends BaseCommand {
 		String homeName = null;
 		
 		// try player name best match
-		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
 		if( otherPlayer != null )
 			playerName = otherPlayer.getName();
 		else
@@ -84,7 +86,7 @@ public class HomeOther extends BaseCommand {
 			}
 			else {
 				if( homeName != null ) {
-					util.sendLocalizedMessage(p, HSPMessages.TOO_MANY_ARGUMENTS);
+					server.sendLocalizedMessage(p, HSPMessages.TOO_MANY_ARGUMENTS);
 					return true;
 				}
 				homeName = args[i];
@@ -96,27 +98,27 @@ public class HomeOther extends BaseCommand {
 		
 		org.morganm.homespawnplus.entity.Home home;
 		if( homeName != null ) {
-			home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
+			home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
 		}
 		else {
-			home = util.getDefaultHome(playerName, worldName);
+			home = homeUtil.getDefaultHome(playerName, worldName);
 		}
 		
 		// didn't find an exact match?  try a best guess match
 		if( home == null )
-			home = util.getBestMatchHome(playerName, worldName);
+			home = homeUtil.getBestMatchHome(playerName, worldName);
 		
 		if( home != null ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEOTHER_TELEPORTING,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEOTHER_TELEPORTING,
 					"home", home.getName(), "player", home.getPlayerName(), "world", home.getWorld());
 			if( applyCost(p) )
-	    		util.teleport(p, home.getLocation(), TeleportCause.COMMAND);
+	    		teleport.teleport(p, home.getLocation(), null);
 		}
 		else if( homeName != null )
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
 					"home", homeName, "player", playerName);
 		else
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
 					"player", playerName, "world", worldName);
 		
 		return true;

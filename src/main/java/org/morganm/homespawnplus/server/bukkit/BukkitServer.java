@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
@@ -78,5 +79,65 @@ public class BukkitServer implements Server {
     @Override
     public Player getPlayer(String playerName) {
         return new BukkitPlayer(plugin.getServer().getPlayer(playerName));
+    }
+
+    /** Given a string, look for the best possible player match. Returned
+     * object could be of subclass Player (if the player is online).
+     * 
+     * @param playerName
+     * @return the found OfflinePlayer object (possibly class Player) or null
+     */
+    public OfflinePlayer getBestMatchPlayer(String playerName) {
+        final String lowerName = playerName.toLowerCase();
+        int onlineMatchDistance = Integer.MAX_VALUE;
+        Player onlineMatch = getPlayer(playerName);
+        if( onlineMatch != null )
+            onlineMatchDistance = onlineMatch.getName().length() - playerName.length();
+        
+        int offlineMatchDistance = Integer.MAX_VALUE;
+        org.bukkit.OfflinePlayer offlineMatch = plugin.getServer().getOfflinePlayer(playerName);
+        // if the player hasn't played before, then Bukkit just returned a bogus
+        // object; there's no real player behind it. If so, we have to go the hard
+        // route of looping through all "seen" offline players to look for the best
+        // match
+        if( !offlineMatch.hasPlayedBefore() ) {
+            // implemented with same algorithm that Bukkit's online "getPlayer()"
+            // routine is
+            org.bukkit.OfflinePlayer found = null;
+            int delta = Integer.MAX_VALUE;
+            org.bukkit.OfflinePlayer[] offlinePlayers = plugin.getServer().getOfflinePlayers();
+            for(org.bukkit.OfflinePlayer offlinePlayer : offlinePlayers) {
+                if (offlinePlayer.getName().toLowerCase().startsWith(lowerName)) {
+                    int curDelta = offlinePlayer.getName().length() - lowerName.length();
+                    if (curDelta < delta) {
+                        found = offlinePlayer;
+                        delta = curDelta;
+                    }
+                    if (curDelta == 0) break;
+                }
+            }
+            if( found != null ) {
+                offlineMatch = found;
+                offlineMatchDistance = delta;
+            }
+        }
+        // offlineplayer HAS played before, calculate string distance
+        else {
+            if (offlineMatch.getName().toLowerCase().startsWith(lowerName)) {
+                offlineMatchDistance = offlineMatch.getName().length() - lowerName.length();
+            }
+        }
+        
+        if( onlineMatchDistance <= offlineMatchDistance ) {
+            if( onlineMatchDistance == Integer.MAX_VALUE )
+                log.debug("getBestMatchPlayer() playerName={}, no online or offline player found, returning null", playerName);
+            else
+                log.debug("getBestMatchPlayer() playerName={}, returning online player {}", playerName, onlineMatch);
+            return onlineMatch;
+        }
+        else {
+            log.debug("getBestMatchPlayer() playerName={}, returning offline player {}", playerName, offlineMatch);
+            return new BukkitOfflinePlayer(offlineMatch);
+        }
     }
 }

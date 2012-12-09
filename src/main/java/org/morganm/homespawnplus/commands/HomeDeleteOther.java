@@ -33,38 +33,40 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import java.util.logging.Level;
+import javax.inject.Inject;
 
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /**
  * @author morganm
  *
  */
 public class HomeDeleteOther extends BaseCommand {
+    @Inject private Storage storage;
+    @Inject private HomeUtil util;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hdo"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
+	public boolean execute(Player p, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return false;
 
 		if( args.length < 1 ) {
-//			util.sendMessage(p, command.getUsage());
 			return false;
 		}
 		
@@ -78,8 +80,7 @@ public class HomeDeleteOther extends BaseCommand {
 			}
 			else {
 				if( homeName != null ) {
-					util.sendLocalizedMessage(p, HSPMessages.TOO_MANY_ARGUMENTS);
-//					util.sendMessage(p,  "Too many arguments");
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.TOO_MANY_ARGUMENTS) );
 					return true;
 				}
 				homeName = args[i];
@@ -91,7 +92,7 @@ public class HomeDeleteOther extends BaseCommand {
 		
 		org.morganm.homespawnplus.entity.Home home;
 		if( homeName != null ) {
-			home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
+			home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
 		}
 		else {
 			home = util.getDefaultHome(playerName, worldName);
@@ -99,26 +100,26 @@ public class HomeDeleteOther extends BaseCommand {
 		
 		if( home != null ) {
 			try {
-				plugin.getStorage().getHomeDAO().deleteHome(home);
+				storage.getHomeDAO().deleteHome(home);
 				if( homeName != null )
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_HOME_DELETED,
-							"home", homeName, "player", playerName);
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_HOME_DELETED,
+							"home", homeName, "player", playerName) );
 				else
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_DEFAULT_HOME_DELETED,
-							"player", playerName, "world", worldName);
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_DEFAULT_HOME_DELETED,
+							"player", playerName, "world", worldName) );
 			}
 			catch(StorageException e) {
-				util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-				log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+			    p.sendMessage( server.getLocalizedMessage(HSPMessages.GENERIC_ERROR) );
+				log.warn("Error caught in /"+getCommandName(), e);
 			}
 		}
 		else if( homeName != null ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
-					"home", homeName, "player", playerName);
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
+					"home", homeName, "player", playerName) );
 		}
 		else
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
-					"player", playerName, "world", worldName);
+		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
+					"player", playerName, "world", worldName) );
 		
 		return true;
 	}

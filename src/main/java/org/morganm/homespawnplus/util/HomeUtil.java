@@ -3,13 +3,12 @@
  */
 package org.morganm.homespawnplus.util;
 
+import java.util.ArrayList;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.config.ConfigCore;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.HomeLimitsManager;
@@ -153,7 +152,7 @@ public class HomeUtil {
                 }
             }
             
-            if( home == null && plugin.getConfig().getBoolean(ConfigOptions.BEDHOME_OVERWRITES_DEFAULT, true) ) {
+            if( home == null && configCore.isBedHomeOverwriteDefault() ) {
                 log.debug("setHome: bedHome flag enabled, but no bedHome found. Using default home");
                 home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
             }
@@ -227,5 +226,45 @@ public class HomeUtil {
         }
         
         return null;
+    }
+
+    /** Look for a partial name match for a home on a given world
+     * 
+     * @param playerName
+     * @param worldName
+     * @return the Home object or null if none found
+     */
+    public Home getBestMatchHome(String playerName, String worldName) {
+        Set<Home> homes = storage.getHomeDAO().findAllHomes();
+        
+        // first find any possible homes based on the input
+        ArrayList<Home> possibles = new ArrayList<Home>();
+        for(Home home : homes) {
+            String homeOwner = home.getPlayerName();
+            if( worldName.equals(home.getWorld()) && homeOwner.contains(playerName) ) {
+                possibles.add(home);
+            }
+        }
+        
+        if( possibles.size() == 0 )
+            return null;
+        else if( possibles.size() == 1 )
+            return possibles.get(0);
+        
+        Home bestMatch = null;
+        // now find the best match out of all the possibilities.  Could have fancier algorithm later,
+        // but for now it just returns the first name it finds that startswith the player input.
+        for(Home home : possibles) {
+            String homeOwner = home.getPlayerName();
+            if( homeOwner.startsWith(playerName) ) {
+                bestMatch = home;
+                break;
+            }
+        }
+        // still no match out of the possibilities?  just take the first one on the list
+        if( bestMatch == null )
+            bestMatch = possibles.get(0);
+        
+        return bestMatch;
     }
 }

@@ -45,8 +45,19 @@ public interface Server {
      * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
      * @return
      */
-    public String getLocalizedMessage(final HSPMessages key, final Object...args);
+    public String getLocalizedMessage(HSPMessages key, final Object...args);
     
+    /**
+     * Given a localized key value and optional arguments, send a localized
+     * message to a given player.
+     *
+     * @param player the player to send the message to
+     * @param key the key value, @see {@link org.morganm.homespawnplus.i18n.HSPMessages}
+     * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
+     * @return
+     */
+    public String sendLocalizedMessage(Player player, HSPMessages key, final Object...args);
+
     /**
      * Given a player name, return the corresponding Player object (if any).
      * 
@@ -55,4 +66,12 @@ public interface Server {
      * @return the player object
      */
     public Player getPlayer(String playerName);
+
+    /** Given a string, look for the best possible player match. Returned
+     * object could be of subclass Player (if the player is online).
+     * 
+     * @param playerName the playerName to look for
+     * @return the found OfflinePlayer object (possibly class Player) or null
+     */
+    public OfflinePlayer getBestMatchPlayer(String playerName);
 }

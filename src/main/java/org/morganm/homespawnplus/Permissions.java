@@ -50,4 +50,41 @@ public class Permissions {
     public boolean isWarmupExempt(Player player, String warmup) {
         return permCheck(player, "WarmupExempt."+warmup);
     }
+    
+    /**
+     * Determine if a player has permission to specify an argument to 
+     * groupspawn commands, such as "/groupspawn somegroup" 
+     * 
+     * @param player
+     * @return
+     */
+    public boolean hasOtherGroupSpawnPermission(Player player) {
+        return hasCommandPermission(player, ".groupspawn.named");
+    }
+    
+    /**
+     * Determine if the player has permission to go to named spawns, such
+     * as "/spawn spawn3".
+     * 
+     * @param player
+     * @param name optional arg, if set, is appended to the permission check
+     * @return
+     */
+    public boolean hasSpawnNamed(Player player, String name) {
+        if( name != null )
+            return hasCommandPermission(player, ".spawn.named."+name);
+        else
+            return hasCommandPermission(player, ".spawn.named");
+    }
+    
+    /**
+     * Determine if the player has permission to send out permament
+     * home invites.
+     * 
+     * @param player
+     * @return
+     */
+    public boolean hasPermanentHomeInvite(Player player) {
+        return hasCommandPermission(player, ".homeinvite.permanent");
+    }
 }

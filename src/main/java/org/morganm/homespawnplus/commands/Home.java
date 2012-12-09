@@ -33,17 +33,21 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 
 /**
@@ -55,23 +59,36 @@ public class Home extends BaseCommand
 	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.otherworld";
 	private static final String NAMED_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.named";
 	
+	private StrategyEngine engine;
+	private ConfigCore configCore;
+	@Inject private Teleport teleport;
+	@Inject private HomeUtil homeUtil;
+	
+	@Inject
+	public void setStrategyEngine(StrategyEngine engine) {
+	    this.engine = engine;
+	}
+	
+	@Inject
+	public void setConfigCore(ConfigCore configCore) {
+	    this.configCore = configCore;
+	}
+
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOME_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOME_USAGE);
  	}
 	
 	@Override
-	public boolean execute(final Player p, final org.bukkit.command.Command command, String[] args)
+	public boolean execute(final Player p, String[] args)
 	{
-		if( !isEnabled() || !hasPermission(p) )
-			return true;
-		
-		debug.debug("home command called player=",p," args=",args);
+		log.debug("home command called player={}, args={}", p, args);
 
 		// this flag is used to determine whether the player influenced the outcome of /home
 		// with an arg or whether it was purely determined by the default home strategy, so
 		// that we know whether the OTHER_WORLD_PERMISSION perm needs to be checked
 		boolean playerDirectedArg = false;
+		
 		final String warmupName = getWarmupName(null);
 		String cooldownName = null;
 		org.morganm.homespawnplus.entity.Home theHome = null;
@@ -83,25 +100,25 @@ public class Home extends BaseCommand
 			String homeName = null;
 			
 			if( args[0].startsWith("w:") ) {
-				if( !plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
+				if( !p.hasPermission(OTHER_WORLD_PERMISSION) ) {
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION) );
 	    			return true;
 				}
 				
 				String worldName = args[0].substring(2);
-				theHome = util.getDefaultHome(p.getName(), worldName);
+				theHome = homeUtil.getDefaultHome(p.getName(), worldName);
 				if( theHome == null ) {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName);
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName) );
 					return true;
 				}
 			}
 			else {
-				if( !plugin.hasPermission(p, NAMED_HOME_PERMISSION) ) {
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_PERMISSION);
+				if( !p.hasPermission(NAMED_HOME_PERMISSION) ) {
+				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_NAMED_HOME_PERMISSION) );
 					return true;
 				}
 				
-				result = util.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
+				result = engine.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
 				theHome = result.getHome();
 				l = result.getLocation();
 			}
@@ -117,17 +134,17 @@ public class Home extends BaseCommand
 			cooldownName = getCooldownName("home-named", homeName);
 			
 			if( l == null ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND, "name", homeName);
+			    server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND, "name", homeName);
 				return true;
 			}
 		}
 		else {
-			result = util.getStrategyResult(EventType.HOME_COMMAND, p);
+			result = engine.getStrategyResult(EventType.HOME_COMMAND, p);
 			theHome = result.getHome();
 			l = result.getLocation();
 		}
 		
-		debug.debug("home command running cooldown check, cooldownName=",cooldownName);
+		log.debug("home command running cooldown check, cooldownName={}",cooldownName);
 		if( !cooldownCheck(p, cooldownName) )
 			return true;
 		
@@ -143,8 +160,8 @@ public class Home extends BaseCommand
     		// player gave input for another world; admin-directed strategies
     		// always allow cross-world locations regardless of permissions.
     		if( playerDirectedArg && !p.getWorld().getName().equals(l.getWorld().getName()) &&
-    				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
+    				!p.hasPermission(OTHER_WORLD_PERMISSION) ) {
+    		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION) );
     			return true;
     		}
     		
@@ -159,8 +176,8 @@ public class Home extends BaseCommand
 					
 					public void run() {
 						if( !canceled ) {
-							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
-									"name", getWarmupName(), "place", "home");
+						    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_WARMUP_FINISHED,
+									"name", getWarmupName(), "place", "home") );
 							doHomeTeleport(p, finalL, cdName, context,
 									finalHome, finalIsNamedHome);
 						}
@@ -182,7 +199,7 @@ public class Home extends BaseCommand
 			}
     	}
     	else
-			util.sendLocalizedMessage(p, HSPMessages.NO_HOME_FOUND);
+    	    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_HOME_FOUND) );
     	
 		return true;
 	}
@@ -202,19 +219,19 @@ public class Home extends BaseCommand
 			homeName = home.getName();
 		
 		if( applyCost(p, true, cooldownName) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) ) {
+		    if( configCore.isTeleportMessages() ) {
     			if( home != null && home.isBedHome() )
-	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_BED_TELEPORTING,
-	    					"home", homeName);
+    			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_BED_TELEPORTING,
+	    					"home", homeName) );
     			else if( isNamedHome )
-	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NAMED_TELEPORTING,
-	    					"home", homeName);
+    			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NAMED_TELEPORTING,
+	    					"home", homeName) );
     			else
-	    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_TELEPORTING,
-	    					"home", homeName);
+    			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_TELEPORTING,
+	    					"home", homeName) );
     		}
     		
-    		util.teleport(p, l, TeleportCause.COMMAND, context);
+    		teleport.teleport(p, l, context.getTeleportOptions());
 		}
 	}
 	

@@ -33,12 +33,11 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.World;
 
 /**
  * @author morganm
@@ -50,15 +49,12 @@ public class SetMapSpawn extends BaseCommand {
 	public String[] getCommandAliases() { return new String[] {"sms"}; }
 
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-
+	public boolean execute(Player p, String[] args) {
 		final World world = p.getWorld();
 		final Location l = p.getLocation();
 		world.setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-		util.sendLocalizedMessage(p, HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
-				"world", world.getName(), "location", util.shortLocationString(l));
+		server.sendLocalizedMessage(p, HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
+				"world", world.getName(), "location", l.shortLocationString());
 
 		return true;
 	}

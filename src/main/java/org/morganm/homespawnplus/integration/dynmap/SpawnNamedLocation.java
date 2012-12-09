@@ -36,6 +36,7 @@ package org.morganm.homespawnplus.integration.dynmap;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.Storage;
 
 /**
  * @author morganm
@@ -76,6 +77,15 @@ public class SpawnNamedLocation implements NamedLocation {
 	 */
 	@Override
 	public boolean isEnabled(ConfigurationSection section) {
-		return true;
+	    // I dislike the reference to Storage, this should be changed to a member
+	    // method for the 2.0 refactor
+	    if( spawn.getGroup().equals(Storage.HSP_WORLD_SPAWN_GROUP) )
+	        return true;
+
+        if( section.getBoolean("include-named-spawns", true) )
+            return true;
+
+        // if it hasn't been true yet, then we're not supposed to show it
+		return false;
 	}
 }

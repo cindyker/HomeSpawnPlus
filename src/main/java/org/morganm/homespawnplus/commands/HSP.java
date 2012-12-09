@@ -45,7 +45,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -163,7 +162,7 @@ public class HSP extends BaseCommand {
 //			register.register(new HspTest());
 //		}
 		else if( args[0].equals("cmdmap") ) {
-			CraftServer cs = (CraftServer) Bukkit.getServer();
+		    org.bukkit.craftbukkit.v1_4_5.CraftServer cs = (org.bukkit.craftbukkit.v1_4_5.CraftServer) Bukkit.getServer();
 			SimpleCommandMap commandMap = cs.getCommandMap();
 			
 			for(Command cmd : commandMap.getCommands()) {

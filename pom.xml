@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.7.3</version>
+  <version>1.7.3.1</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -92,12 +92,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.4.4-R0.1-SNAPSHOT</version>
+      <version>1.4.5-R0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.4.4-R0.1-SNAPSHOT</version>
+      <version>LATEST</version>
     </dependency>
 
     <!-- WorldBorder -->

@@ -17,6 +17,13 @@ public interface Block {
     Location getLocation();
 
     /**
+     * Get the World for this block
+     * 
+     * @return the World this block is located within
+     */
+    public World getWorld();
+
+    /**
      * Gets the type-id of this block
      *
      * @return block type-id

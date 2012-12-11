@@ -90,7 +90,7 @@ public abstract class BaseCommand implements Command {
      * 
      * Note this method does nothing, it's simply a stub to be overridden by a subclass.
      */
-    public boolean execute(Player player, String[] args) {
+    public boolean execute(Player player, String[] args) throws Exception {
         return false;
     }
     
@@ -104,10 +104,17 @@ public abstract class BaseCommand implements Command {
 	        if( !hasPermission(p) )
 	            return true;
 	        
-	        return this.execute(p, args);
+	        // do generic error logging for convenience
+	        try {
+	            return this.execute(p, args);
+	        }
+	        catch(Exception e) {
+	            log.warn("Caught exception in command /"+getCommandName(), e);
+	            server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+	        }
 	    }
-	    else
-	        return false;
+
+        return false;
 	}
 	
 	public void setCommandParameters(Map<String, Object> params) {

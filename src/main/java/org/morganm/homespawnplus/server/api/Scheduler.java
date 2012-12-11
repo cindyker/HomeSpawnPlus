@@ -18,4 +18,15 @@ public interface Scheduler {
      * @return Task id number (-1 if scheduling failed)
      */
     public int scheduleSyncDelayedTask(Runnable task, long delay);
+
+    /**
+     * Schedules a once off task to occur after a delay
+     * This task will be executed by a thread managed by the scheduler
+     *
+     * @param plugin Plugin that owns the task
+     * @param task Task to be executed
+     * @param delay Delay in server ticks before executing task
+     * @return Task id number (-1 if scheduling failed)
+     */
+    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay);
 }

@@ -46,7 +46,7 @@ import javax.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.command.Command;

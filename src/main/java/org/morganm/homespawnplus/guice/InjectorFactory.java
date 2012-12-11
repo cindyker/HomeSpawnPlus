@@ -27,8 +27,7 @@ public class InjectorFactory {
         // environment. For now the only environment we support is Bukkit.
         
         Plugin bukkitPlugin = Bukkit.getPluginManager().getPlugin("HomeSpawnPlus");
-        injector = parent.createChildInjector(new BukkitModule(bukkitPlugin),
-                new BukkitConfigModule(bukkitPlugin));
+        injector = parent.createChildInjector(new BukkitModule(bukkitPlugin));
         
         return injector;
     }

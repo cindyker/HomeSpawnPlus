@@ -36,7 +36,6 @@ package org.morganm.homespawnplus.storage.ebean;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
@@ -45,7 +44,8 @@ import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlQuery;
@@ -60,7 +60,7 @@ import com.avaje.ebean.SqlUpdate;
  */
 public class StorageEBeans implements Storage {
 	private static final int CURRENT_VERSION = 170;
-    private static final Logger log = HomeSpawnPlus.log;
+    private static final Logger log = LoggerFactory.getLogger(StorageEBeans.class);
 
 	private final HomeSpawnPlus plugin;
 	private final String logPrefix;
@@ -243,7 +243,7 @@ public class StorageEBeans implements Storage {
 		else
 			knownVersion = versionObject.getVersion();
 		
-		Debug.getInstance().debug("knownVersion = ",knownVersion);
+		log.debug("knownVersion = {}",knownVersion);
 
 		// determine if we are at version 62 of the database schema
 		try {
@@ -365,8 +365,7 @@ public class StorageEBeans implements Storage {
 				success = true;
 			}
 			catch(SQLException e) {
-				log.severe(logPrefix + " error attempting to update SQLite database schema!");
-				e.printStackTrace();
+				log.error("error attempting to update SQLite database schema!", e);
 			}
 		}
 		else {
@@ -425,8 +424,7 @@ public class StorageEBeans implements Storage {
 				success = true;
 			}
 			catch(SQLException e) {
-				log.severe(logPrefix + " error attempting to update SQLite database schema!");
-				e.printStackTrace();
+				log.error("error attempting to update SQLite database schema!", e);
 			}
 		}
 		else {	// not SQLite
@@ -503,8 +501,7 @@ public class StorageEBeans implements Storage {
 				success = true;
 			}
 			catch(SQLException e) {
-				log.severe(logPrefix + " error attempting to update SQLite database schema!");
-				e.printStackTrace();
+				log.error("error attempting to update SQLite database schema!", e);
 			}
 		}
 		else {

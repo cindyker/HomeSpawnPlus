@@ -26,4 +26,8 @@ public class BukkitWorld implements World {
         return bukkitWorld.getName();
     }
 
+    @Override
+    public boolean setSpawnLocation(int x, int y, int z) {
+        return bukkitWorld.setSpawnLocation(x,  y,  z);
+    }
 }

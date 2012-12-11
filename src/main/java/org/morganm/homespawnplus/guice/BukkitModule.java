@@ -13,6 +13,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Scheduler;
 import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.ServerConfig;
 import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.homespawnplus.server.api.command.CommandConfig;
 import org.morganm.homespawnplus.server.api.command.CommandRegister;
@@ -20,6 +21,7 @@ import org.morganm.homespawnplus.server.api.events.EventDispatcher;
 import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.server.bukkit.BukkitScheduler;
 import org.morganm.homespawnplus.server.bukkit.BukkitServer;
+import org.morganm.homespawnplus.server.bukkit.BukkitServerConfig;
 import org.morganm.homespawnplus.server.bukkit.BukkitYamlConfigFile;
 import org.morganm.homespawnplus.server.bukkit.command.BukkitCommandConfig;
 import org.slf4j.Logger;
@@ -66,6 +68,9 @@ public class BukkitModule extends AbstractModule {
         bind(Scheduler.class)
             .to(BukkitScheduler.class)
             .in(Scopes.SINGLETON);
+        bind(ServerConfig.class)
+            .to(BukkitServerConfig.class).
+            in(Scopes.SINGLETON);
         
         bind(YamlFile.class)
             .to(BukkitYamlConfigFile.class);

@@ -40,4 +40,6 @@ public interface Factory {
      * @return the new StrategyContext object
      */
     public StrategyContext newStrategyContext();
+    
+    public YamlFile newYamlFile();
 }

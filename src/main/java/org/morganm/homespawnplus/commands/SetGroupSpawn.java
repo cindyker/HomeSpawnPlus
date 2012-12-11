@@ -33,11 +33,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 
 /**
@@ -46,23 +48,27 @@ import org.morganm.homespawnplus.i18n.HSPMessages;
  */
 public class SetGroupSpawn extends BaseCommand
 {
+    @Inject private SpawnUtil util;
+
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SETGROUPSPAWN_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SETGROUPSPAWN_USAGE);
 	}
 
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-
+	public boolean execute(Player p, String[] args) {
 		if( args.length < 1 )
 			return false;
 		
 		String group = args[0];
-		HomeSpawnPlus.log.info(HomeSpawnPlus.logPrefix + " Setting group spawn for '"+group+"'.");
-		util.setGroupSpawn(group, p.getLocation(), p.getName());
-		util.sendMessage(p, "Group spawn for "+group+" set successfully!");
+		try {
+    		util.setGroupSpawn(group, p.getLocation(), p.getName());
+    		p.sendMessage("Group spawn for "+group+" set successfully!");
+		}
+        catch(StorageException e) {
+            log.warn("Caught exception in command /"+getCommandName(), e);
+            server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+        }
 		
 		return true;
 	}

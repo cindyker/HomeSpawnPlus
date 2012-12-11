@@ -39,15 +39,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 
@@ -57,21 +52,15 @@ import org.morganm.homespawnplus.storage.dao.HomeDAO;
  * @author morganm
  *
  */
-public class CommandBook implements Runnable {
-	private static final Logger log = HomeSpawnPlus.log;
-	
-	private final String logPrefix;
-	private HomeSpawnPlus plugin;
-	private CommandSender initiatingPlayer;
-	
-	public CommandBook(HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
-		this.plugin = plugin;
-		this.initiatingPlayer = initiatingPlayer;
-		
-		logPrefix = HomeSpawnPlus.logPrefix;
-	}
-	
-	private int convertHomes() throws IOException {
+public class CommandBook extends BaseConverter
+{
+    @Override
+    public String getConverterName() {
+        return "CommandBook";
+    }
+    
+    @Override
+	public int convert() throws IOException {
 		// keep track of player names as we convert their first home, allows us to
 		// set the first home we run into as the default home.
 		Set<String> playerNames = new HashSet<String>();
@@ -81,11 +70,11 @@ public class CommandBook implements Runnable {
 		File commandBookHomeData = new File(parent + "/CommandBook/homes.csv");
 		
 		if( !commandBookHomeData.isFile() ) {
-			log.warning(logPrefix + " No CommandBook homes.csv found, skipping home import");
+			log.warn("No CommandBook homes.csv found, skipping home import");
 			return 0;
 		}
 		
-		HomeDAO dao = plugin.getStorage().getHomeDAO();
+		HomeDAO dao = storage.getHomeDAO();
 		
 		int convertedCount = 0;
 		BufferedReader br = new BufferedReader(new FileReader(commandBookHomeData));
@@ -103,13 +92,13 @@ public class CommandBook implements Runnable {
 			Double pitch = Double.parseDouble(arr[6]);
 			Double yaw = Double.parseDouble(arr[7]);
 			
-			World world = Bukkit.getWorld(worldName);
+			World world = server.getWorld(worldName);
 			if( world == null ) {
-				log.warning("CommandBook converter: tried to convert home from world \""+worldName+"\", but no such world exists");
+				log.warn("CommandBook converter: tried to convert home from world \"{}\", but no such world exists", worldName);
 				continue;
 			}
 			
-			Location l = new Location(world, x.doubleValue(), y.doubleValue(),
+			Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
 					z.doubleValue(), yaw.floatValue(), pitch.floatValue());
 			
 			Home hspHome = new Home();
@@ -129,23 +118,11 @@ public class CommandBook implements Runnable {
 				convertedCount++;
 			}
 			catch(StorageException e) {
-				log.log(Level.WARNING, "StorageException attempting to convert CommandBook home", e);
+				log.warn("StorageException attempting to convert CommandBook home", e);
 			}
 		}
 		br.close();
 		
 		return convertedCount;
-	}
-	
-	public void run() {
-		try {
-			int homesConverted = convertHomes();
-			if( initiatingPlayer != null )
-				initiatingPlayer.sendMessage("Finished converting "+homesConverted+" homes");
-		}
-		catch(IOException e) {
-			log.log(Level.WARNING, "I/O error trying to convert CommmandBook homes", e);
-			initiatingPlayer.sendMessage("Error converting CommandBook homes, check your server.log");
-		}
 	}
 }

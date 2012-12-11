@@ -40,6 +40,8 @@ import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
@@ -48,6 +50,7 @@ import org.morganm.homespawnplus.server.api.Player;
 public class SetSpawn extends BaseCommand
 {
     @Inject private ConfigCore config;
+    @Inject private SpawnUtil util;
     
 	@Override
 	public String[] getCommandAliases() { return new String[] {"setglobalspawn"}; }
@@ -58,24 +61,24 @@ public class SetSpawn extends BaseCommand
 	}
 
 	@Override
-	public boolean execute(Player p, String[] args) {
-		if( args.length > 0 ) {
-			util.setSpawn(args[0], p.getLocation(), p.getName());
-			p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]) );
-		}
-		else {
-			util.setSpawn(p.getLocation(), p.getName());
-			p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
-			
-			// also set map spawn if configured to do so
-	    	if( config.isOverrideWorld() ) {
-	    		final Location l = p.getLocation();
-	    		l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-				p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
-				p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
-						"world", l.getWorld().getName(), "location", l.shortLocationString()) );
-	    	}
-		}
+	public boolean execute(Player p, String[] args) throws StorageException {
+	    if( args.length > 0 ) {
+	        util.setNamedSpawn(args[0], p.getLocation(), p.getName());
+	        p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]) );
+	    }
+	    else {
+	        util.setDefaultWorldSpawn(p.getLocation(), p.getName());
+	        p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
+
+	        // also set map spawn if configured to do so
+	        if( config.isOverrideWorld() ) {
+	            final Location l = p.getLocation();
+	            l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+	            p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS) );
+	            p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
+	                    "world", l.getWorld().getName(), "location", l.shortLocationString()) );
+	        }
+	    }
 		
 		return true;
 	}

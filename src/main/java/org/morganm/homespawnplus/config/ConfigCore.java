@@ -136,4 +136,24 @@ public class ConfigCore implements ConfigInterface {
     public boolean isBedHomeOverwriteDefault() {
         return yaml.getBoolean("bedHomeOverwritesDefault");
     }
+    
+    /**
+     * Return a string representing the default color, of the form
+     * "%yellow", "%red%", etc.  TODO: link to documentation on colors
+     * 
+     * @return
+     */
+    public String getDefaultColor() {
+        return yaml.getString("defaultMessageColor");
+    }
+    
+    /**
+     * Return the default world, used anywhere "default world" is referenced
+     * in spawn strategies.
+     * 
+     * @return
+     */
+    public String getDefaultWorld() {
+        return yaml.getString("defaultWorld");
+    }
 }

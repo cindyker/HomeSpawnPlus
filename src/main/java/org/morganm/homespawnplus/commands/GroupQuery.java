@@ -33,11 +33,15 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.OfflinePlayer;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.util.SpawnUtil;
+import org.morganm.mBukkitLib.PermissionSystem;
 
 /** Command to return the group HSP thinks a player is in, based on the underlying
  * Permission system in use.
@@ -46,7 +50,9 @@ import org.morganm.homespawnplus.server.api.Player;
  *
  */
 public class GroupQuery extends BaseCommand {
-
+    @Inject private PermissionSystem permSystem;
+    @Inject private SpawnUtil util;
+    
 	@Override
 	public String[] getCommandAliases() { return new String[] {"gq"}; }
 	
@@ -65,33 +71,24 @@ public class GroupQuery extends BaseCommand {
 		boolean playerOffline = false;
 		
 		if( args.length > 0 ) {
-			Player p = server.getPlayer(args[0]);
-			if( p != null ) {
-				playerName = p.getName();
-				playerWorld = p.getWorld().getName();
-			}
-			else {
-				// look for an OfflinePlayer by that name
-				OfflinePlayer offline = server.getOfflinePlayer(args[0]);
-				if( offline.hasPlayedBefore() ) {
-					playerOffline = true;
-					playerName = offline.getName();
-					
-					if( args.length > 1 )
-						playerWorld = args[1];
-					else {
-						// no way to get the world of an offline player, so we have
-						// to just assume the default world
-						playerWorld = util.getDefaultWorld();
-					}
-				}
-				
-				// didn't find any player by that name, error out
-				if( playerName == null ) {
-					util.sendMessage(sender, "Player "+args[0]+" not found.");
-					return true;
-				}
-			}
+		    OfflinePlayer offline = server.getBestMatchPlayer(args[0]);
+            playerName = offline.getName();
+            
+            if( args.length > 1 )
+                playerWorld = args[1];
+            else if( offline instanceof Player )
+                playerWorld = ((Player) offline).getWorld().getName();
+            else {
+                // no way to get the world of an offline player, so we have
+                // to just assume the default world
+                playerWorld = util.getDefaultWorld();
+            }
+
+            // didn't find any player by that name, error out
+            if( playerName == null ) {
+                sender.sendMessage("Player "+args[0]+" not found.");
+                return true;
+            }
 		}
 		else if( sender instanceof Player ) {
 			Player p = (Player) sender;
@@ -102,10 +99,10 @@ public class GroupQuery extends BaseCommand {
 		if( playerName == null )
 			return false;
 
-		String group = plugin.getPlayerGroup(playerWorld, playerName);
-		util.sendMessage(sender, "Player "+playerName+" is in group \""+group+"\" on "+playerWorld
+		String group = permSystem.getPlayerGroup(playerWorld, playerName);
+		sender.sendMessage("Player "+playerName+" is in group \""+group+"\" on "+playerWorld
 				+ (playerOffline ? " [player offline]" : "")
-				+ " (using perms "+plugin.getPermissionSystem().getSystemInUseString()+")");
+				+ " (using perms "+permSystem.getSystemInUseString()+")");
 		return true;
 	}
 }

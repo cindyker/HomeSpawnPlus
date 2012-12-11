@@ -34,27 +34,18 @@
 package org.morganm.homespawnplus.commands;
 
 import java.io.File;
-import java.util.Random;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import javax.inject.Inject;
+
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.config.ConfigManager;
 import org.morganm.homespawnplus.i18n.HSPMessages;
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.homespawnplus.storage.StorageException;
-import org.morganm.homespawnplus.storage.yaml.HomeDAOYaml;
-import org.morganm.homespawnplus.storage.yaml.SpawnDAOYaml;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
 /**
@@ -62,67 +53,48 @@ import org.morganm.homespawnplus.storage.yaml.StorageYaml;
  *
  */
 public class HSP extends BaseCommand {
-	private static final Logger log = HomeSpawnPlus.log;
-	private String logPrefix;
-	
+    @Inject ConfigManager configManager;
+    
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HSP_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HSP_USAGE);
 	}
 
-	@Override
-	public org.morganm.homespawnplus.command.Command setPlugin(HomeSpawnPlus plugin) {
-		this.logPrefix = HomeSpawnPlus.logPrefix;
-		return super.setPlugin(plugin);
-	}
-
-	@Override
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
-		return executePrivate(console, command, args);
-	}
-
-	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		return executePrivate(p, command, args);
-	}
-	
-	private boolean executePrivate(CommandSender p, Command command, String[] args) {
-		if( !isEnabled() || !plugin.hasPermission(p, HomeSpawnPlus.BASE_PERMISSION_NODE+".admin") )
+    @Override
+    public boolean execute(CommandSender p, String[] args) {
+        if( permissions.isAdmin(p) )
 			return false;
 		
 		if( args.length < 1 ) {
 			return false;
-//			printUsage(p, command);
 		}
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
 			try {
-				plugin.loadConfig(true);
+			    configManager.loadAll();
 				
 				// also call hookWarmups, in case admin changed the warmup settings
-				plugin.hookWarmups();
+//				plugin.hookWarmups();
 				
 				success = true;
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_ERROR_RELOADING);
-//				util.sendMessage(p, "Error loading config data, not successful.  Check your server logs.");
+			    log.error("Caught exception reloading config", e);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_ERROR_RELOADING);
 			}
 			
 			if( success )
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_CONFIG_RELOADED);
-//				util.sendMessage(p, "Config data reloaded.");
+			    server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_CONFIG_RELOADED);
 		}
+		/*
 		else if( args[0].startsWith("reloadd") || args[0].equals("rd") ) {
 			// purge the existing cache
-			plugin.getStorage().purgeCache();
+			storage.purgeCache();
 			// now reload it by grabbing all of the objects
-			plugin.getStorage().getHomeDAO().findAllHomes();
-			plugin.getStorage().getSpawnDAO().findAllSpawns();
+			storage.getHomeDAO().findAllHomes();
+			storage.getSpawnDAO().findAllSpawns();
 
-			util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
-//			util.sendMessage(p, "Data cache purged and reloaded");
+			server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
 		}
 		else if( args[0].equals("test") ) {
 			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
@@ -162,6 +134,8 @@ public class HSP extends BaseCommand {
 //			CommandRegister register = new CommandRegister(plugin);
 //			register.register(new HspTest());
 //		}
+        */
+		/*
 		else if( args[0].equals("cmdmap") ) {
 			CraftServer cs = (CraftServer) Bukkit.getServer();
 			SimpleCommandMap commandMap = cs.getCommandMap();
@@ -182,9 +156,8 @@ public class HSP extends BaseCommand {
 //				}
 			}
 		}
+		*/
 		else if( args[0].startsWith("backup") ) {
-			Storage storage = plugin.getStorage();
-
 			File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
 			if( backupFile.exists() )
 				backupFile.delete();
@@ -195,44 +168,40 @@ public class HSP extends BaseCommand {
 
 				backupStorage.setDeferredWrites(true);
 				for(org.morganm.homespawnplus.entity.Home o : storage.getHomeDAO().findAllHomes()) {
-					debug.devDebug("backing up Home object id ",o.getId());
+					log.debug("backing up Home object id ",o.getId());
 					backupStorage.getHomeDAO().saveHome(o);
 				}
 				for(org.morganm.homespawnplus.entity.Spawn o : storage.getSpawnDAO().findAllSpawns()) {
-					debug.devDebug("backing up Spawn object id ",o.getId());
+					log.debug("backing up Spawn object id ",o.getId());
 					backupStorage.getSpawnDAO().saveSpawn(o);
 				}
 				for(org.morganm.homespawnplus.entity.Player o : storage.getPlayerDAO().findAllPlayers()) {
-					debug.devDebug("backing up Player object id ",o.getId());
+					log.debug("backing up Player object id ",o.getId());
 					backupStorage.getPlayerDAO().savePlayer(o);
 				}
 				for(org.morganm.homespawnplus.entity.HomeInvite o : storage.getHomeInviteDAO().findAllHomeInvites()) {
-					debug.devDebug("backing up HomeInvite object id ",o.getId());
+					log.debug("backing up HomeInvite object id ",o.getId());
 					backupStorage.getHomeInviteDAO().saveHomeInvite(o);
 				}
 
 				backupStorage.flushAll();
 	
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-				log.info(logPrefix+" Data backed up to file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+				log.info("Data backed up to file {}", HomeSpawnPlus.YAML_BACKUP_FILE);
 			}
 			catch(StorageException e) {
-				log.warning(logPrefix+" Error saving backup file"+e.getMessage());
-				e.printStackTrace();
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
+				log.warn("Error saving backup file", e);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
 			}
 		}
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || (!"OVERWRITE".equals(args[1])
 					&& !("me".equals(args[1]) && p instanceof ConsoleCommandSender)) ) {	// testing shortcut
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-//				util.sendMessage(p, "In order to start restore you must send the command \"/hsp restore OVERWRITE\"");
-//				util.sendMessage(p, "THIS WILL OVERWRITE EXISTING DATA and restore data from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
 			}
 			else {
 				File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
 				if( backupFile.exists() ) {
-					final Storage storage = plugin.getStorage();
 					try {
 						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
 						backupStorage.initializeStorage();
@@ -242,25 +211,25 @@ public class HSP extends BaseCommand {
 						
 						Set<org.morganm.homespawnplus.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
 						for(org.morganm.homespawnplus.entity.Home home : homes) {
-							debug.devDebug("Restoring home ",home);
+							log.debug("Restoring home ",home);
 							home.setLastModified(null);
 							storage.getHomeDAO().saveHome(home);
 						}
 						Set<org.morganm.homespawnplus.entity.Spawn> spawns = backupStorage.getSpawnDAO().findAllSpawns();
 						for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
-							debug.devDebug("Restoring spawn ",spawn);
+							log.debug("Restoring spawn ",spawn);
 							spawn.setLastModified(null);
 							storage.getSpawnDAO().saveSpawn(spawn);
 						}
 						Set<org.morganm.homespawnplus.entity.Player> players = backupStorage.getPlayerDAO().findAllPlayers();
 						for(org.morganm.homespawnplus.entity.Player player : players) {
-							debug.devDebug("Restoring player ",player);
+							log.debug("Restoring player ",player);
 							player.setLastModified(null);
 							storage.getPlayerDAO().savePlayer(player);
 						}
 						Set<org.morganm.homespawnplus.entity.HomeInvite> homeInvites = backupStorage.getHomeInviteDAO().findAllHomeInvites();
 						for(org.morganm.homespawnplus.entity.HomeInvite homeInvite : homeInvites) {
-							debug.devDebug("Restoring homeInvite ",homeInvite);
+							log.debug("Restoring homeInvite ",homeInvite);
 							homeInvite.setLastModified(null);
 							storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
 						}
@@ -268,19 +237,18 @@ public class HSP extends BaseCommand {
 						storage.flushAll();
 					}
 					catch(StorageException e) {
-						util.sendMessage(p, "Caught exception: "+e.getMessage());
-						log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+						p.sendMessage("Caught exception: "+e.getMessage());
+						log.warn("Error caught in /"+getCommandName()+": "+e.getMessage(), e);
 					}
 					finally {
 						storage.setDeferredWrites(false);
 					}
 					
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-//					util.sendMessage(p, "Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
-					log.info(logPrefix+" Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+					log.info("Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
 				}
 				else
-					util.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
 //					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
 			}
 		}

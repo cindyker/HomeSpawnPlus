@@ -33,14 +33,10 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
 
 /**
  * @author morganm
@@ -54,31 +50,17 @@ public class HomeListOther extends BaseCommand {
 
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOMELISTOTHER_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOMELISTOTHER_USAGE);
 	}
 
 	@Override
-	public org.morganm.homespawnplus.command.Command setPlugin(HomeSpawnPlus plugin) {
-		homeListCommand = new HomeList();
-		homeListCommand.setPlugin(plugin);
-		
-		return super.setPlugin(plugin);
-	}
+    public boolean execute(CommandSender p, String[] args) {
+        if( !defaultCommandChecks(p) )
+            return false;
+        
+        if( homeListCommand == null )
+            homeListCommand = new HomeList();
 
-	@Override
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
-		return executePrivate(console, command, args);
-	}
-
-	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		return executePrivate(p, command, args);
-	}
-	
-	private boolean executePrivate(CommandSender p, Command command, String[] args) {
 		String player = null;
 		String world = "all";
 		
@@ -87,7 +69,7 @@ public class HomeListOther extends BaseCommand {
 		}
 		
 		// try player name best match
-		final OfflinePlayer otherPlayer = util.getBestMatchPlayer(args[0]);
+		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
 		if( otherPlayer != null )
 			player = otherPlayer.getName();
 		else

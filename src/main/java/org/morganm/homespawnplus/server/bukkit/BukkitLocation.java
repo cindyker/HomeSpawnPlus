@@ -4,7 +4,7 @@
 package org.morganm.homespawnplus.server.bukkit;
 
 import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
+import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.World;
 
@@ -33,7 +33,7 @@ public class BukkitLocation implements Location {
      */
     @Override
     public Block getBlock() {
-        return bukkitLocation.getBlock();
+        return new BukkitBlock(this);
     }
 
     /* (non-Javadoc)

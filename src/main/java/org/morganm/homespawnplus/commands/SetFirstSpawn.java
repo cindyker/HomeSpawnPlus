@@ -33,10 +33,13 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 
 /**
@@ -45,10 +48,12 @@ import org.morganm.homespawnplus.server.api.Player;
  */
 public class SetFirstSpawn extends BaseCommand
 {
+    @Inject private SpawnUtil util;
+
 	@Override
-	public boolean execute(Player p, String[] args) {
-		util.setSpawn(ConfigOptions.VALUE_NEW_PLAYER_SPAWN, p.getLocation(), p.getName());
-		server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
+	public boolean execute(Player p, String[] args) throws StorageException {
+	    util.setFirstSpawn(p.getLocation(), p.getName());
+	    server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
 		
 		return true;
 	}

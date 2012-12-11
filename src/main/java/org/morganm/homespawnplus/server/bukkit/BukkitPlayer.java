@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.World;
 
 /**
  * Bukkit implementation of Player API.
@@ -56,5 +57,36 @@ public class BukkitPlayer implements Player {
     @Override
     public Location getBedSpawnLocation() {
         return new BukkitLocation(bukkitPlayer.getBedSpawnLocation());
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        // TODO: add default color
+        bukkitPlayer.sendMessage(message);
+    }
+
+    @Override
+    public void sendMessage(String[] messages) {
+        // TODO: add default color
+        bukkitPlayer.sendMessage(messages);
+    }
+
+    @Override
+    public World getWorld() {
+        return new BukkitWorld(bukkitPlayer.getWorld());
+    }
+
+    @Override
+    public void setBedSpawnLocation(Location location) {
+        // if BukkitPlayer is in use, it's because we're running on a Bukkit Server so
+        // we can safely assume the incoming object is a BukkitLocation
+        bukkitPlayer.setBedSpawnLocation( ((BukkitLocation) location).getBukkitLocation() );
+    }
+
+    @Override
+    public void teleport(Location location) {
+        // if BukkitPlayer is in use, it's because we're running on a Bukkit Server so
+        // we can safely assume the incoming object is a BukkitLocation
+        bukkitPlayer.teleport( ((BukkitLocation) location).getBukkitLocation() );
     }
 }

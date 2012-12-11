@@ -33,16 +33,21 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
  *
  */
 public class SetDefaultSpawn extends BaseCommand {
+    @Inject private SpawnUtil util;
 
 	@Override
 	public String getUsage() {
@@ -50,51 +55,20 @@ public class SetDefaultSpawn extends BaseCommand {
 	}
 
 	@Override
-	public boolean execute(Player p, String[] args) {
-		
+	public boolean execute(Player p, String[] args) throws StorageException {
 		if( args.length < 1 ) {
 			server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
-		}
-		else {
-			String spawnName = args[0];
-			
-			/*
-			if( args[0].equals("-l") ) {
-				if( args.length < 2 ) {
-					util.sendMessage(p, "You must specify the spawnName to set as global default. Single world spawn is named "+Storage.HSP_WORLD_SPAWN_GROUP);
-				}
-				else {
-					localOnlyFlag = true;
-					spawnName = args[1];
-				}
-			}
-			else {
-				spawnName = args[0];
-			}
-			*/
-			
-			org.morganm.homespawnplus.entity.Spawn spawn = storage.getSpawnDAO().findSpawnByName(spawnName);
-			if( spawn != null ) {
-				Location l = spawn.getLocation();
-				util.setSpawn(l, p.getName());
-				server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
-						"name", spawn.getName(), "location", l.shortLocationString());
-				
-//				util.sendMessage(p, "Default spawn changed to "+spawn.getName()+" at location ["+util.shortLocationString(l)+"]");
-				
-				/*
-				if( localOnlyFlag )
-				else {
-					// TODO: first blank out all globalSpawn flags.
-					spawn.setGlobalDefaultSpawn(true);
-				}
-				
-				plugin.getStorage().writeSpawn(spawn);
-				*/
-			}
+			return true;
 		}
 		
+		org.morganm.homespawnplus.entity.Spawn spawn = storage.getSpawnDAO().findSpawnByName(args[0]);
+		if( spawn != null ) {
+		    Location l = spawn.getLocation();
+		    util.setDefaultWorldSpawn(l, p.getName());
+		    server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
+		            "name", spawn.getName(), "location", l.shortLocationString());
+		}
+
 		return true;
 	}
-
 }

@@ -37,15 +37,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.ServerConfig;
+import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.Storage;
 
 /**
@@ -53,29 +53,21 @@ import org.morganm.homespawnplus.storage.Storage;
  *
  */
 public class SpawnList extends BaseCommand {
+    @Inject private ServerConfig serverConfig;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"spawnl", "listspawns"}; }
 
 	@Override
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
-		return executePrivate(console, command, args);
-	}
-
-	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SPAWNLIST_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SPAWNLIST_USAGE);
 	}
 
-	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		return executePrivate(p, command, args);
-	}
-	
-	private boolean executePrivate(CommandSender p, Command command, String[] originalArgs) {
+    @Override
+    public boolean execute(CommandSender p, String[] originalArgs) {
+        if( !defaultCommandChecks(p) )
+            return false;
+
 		boolean showMapSpawn = false;
 		List<String> args = new ArrayList<String>(originalArgs.length);
 		
@@ -93,36 +85,34 @@ public class SpawnList extends BaseCommand {
 				world = args.get(0);
 		}
 		
-		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
+		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = storage.getSpawnDAO().findAllSpawns();
 		
 		boolean displayedSpawn = false;
 		if( spawns != null && spawns.size() > 0 ) {
 			if( world.equals("all") || world.equals("*") ) {
 				world = "all";
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_ALL_WORLDS);
-//				util.sendMessage(p, "Spawn list for all worlds: ");
+				server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_ALL_WORLDS);
 			}
 			else
-				util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_FOR_WORLD,
+			    server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_FOR_WORLD,
 						"world", world);
-//				util.sendMessage(p, "Spawn list on world \""+world+"\": ");
 			
 			if( showMapSpawn ) {
 				List<World> worlds = null;
 				if( world.equals("all") ) {
-					worlds = plugin.getServer().getWorlds();
+					worlds = server.getWorlds();
 				}
 				else {
 					worlds = new ArrayList<World>();
-					World w = plugin.getServer().getWorld(world);
+					World w = server.getWorld(world);
 					if( w != null )
 						worlds.add(w);
 				}
 				
 				for(World w : worlds) {
 					Location l = w.getSpawnLocation();
-					p.sendMessage(util.getDefaultColor() + "id: " + ChatColor.RED + "none " + util.getDefaultColor()
-							+ util.shortLocationString(l)
+					p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + "none " + serverConfig.getDefaultColor()
+							+ l.shortLocationString()
 							+ ChatColor.GREEN + " (map spawn)"
 							);
 				}
@@ -139,20 +129,19 @@ public class SpawnList extends BaseCommand {
 					group = null;
 				String name = spawn.getName();
 				
-				p.sendMessage(util.getDefaultColor() + "id: " + ChatColor.RED + spawn.getId() + " " + util.getDefaultColor()
-						+ (name != null ? "["+util.getLocalizedMessage(HSPMessages.GENERIC_NAME)+": " + ChatColor.RED + name + util.getDefaultColor() + "] " : "")
-						+ (group != null ? "["+util.getLocalizedMessage(HSPMessages.GENERIC_GROUP)+": " + ChatColor.RED + group + util.getDefaultColor() + "] " : "")
-						+ util.shortLocationString(spawn)
+				p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + spawn.getId() + " " + serverConfig.getDefaultColor()
+						+ (name != null ? "["+server.getLocalizedMessage(HSPMessages.GENERIC_NAME)+": " + ChatColor.RED + name + serverConfig.getDefaultColor() + "] " : "")
+						+ (group != null ? "["+server.getLocalizedMessage(HSPMessages.GENERIC_GROUP)+": " + ChatColor.RED + group + serverConfig.getDefaultColor() + "] " : "")
+						+ spawn.getLocation().shortLocationString()
 						+ (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup())
-								? ChatColor.GREEN + " ("+util.getLocalizedMessage(HSPMessages.GENERIC_WORLD_DEFAULT)+")"
+								? ChatColor.GREEN + " ("+server.getLocalizedMessage(HSPMessages.GENERIC_WORLD_DEFAULT)+")"
 								: ""));
 			}
 		}
 		
 		if( !displayedSpawn )
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_NO_SPAWNS_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_NO_SPAWNS_FOUND,
 					"world", world);
-//			util.sendMessage(p, "No spawns found for world \""+world+"\"");
 
 		return true;
 	}

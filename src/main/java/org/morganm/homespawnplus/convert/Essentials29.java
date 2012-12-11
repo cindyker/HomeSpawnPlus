@@ -37,18 +37,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 
@@ -58,63 +52,54 @@ import org.morganm.homespawnplus.storage.dao.HomeDAO;
  * @author morganm
  *
  */
-//@SuppressWarnings("deprecation")
-public class Essentials29 implements Runnable {
-	private static final Logger log = HomeSpawnPlus.log;
+public class Essentials29 extends BaseConverter
+{
+    final private Map<String, String> offlinePlayers = new HashMap<String,String>();
+
+    @Override
+    public String getConverterName() {
+        return "Essentials 2.9";
+    }
 	
-	private final String logPrefix;
-	private HomeSpawnPlus plugin;
-	private CommandSender initiatingPlayer;
-	final private Map<String, String> offlinePlayers = new HashMap<String,String>();
-	
-	public Essentials29(HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
-		this.plugin = plugin;
-		this.initiatingPlayer = initiatingPlayer;
-		
-		logPrefix = HomeSpawnPlus.logPrefix;
-	}
-	
-	private int convertHomes() {
+    @Override
+	public int convert() throws Exception {
 		File folder = plugin.getDataFolder();
 		String parent = folder.getParent();
 		File essentialsUserData = new File(parent + "/Essentials/userdata");
 		
 		if( !essentialsUserData.isDirectory() ) {
-			log.warning(logPrefix + " No essentials user directory found, skipping Home import");
+			log.warn("No essentials user directory found, skipping Home import");
 			return 0;
 		}
 		
 		loadOfflinePlayers();
 		
-		HomeDAO dao = plugin.getStorage().getHomeDAO();
+		HomeDAO dao = storage.getHomeDAO();
 		
 		int convertedCount = 0;
 		File[] files = essentialsUserData.listFiles();
 		for(File file : files) {
-			YamlConfiguration userData = YamlConfiguration.loadConfiguration(file);
-			
-			ConfigurationSection section = userData.getConfigurationSection("homes");
-			Set<String> homes = null;
-			if( section != null )
-				homes = section.getKeys(false);
-			
+		    YamlFile userData = factory.newYamlFile();
+		    userData.load(file);
+		    
+			Set<String> homes = userData.getKeys("homes");
 			if( homes != null && homes.size() > 0 ) {
 				for(String home : homes) {
 					String worldName = userData.getString("homes."+home+".world");
 					// if there's no world, this user doesn't have a home set.  Skip it.
 					if( worldName == null )
 						continue;
-					World world = Bukkit.getWorld(worldName);
+					World world = server.getWorld(worldName);
 					if( world == null ) {
-						log.warning("Essentials 2.9 converter: tried to convert home from world \""+worldName+"\", but no such world exists");
+						log.warn("Essentials 2.9 converter: tried to convert home from world \"{}\", but no such world exists", worldName);
 						continue;
 					}
 					
-					Double x = userData.getDouble("homes."+home+".x", 0);
-					Double y = userData.getDouble("homes."+home+".y", 0);
-					Double z = userData.getDouble("homes."+home+".z", 0);
-					Double yaw = userData.getDouble("homes."+home+".yaw", 0);
-					Double pitch = userData.getDouble("homes."+home+".pitch", 0);
+					Double x = userData.getDouble("homes."+home+".x");
+					Double y = userData.getDouble("homes."+home+".y");
+					Double z = userData.getDouble("homes."+home+".z");
+					Double yaw = userData.getDouble("homes."+home+".yaw");
+					Double pitch = userData.getDouble("homes."+home+".pitch");
 					
 					String lowerCaseName = file.getName();
 					lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
@@ -126,8 +111,8 @@ public class Essentials29 implements Runnable {
 					if( playerName == null )
 						playerName = lowerCaseName;
 					
-					Location l = new Location(world, x.doubleValue(), y.doubleValue(),
-							z.doubleValue(), yaw.floatValue(), pitch.floatValue());
+		            Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
+		                    z.doubleValue(), yaw.floatValue(), pitch.floatValue());
 					
 					Home hspHome = new Home();
 					hspHome.setLocation(l);
@@ -143,7 +128,7 @@ public class Essentials29 implements Runnable {
 						convertedCount++;
 					}
 					catch(StorageException e) {
-						log.log(Level.WARNING, "StorageException attempting to convert Essentials 2.9 home", e);
+						log.warn("StorageException attempting to convert Essentials 2.9 home", e);
 					}
 				}
 			}
@@ -159,15 +144,9 @@ public class Essentials29 implements Runnable {
 	 * 
 	 */
 	private void loadOfflinePlayers() {
-		OfflinePlayer[] players = Bukkit.getOfflinePlayers();
+		OfflinePlayer[] players = server.getOfflinePlayers();
 		for(OfflinePlayer player : players) {
 			offlinePlayers.put(player.getName().toLowerCase(), player.getName());
 		}
-	}
-	
-	public void run() {
-		int homesConverted = convertHomes();
-		if( initiatingPlayer != null )
-			initiatingPlayer.sendMessage("Finished converting "+homesConverted+" homes");
 	}
 }

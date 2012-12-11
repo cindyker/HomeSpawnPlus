@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.server.api;
 
+import java.util.List;
+
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.events.EventDispatcher;
 
@@ -19,6 +21,13 @@ public interface Server {
      * @return the World object or null if no World was found
      */
     public World getWorld(String worldName);
+    
+    /**
+     * Gets a list of all worlds on this server
+     *
+     * @return A list of worlds
+     */
+    public List<World> getWorlds();
 
     public EventDispatcher getEventDispatcher();
     
@@ -49,14 +58,14 @@ public interface Server {
     
     /**
      * Given a localized key value and optional arguments, send a localized
-     * message to a given player.
+     * message to a given player or console.
      *
-     * @param player the player to send the message to
+     * @param sender the player to send the message to
      * @param key the key value, @see {@link org.morganm.homespawnplus.i18n.HSPMessages}
      * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
      * @return
      */
-    public String sendLocalizedMessage(Player player, HSPMessages key, final Object...args);
+    public String sendLocalizedMessage(CommandSender sender, HSPMessages key, final Object...args);
 
     /**
      * Given a player name, return the corresponding Player object (if any).
@@ -74,4 +83,21 @@ public interface Server {
      * @return the found OfflinePlayer object (possibly class Player) or null
      */
     public OfflinePlayer getBestMatchPlayer(String playerName);
+
+    /**
+     * Gets every player that has ever played on this server.
+     *
+     * @return Array containing all players
+     */
+    public OfflinePlayer[] getOfflinePlayers();
+
+    /**
+     * Translates color codes in a string using the '&' character code. For example,
+     * "&F" represents WHITE on Bukkit. All instances of color codes found in the
+     * string will be translated.
+     * 
+     * @param stringToTranslate String to be color translated. 
+     * @return Text containing the ChatColor.COLOR_CODE color code characters.
+     */
+    public String translateColorCodes(String stringToTranslate);
 }

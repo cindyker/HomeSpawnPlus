@@ -38,12 +38,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.morganm.homespawnplus.HomeSpawnUtils;
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 
 /** Converter for original SpawnControl.
@@ -51,21 +51,17 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
  * @author morganm
  *
  */
-public class SpawnControl implements Runnable {
-	private static final Logger log = org.morganm.homespawnplus.HomeSpawnPlus.log;
+public class SpawnControl extends BaseConverter
+{
+    @Inject private HomeUtil util;
+    
+    @Override
+    public String getConverterName() {
+        return "SpawnControl";
+    }
 
-	private final String logPrefix;
-	private org.morganm.homespawnplus.HomeSpawnPlus plugin;
-	private CommandSender initiatingPlayer;
-
-	public SpawnControl(org.morganm.homespawnplus.HomeSpawnPlus plugin, CommandSender initiatingPlayer) {
-		this.plugin = plugin;
-		this.initiatingPlayer = initiatingPlayer;
-		
-		logPrefix = org.morganm.homespawnplus.HomeSpawnPlus.logPrefix;
-	}
-	
-	private int convertHomes() {
+    @Override
+	public int convert() {
         int convertedCount = 0;
         
 		try
@@ -76,7 +72,7 @@ public class SpawnControl implements Runnable {
         	PreparedStatement ps = conn.prepareStatement("SELECT * FROM `players`");
             ResultSet rs = ps.executeQuery();
 
-            HomeSpawnUtils util = plugin.getUtil();
+//            HomeSpawnUtils util = plugin.getUtil();
             
             int consecutiveErrors = 0;
             while (rs.next()) {
@@ -87,9 +83,10 @@ public class SpawnControl implements Runnable {
             	try {
             		String playerName = rs.getString("name");
             		String worldName = rs.getString("world");
-            		World world = plugin.getServer().getWorld(worldName);
+            		World world = server.getWorld(worldName);
             		
-            		Location l = new Location(world, rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("r"), rs.getFloat("p"));
+                    Location l = factory.newLocation(world.getName(), rs.getDouble("x"), rs.getDouble("y"),
+                            rs.getDouble("z"), rs.getFloat("r"), rs.getFloat("p"));
             		
             		util.setHome(playerName, l, "[SpawnControl_Conversion]", true, false);
             		convertedCount++;
@@ -97,33 +94,24 @@ public class SpawnControl implements Runnable {
             		consecutiveErrors = 0;	// success! reset consecutiveErrors counter
             	}
             	catch(Exception e) {
-            		log.warning(logPrefix + " error trying to process SQL row");
+            		log.warn("error trying to process SQL row", e);
             		consecutiveErrors++;
             	}
             }
         	conn.close();
         	
         	if( consecutiveErrors > 10 )
-        		log.warning(logPrefix + " conversion process aborted, too many consecutive errors");
+        		log.warn("conversion process aborted, too many consecutive errors");
         }
         catch(SQLException e)
         {
-        	// ERROR
-        	System.out.println("[getPlayerData] DB ERROR - " + e.getMessage() + " | SQLState: " + e.getSQLState() + " | Error Code: " + e.getErrorCode());
+            log.error("Caught exception", e);
         }
         catch(Exception e)
         {
-        	// Error
-        	System.out.println("Error: " + e.getMessage());
-        	e.printStackTrace();
+            log.error("Caught exception", e);
         }
         
         return convertedCount;
-	}
-	
-	public void run() {
-		int homesConverted = convertHomes();
-		if( initiatingPlayer != null )
-			initiatingPlayer.sendMessage("Finished converting "+homesConverted+" homes");
 	}
 }

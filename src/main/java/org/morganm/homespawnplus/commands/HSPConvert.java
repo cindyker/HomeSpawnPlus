@@ -33,68 +33,53 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.convert.CommandBook;
-import org.morganm.homespawnplus.convert.Essentials23;
+import org.morganm.homespawnplus.convert.Converter;
 import org.morganm.homespawnplus.convert.Essentials29;
 import org.morganm.homespawnplus.convert.SpawnControl;
+import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.Scheduler;
 
+import com.google.inject.Injector;
 
 /**
  * @author morganm
  *
  */
 public class HSPConvert extends BaseCommand {
+    @Inject private Injector injector;
+    @Inject private Scheduler scheduler;
 
-	@Override
-	public boolean execute(ConsoleCommandSender console, org.bukkit.command.Command command, String[] args) {
-		return executePrivate(console, command, args);
-	}
-
-	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
+    public boolean execute(CommandSender sender, String[] args) {
+        if( permissions.isAdmin(sender) )
+            return false;
 		
-		return executePrivate(p, command, args);
-	}
-	
-	private boolean executePrivate(CommandSender sender, Command command, String[] args) {
-		if( !isEnabled() || !plugin.hasPermission(sender, HomeSpawnPlus.BASE_PERMISSION_NODE+".admin") )
-			return false;
-		
-		Runnable converter = null;
+		Converter converter = null;
 		
 		if( args.length < 1 ) {
 			sender.sendMessage("Usage: /"+getCommandName()+" [essentials|spawncontrol|commandbook]");
 		}
 		else if( args[0].equalsIgnoreCase("commandbook") ) {
-			sender.sendMessage("Starting CommandBook conversion");
-			converter = new CommandBook(plugin, sender);
+			converter = injector.getInstance(CommandBook.class);
 		}
 		else if( args[0].equalsIgnoreCase("essentials") ) {
-			sender.sendMessage("Starting Essentials 2.9+ conversion");
-			converter = new Essentials29(plugin, sender);
-		}
-		else if( args[0].equalsIgnoreCase("essentials23") ) {
-			sender.sendMessage("Starting Essentials 2.3 conversion");
-			converter = new Essentials23(plugin, sender);
+            converter = injector.getInstance(Essentials29.class);
 		}
 		else if( args[0].equalsIgnoreCase("spawncontrol") ) {
-			sender.sendMessage("Starting SpawnControl conversion");
-			converter = new SpawnControl(plugin, sender);
+            converter = injector.getInstance(SpawnControl.class);
 		}
 		else {
 			sender.sendMessage("Unknown conversion type: "+args[0]);
 		}
 		
-		if( converter != null )
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, converter);
+		if( converter != null ) {
+		    converter.setInitiatingSender(sender);
+            sender.sendMessage("Starting "+converter.getConverterName()+" conversion");
+			scheduler.scheduleAsyncDelayedTask(plugin, converter, 0L);
+		}
 		
 		return true;
 	}

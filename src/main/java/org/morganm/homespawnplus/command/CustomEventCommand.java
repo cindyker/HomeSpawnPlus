@@ -33,19 +33,23 @@
  */
 package org.morganm.homespawnplus.command;
 
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
+import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /**
  * @author morganm
  *
  */
 public class CustomEventCommand extends BaseCommand {
+    @Inject private Teleport teleport;
+	@Inject private StrategyEngine engine;
 	
 	public String getEvent() {
 		return super.getStringParam("event");
@@ -60,14 +64,14 @@ public class CustomEventCommand extends BaseCommand {
 	}
 
 	@Override
-	public boolean execute(final Player p, final Command command, final String[] args) {
+	public boolean execute(final Player p, final String[] args) {
 		if( !defaultCommandChecks(p) )
 			return true;
 		
 		String event = getEvent();
 		if( event == null ) {
-			util.sendMessage(p, "There was an error, please report it to your administrator");
-			log.warning("CustomChainCommand event is null, cannot execute");
+			p.sendMessage("There was an error, please report it to your administrator");
+			log.warn("CustomChainCommand event is null, cannot execute");
 			return true;
 		}
 		
@@ -76,17 +80,16 @@ public class CustomEventCommand extends BaseCommand {
 		if( args.length > 0 && !getNoArg() )
 			arg = args[0];
 		
-		StrategyEngine engine = plugin.getStrategyEngine();
-		Location l = engine.getStrategyLocation(event, p, arg);
+		final StrategyResult result = engine.getStrategyResult(event, p, arg);
+		final Location l = result.getLocation();
 		if( l == null ) {
-			util.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
+			server.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
 			return true;
 		}
 		
 		final String cooldownName = getCooldownName(getCommandName(), null);
 		
 		if( hasWarmup(p, cooldownName) ) {	// warmup name is same as cooldown
-    		final Location finalL = l;
 			doWarmup(p, new WarmupRunner() {
 				private boolean canceled = false;
 				private String cdName;
@@ -94,10 +97,10 @@ public class CustomEventCommand extends BaseCommand {
 				
 				public void run() {
 					if( !canceled ) {
-						util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
-								"name", getWarmupName(), "place", util.shortLocationString(finalL));
+					    server.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+								"name", getWarmupName(), "place", l.shortLocationString());
 						if( applyCost(p, true, cdName) )
-				    		util.teleport(p, finalL, TeleportCause.COMMAND);
+			                teleport.teleport(p, l, result.getContext().getTeleportOptions());
 					}
 				}
 
@@ -114,7 +117,7 @@ public class CustomEventCommand extends BaseCommand {
 		}
 		else {
 			if( applyCost(p, true, cooldownName) )
-	    		util.teleport(p, l, TeleportCause.COMMAND);
+	            teleport.teleport(p, l, result.getContext().getTeleportOptions());
 		}
 
 		return true;

@@ -34,20 +34,19 @@
 package org.morganm.homespawnplus.commands;
 
 import java.util.Date;
-import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigCore;
+import org.morganm.homespawnplus.config.ConfigHomeInvites;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.storage.StorageException;
 
 /** Cooldown, warmup and teleport logic structured similar to Home command.
@@ -56,24 +55,23 @@ import org.morganm.homespawnplus.storage.StorageException;
  *
  */
 public class HomeInviteTeleport extends BaseCommand {
-	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.homeinvitetp.otherworld";
+    @Inject private Teleport teleport;
+    @Inject private ConfigHomeInvites homeInviteConfig;
+    @Inject private ConfigCore coreConfig;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hit", "hitp", "homeinvitetp"}; }
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_TELEPORT_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_TELEPORT_USAGE);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(final Player p, Command command, String[] args) {
-		if( !isEnabled() || !hasPermission(p) )
-			return true;
-		
+	public boolean execute(final Player p, String[] args) {
 		if( args.length < 1 ) {
 			return false;
 		}
@@ -85,31 +83,28 @@ public class HomeInviteTeleport extends BaseCommand {
 		if( args.length == 1 ) {
 			try {
 				int id = Integer.parseInt(args[0]);
-				homeInvite = plugin.getStorage().getHomeInviteDAO().findHomeInviteById(id);
+				homeInvite = storage.getHomeInviteDAO().findHomeInviteById(id);
 			}
 			catch(NumberFormatException e) {
-				util.sendMessage(p, "Error: Expected id number, got \""+args[0]+"\"");
+				p.sendMessage("Error: Expected id number, got \""+args[0]+"\"");
 				return false;			// send command usage
 			}
 		}
 		else if( args.length == 2 ) {
 			// find the player
-			Player targetPlayer = Bukkit.getPlayer(args[0]);
-			OfflinePlayer targetOfflinePlayer = Bukkit.getOfflinePlayer(args[0]);
+		    OfflinePlayer foundPlayer = server.getBestMatchPlayer(args[0]);
 			String targetPlayerName = null;
-			if( targetPlayer != null )
-				targetPlayerName = targetPlayer.getName();
-			else if( targetOfflinePlayer != null )
-				targetPlayerName = targetOfflinePlayer.getName();
+			if( foundPlayer != null )
+				targetPlayerName = foundPlayer.getName();
 			else
-				util.sendMessage(p, "Could not find player \""+args[0]+"\"");
+				p.sendMessage("Could not find player \""+args[0]+"\"");
 			
 			if( targetPlayerName != null ) {
 				// now find the home with the name given for that player
-				org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(args[1], targetPlayerName);
+				org.morganm.homespawnplus.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(args[1], targetPlayerName);
 				
 				// now look for the HomeInvite for that home with this player as the invitee
-				homeInvite = plugin.getStorage().getHomeInviteDAO().findInviteByHomeAndInvitee(home, p.getName());
+				homeInvite = storage.getHomeInviteDAO().findInviteByHomeAndInvitee(home, p.getName());
 			}
 		}
 		else {
@@ -122,11 +117,11 @@ public class HomeInviteTeleport extends BaseCommand {
 			
 			if( theHome == null
 					|| (theHome.getPlayerName() == null && theHome.getWorld() == null) ) {
-				util.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
+				server.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
 				try {
-					plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(homeInvite);
+					storage.getHomeInviteDAO().deleteHomeInvite(homeInvite);
 				} catch(Exception e) {
-					log.log(Level.INFO, "Error deleting homeInvite", e);
+					log.warn("Error deleting homeInvite", e);
 				}
 				return true;
 			}
@@ -145,8 +140,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			}
 			
 			// check if it's a bedhome and we're not allowed to teleport to bedhomes
-    		final boolean allowBedHomeInvites = plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_ALLOW_BEDHOME, true);
-    		if( !allowBedHomeInvites && homeInvite.getHome().isBedHome() ) {
+    		if( !homeInviteConfig.allowBedHomeInvites() && homeInvite.getHome().isBedHome() ) {
 				deleteHomeInvite(homeInvite);
 				homeInvite = null;
     		}
@@ -155,7 +149,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			if( homeInvite != null ) {
 				// BUG: EBEAN cascading is not working, the @OneToOne entity attached
 				// to homeInvite has the id set, but not the attributes.
-				debug.devDebug("HomeInviteTeleport: home=",homeInvite.getHome());
+				log.debug("HomeInviteTeleport: home={}",homeInvite.getHome());
 				l = homeInvite.getHome().getLocation();
 			}
 		}
@@ -163,20 +157,19 @@ public class HomeInviteTeleport extends BaseCommand {
 		
     	if( l != null ) {
     		// make sure it's on the same world, or if not, that we have cross-world home perms
-    		if( !p.getWorld().getName().equals(l.getWorld().getName()) &&
-    				!plugin.hasPermission(p, OTHER_WORLD_PERMISSION) ) {
-				util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
+    		if( !p.getWorld().getName().equals(l.getWorld().getName()) && permissions.hasHomeInviteOtherWorld(p) ) {
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION);
     			return true;
     		}
     		
 			String cooldownName = getCooldownName(getCommandName(), Integer.toString(homeInvite.getId()));
-			if( plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_USE_HOME_COOLDOWN, true) )
+			if( homeInviteConfig.useHomeCooldown() )
 				cooldownName = getCooldownName("home", Integer.toString(homeInvite.getId()));
 			String warmupName = getCommandName();
-			if( plugin.getConfig().getBoolean(ConfigOptions.HOME_INVITE_USE_HOME_WARMUP, true) )
+			if( homeInviteConfig.useHomeWarmup() )
 				warmupName = "home";
 			
-    		debug.debug("homeInviteTeleport command running cooldown check, cooldownName=",cooldownName);
+    		log.debug("homeInviteTeleport command running cooldown check, cooldownName={}",cooldownName);
     		if( !cooldownCheck(p, cooldownName) )
     			return true;
     		
@@ -191,7 +184,7 @@ public class HomeInviteTeleport extends BaseCommand {
 					
 					public void run() {
 						if( !canceled ) {
-							util.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+							server.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
 									"name", getWarmupName(), "place", placeString);
 							doHomeTeleport(p, finalL, cdName, finalHome);
 						}
@@ -213,7 +206,7 @@ public class HomeInviteTeleport extends BaseCommand {
 			}
     	}
     	else
-			util.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
+			server.sendLocalizedMessage(p, HSPMessages.NO_HOME_INVITE_FOUND);
     	
 		return true;
 	}
@@ -236,12 +229,12 @@ public class HomeInviteTeleport extends BaseCommand {
 		}
 		
 		if( applyCost(p, true, cooldownName) ) {
-    		if( plugin.getConfig().getBoolean(ConfigOptions.TELEPORT_MESSAGES, false) )
-    			util.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_TELEPORTING,
+		    if( coreConfig.isTeleportMessages() )
+    			server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_TELEPORTING,
     					"home", homeName,
     					"player", playerName);
     		
-    		util.teleport(p, l, TeleportCause.COMMAND);
+    		teleport.teleport(p, l, null);
 		}
 	}
 
@@ -249,10 +242,10 @@ public class HomeInviteTeleport extends BaseCommand {
 		// it's expired, so delete it. we ignore any error here since it doesn't
 		// affect the outcome of the rest of the command.
 		try {
-			plugin.getStorage().getHomeInviteDAO().deleteHomeInvite(hi);
+			storage.getHomeInviteDAO().deleteHomeInvite(hi);
 		}
 		catch(StorageException e) {
-			log.log(Level.WARNING, "Caught exception: "+e.getMessage(), e);
+			log.warn("Caught exception: "+e.getMessage(), e);
 		}
 	}
 }

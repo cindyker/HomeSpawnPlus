@@ -5,6 +5,7 @@ package org.morganm.homespawnplus;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.mBukkitLib.PermissionSystem;
 
@@ -30,23 +31,40 @@ public class Permissions {
     /**
      * Prepend the PREFIX and check if a player has a given permission node. 
      * 
-     * @param player the player to check
+     * @param sender the player to check
      * @param perm the permission to check (PREFIX is automatically prepended)
      * 
      * @return true if the player has the permission
      */
-    private boolean permCheck(Player player, String perm) {
-        return permSystem.has(player.getName(), PERM_PREFIX+ perm);
+    private boolean permCheck(CommandSender sender, String perm) {
+        return permSystem.has(sender.getName(), PERM_PREFIX+ perm);
     }
 
-    public boolean hasCommandPermission(Player player, String command) {
-        return permCheck(player,  "command." + command);
+    public boolean hasCommandPermission(CommandSender sender, String command) {
+        return permCheck(sender,  "command." + command);
     }
     
     public boolean hasSetHomeNamed(Player player) {
         return permCheck(player, "command.sethome.named");
     }
     
+    /**
+     * Determine if the player should have HSP admin privileges.
+     * 
+     * @param player
+     * @return
+     */
+    public boolean isAdmin(CommandSender sender) {
+        return permCheck(sender, "admin");
+    }
+    
+    /**
+     * Determine if the player should be exempt from a given warmup.
+     * 
+     * @param player
+     * @param warmup
+     * @return
+     */
     public boolean isWarmupExempt(Player player, String warmup) {
         return permCheck(player, "WarmupExempt."+warmup);
     }
@@ -59,7 +77,7 @@ public class Permissions {
      * @return
      */
     public boolean hasOtherGroupSpawnPermission(Player player) {
-        return hasCommandPermission(player, ".groupspawn.named");
+        return hasCommandPermission(player, "groupspawn.named");
     }
     
     /**
@@ -72,9 +90,9 @@ public class Permissions {
      */
     public boolean hasSpawnNamed(Player player, String name) {
         if( name != null )
-            return hasCommandPermission(player, ".spawn.named."+name);
+            return hasCommandPermission(player, "spawn.named."+name);
         else
-            return hasCommandPermission(player, ".spawn.named");
+            return hasCommandPermission(player, "spawn.named");
     }
     
     /**
@@ -85,6 +103,10 @@ public class Permissions {
      * @return
      */
     public boolean hasPermanentHomeInvite(Player player) {
-        return hasCommandPermission(player, ".homeinvite.permanent");
+        return hasCommandPermission(player, "homeinvite.permanent");
+    }
+    
+    public boolean hasHomeInviteOtherWorld(Player player) {
+        return hasCommandPermission(player, "homeinvitetp.otherworld");
     }
 }

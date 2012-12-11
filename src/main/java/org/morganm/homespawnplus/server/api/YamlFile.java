@@ -27,6 +27,7 @@ public interface YamlFile {
     public Object get(String path);
     public boolean getBoolean(String path);
     public int getInt(String path);
+    public double getDouble(String path);
     public String getString(String path);
     public Set<String> getKeys(String path);
     public List<String> getStringList(String path);

@@ -37,7 +37,6 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigCore;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.server.api.Location;
@@ -47,6 +46,8 @@ import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.SpawnUtil;
+import org.morganm.mBukkitLib.PermissionSystem;
 
 
 /**
@@ -58,6 +59,8 @@ public class GroupSpawn extends BaseCommand
 	@Inject private StrategyEngine engine;
 	@Inject private Teleport teleport;
     @Inject private ConfigCore configCore;
+    @Inject private PermissionSystem permSystem;
+    @Inject private SpawnUtil util;
 	
 	@Override
 	public String[] getCommandAliases() { return new String[] {"gs"}; }
@@ -71,7 +74,7 @@ public class GroupSpawn extends BaseCommand
 	public boolean execute(final Player p, final String[] args) {
 		String cooldownName = "groupspawn";
 		
-		String groupName = plugin.getPlayerGroup(p.getWorld().getName(), p.getName());
+		String groupName = permSystem.getPlayerGroup(p.getWorld().getName(), p.getName());
 		
 		StrategyResult result = null;
 		Location l = null;
@@ -91,7 +94,7 @@ public class GroupSpawn extends BaseCommand
 				}
 			}
 			else {
-				util.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+				server.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
 			}
 		}
 		else {
@@ -104,8 +107,8 @@ public class GroupSpawn extends BaseCommand
 			return true;
     	
 		if( l == null ) {
-		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
-					"group", plugin.getPlayerGroup(p.getWorld().getName(), p.getName())) );
+		    server.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
+					"group", groupName);
 			
 			return true;
 		}

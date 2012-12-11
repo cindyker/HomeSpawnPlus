@@ -157,145 +157,9 @@ public class HomeSpawnUtils {
     	return spawn;
     }
    
-    public void setSpawn(String spawnName, Location l, String updatedBy)
-    {
-    	Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnByName(spawnName);
-    	
-		// if we get an object back, we already have a Spawn set for this spawnName, so we
-		// just update the x/y/z location of it.
-    	if( spawn != null ) {
-    		spawn.setLocation(l);
-    		spawn.setUpdatedBy(updatedBy);
-    	}
-    	// this is a new spawn for this world/group combo, create a new object
-    	else {
-    		spawn = new Spawn(l, updatedBy);
-    		spawn.setName(spawnName);
-    	}
-    	
-    	try {
-    		plugin.getStorage().getSpawnDAO().saveSpawn(spawn);
-    	}
-    	catch(StorageException e) {
-			log.log(Level.WARNING, "Error saving home: "+e.getMessage(), e);
-    	}
-    }
     
-    /** Set the default spawn for a given world.
-     * 
-     * @param l
-     * @param updatedBy
-     */
-    public void setSpawn(Location l, String updatedBy)
-    {
-    	setGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, l, updatedBy);
-    }
     
-    /** Set the spawn for a given world and group.
-     * 
-     * @param group the group this spawn is related to. Can be null, in which case this update sets the default for the given world.
-     * @param l
-     * @param updatedBy
-     */
-    public void setGroupSpawn(String group, Location l, String updatedBy)
-    {
-    	Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorldAndGroup(l.getWorld().getName(), group);
-//    	log.info(logPrefix + " setGroupSpawn(), spawn lookup = "+spawn);
-    	
-		// if we get an object back, we already have a Spawn set for this world/group combo, so we
-		// just update the x/y/z location of it.
-    	if( spawn != null ) {
-    		spawn.setLocation(l);
-    		spawn.setUpdatedBy(updatedBy);
-    	}
-    	// this is a new spawn for this world/group combo, create a new object
-    	else {
-    		spawn = new Spawn(l, updatedBy);
-    		spawn.setGroup(group);
-    	}
-    	
-    	try {
-        	plugin.getStorage().getSpawnDAO().saveSpawn(spawn);
-    	}
-    	catch(StorageException e) {
-			log.log(Level.WARNING, "Caught exception "+e.getMessage(), e);
-    	}
-    }
-
-    public Spawn getSpawn(String worldName)
-    {
-    	return getGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, worldName);
-    }
     
-    public String getDefaultWorld() {
-    	if( defaultSpawnWorld == null )
-    		getDefaultSpawn();		// this will find the default spawn world and set defaultSpawnWorld variable
-    	
-    	return defaultSpawnWorld;
-    }
-    
-    /** Return the global default spawn (ie. there is only one, this is not the multi-world spawn).
-     * 
-     *  This checks, in order:
-     *    * The world defined by the admin in spawn.defaultWorld
-     *    * The world named "world" (if any)
-     *    * The first world it can find as returned by server.getWorlds()
-     *    
-     *  For each case, it checks our database for any spawn record.  If the world is valid, but we
-     *  have no spawn location on record, then we ask Bukkit what the world spawn location is and
-     *  update ours to be the same.
-     * 
-     * @return
-     */
-    public Spawn getDefaultSpawn() {
-    	Spawn spawn;
-    	
-    	// once we find the defaultSpawnWorld, it's cached for efficiency, so if we've already
-    	// cached it, just use that.
-    	// Note that if something bizarre happens (like the default world spawn gets deleted from
-    	// the underlying database), this just safely falls through and looks for the default
-    	// world again.
-    	if( defaultSpawnWorld != null ) {
-    		spawn = getSpawn(defaultSpawnWorld);
-    		if( spawn != null )
-    			return spawn;
-    	}
-    	
-    	// first, try to get the default spawn based upon the config 
-		String configDefaultWorldName = plugin.getHSPConfig().getString(ConfigOptions.DEFAULT_WORLD, "world");
-		World world = server.getWorld(configDefaultWorldName);
-		
-		// if that didn't work, just get the first world that Bukkit has in it's list
-		if( world == null )
-			world = server.getWorlds().get(0);
-
-		// Should be impossible to enter this next if(), so throw an exception if we ever get here.
-		if( world == null )
-			throw new NullPointerException("Couldn't find spawn world!  world is null");
-
-		spawn = getSpawn(world.getName());
-		if( spawn == null ) {
-			// if we didn't find the spawn in our database, then get the spawn location from Bukkit
-			// and update our database with that as the default spawn for that world. 
-			Location l = world.getSpawnLocation();
-			setSpawn(l, logPrefix);
-			
-			spawn = getSpawn(world.getName());	// now get the Spawn object we just inserted
-			
-			// shouldn't ever happen, but we know how that goes ...  If there's a problem getting
-			// the object back we just inserted, then we just create a new object with default
-			// world spawn coordinates and complain loudly in the logs.
-			if( spawn == null ) {
-				log.warning(logPrefix + " ERROR: could not find default Spawn - improvising!");
-				spawn = new Spawn(l, logPrefix);
-				spawn.setGroup(Storage.HSP_WORLD_SPAWN_GROUP);
-			}
-		}
-		
-		defaultSpawnWorld = world.getName();
-		
-		return spawn;
-    }
     
     /** Return the home location of the given player and world.
      * 
@@ -333,23 +197,7 @@ public class HomeSpawnUtils {
 		return plugin.getStorage().getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
     }
     
-    
-    // Get group spawn
-    public Spawn getGroupSpawn(String group, String worldName)
-    {
-    	Spawn spawn = null;
-    	
-    	if( group == null )
-    		spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorld(worldName);
-    	else
-    		spawn = plugin.getStorage().getSpawnDAO().findSpawnByWorldAndGroup(worldName, group);
-    	
-    	if( spawn == null && isVerboseLogging() )
-        	log.warning(logPrefix + " Could not find or load group spawn for '"+group+"' on world "+worldName+"!");
-    	
-    	return spawn;
-    }
-    
+        
     /** Return the cost for a given command by a given player. This takes into account
      * any permissions they have and the world they are on for any specific overrides
      * other than the default options.

@@ -3,10 +3,22 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 
+import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
@@ -29,11 +41,23 @@ public class BukkitServer implements Server {
     private final Plugin plugin;
     private final Teleport teleport;
     
+    /* A cached list of worlds, so we don't have to constantly recreate new world
+     * wrapper objects.
+     */
+    private Map<String, World> worlds;
+    private List<World> worldList;
+    /* A flag to tell us when the underlying Bukkit worlds have possibly changed,
+     * in which case we reload our world cache before using it. 
+     */
+    private boolean clearWorldCache = true;
+    
     @Inject
     public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport) {
         this.dispatcher = new org.morganm.homespawnplus.server.bukkit.EventDispatcher(listener);
         this.plugin = plugin;
         this.teleport = teleport;
+        
+        this.plugin.getServer().getPluginManager().registerEvents(new WorldListener(), this.plugin);
     }
 
     @Override
@@ -41,11 +65,6 @@ public class BukkitServer implements Server {
         return dispatcher;
     }
     
-    @Override
-    public World getWorld(String worldName) {
-        return new BukkitWorld(plugin.getServer().getWorld(worldName));
-    }
-
     @Override
     public void delayedTeleport(Player player, Location location) {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
@@ -72,10 +91,14 @@ public class BukkitServer implements Server {
 
     @Override
     public String getLocalizedMessage(HSPMessages key, Object... args) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO
     }
 
+    @Override
+    public String sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
+        // TODO
+    }
+    
     @Override
     public Player getPlayer(String playerName) {
         return new BukkitPlayer(plugin.getServer().getPlayer(playerName));
@@ -138,6 +161,51 @@ public class BukkitServer implements Server {
         else {
             log.debug("getBestMatchPlayer() playerName={}, returning offline player {}", playerName, offlineMatch);
             return new BukkitOfflinePlayer(offlineMatch);
+        }
+    }
+
+    @Override
+    public String translateColorCodes(String stringToTranslate) {
+        return ChatColor.translateAlternateColorCodes('&', stringToTranslate);
+    }
+
+    private void cacheWorlds() {
+        List<org.bukkit.World> bukkitWorlds = plugin.getServer().getWorlds();
+        
+        // (re-)initialize array of the appropriate size 
+        worlds = new HashMap<String, World>(bukkitWorlds.size());
+        
+        for(org.bukkit.World bukkitWorld : bukkitWorlds) {
+            worlds.put(bukkitWorld.getName(), new BukkitWorld(bukkitWorld));
+        }
+        
+        worldList = Collections.unmodifiableList(new ArrayList<World>(worlds.values()));
+    }
+
+    @Override
+    public List<World> getWorlds() {
+        if( clearWorldCache )
+            cacheWorlds();
+        
+        return worldList;
+    }
+
+    @Override
+    public World getWorld(String worldName) {
+        if( clearWorldCache )
+            cacheWorlds();
+        
+        return worlds.get(worldName);
+    }
+    
+    private class WorldListener implements Listener {
+        @EventHandler
+        public void worldLoadEvent(WorldLoadEvent e) {
+            clearWorldCache = true;
+        }
+        @EventHandler
+        public void worldUnloadEvent(WorldUnloadEvent e) {
+            clearWorldCache = true;
         }
     }
 }

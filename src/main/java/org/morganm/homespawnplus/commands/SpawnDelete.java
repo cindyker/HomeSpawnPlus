@@ -33,12 +33,9 @@
  */
 package org.morganm.homespawnplus.commands;
 
-import java.util.logging.Level;
-
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 
@@ -53,24 +50,21 @@ public class SpawnDelete extends BaseCommand {
 	
 	@Override
 	public String getUsage() {
-		return	util.getLocalizedMessage(HSPMessages.CMD_SPAWNDELETE_USAGE);
+		return server.getLocalizedMessage(HSPMessages.CMD_SPAWNDELETE_USAGE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
-	public boolean execute(Player p, Command command, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
+	public boolean execute(CommandSender p, String[] args) {
+	    if( !defaultCommandChecks(p) )
+	        return false;
+	    
 		org.morganm.homespawnplus.entity.Spawn spawn = null;
 		
 		if( args.length < 1 ) {
 			return false;
 		}
 		
-		SpawnDAO dao = plugin.getStorage().getSpawnDAO();
+		SpawnDAO dao = storage.getSpawnDAO();
 		
 		int id = -1;
 		try {
@@ -84,20 +78,19 @@ public class SpawnDelete extends BaseCommand {
 			spawn = dao.findSpawnByName(args[0]);
 		
 		if( spawn == null ) {
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
 					"name", args[0]);
-//			util.sendMessage(p, "No spawn found for name or id: "+args[0]);
 			return true;
 		}
 		
 		try {
 			dao.deleteSpawn(spawn);
-			util.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
+			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
 					"name", args[0]);
 		}
 		catch(StorageException e) {
-			util.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-			log.log(Level.WARNING, "Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+			server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+			log.warn("Error caught in /"+getCommandName(), e);
 		}
 		return true;
 	}

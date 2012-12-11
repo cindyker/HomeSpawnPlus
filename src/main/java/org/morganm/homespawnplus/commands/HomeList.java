@@ -103,10 +103,10 @@ public class HomeList extends BaseCommand {
 				String name = home.getName();
 				if( name == null )
 					name = "<noname>";
-				sender.sendMessage( server.getLocalizedMessage( name+" [id:"+home.getId()+"]: "+ util.shortLocationString(home)
+				sender.sendMessage(name+" [id:"+home.getId()+"]: "+ home.getLocation().shortLocationString()
 						+ (home.isDefaultHome()
 								? " ("+server.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
-								: "")) );
+								: ""));
 			}
 		}
 		else

@@ -29,8 +29,6 @@
  *     Mark Morgan - initial API and implementation
  ******************************************************************************/
 package org.morganm.homespawnplus.integration.dynmap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,9 +41,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.MarkerAPI;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.config.ConfigDynmap;
 import org.morganm.homespawnplus.config.old.ConfigOptions;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Dynmap module for HSP, code heavily borrowed from Mike Primm's
  * excellent DynmapCommandBookPlugin and simply adapted for HSP.
@@ -54,11 +53,10 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class DynmapModule {
-	
-    private final Logger log;
-    private final String logPrefix;
+    private final Logger log = LoggerFactory.getLogger(DynmapModule.class);
 
-    private final HomeSpawnPlus plugin;
+    private final ConfigDynmap config;
+//    private final OldHSP plugin;
     private Plugin dynmap;
     private DynmapAPI api;
     private MarkerAPI markerapi;
@@ -74,10 +72,8 @@ public class DynmapModule {
     private long updperiod;
     private MarkerUpdate markerUpdateObject = null;
     
-    public DynmapModule(final HomeSpawnPlus plugin) {
-    	this.plugin = plugin;
-    	this.log = plugin.getLogger();
-    	this.logPrefix = plugin.getLogPrefix();
+    public DynmapModule(ConfigDynmap config) {
+    	this.config = config;
     }
 
     /** Previously "onEnable" in CommandBook version. Since this is being coded as an integrated
@@ -86,7 +82,7 @@ public class DynmapModule {
      */
     public void init() {
     	// don't do anything if we're not supposed to
-    	if( !plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_ENABLED, false) )
+    	if( !config.isEnabled() )
     		return;
     	
         info("initializing HSP dynmap integration");
@@ -135,7 +131,7 @@ public class DynmapModule {
         if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS_ENABLED, true)) {
             SpawnLocationManager mgr = new SpawnLocationManager(plugin);
         	ConfigurationSection cfg = plugin.getConfig().getConfigurationSection(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS);
-        	Debug.getInstance().debug("spawn cfg=",cfg);
+        	log.debug("spawn cfg={}",cfg);
 	        /* Now, add marker set for spawns */
 	        spawnLayer = new Layer(this, mgr, "spawns", cfg, "Spawns", "spawn", "%name%", updperiod);
         }
@@ -181,7 +177,7 @@ public class DynmapModule {
     
     private void updateMarkers() {
     	long startTime = System.currentTimeMillis();
-    	Debug.getInstance().debug("DynmapModule.updateMarkers() START");
+    	log.debug("DynmapModule.updateMarkers() START");
     	
         if(homelayer != null)
             homelayer.updateMarkerSet();
@@ -189,14 +185,14 @@ public class DynmapModule {
         	spawnLayer.updateMarkerSet();
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, markerUpdateObject, updperiod);
         
-    	Debug.getInstance().debug("DynmapModule.updateMarkers() END (",System.currentTimeMillis()-startTime," total ms)");
+    	log.debug("DynmapModule.updateMarkers() END ({} total ms)", System.currentTimeMillis()-startTime);
     }
 
     public void info(String msg) {
-        log.log(Level.INFO, logPrefix + " " + msg);
+        log.info(msg);
     }
     public void severe(String msg) {
-        log.log(Level.SEVERE, logPrefix + " " + msg);
+        log.error(msg);
     }
     
     public Server getServer() {

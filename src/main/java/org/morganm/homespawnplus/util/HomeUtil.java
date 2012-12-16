@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.Home;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
+@Singleton
 public class HomeUtil {
     private final Logger log = LoggerFactory.getLogger(HomeUtil.class);
     

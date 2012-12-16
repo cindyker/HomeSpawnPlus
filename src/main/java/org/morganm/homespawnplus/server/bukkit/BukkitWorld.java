@@ -3,6 +3,7 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
+import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.World;
 
 /**
@@ -29,5 +30,10 @@ public class BukkitWorld implements World {
     @Override
     public boolean setSpawnLocation(int x, int y, int z) {
         return bukkitWorld.setSpawnLocation(x,  y,  z);
+    }
+
+    @Override
+    public Location getSpawnLocation() {
+        return new BukkitLocation(bukkitWorld.getSpawnLocation());
     }
 }

@@ -33,19 +33,24 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
  *
  */
 public class SpawnDefaultWorld extends BaseStrategy {
+    protected SpawnUtil spawnUtil;
+    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResult(plugin.getUtil().getDefaultSpawn().getLocation());
+		return new StrategyResult(spawnUtil.getDefaultSpawn().getLocation());
 	}
 
 	@Override

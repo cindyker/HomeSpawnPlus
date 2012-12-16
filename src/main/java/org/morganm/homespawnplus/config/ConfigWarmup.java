@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.YamlFile;
 
@@ -19,6 +20,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigWarmup implements ConfigInterface {
     private final YamlFile yaml;
     private final File file;

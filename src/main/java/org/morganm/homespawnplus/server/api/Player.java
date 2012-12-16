@@ -67,4 +67,11 @@ public interface Player extends CommandSender, OfflinePlayer {
      * @param location
      */
     public void teleport(Location location);
+
+    /**
+     * Returns if the player is in sneak mode
+     *
+     * @return true if player is in sneak mode
+     */
+    public boolean isSneaking();
 }

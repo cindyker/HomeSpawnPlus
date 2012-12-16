@@ -34,8 +34,9 @@
 package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.event.Listener;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.OldHSP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.MultiverseCore.event.MVTeleportEvent;
@@ -49,10 +50,12 @@ import com.onarandombox.MultiversePortals.event.MVPortalEvent;
  *
  */
 public class MultiverseListener implements Listener {
-	final HomeSpawnPlus plugin;
+    private static final Logger log = LoggerFactory.getLogger(MultiverseListener.class);
+    
+	final OldHSP plugin;
 	final MultiverseSafeTeleporter teleporter;
 	
-	public MultiverseListener(final HomeSpawnPlus plugin, final MultiverseSafeTeleporter teleporter) {
+	public MultiverseListener(final OldHSP plugin, final MultiverseSafeTeleporter teleporter) {
 		this.plugin = plugin;
 		this.teleporter = teleporter;
 	}
@@ -61,7 +64,7 @@ public class MultiverseListener implements Listener {
 		if(event.isCancelled())
 			return;
 		
-		Debug.getInstance().debug("onMultiverseTeleport(): setting entity to ",event.getTeleportee());
+		log.debug("onMultiverseTeleport(): setting entity to {}",event.getTeleportee());
 		plugin.getMultiverseIntegration().setCurrentTeleporter(event.getTeleportee().getName());
 	}
 	
@@ -69,7 +72,7 @@ public class MultiverseListener implements Listener {
 		if(event.isCancelled())
 			return;
 		
-		Debug.getInstance().debug("onMultiversePortalEvent(): setting entity to ",event.getTeleportee());
+		log.debug("onMultiversePortalEvent(): setting entity to {}",event.getTeleportee());
 		MVPortal portal = event.getSendingPortal();
 		if( portal != null )
 			plugin.getMultiverseIntegration().setSourcePortalName(portal.getName());

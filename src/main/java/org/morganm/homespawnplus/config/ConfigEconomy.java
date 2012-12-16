@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.YamlFile;
 
@@ -17,6 +18,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigEconomy implements ConfigInterface {
     private final YamlFile yaml;
     private final File file;
@@ -55,14 +57,20 @@ public class ConfigEconomy implements ConfigInterface {
      * 
      * @return
      */
-    public List<String> getWorldsWithSpecificCosts();
+    public List<String> getWorldsWithSpecificCosts() {
+        // TODO: something
+        return null;
+    }
     
     /**
      * Return world-specific costs for a given command.
      * 
      * @return
      */
-    public int getWorldSpecificCost(String world, String command);
+    public int getWorldSpecificCost(String world, String command) {
+        // TODO: something
+        return 0;
+    }
 
     /**
      * Return a list of permissions that have permission-specific costs. The list
@@ -70,7 +78,10 @@ public class ConfigEconomy implements ConfigInterface {
      * 
      * @return
      */
-    public List<String> getPermissionsWithSpecificCosts();
+    public List<String> getPermissionsWithSpecificCosts() {
+        // TODO: something
+        return null;
+    }
     
     /**
      * Return permission-specific costs for a given command. In the event that
@@ -80,5 +91,8 @@ public class ConfigEconomy implements ConfigInterface {
      * 
      * @return
      */
-    public int getPermissionSpecificCost(String permission, String command);
+    public int getPermissionSpecificCost(String permission, String command) {
+        // TODO: something
+        return 0;
+    }
 }

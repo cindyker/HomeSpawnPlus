@@ -107,4 +107,9 @@ public class BukkitYamlConfigFile implements YamlFile {
         else
             return emptyList;
     }
+
+    @Override
+    public double getDouble(String path) {
+        return yaml.getDouble(path);
+    }
 }

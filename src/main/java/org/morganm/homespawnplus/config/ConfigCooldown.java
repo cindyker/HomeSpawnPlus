@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.YamlFile;
 
@@ -22,6 +23,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigCooldown implements ConfigInterface {
     private static final String RESET_ON_DEATH = "resetOnDeath";
     

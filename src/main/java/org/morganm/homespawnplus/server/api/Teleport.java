@@ -51,6 +51,16 @@ public interface Teleport {
     public void teleport(Player p, Location l, TeleportOptions options);
 
 
+    /** Given a min and max (that define a square cube "region"), randomly pick
+     * a location in between them, and then find a "safe spawn" point based on
+     * that location (ie. that won't suffocate or be right above lava, etc).
+     * 
+     * @param min
+     * @param max
+     * @return the random safe Location, or null if one couldn't be located
+     */
+    public Location findRandomSafeLocation(Location min, Location max, TeleportOptions options);
+    
     /*
     {
         if( l == null || p == null )

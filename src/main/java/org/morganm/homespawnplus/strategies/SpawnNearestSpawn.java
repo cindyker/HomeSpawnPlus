@@ -35,9 +35,12 @@ package org.morganm.homespawnplus.strategies;
 
 import java.util.Set;
 
-import org.bukkit.Location;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyMode;
@@ -48,12 +51,14 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class SpawnNearestSpawn extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of spawns is relatively small (ie. not in the hundreds or thousands).
-		final Set<Spawn> allSpawns = plugin.getStorage().getSpawnDAO().findAllSpawns();
+		final Set<Spawn> allSpawns = storage.getSpawnDAO().findAllSpawns();
 		final Location playerLoc = context.getEventLocation();
 		
 		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);

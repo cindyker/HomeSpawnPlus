@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Player;
@@ -15,6 +16,7 @@ import org.morganm.mBukkitLib.PermissionSystem;
  * @author morganm
  *
  */
+@Singleton
 public class Permissions {
     /**
      * The base permission prefix - all HSP permissions start with this prefix. 
@@ -108,5 +110,15 @@ public class Permissions {
     
     public boolean hasHomeInviteOtherWorld(Player player) {
         return hasCommandPermission(player, "homeinvitetp.otherworld");
+    }
+    
+    /**
+     * Determine if player has permission to set bed homes.
+     * 
+     * @param player
+     * @return
+     */
+    public boolean hasBedSetHome(Player player) {
+        return permCheck(player, "home.bedsethome");
     }
 }

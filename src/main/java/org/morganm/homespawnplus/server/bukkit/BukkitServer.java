@@ -25,8 +25,9 @@ import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.World;
-import org.morganm.homespawnplus.server.api.events.EventDispatcher;
-import org.morganm.homespawnplus.server.api.events.EventListener;
+import org.morganm.homespawnplus.server.api.event.EventDispatcher;
+import org.morganm.homespawnplus.server.api.event.EventListener;
+import org.morganm.mBukkitLib.i18n.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,10 @@ import org.slf4j.LoggerFactory;
 public class BukkitServer implements Server {
     private final Logger log = LoggerFactory.getLogger(BukkitServer.class);
 
-    private final org.morganm.homespawnplus.server.bukkit.EventDispatcher dispatcher;
+    private final org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher dispatcher;
     private final Plugin plugin;
     private final Teleport teleport;
+    private final Locale locale;
     
     /* A cached list of worlds, so we don't have to constantly recreate new world
      * wrapper objects.
@@ -52,10 +54,11 @@ public class BukkitServer implements Server {
     private boolean clearWorldCache = true;
     
     @Inject
-    public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport) {
-        this.dispatcher = new org.morganm.homespawnplus.server.bukkit.EventDispatcher(listener);
+    public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport, Locale locale) {
+        this.dispatcher = new org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher(listener, this.plugin);
         this.plugin = plugin;
         this.teleport = teleport;
+        this.locale = locale;
         
         this.plugin.getServer().getPluginManager().registerEvents(new WorldListener(), this.plugin);
     }
@@ -91,12 +94,12 @@ public class BukkitServer implements Server {
 
     @Override
     public String getLocalizedMessage(HSPMessages key, Object... args) {
-        // TODO
+        return locale.getMessage(key.toString(), args);
     }
 
     @Override
-    public String sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
-        // TODO
+    public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
+        sender.sendMessage(locale.getMessage(key.toString(), args));
     }
     
     @Override
@@ -207,5 +210,15 @@ public class BukkitServer implements Server {
         public void worldUnloadEvent(WorldUnloadEvent e) {
             clearWorldCache = true;
         }
+    }
+
+    @Override
+    public OfflinePlayer[] getOfflinePlayers() {
+        org.bukkit.OfflinePlayer[] bukkitOffline = plugin.getServer().getOfflinePlayers();
+        OfflinePlayer[] offlinePlayers = new OfflinePlayer[bukkitOffline.length];
+        for(int i=0; i < bukkitOffline.length; i++) {
+            offlinePlayers[i] = new BukkitOfflinePlayer(bukkitOffline[i]);
+        }
+        return offlinePlayers;
     }
 }

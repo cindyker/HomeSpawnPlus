@@ -37,7 +37,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigEconomy;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -192,7 +192,7 @@ public abstract class BaseCommand implements Command {
 		if( economy == null )
 			returnValue = true;
 		
-		if( !returnValue && p.hasPermission(HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+		if( !returnValue && p.hasPermission(OldHSP.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
 			returnValue = true;
 
 		if( !returnValue ) {
@@ -231,7 +231,7 @@ public abstract class BaseCommand implements Command {
 		if( economy == null || configEconomy.isEnabled() == false )
 			returnValue = true;
 		
-		final String perm = HomeSpawnPlus.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName();
+		final String perm = OldHSP.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName();
 		if( !returnValue && p.hasPermission(perm) )
 		    returnValue = true;
 		
@@ -427,7 +427,7 @@ public abstract class BaseCommand implements Command {
 			
 			// otherwise use default permission node
 			if( permissionNode == null )
-				permissionNode = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command." + getCommandName();
+				permissionNode = OldHSP.BASE_PERMISSION_NODE + ".command." + getCommandName();
 		}
 		
 		return permissionNode;

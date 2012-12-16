@@ -35,7 +35,7 @@ package org.morganm.homespawnplus.commands;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -56,8 +56,8 @@ import org.morganm.homespawnplus.util.HomeUtil;
  */
 public class Home extends BaseCommand
 {
-	private static final String OTHER_WORLD_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.otherworld";
-	private static final String NAMED_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.named";
+	private static final String OTHER_WORLD_PERMISSION = OldHSP.BASE_PERMISSION_NODE + ".command.home.otherworld";
+	private static final String NAMED_HOME_PERMISSION = OldHSP.BASE_PERMISSION_NODE + ".command.home.named";
 	
 	private StrategyEngine engine;
 	private ConfigCore configCore;

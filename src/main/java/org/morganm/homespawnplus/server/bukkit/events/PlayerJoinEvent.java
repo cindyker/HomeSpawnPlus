@@ -26,8 +26,8 @@ implements org.morganm.homespawnplus.server.api.events.PlayerJoinEvent
     private org.bukkit.event.player.PlayerJoinEvent event;
 
     public PlayerJoinEvent(org.bukkit.event.player.PlayerJoinEvent event) {
+        super(event);
         this.event = event;
-        this.bukkitPlayerEvent = event;
     }
     
     @Inject

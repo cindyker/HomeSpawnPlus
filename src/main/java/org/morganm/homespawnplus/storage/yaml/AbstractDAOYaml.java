@@ -45,7 +45,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.entity.BasicEntity;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableYamlObject;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Utilities/routines common to YAML DAOs.
  * 
@@ -55,7 +56,8 @@ import org.morganm.homespawnplus.util.Debug;
 public abstract class AbstractDAOYaml<T extends BasicEntity, U extends SerializableYamlObject<T>>
 implements YamlDAOInterface
 {
-	protected final Debug debug;
+    protected static final Logger log = LoggerFactory.getLogger(AbstractDAOYaml.class);
+
 	protected final String configBase;
 	protected YamlConfiguration yaml;
 	protected File file;
@@ -71,19 +73,17 @@ implements YamlDAOInterface
 	
 	protected AbstractDAOYaml(final String configBase) {
 		this.configBase = configBase;
-		debug = Debug.getInstance();
 	}
 
 	public synchronized void load() throws IOException, InvalidConfigurationException {
 		if( yaml == null ) {
-			debug.devDebug("AbstractDAOLYaml::load() instantiating new YamlConfiguration object");
+			log.debug("AbstractDAOLYaml::load() instantiating new YamlConfiguration object");
 			this.yaml = new YamlConfiguration();
 		}
 		if( file.exists() ) {
-			debug.devDebug("loading YAML file ", file);
+			log.debug("loading YAML file {}", file);
 			yaml.load(file);
-			if( debug.isDevDebug() )
-				debug.devDebug("sections: ",yaml.getKeys(false));
+			log.debug("sections: {}",yaml.getKeys(false));
 		}
 	}
 	public void save() throws IOException {
@@ -117,39 +117,39 @@ implements YamlDAOInterface
 	protected abstract U newSerializable(T object);
 
 	protected Set<T> findAllObjects() {
-		debug.devDebug("findAllObjects() invoked for object ",this);
+		log.debug("findAllObjects() invoked for object {}",this);
 		// if the cache is still valid, just return that
 		if( !cacheInvalid ) {
-			debug.devDebug("findAllObjects() cache is valid, returning cache, size=",allObjects.size());
+			log.debug("findAllObjects() cache is valid, returning cache, size={}",allObjects.size());
 			return allObjects;
 		}
 		
 		if( allObjects == null ) {
-			debug.devDebug("findAllObjects() allObjects is null, initializing variable");
+			log.debug("findAllObjects() allObjects is null, initializing variable");
 			allObjects = new LinkedHashSet<T>(100);
 		}
 		if( cacheInvalid ) {
-			debug.devDebug("findAllObjects() cache flagged as invalid, clearing cache");
+			log.debug("findAllObjects() cache flagged as invalid, clearing cache");
 			allObjects.clear();
 		}
 		
-		debug.devDebug("findAllObjects() loading section ",configBase);
+		log.debug("findAllObjects() loading section {}",configBase);
 		ConfigurationSection section = yaml.getConfigurationSection(configBase);
 		if( section != null ) {
 			Set<String> keys = section.getKeys(false);
-			debug.devDebug("findAllObjects() config section ",configBase," found, loading elements. keys=",keys);
+			log.debug("findAllObjects() config section {} found, loading elements. keys={}", configBase, keys);
 			
 			for(String key : keys) {
-				debug.devDebug("findAllObjects() loading key ",key);
+				log.debug("findAllObjects() loading key {}",key);
 				@SuppressWarnings("unchecked")
 				U object = (U) yaml.get(configBase+"."+key);
 				allObjects.add(object.getObject());
 			}
 		}
 		else
-			debug.devDebug("findAllObjects() section ",configBase," not found");
+			log.debug("findAllObjects() section {} not found", configBase);
 		
-		debug.devDebug("findAllObjects() finished loading ",allObjects.size()," elements");
+		log.debug("findAllObjects() finished loading {} elements", allObjects.size());
 			
 		cacheInvalid = false;
 		return allObjects;
@@ -161,7 +161,7 @@ implements YamlDAOInterface
 		object.setLastModified(new Timestamp(System.currentTimeMillis()));
 
 		final String node = configBase+"."+object.getId();
-		debug.devDebug("YAML: saveObject called on ",object,", writing to node ",node);
+		log.debug("YAML: saveObject called on {}, writing to node {}", object, node);
 		yaml.set(node, newSerializable(object));
 		if( !deferredWrite ) {
 			try {

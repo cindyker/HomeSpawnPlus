@@ -6,7 +6,7 @@ package org.morganm.homespawnplus.server.api;
 import java.util.List;
 
 import org.morganm.homespawnplus.i18n.HSPMessages;
-import org.morganm.homespawnplus.server.api.events.EventDispatcher;
+import org.morganm.homespawnplus.server.api.event.EventDispatcher;
 
 
 /**
@@ -65,7 +65,7 @@ public interface Server {
      * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
      * @return
      */
-    public String sendLocalizedMessage(CommandSender sender, HSPMessages key, final Object...args);
+    public void sendLocalizedMessage(CommandSender sender, HSPMessages key, final Object...args);
 
     /**
      * Given a player name, return the corresponding Player object (if any).

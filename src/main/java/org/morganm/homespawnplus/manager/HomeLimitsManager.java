@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import javax.inject.Inject;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.old.Config;
 import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
@@ -221,7 +221,7 @@ public class HomeLimitsManager {
      */
     public boolean isSingleGlobalHomeEnabled(String world, String playerName) {
         if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
-                !plugin.hasPermission(world, playerName, HomeSpawnPlus.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
+                !plugin.hasPermission(world, playerName, OldHSP.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
             return true;
         }
         else

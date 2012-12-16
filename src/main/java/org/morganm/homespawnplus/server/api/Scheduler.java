@@ -28,5 +28,5 @@ public interface Scheduler {
      * @param delay Delay in server ticks before executing task
      * @return Task id number (-1 if scheduling failed)
      */
-    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay);
+    public int scheduleAsyncDelayedTask(Runnable task, long delay);
 }

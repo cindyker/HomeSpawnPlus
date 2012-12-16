@@ -36,12 +36,20 @@ package org.morganm.homespawnplus.storage.ebean;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.PersistenceException;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.entity.PlayerLastLocation;
+import org.morganm.homespawnplus.entity.PlayerSpawn;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.entity.Version;
+import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.slf4j.Logger;
@@ -58,15 +66,17 @@ import com.avaje.ebean.SqlUpdate;
  * @author morganm
  *
  */
+@Singleton
 public class StorageEBeans implements Storage {
-	private static final int CURRENT_VERSION = 170;
     private static final Logger log = LoggerFactory.getLogger(StorageEBeans.class);
+	private static final int CURRENT_VERSION = 170;
 
-	private final HomeSpawnPlus plugin;
-	private final String logPrefix;
 	private MyDatabase persistanceReimplementedDatabase;
 	private boolean usePersistanceReimplemented = false;
 	
+	private final EbeanServer ebeanServer;
+	private final EBeanUtils ebeanUtils;
+	private final Plugin plugin;
 	private HomeDAOEBean homeDAO;
 	private HomeInviteDAOEBean homeInviteDAO;
 	private SpawnDAOEBean spawnDAO;
@@ -75,14 +85,16 @@ public class StorageEBeans implements Storage {
 	private PlayerSpawnDAOEBean playerSpawnDAO;
 	private PlayerLastLocationDAOEBean playerLastLocationDAO;
 
-	public StorageEBeans(HomeSpawnPlus plugin) {
-		this.plugin = plugin;
-		this.logPrefix = HomeSpawnPlus.logPrefix;
+	@Inject
+	public StorageEBeans(EbeanServer ebeanServer, EBeanUtils ebeanUtils, Plugin plugin) {
+	    this.ebeanServer = ebeanServer;
+	    this.ebeanUtils = ebeanUtils;
+	    this.plugin = plugin;
 		this.usePersistanceReimplemented = false;
 	}
-	public StorageEBeans(HomeSpawnPlus plugin, boolean usePersistanceReimplemented) {
-		this(plugin);
-		this.usePersistanceReimplemented = usePersistanceReimplemented;
+	
+	public void setUsePersistanceReimplemented(boolean usePersistanceReimplemented) {
+	    this.usePersistanceReimplemented = usePersistanceReimplemented;
 	}
 	
 	@Override
@@ -101,24 +113,35 @@ public class StorageEBeans implements Storage {
 		if( usePersistanceReimplemented )
 			return persistanceReimplementedDatabase.getDatabase();
 		else
-			return plugin.getDatabase();
+			return ebeanServer;
 	}
 	
-	public boolean usePersistanceReimplemented() {
+	public boolean isUsePersistanceReimplemented() {
 		return usePersistanceReimplemented;
 	}
 
-	private void persistanceReimplementedInitialize() {
-        final EBeanUtils utils = EBeanUtils.getInstance();
+    public static List<Class<?>> getDatabaseClasses() {
+        List<Class<?>> classList = new LinkedList<Class<?>>();
+        classList.add(Home.class);
+        classList.add(Spawn.class);
+        classList.add(org.morganm.homespawnplus.entity.Player.class);
+        classList.add(Version.class);
+        classList.add(HomeInvite.class);
+        classList.add(PlayerSpawn.class);
+        classList.add(PlayerLastLocation.class);
+        return classList;
+    }
 
+	private void persistanceReimplementedInitialize() {
 		persistanceReimplementedDatabase = new MyDatabase(plugin) {
         	protected java.util.List<Class<?>> getDatabaseClasses() {
-        		return plugin.getDatabaseClasses();
+        		return getDatabaseClasses();
             };        	
         };
 
-        persistanceReimplementedDatabase.initializeDatabase(utils.getDriver(), utils.getUrl(), utils.getUsername(),
-        		utils.getPassword(), utils.getIsolation(), utils.getLogging(), utils.getRebuild());
+        persistanceReimplementedDatabase.initializeDatabase(ebeanUtils.getDriver(), ebeanUtils.getUrl(),
+                ebeanUtils.getUsername(), ebeanUtils.getPassword(), ebeanUtils.getIsolation(),
+                ebeanUtils.getLogging(), ebeanUtils.getRebuild());
 	}
 	
 	/* (non-Javadoc)
@@ -129,16 +152,15 @@ public class StorageEBeans implements Storage {
 			persistanceReimplementedInitialize();
 		}
 		else {
-	        EbeanServer db = plugin.getDatabase();
-	        if( db == null )
-	        	throw new NullPointerException("plugin.getDatabase() returned null EbeanServer!");
+	        if( ebeanServer == null )
+	        	throw new NullPointerException("null EbeanServer!");
 	        
 			// Check that our tables exist - if they don't, then install the database.
 	        try {
-	            db.find(Spawn.class).findRowCount();
+	            ebeanServer.find(Spawn.class).findRowCount();
 	        } catch (PersistenceException ex) {
 	            log.info("Installing database for "
-	                    + plugin.getPluginName()
+	                    + plugin.getName()
 	                    + " due to first time usage");
 	            
 	            // for some reason bukkit's EBEAN implementation blows up when trying
@@ -152,7 +174,7 @@ public class StorageEBeans implements Storage {
 		}
         
         homeDAO = new HomeDAOEBean(getDatabase());
-        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), plugin);
+        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this);
         spawnDAO = new SpawnDAOEBean(getDatabase());
         playerDAO = new PlayerDAOEBean(getDatabase());
         versionDAO = new VersionDAOEBean(getDatabase());
@@ -216,7 +238,7 @@ public class StorageEBeans implements Storage {
 	 * @return
 	 */
 	private boolean isSqlLite() {
-		return EBeanUtils.getInstance().isSqlLite();
+		return ebeanUtils.isSqlLite();
 	}
 	
 	private void upgradeDatabase() {
@@ -271,7 +293,7 @@ public class StorageEBeans implements Storage {
 	}
 	
 	private void updateToVersion63(final EbeanServer db) {
-		log.info(logPrefix + " Upgrading from version 0.6.2 database to version 0.6.3");
+		log.info("Upgrading from version 0.6.2 database to version 0.6.3");
 		SqlUpdate update = db.createSqlUpdate("ALTER TABLE hsp_player "
 				+ "ADD(`world` varchar(32) DEFAULT NULL"
 				+ ",`x` double DEFAULT NULL"
@@ -281,11 +303,11 @@ public class StorageEBeans implements Storage {
 				+ ",`yaw` float DEFAULT NULL);"
 		);
 		update.execute();
-		log.info(logPrefix + " Upgrade from version 0.6.2 database to version 0.6.3 complete");
+		log.info("Upgrade from version 0.6.2 database to version 0.6.3 complete");
 	}
 	
 	private void updateToVersion80(final EbeanServer db) {
-		log.info(logPrefix + " Upgrading from version 0.6.3 database to version 0.8");
+		log.info("Upgrading from version 0.6.3 database to version 0.8");
 		SqlUpdate update = db.createSqlUpdate(
 				"CREATE TABLE `hsp_version` ("+
 				"`id` int(11) NOT NULL,"+
@@ -299,19 +321,18 @@ public class StorageEBeans implements Storage {
 
 		update = db.createSqlUpdate("ALTER TABLE hsp_spawn modify group_name varchar(32)");
 		update.execute();
-		log.info(logPrefix + " Upgrade from version 0.6.3 database to version 0.8 complete");
+		log.info("Upgrade from version 0.6.3 database to version 0.8 complete");
 	}
 	
 	private void updateToVersion91(final EbeanServer db) {
-		log.info(logPrefix + " Upgrading from version 0.8 database to version 0.9.1");
+		log.info("Upgrading from version 0.8 database to version 0.9.1");
 		
 		boolean success = false;
 		// we must do some special work for SQLite since it doesn't respond to ALTER TABLE
 		// statements from within the EBeanServer interface.  PITA!
 		if( isSqlLite() ) {
-			EBeanUtils ebu = EBeanUtils.getInstance();
 			try {
-				Connection conn = ebu.getConnection();
+				Connection conn = ebeanUtils.getConnection();
 				Statement stmt = conn.createStatement();
 				stmt.execute("BEGIN TRANSACTION;");
 				stmt.execute("CREATE TEMPORARY TABLE hsphome_backup("
@@ -390,18 +411,17 @@ public class StorageEBeans implements Storage {
 			
 			update = db.createSqlUpdate("update hsp_version set database_version=91");
 			update.execute();
-			log.info(logPrefix + " Upgrade from version 0.8 database to version 0.9.1 complete");
+			log.info("Upgrade from version 0.8 database to version 0.9.1 complete");
 		}
 	}
 	
 	private void updateToVersion150(final EbeanServer db) {
-		log.info(logPrefix + " Upgrading from version 0.9.1 database to version 1.5.0");
+		log.info("Upgrading from version 0.9.1 database to version 1.5.0");
 		
 		boolean success = false;
 		if( isSqlLite() ) {
-			EBeanUtils ebu = EBeanUtils.getInstance();
 			try {
-				Connection conn = ebu.getConnection();
+				Connection conn = ebeanUtils.getConnection();
 				Statement stmt = conn.createStatement();
 				stmt.execute("BEGIN TRANSACTION;");
 				stmt.execute("CREATE TABLE hsp_homeinvite ("
@@ -450,17 +470,16 @@ public class StorageEBeans implements Storage {
 			SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=150");
 			update.execute();
 		}
-		log.info(logPrefix + " Upgrade from version 0.9.1 database to version 1.5.0 complete");
+		log.info("Upgrade from version 0.9.1 database to version 1.5.0 complete");
 	}
 
 	private void updateToVersion170(final EbeanServer db) {
-		log.info(logPrefix + " Upgrading from version 1.5.0 database to version 1.7.0");
+		log.info("Upgrading from version 1.5.0 database to version 1.7.0");
 		
 		boolean success = false;
 		if( isSqlLite() ) {
-			EBeanUtils ebu = EBeanUtils.getInstance();
 			try {
-				Connection conn = ebu.getConnection();
+				Connection conn = ebeanUtils.getConnection();
 				Statement stmt = conn.createStatement();
 				stmt.execute("BEGIN TRANSACTION;");
 				stmt.execute("CREATE TABLE hsp_playerspawn (id integer primary key"
@@ -550,7 +569,7 @@ public class StorageEBeans implements Storage {
 			SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=170");
 			update.execute();
 		}
-		log.info(logPrefix + " Upgrade from version 1.5.0 database to version 1.7.0 complete");
+		log.info("Upgrade from version 1.5.0 database to version 1.7.0 complete");
 	}
 	
 	// Ebeans does nothing with these methods

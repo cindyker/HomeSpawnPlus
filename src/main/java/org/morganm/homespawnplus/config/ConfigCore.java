@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.YamlFile;
 
@@ -16,6 +17,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigCore implements ConfigInterface {
     private final YamlFile yaml;
     private final File file;
@@ -155,5 +157,91 @@ public class ConfigCore implements ConfigInterface {
      */
     public String getDefaultWorld() {
         return yaml.getString("defaultWorld");
+    }
+    
+    /**
+     * Boolean value to control whether or not HSP monitors events to see
+     * if the player is appearing somewhere other than where HSP intended
+     * and prints out warnings to the log if so.
+     * 
+     * @return
+     */
+    public boolean isWarnLocationChange() {
+        return yaml.getBoolean("warnLocationChange");
+    }
+    
+    /**
+     * Boolean value to control whether or not sleeping in a bed sets a
+     * player's HSP home to that location. If this config value is false,
+     * HSP ignores bed events entirely.
+     * 
+     * @return
+     */
+    public boolean isBedSetHome() {
+        return yaml.getBoolean("bedsethome");
+    }
+    
+    /**
+     * Boolean value to control whether or not homes can be set during
+     * the day. If this value is true, HSP follows "vanilla Minecraft"
+     * behavior and bed homes can only be set at night.
+     * 
+     * @return
+     */
+    public boolean isBedHomeMustBeNight() {
+        return yaml.getBoolean("bedHomeMustBeNight");
+    }
+    
+    /**
+     * By default, HSP has "2-click" protection enabled, which requires
+     * a player to click twice to save their home to a bed; also by
+     * default HSP will cancel the first click of the 2-click safety,
+     * which avoids an extra "You can only sleep at night" message when
+     * clicking during daylight.
+     * 
+     * Some admins preferred the original behavior where HSP did not
+     * cancel the first click, so this config parameter can be used
+     * to bring back that behavior.
+     * 
+     * @return
+     */
+    public boolean isBedHomeOriginalBehavior() {
+        return yaml.getBoolean("bedHomeOriginalBehavior");
+    }
+    
+    /**
+     * HSP allows players to set their bedHome during the day, but
+     * vanilla Minecraft will still print the "You can only sleep
+     * at night" message. With this option enabled, HSP will
+     * suppress that message.
+     * 
+     * However, it comes at the cost of canceling the bed click
+     * which means players can never actually sleep in a bed.
+     * 
+     * @return
+     */
+    public boolean isBedNeverDisplayNightMessage() {
+        return yaml.getBoolean("bedHomeNeverDisplayNightMessage");
+    }
+    
+    /**
+     * Boolean value that determines whether or not 2 clicks are
+     * required to set a bed home. If false, only 1 click is
+     * required.
+     * 
+     * @return
+     */
+    public boolean isBedHome2Clicks() {
+        return yaml.getBoolean("bedhome2clicks");
+    }
+    
+    /**
+     * Boolean value to control whether or not HSP records the
+     * location when a player logs out.
+     * 
+     * @return
+     */
+    public boolean isRecordLastLogout() {
+        return yaml.getBoolean("recordLastLogout");
     }
 }

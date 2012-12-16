@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.YamlFile;
 
@@ -15,6 +16,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigHomeInvites implements ConfigInterface {
     private final YamlFile yaml;
     private final File file;

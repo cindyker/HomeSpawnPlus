@@ -37,7 +37,7 @@ import java.io.File;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
@@ -69,7 +69,7 @@ public class StorageYaml implements Storage {
     }
 
 	@SuppressWarnings("unused")
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 	private final Debug debug;
 	
 	// if multiple files are being used, this is the directory they are written to
@@ -94,7 +94,7 @@ public class StorageYaml implements Storage {
 	 * @param file The file to write to or the directory to put files in, depending on
 	 * the value of the first argument.
 	 */
-	public StorageYaml(final HomeSpawnPlus plugin, final boolean singleFile, final File file) {
+	public StorageYaml(final OldHSP plugin, final boolean singleFile, final File file) {
 		this.plugin = plugin;
 		this.debug = Debug.getInstance();
 		if( singleFile )

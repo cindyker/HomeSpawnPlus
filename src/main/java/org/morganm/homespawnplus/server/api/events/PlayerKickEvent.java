@@ -7,6 +7,6 @@ package org.morganm.homespawnplus.server.api.events;
  * @author morganm
  *
  */
-public interface PlayerKickEvent {
+public interface PlayerKickEvent extends PlayerEvent {
 
 }

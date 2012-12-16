@@ -11,5 +11,7 @@ import java.io.File;
  */
 public interface Plugin {
     public File getDataFolder();
-//    public File getJarFile();
+    public File getJarFile();
+    public String getName();
+    public ClassLoader getClassLoader();
 }

@@ -33,7 +33,6 @@
  */
 package org.morganm.homespawnplus.strategy;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
 
 /** Strategy interface for all strategies.
  * 
@@ -61,7 +60,7 @@ public interface Strategy {
 	 * 
 	 * @param plugin
 	 */
-	public void setPlugin(HomeSpawnPlus plugin);
+//	public void setPlugin(OldHSP plugin);
 	
 	/** This method should be called after Strategy instantiation so the strategy
 	 * can do validation on it's inputs. This should be called AFTER setPlugin() so

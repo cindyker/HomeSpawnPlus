@@ -24,6 +24,11 @@ public class BukkitLocation implements Location {
         bukkitLocation = new org.bukkit.Location(w, l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
     }
     
+    public BukkitLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
+        org.bukkit.World w = Bukkit.getWorld(worldName);
+        bukkitLocation = new org.bukkit.Location(w, x, y, z, yaw, pitch);
+    }
+    
     public org.bukkit.Location getBukkitLocation() {
         return bukkitLocation;
     }
@@ -160,7 +165,6 @@ public class BukkitLocation implements Location {
     @Override
     public String shortLocationString() {
         // TODO need to tie into util method
-        return null;
     }
 
 }

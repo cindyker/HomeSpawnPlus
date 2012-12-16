@@ -33,11 +33,15 @@
  */
 package org.morganm.homespawnplus.strategy;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Location;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.util.BedUtils;
+import org.morganm.homespawnplus.util.HomeUtil;
 
 /** Methods that are useful for Home-related strategies.
  * 
@@ -45,6 +49,13 @@ import org.morganm.homespawnplus.entity.Home;
  *
  */
 public abstract class HomeStrategy extends BaseStrategy {
+    protected Storage storage;
+    protected HomeUtil homeUtil;
+    protected BedUtils bedUtil;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject public void setHomeUtil(HomeUtil homeUtil) { this.homeUtil = homeUtil; }
+    @Inject public void setBedUtil(BedUtils bedUtil) { this.bedUtil = bedUtil; }
+    
 	/** Taking mode into account, find the default home on a given world. This may
 	 * return just a bed home, or not a bed at all or even any home, all depending on the
 	 * home mode that is set.
@@ -59,7 +70,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 			if( context.getEventLocation().getWorld() != null )
 				worldName = context.getEventLocation().getWorld().getName();
 		
-		debug.devDebug("getModeHome() worldName=",worldName,", location=",context.getEventLocation());
+		log.debug("getModeHome() worldName={}, location={}", worldName, context.getEventLocation());
 		
 		Home home = null;
 		// cache whether or not we are checking distance for efficiency
@@ -71,7 +82,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 				|| context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY)
 				|| context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) )
 		{
-			home = plugin.getUtil().getDefaultHome(playerName, worldName);
+			home = homeUtil.getDefaultHome(playerName, worldName);
 			
 			// if mode is MODE_HOME_NO_BED and the default home is a bed, don't use it
 			if( home != null && home.isBedHome() && context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) ) {
@@ -114,7 +125,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 		// TODO: 4/17/12: review of code appears that MODE_HOME_ANY implementation is not
 		// functioning here as intended. Should be fixed and validated to be working.
 		if( home == null && context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
-			Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+			Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
 			// just grab the first one we find
 			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();
@@ -144,7 +155,7 @@ public abstract class HomeStrategy extends BaseStrategy {
     private Home getBedHome(String playerName, String worldName) {
     	Home bedHome = null;
     	
-		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+		Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
     	if( homes != null && homes.size() != 0 ) {
 	    	for(Home home : homes) {
 	    		if( home.isBedHome() ) {
@@ -170,9 +181,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 		if( l == null )
 			return false;
 		
-		HashSet<Location> checkedLocs = new HashSet<Location>(50);
-		Location bedLoc = plugin.getUtil().findBed(l.getBlock(), checkedLocs, 0, 5);
-		
+		Location bedLoc = bedUtil.findBed(l.getBlock(), 5);
 		return bedLoc != null;
 	}
 }

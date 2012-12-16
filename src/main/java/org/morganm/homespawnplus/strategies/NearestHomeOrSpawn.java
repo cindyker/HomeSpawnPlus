@@ -33,7 +33,7 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.bukkit.Location;
+import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;

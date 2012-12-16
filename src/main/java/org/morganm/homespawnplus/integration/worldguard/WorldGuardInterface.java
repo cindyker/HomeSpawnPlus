@@ -34,15 +34,14 @@
 package org.morganm.homespawnplus.integration.worldguard;
 
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.OldHSP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class exists to wrap WorldGuard functionality so that our plugin can
  * load/function without WorldGuard, since WorldGuard is not referenced in any
@@ -53,15 +52,13 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class WorldGuardInterface {
-	private static final Logger log = HomeSpawnPlus.log;
+	private static final Logger log = LoggerFactory.getLogger(WorldGuardInterface.class);
 	private static boolean worldGuardError = false;
 	
-	private final String logPrefix;
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 	
-	public WorldGuardInterface(HomeSpawnPlus plugin) {
+	public WorldGuardInterface(OldHSP plugin) {
 		this.plugin = plugin;
-		this.logPrefix = HomeSpawnPlus.logPrefix;
 //		this.SPAWN_PERM = new RegionGroupFlag("spawn-group", RegionGroupFlag.RegionGroup.MEMBERS);
 	}
 	
@@ -98,7 +95,7 @@ public class WorldGuardInterface {
 	 * @return
 	 */
 	public org.bukkit.Location getWorldGuardSpawnLocation(Player player) {
-		Debug.getInstance().debug("getWorldGuardSpawnLocation(): player=",player);
+		log.debug("getWorldGuardSpawnLocation(): player={}",player);
 		org.bukkit.Location loc = null;
 		
 		try {
@@ -110,12 +107,12 @@ public class WorldGuardInterface {
 				com.sk89q.worldguard.bukkit.ConfigurationManager cfg = worldGuard.getGlobalStateManager();
 				com.sk89q.worldguard.bukkit.WorldConfiguration wcfg = cfg.get(player.getWorld());
 	
-				Debug.getInstance().debug("getWorldGuardSpawnLocation(): location=",location,", wcfg=",wcfg);
+				log.debug("getWorldGuardSpawnLocation(): location={}, wcfg={}", location, wcfg);
 		        if (wcfg.useRegions) {
 		        	com.sk89q.worldedit.Vector pt = com.sk89q.worldguard.bukkit.BukkitUtil.toVector(location);
 		        	com.sk89q.worldguard.protection.managers.RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
 		            com.sk89q.worldguard.protection.ApplicableRegionSet set = mgr.getApplicableRegions(pt);
-					Debug.getInstance().debug("getWorldGuardSpawnLocation(): wcfg.useRegion=true, set.size()=",set.size());
+					log.debug("getWorldGuardSpawnLocation(): wcfg.useRegion=true, set.size()={}",set.size());
 
 		            for(Iterator<com.sk89q.worldguard.protection.regions.ProtectedRegion> i = set.iterator(); i.hasNext();) {
 		            	final com.sk89q.worldguard.protection.regions.ProtectedRegion region = i.next();
@@ -126,7 +123,7 @@ public class WorldGuardInterface {
 		            		com.sk89q.worldedit.Vector pos = teleportLocation.getPosition();
 		            		loc = new org.bukkit.Location(world, pos.getX(), pos.getY(), pos.getZ(),
 		            				teleportLocation.getYaw(), teleportLocation.getPitch());
-							Debug.getInstance().debug("getWorldGuardSpawnLocation(): found loc=",loc);
+							log.debug("getWorldGuardSpawnLocation(): found loc={}",loc);
 		            		break;
 		            	}
 		            }
@@ -134,7 +131,7 @@ public class WorldGuardInterface {
 //		            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
 //		            Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC, localPlayer);
 //
-//					Debug.getInstance().debug("getWorldGuardSpawnLocation(): wcfg.useRegion=true, spawn=",spawn);
+//					log.debug("getWorldGuardSpawnLocation(): wcfg.useRegion=true, spawn=",spawn);
 //		            if (spawn != null) {
 //		                loc = BukkitUtil.toLocation(player.getWorld(), spawn);
 //		            }
@@ -172,12 +169,11 @@ public class WorldGuardInterface {
 			// this plugin is not compatible with)
 			if( !worldGuardError ) {
 				worldGuardError = true;
-				log.warning(logPrefix + " Error trying to resolve WorldGuard spawn (this message will only print once): "+e.getMessage());
-				e.printStackTrace();
+				log.warn("Error trying to resolve WorldGuard spawn (this message will only print once): "+e.getMessage(), e);
 			}
 		}
 		
-		Debug.getInstance().debug("getWorldGuardSpawnLocation(): exit, loc=",loc);
+		log.debug("getWorldGuardSpawnLocation(): exit, loc=",loc);
 		return loc;
 	}
 	
@@ -191,7 +187,7 @@ public class WorldGuardInterface {
 			}
 		}
 		catch(Throwable e) {
-			log.log(Level.WARNING, logPrefix + " Error trying find WorldGuard region \""+regionName+"\": "+e.getMessage(), e);
+			log.warn("Error trying find WorldGuard region \""+regionName+"\": "+e.getMessage(), e);
 		}
 		
 		return null;

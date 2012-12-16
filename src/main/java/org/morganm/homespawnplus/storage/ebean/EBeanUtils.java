@@ -39,8 +39,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.server.api.Plugin;
 
 /** Class which acts as an interface to load the "bukkit.yml" EBean settings
  * for the purpose of allowing SQLite schema upgrades, which are impossible otherwise
@@ -49,27 +52,19 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  * @author morganm
  *
  */
+@Singleton
 public class EBeanUtils {
-	private static EBeanUtils instance;
-	
-	private final HomeSpawnPlus plugin;
+	private final Plugin plugin;
 	private final Properties connectionProperties;
 	private final YamlConfiguration configuration;
 
-	private EBeanUtils(HomeSpawnPlus plugin) {
+	@Inject
+	private EBeanUtils(Plugin plugin) {
 		this.plugin = plugin;
 		this.configuration = YamlConfiguration.loadConfiguration(new File("bukkit.yml"));
 		connectionProperties = new Properties();
 		connectionProperties.put("user", configuration.getString("database.username"));
 		connectionProperties.put("password", configuration.getString("database.password"));
-	}
-	
-	public static EBeanUtils getInstance() {
-		if( instance == null ) {
-			instance = new EBeanUtils(HomeSpawnPlus.getInstance());
-		}
-		
-		return instance;
 	}
 	
 	public String getDriver() {
@@ -106,6 +101,6 @@ public class EBeanUtils {
 
 	private String replaceDatabaseString(String input) {
 		input = input.replaceAll("\\{DIR\\}", plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
-		input = input.replaceAll("\\{NAME\\}", plugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
+		input = input.replaceAll("\\{NAME\\}", plugin.getName().replaceAll("[^\\w_-]", ""));
 		return input;
 	}}

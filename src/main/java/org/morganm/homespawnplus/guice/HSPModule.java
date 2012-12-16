@@ -7,14 +7,10 @@ import java.io.IOException;
 
 import javax.inject.Singleton;
 
-import org.morganm.homespawnplus.HSPNew;
-import org.morganm.homespawnplus.Permissions;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.config.ConfigCore;
-import org.morganm.homespawnplus.config.ConfigEconomy;
-import org.morganm.homespawnplus.server.api.events.EventListener;
-import org.morganm.homespawnplus.util.HomeUtil;
-import org.morganm.mBukkitLib.PermissionSystem;
-import org.morganm.mBukkitLib.Teleport;
+import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.homespawnplus.server.api.event.EventListener;
 import org.morganm.mBukkitLib.i18n.Locale;
 import org.morganm.mBukkitLib.i18n.LocaleConfig;
 import org.morganm.mBukkitLib.i18n.LocaleFactory;
@@ -29,11 +25,11 @@ import com.google.inject.Scopes;
  *
  */
 public class HSPModule extends AbstractModule {
-    private HSPNew mainClass;
+    private HomeSpawnPlus mainClass;
     private LocaleConfig localeConfig;
-    private Locale locale;  // TODO
+    private Locale locale;
     
-    public HSPModule(HSPNew mainClass) {
+    public HSPModule(HomeSpawnPlus mainClass) {
         this.mainClass = mainClass;
     }
 
@@ -42,37 +38,42 @@ public class HSPModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bind(Teleport.class)
-            .in(Scopes.SINGLETON);
-        bind(PermissionSystem.class)
-            .in(Scopes.SINGLETON);
-        bind(Permissions.class)
-            .in(Scopes.SINGLETON);
         bind(EventListener.class)
             .to(org.morganm.homespawnplus.listener.EventListener.class)
-            .in(Scopes.SINGLETON);
-        bind(HomeUtil.class)
-            .in(Scopes.SINGLETON);
-        
-        // Configuration objects
-        bind(ConfigCore.class)
-            .in(Scopes.SINGLETON);
-        bind(ConfigEconomy.class)
             .in(Scopes.SINGLETON);
     }
 
     @Provides
     @Singleton
-    protected HSPNew provideHSPNew() {
+    protected HomeSpawnPlus provideHSPNew() {
         return mainClass;
     }
     
     @Provides
     @Singleton
-    protected Locale provideLocale() throws IOException {
-        if( locale == null )
-            locale = LocaleFactory.getLocale(localeConfig);
+    protected LocaleConfig provideLocaleConfig(Plugin plugin, ConfigCore config) {
+        if( localeConfig == null )
+            localeConfig = new LocaleConfig(config.getLocale(),
+                    plugin.getDataFolder(), "homespawnplus", plugin.getJarFile(), null);
         
+        return localeConfig;
+    }
+    
+    /**
+     * Guice documentation recommends that providers should not throw exceptions.
+     * We do in this case because if getLocale() throws an exception, injection
+     * should stop since the plugin cannot run without it.
+     * 
+     * @param localeConfig
+     * @return
+     * @throws IOException
+     */
+    @Provides
+    @Singleton
+    protected Locale provideLocale(LocaleConfig localeConfig) throws IOException {
+        if( locale == null )
+                locale = LocaleFactory.getLocale(localeConfig);
+
         return locale;
     }
  }

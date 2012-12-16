@@ -39,23 +39,26 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.old.ConfigOptions;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
  *
  */
 public class MultiverseIntegration {
-	private final HomeSpawnPlus plugin;
+    private static final Logger log = LoggerFactory.getLogger(MultiverseIntegration.class);
+    
+	private final OldHSP plugin;
 	private MultiverseSafeTeleporter teleporter;
 	private MultiverseListener multiverseListener;
 	private String currentTeleporter;
 	private String sourcePortalName;
 	private String destinationPortalName;
 	
-	public MultiverseIntegration(final HomeSpawnPlus plugin) {
+	public MultiverseIntegration(final OldHSP plugin) {
 		this.plugin = plugin;
 	}
 	
@@ -88,7 +91,7 @@ public class MultiverseIntegration {
 				com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
 			
 				if( multiverse != null ) {
-					Debug.getInstance().debug("Hooking Multiverse");
+					log.debug("Hooking Multiverse");
 					teleporter = new MultiverseSafeTeleporter(plugin, multiverse);
 					teleporter.install();
 					multiverseListener = new MultiverseListener(plugin, teleporter);
@@ -100,7 +103,7 @@ public class MultiverseIntegration {
 	
 	public void onDisable() {
 		if( teleporter != null ) {
-			Debug.getInstance().debug("Unhooking Multiverse");
+			log.debug("Unhooking Multiverse");
 			teleporter.uninstall();
 		}
 		teleporter = null;

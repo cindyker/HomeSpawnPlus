@@ -44,6 +44,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_4_5.CraftServer;
@@ -53,6 +55,7 @@ import org.morganm.homespawnplus.command.Command;
 import org.morganm.homespawnplus.command.CustomEventCommand;
 import org.morganm.homespawnplus.server.api.command.CommandConfig;
 import org.morganm.homespawnplus.server.api.command.CommandRegister;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,11 +77,13 @@ public class BukkitCommandRegister implements CommandRegister {
 	private final Set<String> loadedCommands = new HashSet<String>(25);
 	private final Reflections reflections;
 	private final CommandConfig commandConfig;
+	private final BukkitFactory factory;
 	
 	@Inject
-	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig) {
+	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig, BukkitFactory factory) {
 		this.plugin = plugin;
 		this.commandConfig = commandConfig;
+		this.factory = factory;
 		
         customClassMap.put("customeventcommand", CustomEventCommand.class);
 
@@ -87,11 +92,11 @@ public class BukkitCommandRegister implements CommandRegister {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void register(Command command, Map<String, Object> cmdParams) {
+	private void register(final Command command, Map<String, Object> cmdParams) {
 		String cmdName = command.getCommandName();
 		
 		log.debug("register() command={},cmdParams={}", command, cmdParams);
-		command.setPlugin(plugin);
+//		command.setPlugin(plugin);
 		command.setCommandParameters(cmdParams);
 		
 		if( cmdParams.containsKey("name") )
@@ -110,7 +115,13 @@ public class BukkitCommandRegister implements CommandRegister {
 			
 			// construct a new PluginCommand object
 			PluginCommand pc = constructor.newInstance(cmdName, plugin);
-			pc.setExecutor(command);
+			pc.setExecutor(new CommandExecutor() {
+                public boolean onCommand(CommandSender sender,
+                        org.bukkit.command.Command bukkitCommand, String label, String[] args) {
+                    org.morganm.homespawnplus.server.api.CommandSender apiSender = factory.getCommandSender(sender);
+                    return command.execute(apiSender, args);
+                }
+            });
 			pc.setLabel(cmdName);
 			if( command.getUsage() != null )
 				pc.setUsage(command.getUsage());

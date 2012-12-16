@@ -33,16 +33,25 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.SpawnUtil;
+import org.morganm.mBukkitLib.PermissionSystem;
 
 /**
  * @author morganm
  *
  */
 public class SpawnGroupSpecificWorld extends BaseStrategy {
+    protected SpawnUtil spawnUtil;
+    protected PermissionSystem perm;
+    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
+    @Inject public void setPermissionSystem(PermissionSystem perm) { this.perm = perm; }
+
 	private final String worldName;
 	
 	public SpawnGroupSpecificWorld(final String worldName) {
@@ -52,9 +61,9 @@ public class SpawnGroupSpecificWorld extends BaseStrategy {
 	public StrategyResult evaluate(final StrategyContext context, final String world) {
 		Spawn spawn = null;
 		
-		String group = plugin.getPlayerGroup(world, context.getPlayer().getName());
+		String group = perm.getPlayerGroup(world, context.getPlayer().getName());
 		if( group != null )
-			spawn = plugin.getUtil().getGroupSpawn(group, world);
+			spawn = spawnUtil.getGroupSpawn(group, world);
 
 		return new StrategyResult(spawn);		
 	}

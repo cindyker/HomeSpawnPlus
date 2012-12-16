@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.Storage;
@@ -66,7 +67,11 @@ public class SpawnUtil {
     
     public void setFirstSpawn(Location l, String updatedBy) throws StorageException
     {
-        setGroupSpawn("newPlayerSpawn", l, updatedBy);
+        setNamedSpawn("newPlayerSpawn", l, updatedBy);
+    }
+    public Spawn getFirstSpawn()
+    {
+        return storage.getSpawnDAO().findSpawnByName("newPlayerSpawn");
     }
     
     /** Set the default spawn for a given world.
@@ -214,5 +219,29 @@ public class SpawnUtil {
         
         defaultSpawnWorld = world.getName();
         return spawn;
+    }
+
+    /**
+     * Update the logout location of a player, if enabled.
+     * 
+     * @param p
+     */
+    public void updateQuitLocation(Player p)
+    {
+        if( configCore.isRecordLastLogout() ) {
+            log.debug("updateQuitLocation: updating last logout location for player ",p.getName());
+
+            Location quitLocation = p.getLocation();
+            org.morganm.homespawnplus.entity.Player playerStorage = storage.getPlayerDAO().findPlayerByName(p.getName());
+            if( playerStorage == null )
+                playerStorage = new org.morganm.homespawnplus.entity.Player(p);
+            playerStorage.updateLastLogoutLocation(quitLocation);
+            try {
+                storage.getPlayerDAO().savePlayer(playerStorage);
+            }
+            catch(StorageException e) {
+                log.warn("Caught exception", e);
+            }
+        }
     }
 }

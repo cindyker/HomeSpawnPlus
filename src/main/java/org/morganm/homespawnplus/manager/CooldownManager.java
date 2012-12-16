@@ -40,7 +40,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.ConfigCooldown;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
@@ -70,7 +70,7 @@ public class CooldownManager {
     
     private boolean isExemptFromCooldown(Player p, String cooldown) {
     	final CooldownNames cn = parseCooldownNames(cooldown);
-    	if( p.hasPermission(HomeSpawnPlus.BASE_PERMISSION_NODE+".CooldownExempt."+cn.baseName) )
+    	if( p.hasPermission(OldHSP.BASE_PERMISSION_NODE+".CooldownExempt."+cn.baseName) )
     		return true;
     	else
     		return false;

@@ -3,14 +3,24 @@
  */
 package org.morganm.homespawnplus.util;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Permissions;
+import org.morganm.homespawnplus.config.ConfigCore;
+import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.api.BlockFace;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +40,21 @@ public class BedUtils {
     };
     
     private final Logger log = LoggerFactory.getLogger(BedUtils.class);
+    private final Permissions permissions;
+    private final ConfigCore configCore;
+    private final Server server;
+    private final HomeUtil homeUtil;
+    
+    // map sorted by PlayerName->Location->Time of event
+    private final HashMap<String, ClickedEvent> bedClicks = new HashMap<String, ClickedEvent>();
+    
+    @Inject
+    public BedUtils(Permissions permissions, ConfigCore configCore, Server server, HomeUtil homeUtil) {
+        this.permissions = permissions;
+        this.configCore = configCore;
+        this.server = server;
+        this.homeUtil = homeUtil;
+    }
     
     /** Find a bed starting at a given Block, up to maxDepth blocks away.
      * 
@@ -132,5 +157,100 @@ public class BedUtils {
 
         if( bedLoc != null )
             player.setBedSpawnLocation(bedLoc);
+    }
+
+    /** Called when player right-clicks on a bed. Includes 2-click protection mechanism, if enabled.
+     * 
+     * @return true if the event should be canceled, false if not
+     * @param p
+     */
+    public boolean doBedClick(final Player player, final Block bedBlock) {
+        // someone clicked on a bed, good time to keep the 2-click hash clean
+        cleanupBedClicks();
+
+        // make sure player has permission
+        if( !permissions.hasBedSetHome(player) ) {
+            log.debug("onPlayerInteract(): player {} has no permission", player);
+            return false;
+        }
+
+        final boolean require2Clicks = configCore.isBedHome2Clicks();
+
+        ClickedEvent ce = bedClicks.get(player.getName());
+
+        // if there is an event in the cache, then this is their second click - save their home
+        if( ce != null || !require2Clicks ) {
+            if( ce == null || bedBlock.getLocation().equals(ce.location) ) {
+                boolean setDefaultHome = false;
+
+                // we set the bed to be the default home only if there isn't another non-bed
+                // default home that exists
+                Home existingDefaultHome = homeUtil.getDefaultHome(player.getName(), player.getWorld().getName());
+                if( existingDefaultHome == null || existingDefaultHome.isBedHome() )
+                    setDefaultHome = true;
+
+                // we update the Bukkit bed first as this avoids setHome() having to
+                // guess which bed we clicked on. However, it's possible setHome() will
+                // refuse to set the home for some reason, so we first record the
+                // old location so we can restore it if the setHome() call fails.
+                Location oldBedLoc = player.getBedSpawnLocation();
+                player.setBedSpawnLocation(bedBlock.getLocation()); // update Bukkit bed
+                
+                String errorMsg = homeUtil.setHome(player.getName(), player.getLocation(), player.getName(), setDefaultHome, true); 
+                if( errorMsg == null ) {        // success!
+                    server.sendLocalizedMessage(player, HSPMessages.HOME_BED_SET);
+                }
+                else {
+                    player.sendMessage(errorMsg);
+                    player.setBedSpawnLocation(oldBedLoc);  // restore old bed if setHome() failed
+                }
+
+                bedClicks.remove(player.getName());
+            }
+        }
+        // otherwise this is first click, tell them to click again to save their home
+        else {
+            bedClicks.put(player.getName(), new ClickedEvent(bedBlock.getLocation(), System.currentTimeMillis()));
+            server.sendLocalizedMessage(player, HSPMessages.HOME_BED_ONE_MORE_CLICK);
+            
+            // cancel the first-click event if 2 clicks is required
+            return require2Clicks;
+        }
+        
+        return false;
+    }
+    
+    private long lastCleanup = 0L;
+    private void cleanupBedClicks() {
+        // skip cleanup if nothing to do
+        if( bedClicks.size() == 0 )
+            return;
+        
+        // don't run a cleanup if we just ran one in the last 5 seconds
+        if( System.currentTimeMillis() < lastCleanup+5000 )
+            return;
+        
+        lastCleanup = System.currentTimeMillis();
+        
+        long currentTime = System.currentTimeMillis();
+        
+        Set<Entry<String, ClickedEvent>> set = bedClicks.entrySet();
+        for(Iterator<Entry<String, ClickedEvent>> i = set.iterator(); i.hasNext();) {
+            Entry<String, ClickedEvent> e = i.next();
+            // if the click is older than 5 seconds, remove it
+            if( currentTime > e.getValue().timestamp+5000 ) {
+                i.remove();
+            }
+        }
+    }
+
+    private class ClickedEvent {
+        public Location location;
+        public long timestamp;
+        
+        public ClickedEvent(Location location, long timestamp) {
+            this.location = location;
+            this.timestamp = timestamp;
+        }
     }
 }

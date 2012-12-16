@@ -39,7 +39,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.bukkit.command.ConsoleCommandSender;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigManager;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -158,7 +158,7 @@ public class HSP extends BaseCommand {
 		}
 		*/
 		else if( args[0].startsWith("backup") ) {
-			File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
+			File backupFile = new File(OldHSP.YAML_BACKUP_FILE);
 			if( backupFile.exists() )
 				backupFile.delete();
 			
@@ -186,8 +186,8 @@ public class HSP extends BaseCommand {
 
 				backupStorage.flushAll();
 	
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-				log.info("Data backed up to file {}", HomeSpawnPlus.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", OldHSP.YAML_BACKUP_FILE);
+				log.info("Data backed up to file {}", OldHSP.YAML_BACKUP_FILE);
 			}
 			catch(StorageException e) {
 				log.warn("Error saving backup file", e);
@@ -197,10 +197,10 @@ public class HSP extends BaseCommand {
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || (!"OVERWRITE".equals(args[1])
 					&& !("me".equals(args[1]) && p instanceof ConsoleCommandSender)) ) {	// testing shortcut
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", OldHSP.YAML_BACKUP_FILE);
 			}
 			else {
-				File backupFile = new File(HomeSpawnPlus.YAML_BACKUP_FILE);
+				File backupFile = new File(OldHSP.YAML_BACKUP_FILE);
 				if( backupFile.exists() ) {
 					try {
 						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
@@ -244,11 +244,11 @@ public class HSP extends BaseCommand {
 						storage.setDeferredWrites(false);
 					}
 					
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
-					log.info("Existing data wiped and data restored from file "+HomeSpawnPlus.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", OldHSP.YAML_BACKUP_FILE);
+					log.info("Existing data wiped and data restored from file "+OldHSP.YAML_BACKUP_FILE);
 				}
 				else
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", HomeSpawnPlus.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", OldHSP.YAML_BACKUP_FILE);
 //					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
 			}
 		}

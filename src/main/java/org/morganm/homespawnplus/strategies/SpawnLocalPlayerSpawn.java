@@ -33,8 +33,11 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.PlayerSpawn;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
@@ -45,15 +48,18 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class SpawnLocalPlayerSpawn extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		StrategyResult result = null;
 		
 		Player p = context.getPlayer();
 		String worldName = context.getEventLocation().getWorld().getName();
-		debug.debug("SpawnLocalPlayerSpawn.evaluate() worldName=",worldName);
+		log.debug("SpawnLocalPlayerSpawn.evaluate() worldName={}",worldName);
 		
-		PlayerSpawnDAO dao = plugin.getStorage().getPlayerSpawnDAO();
+		PlayerSpawnDAO dao = storage.getPlayerSpawnDAO();
 		PlayerSpawn ps = dao.findByWorldAndPlayerName(worldName, p.getName());
 		
 		if( ps != null ) {

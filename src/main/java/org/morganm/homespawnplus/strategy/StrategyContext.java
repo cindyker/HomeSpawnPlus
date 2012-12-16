@@ -38,6 +38,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
@@ -49,7 +51,8 @@ import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
 import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
 import org.morganm.homespawnplus.strategies.ModeSourceWorld;
 import org.morganm.homespawnplus.strategies.ModeYBounds;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The context given to a strategy that is being evaluated.
  * 
@@ -57,8 +60,12 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StrategyContext {
+    private static final Logger log = LoggerFactory.getLogger(StrategyContext.class);
+    
 	private final static ModeStrategy defaultMode = new ModeDefault();
 	private final Factory factory;
+    private final MultiverseIntegration multiVerse;
+    private final WorldGuardIntegration worldGuard;
 	
 	private String eventType;
 	private Player player;
@@ -76,8 +83,10 @@ public class StrategyContext {
 	private List<ModeStrategy> currentModes;
 	
 	@Inject
-	public StrategyContext(Factory factory) {
+	public StrategyContext(Factory factory, MultiverseIntegration multiVerse, WorldGuardIntegration worldGuard) {
 	    this.factory = factory;
+	    this.multiVerse = multiVerse;
+	    this.worldGuard = worldGuard;
 	}
 
 	public String getEventType() {
@@ -199,7 +208,7 @@ public class StrategyContext {
 	 */
 	public boolean isModeEnabled(final StrategyMode mode) {
 		boolean ret = getMode(mode) != null;
-		Debug.getInstance().devDebug("isModeEnabled() mode=",mode,", ret=",ret);
+		log.debug("isModeEnabled() mode=",mode,", ret=",ret);
 		return ret;
 	}
 	
@@ -210,13 +219,13 @@ public class StrategyContext {
 	 */
 	public ModeStrategy getMode(final StrategyMode mode) {
 		ModeStrategy ret = null;
-		Debug.getInstance().devDebug("getMode() check for mode ",mode);
+		log.debug("getMode() check for mode ",mode);
 		
 		if( currentModes == null || currentModes.size() == 0 ) {
 			if( isDefaultMode(mode) )
 				ret = defaultMode;
 			
-			Debug.getInstance().devDebug("getMode() No modes defined, returning ",ret);
+			log.debug("getMode() No modes defined, returning ",ret);
 			return ret;
 		}
 		
@@ -228,7 +237,7 @@ public class StrategyContext {
 			}
 		}
 		
-		Debug.getInstance().devDebug("getMode() returning ",ret);
+		log.debug("getMode() returning ",ret);
 		return ret;
 	}
 	
@@ -238,14 +247,14 @@ public class StrategyContext {
 	 * @return
 	 */
 	public boolean isStrategyProcessingAllowed() {
-		if( plugin.getMultiverseIntegration().isEnabled() ) {
+		if( multiVerse.isEnabled() ) {
 			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_MULTIVERSE_SOURCE_PORTAL);
 			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseSourcePortal ) {
 				ModeMultiverseSourcePortal mode = (ModeMultiverseSourcePortal) modeStrategy;
 				String strategyPortalName = mode.getPortalName();
-				String sourcePortalName = plugin.getMultiverseIntegration().getSourcePortalName();
+				String sourcePortalName = multiVerse.getSourcePortalName();
 				if( !strategyPortalName.equals(sourcePortalName) ) {
-					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for source portal check. ",
+					log.debug("isStrategyProcessingAllowed() returning false for source portal check. ",
 							"strategyPortalName=",strategyPortalName,", sourcePortalName=",sourcePortalName);
 					return false;
 				}
@@ -255,23 +264,23 @@ public class StrategyContext {
 			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseDestinationPortal ) {
 				ModeMultiverseDestinationPortal mode = (ModeMultiverseDestinationPortal) modeStrategy;
 				String strategyPortalName = mode.getPortalName();
-				String destinationPortalName = plugin.getMultiverseIntegration().getDestinationPortalName();
+				String destinationPortalName = multiVerse.getDestinationPortalName();
 				if( !strategyPortalName.equals(destinationPortalName) ) {
-					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
+					log.debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
 							"strategyPortalName=",strategyPortalName,", destinationPortalName=",destinationPortalName);
 					return false;
 				}
 			}
 		}
 		
-		if( plugin.getWorldGuardIntegration().isEnabled() ) {
+		if( worldGuard.isEnabled() ) {
 			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_IN_REGION);
 			if( modeStrategy != null && modeStrategy instanceof ModeInRegion ) {
 				ModeInRegion mode = (ModeInRegion) modeStrategy;
 				String regionName = mode.getRegionName();
 				
-				if( !plugin.getWorldGuardIntegration().getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
-					Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
+				if( !worldGuard.getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
+					log.debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
 							"region=",regionName);
 					return false;
 				}
@@ -284,13 +293,13 @@ public class StrategyContext {
 			String sourceWorld = mode.getWorldName();
 			
 			if( getFromLocation() == null || !getFromLocation().getWorld().getName().equals(sourceWorld) ) { 
-				Debug.getInstance().debug("isStrategyProcessingAllowed() returning false for sourceWorld. ",
+				log.debug("isStrategyProcessingAllowed() returning false for sourceWorld. ",
 						"sourceWorld=",sourceWorld,", fromLocation=",fromLocation);
 				return false;
 			}
 		}
 
-		Debug.getInstance().debug("isStrategyProcessingAllowed() returning true");
+		log.debug("isStrategyProcessingAllowed() returning true");
 		return true;
 	}
 	

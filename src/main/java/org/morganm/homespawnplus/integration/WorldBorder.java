@@ -37,7 +37,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 
 /**
  * @author morganm
@@ -45,10 +45,10 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  */
 public class WorldBorder {
 	@SuppressWarnings("unused")
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 	private com.wimbli.WorldBorder.WorldBorder worldBorder;
 	
-	public WorldBorder(HomeSpawnPlus plugin) {
+	public WorldBorder(OldHSP plugin) {
 		this.plugin = plugin;
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
 		if( p != null )

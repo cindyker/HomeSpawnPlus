@@ -22,12 +22,14 @@ public class BukkitScheduler implements Scheduler {
         this.bukkitServer = bukkitServer;
     }
 
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Scheduler#scheduleSyncDelayedTask(org.morganm.homespawnplus.server.api.Plugin, java.lang.Runnable, long)
-     */
     @Override
     public int scheduleSyncDelayedTask(Runnable task, long delay) {
         return bukkitServer.getScheduler().scheduleSyncDelayedTask(plugin, task, delay);
+    }
+
+    @Override
+    public int scheduleAsyncDelayedTask(Runnable task, long delay) {
+        return bukkitServer.getScheduler().runTaskLaterAsynchronously(plugin, task, delay).getTaskId();
     }
 
 }

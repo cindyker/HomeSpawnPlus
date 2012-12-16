@@ -37,7 +37,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
 
@@ -62,7 +62,7 @@ implements SerializableYamlObject<HomeInvite>
 		
 		Object o = map.get(ATTR_HOME);
 		if( o instanceof Integer ) {
-			Home h = HomeSpawnPlus.getInstance().getStorage().getHomeDAO().findHomeById((Integer) o);
+			Home h = OldHSP.getInstance().getStorage().getHomeDAO().findHomeById((Integer) o);
 			if( h != null )
 				getObject().setHome(h);
 		}

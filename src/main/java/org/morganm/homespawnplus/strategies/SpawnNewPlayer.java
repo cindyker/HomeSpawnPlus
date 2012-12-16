@@ -33,11 +33,14 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
@@ -45,13 +48,18 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  */
 public class SpawnNewPlayer extends BaseStrategy
 {
+    protected SpawnUtil spawnUtil;
+    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		Spawn spawn = null;
 		
-		if( plugin.getUtil().isNewPlayer(context.getPlayer()) ) {
+		if( context.getPlayer().isNewPlayer() ) {
 			logVerbose("player is detemined to be a new player");
-			spawn = plugin.getUtil().getSpawnByName(ConfigOptions.VALUE_NEW_PLAYER_SPAWN);
+			spawn = spawnUtil.getFirstSpawn();
 		}
 		else 
 			logVerbose("player is detemined to NOT be a new player");

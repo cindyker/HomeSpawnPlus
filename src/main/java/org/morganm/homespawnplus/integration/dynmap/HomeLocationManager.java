@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.World;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 
@@ -47,9 +47,9 @@ import org.morganm.homespawnplus.storage.dao.HomeDAO;
  *
  */
 public class HomeLocationManager implements LocationManager {
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 
-	public HomeLocationManager(final HomeSpawnPlus plugin) {
+	public HomeLocationManager(final OldHSP plugin) {
 		this.plugin = plugin;
 	}
 	

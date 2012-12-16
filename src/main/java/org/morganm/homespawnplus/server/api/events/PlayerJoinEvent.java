@@ -4,20 +4,12 @@
 package org.morganm.homespawnplus.server.api.events;
 
 import org.morganm.homespawnplus.server.api.Location;
-import org.morganm.homespawnplus.server.api.Player;
 
 /**
  * @author morganm
  *
  */
-public interface PlayerJoinEvent {
-    /**
-     * Get the player that joined.
-     * 
-     * @return the player that joined
-     */
-    public Player getPlayer();
-    
+public interface PlayerJoinEvent extends PlayerEvent {
     /**
      * Set the location the player should spawn at.
      * 

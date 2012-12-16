@@ -34,7 +34,7 @@
 package org.morganm.homespawnplus.integration.worldguard;
 
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 
 /** Abstraction layer for WorldGuardInterface. This allows this class (and
  * therefore HSP) to load even if WorldGuard isn't installed on the server.
@@ -43,11 +43,11 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
  *
  */
 public class WorldGuardIntegration {
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 	private WorldGuardInterface worldGuardInterface;
 	private WorldGuardRegion worldGuardRegion;
 	
-	public WorldGuardIntegration(HomeSpawnPlus plugin) {
+	public WorldGuardIntegration(OldHSP plugin) {
 		this.plugin = plugin;
 	}
 	

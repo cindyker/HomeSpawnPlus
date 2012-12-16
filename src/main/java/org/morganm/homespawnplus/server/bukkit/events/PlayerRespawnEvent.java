@@ -17,8 +17,8 @@ implements org.morganm.homespawnplus.server.api.events.PlayerRespawnEvent
     private org.bukkit.event.player.PlayerRespawnEvent event;
 
     public PlayerRespawnEvent(org.bukkit.event.player.PlayerRespawnEvent event) {
+        super(event);
         this.event = event;
-        this.bukkitPlayerEvent = event;
     }
 
     @Override
@@ -29,5 +29,10 @@ implements org.morganm.homespawnplus.server.api.events.PlayerRespawnEvent
     @Override
     public boolean isBedSpawn() {
         return event.isBedSpawn();
+    }
+
+    @Override
+    public Location getRespawnLocation() {
+        return new BukkitLocation(event.getRespawnLocation());
     }
 }

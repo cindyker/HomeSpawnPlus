@@ -50,7 +50,6 @@ import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.World;
-import org.morganm.homespawnplus.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,6 @@ import org.slf4j.LoggerFactory;
  */
 public class StrategyConfig {
     private final Logger log = LoggerFactory.getLogger(StrategyConfig.class);
-	private final Debug debug = Debug.getInstance();
 	private final Map<String, Set<Strategy>> defaultStrategies;
 	private final Map<String, WorldStrategies> worldStrategies;
 	private final Map<String, PermissionStrategies> permissionStrategies;
@@ -85,7 +83,7 @@ public class StrategyConfig {
 	 */
 	private void checkTypeForRegion(String eventType, String worldContext) {
 		eventType = eventType.toLowerCase();
-		log.debug("checkTypeForRegion() eventType=",eventType);
+		log.debug("checkTypeForRegion() eventType={}",eventType);
 		int index = eventType.indexOf(';');
 		if( index == -1 )
 			return;
@@ -123,7 +121,7 @@ public class StrategyConfig {
 	 * 
 	 */
 	public void loadConfig() {
-		debug.debug("loadConfig() enter");
+		log.debug("loadConfig() enter");
 
 		// clear out any existing data before loading from the config
 		defaultStrategies.clear();
@@ -143,17 +141,17 @@ public class StrategyConfig {
 				+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE);
 		loadPermissionStrategies(section);
 
-		debug.debug("loadConfig() finished loading");
+		log.debug("loadConfig() finished loading");
 	}
 	
 	private void loadDefaultStrategies(ConfigurationSection section) {
 		if( section == null ) {
-			debug.debug("loadDefaultStrategies() default section is null, skipping");
+			log.debug("loadDefaultStrategies() default section is null, skipping");
 			return;
 		}
 		
 		int count=0;
-		debug.debug("loadDefaultStrategies() loading default strategies");
+		log.debug("loadDefaultStrategies() loading default strategies");
 
 		Set<String> eventTypes = section.getKeys(false);
 		for(String eventType : eventTypes) {
@@ -187,21 +185,21 @@ public class StrategyConfig {
 			}
 		}
 		
-		debug.debug("loadDefaultStrategies() loaded ",count," total default strategy objects");
+		log.debug("loadDefaultStrategies() loaded {} total default strategy objects", count);
 	}
 	
 	private void loadWorldStrategies(ConfigurationSection section) {
 		if( section == null ) {
-			debug.debug("loadWorldStrategies() world section is null, skipping");
+			log.debug("loadWorldStrategies() world section is null, skipping");
 			return;
 		}
 		
 		int count=0;
-		debug.debug("loadWorldStrategies() loading world-specific strategies");
+		log.debug("loadWorldStrategies() loading world-specific strategies");
 		
 		Set<String> eventWorlds = section.getKeys(false);
 		if( eventWorlds == null ) {
-			debug.debug("loadWorldStrategies() world section keys are null, skipping");
+			log.debug("loadWorldStrategies() world section keys are null, skipping");
 			return;
 		}
 
@@ -243,7 +241,7 @@ public class StrategyConfig {
 			}
 		}
 			
-		debug.debug("loadWorldStrategies() loaded ",count," total world strategy objects");
+		log.debug("loadWorldStrategies() loaded {} total world strategy objects", count);
 	}
 	
 	/** Load permission strategies.
@@ -252,16 +250,16 @@ public class StrategyConfig {
 	 */
 	private void loadPermissionStrategies(ConfigurationSection section) {
 		if( section == null ) {
-			debug.debug("loadPermissionStrategies() permission section is null, skipping");
+			log.debug("loadPermissionStrategies() permission section is null, skipping");
 			return;
 		}
 		
 		int count=0;
-		debug.debug("loadPermissionStrategies() loading permission-specific strategies");
+		log.debug("loadPermissionStrategies() loading permission-specific strategies");
 		
 		Set<String> permEntries = section.getKeys(false);
 		if( permEntries == null ) {
-			debug.debug("loadPermissionStrategies() permission section keys are null, skipping");
+			log.debug("loadPermissionStrategies() permission section keys are null, skipping");
 			return;
 		}
 
@@ -315,7 +313,7 @@ public class StrategyConfig {
 			}
 		}
 
-		debug.debug("loadPermissionStrategies() loaded ",count," total permission strategy objects");
+		log.debug("loadPermissionStrategies() loaded {} total permission strategy objects", count);
 	}
 	
 	/** Given a specific event type, return the default strategy chain associated with
@@ -343,9 +341,9 @@ public class StrategyConfig {
 		
 		for(PermissionStrategies strat : permissionStrategies.values()) {
 			for(String perm : strat.permissions) {
-				debug.debug("checking permission ",perm);
+				log.debug("checking permission {}",perm);
 				if( player.hasPermission(perm) ) {
-					debug.debug("player ",player," does have perm ",perm,", looking up strategies");
+					log.debug("player {} does have perm {}, looking up strategies", player, perm);
 					Set<Strategy> set = strat.eventStrategies.get(event);
 					if( set != null )
 						strategies.add(set);

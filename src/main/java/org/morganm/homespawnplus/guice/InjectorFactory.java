@@ -5,7 +5,7 @@ package org.morganm.homespawnplus.guice;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.HSPNew;
+import org.morganm.homespawnplus.HomeSpawnPlus;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -18,16 +18,11 @@ import com.google.inject.Injector;
  *
  */
 public class InjectorFactory {
-    public static Injector createInjector(HSPNew plugin) {
-        Injector parent = Guice.createInjector(new HSPModule(plugin));
-        
-        Injector injector = parent;     // default injector is the parent
-        
+    public static Injector createInjector(HomeSpawnPlus plugin) {
         // in the future this will choose different injectors based on the
         // environment. For now the only environment we support is Bukkit.
-        
         Plugin bukkitPlugin = Bukkit.getPluginManager().getPlugin("HomeSpawnPlus");
-        injector = parent.createChildInjector(new BukkitModule(bukkitPlugin));
+        Injector injector = Guice.createInjector(new HSPModule(plugin), new BukkitModule(bukkitPlugin));
         
         return injector;
     }

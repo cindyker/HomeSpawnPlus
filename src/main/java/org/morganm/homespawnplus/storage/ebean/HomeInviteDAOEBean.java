@@ -36,9 +36,9 @@ package org.morganm.homespawnplus.storage.ebean;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
 
@@ -52,10 +52,10 @@ import com.avaje.ebean.Transaction;
  */
 public class HomeInviteDAOEBean implements HomeInviteDAO {
 	private EbeanServer ebean;
-	private HomeSpawnPlus plugin;
+	private Storage storage;
 	
-	public HomeInviteDAOEBean(final EbeanServer ebean, final HomeSpawnPlus plugin) {
-		this.plugin = plugin;
+	public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage) {
+	    this.storage = storage;
 		setEbeanServer(ebean);
 	}
 	
@@ -107,7 +107,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 		Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
 		
 		// first find all homes for this player
-		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(player);
+		Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
 		if( homes == null || homes.size() == 0 )
 			return invites;
 

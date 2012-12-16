@@ -188,7 +188,7 @@ public class Metrics {
      * 
      * @param hsp
      */
-    public void findCustomData(final HomeSpawnPlus hsp) {
+    public void findCustomData(final OldHSP hsp) {
         // Create our Permission Graph and Add our permission Plotters
         Graph permGraph = createGraph(plugin, Graph.Type.Pie, "Permission");
         final String permName = hsp.getPermissionSystem().getSystemInUseString();

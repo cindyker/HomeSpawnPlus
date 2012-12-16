@@ -7,6 +7,6 @@ package org.morganm.homespawnplus.server.api.events;
  * @author morganm
  *
  */
-public interface PlayerQuitEvent {
+public interface PlayerQuitEvent extends PlayerEvent {
 
 }

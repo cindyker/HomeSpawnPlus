@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.strategies.Default;
 import org.morganm.homespawnplus.strategies.HomeAnyWorld;
 import org.morganm.homespawnplus.strategies.HomeDefaultWorld;
@@ -173,7 +173,7 @@ public class StrategyFactory {
 	{
 		try {
 			Strategy strategy = clazz.newInstance();
-			strategy.setPlugin(HomeSpawnPlus.getInstance());
+			strategy.setPlugin(OldHSP.getInstance());
 			strategy.validate();
 			return strategy;
 		}
@@ -192,7 +192,7 @@ public class StrategyFactory {
 			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
 			Strategy strategy = constructor.newInstance(arg);
 			
-			strategy.setPlugin(HomeSpawnPlus.getInstance());
+			strategy.setPlugin(OldHSP.getInstance());
 			strategy.validate();
 			
 			return strategy;

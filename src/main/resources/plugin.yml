@@ -1,5 +1,5 @@
 name: ${project.name}
-main: org.morganm.homespawnplus.HomeSpawnPlus
+main: org.morganm.homespawnplus.server.bukkit.HSPBukkit
 url: ${project.url}
 version: ${project.version}
 author: morganm

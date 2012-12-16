@@ -78,7 +78,7 @@ public class HSPConvert extends BaseCommand {
 		if( converter != null ) {
 		    converter.setInitiatingSender(sender);
             sender.sendMessage("Starting "+converter.getConverterName()+" conversion");
-			scheduler.scheduleAsyncDelayedTask(plugin, converter, 0L);
+			scheduler.scheduleAsyncDelayedTask(converter, 0L);
 		}
 		
 		return true;

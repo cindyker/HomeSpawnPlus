@@ -74,11 +74,11 @@ import org.morganm.homespawnplus.util.Teleport;
  * @author morganm
  *
  */
-public class HomeSpawnUtils {
-	private static final Logger log = HomeSpawnPlus.log;
-	private final String logPrefix = HomeSpawnPlus.logPrefix;
+public class OldHSPUtils {
+	private static final Logger log = OldHSP.log;
+	private final String logPrefix = OldHSP.logPrefix;
 
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
     private final Server server;
 	private final Random random = new Random(System.currentTimeMillis());
     private Debug debug;
@@ -86,7 +86,7 @@ public class HomeSpawnUtils {
 	// set when we first find the defaultSpawnWorld, cached for future reference
     private String defaultSpawnWorld;
 	
-	public HomeSpawnUtils(HomeSpawnPlus plugin) {
+	public OldHSPUtils(OldHSP plugin) {
 		this.plugin = plugin;
 		this.server = plugin.getServer();
 		this.debug = Debug.getInstance();
@@ -284,25 +284,6 @@ public class HomeSpawnUtils {
     	return cost;
     }
 
-    public void updateQuitLocation(Player p)
-    {
-    	if( plugin.getHSPConfig().getBoolean(ConfigOptions.ENABLE_RECORD_LAST_LOGOUT, false) ) {
-    		debug.debug("updateQuitLocation: updating last logout location for player ",p.getName());
-    		
-	    	Location quitLocation = p.getLocation();
-	    	org.morganm.homespawnplus.entity.Player playerStorage = plugin.getStorage().getPlayerDAO().findPlayerByName(p.getName());
-	    	if( playerStorage == null )
-	    		playerStorage = new org.morganm.homespawnplus.entity.Player(p);
-	    	playerStorage.updateLastLogoutLocation(quitLocation);
-	    	try {
-	    		plugin.getStorage().getPlayerDAO().savePlayer(playerStorage);
-	    	}
-	    	catch(StorageException e) {
-				log.log(Level.WARNING, "Caught exception "+e.getMessage(), e);
-	    	}
-    	}
-    }
-    
     public boolean isNewPlayer(Player p) {
     	String strategy = plugin.getHSPConfig().getString(ConfigOptions.NEW_PLAYER_STRATEGY, ConfigOptions.NewPlayerStrategy.PLAYER_DAT.toString());
     	

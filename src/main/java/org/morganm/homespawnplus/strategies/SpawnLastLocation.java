@@ -33,8 +33,11 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.bukkit.entity.Player;
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
@@ -45,6 +48,9 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class SpawnLastLocation extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+
 	private String world;
 	
 	public SpawnLastLocation() {}
@@ -68,7 +74,7 @@ public class SpawnLastLocation extends BaseStrategy {
 		if( worldName == null )
 			worldName = context.getEventLocation().getWorld().getName();
 
-		PlayerLastLocationDAO dao = plugin.getStorage().getPlayerLastLocationDAO();
+		PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
 		PlayerLastLocation	 pll = dao.findByWorldAndPlayerName(worldName, p.getName());
 		
 		if( pll != null )

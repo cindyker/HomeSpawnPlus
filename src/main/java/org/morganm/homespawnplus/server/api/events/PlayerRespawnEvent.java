@@ -18,6 +18,13 @@ public interface PlayerRespawnEvent extends PlayerEvent {
     public void setRespawnLocation(Location respawnLocation);
 
     /**
+     * Gets the respawn location
+     *
+     * @return Location the respawn location
+     */
+    public Location getRespawnLocation();
+
+    /**
      * Gets whether the respawn location is the player's bed.
      *
      * @return true if the respawn location is the player's bed.

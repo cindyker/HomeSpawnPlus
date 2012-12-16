@@ -38,16 +38,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.OldHSP;
 
 /**
  * @author morganm
  *
  */
 public class HSPEntityListener implements Listener {
-	private final HomeSpawnPlus plugin;
+	private final OldHSP plugin;
 	
-	public HSPEntityListener(HomeSpawnPlus plugin) {
+	public HSPEntityListener(OldHSP plugin) {
 		this.plugin = plugin;
 	}
 	

@@ -33,11 +33,10 @@
  */
 package org.morganm.homespawnplus.strategy;
 
-import java.util.logging.Logger;
+import javax.inject.Inject;
 
-import org.morganm.homespawnplus.HomeSpawnPlus;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
-import org.morganm.homespawnplus.util.Debug;
+import org.morganm.homespawnplus.config.ConfigCore;
+import org.slf4j.LoggerFactory;
 
 /** Basic routines common/useful to most all strategies.
  * 
@@ -45,10 +44,13 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public abstract class BaseStrategy implements Strategy {
-	protected HomeSpawnPlus plugin;
-	protected Logger log;
-	protected String logPrefix;
-	protected final Debug debug = Debug.getInstance();
+	protected org.slf4j.Logger log = LoggerFactory.getLogger(BaseStrategy.class);
+	protected ConfigCore configCore;
+	
+	@Inject
+	public void setConfigCore(ConfigCore configCore) {
+	    this.configCore = configCore;
+	}
 
 	@Override
 	public String getStrategyConfigName() {
@@ -56,14 +58,12 @@ public abstract class BaseStrategy implements Strategy {
 	}
 	
 	protected boolean isVerbose() {
-		return plugin.getConfig().getBoolean(ConfigOptions.STRATEGY_VERBOSE_LOGGING, false);
+	    return configCore.isVerboseStrategyLogging();
 	}
 	
 	protected void logVerbose(final Object...args) {
 		if( isVerbose() ) {
-			final StringBuilder sb = new StringBuilder(logPrefix);
-			if( !logPrefix.endsWith(" ") )
-				sb.append(" ");
+			final StringBuilder sb = new StringBuilder();
 			
 			sb.append("(strategy ");
 			sb.append(this.getStrategyConfigName());
@@ -78,13 +78,7 @@ public abstract class BaseStrategy implements Strategy {
 	}
 	
 	protected void logInfo(String msg) {
-		log.info(logPrefix + " " + msg);
-	}
-	
-	public void setPlugin(final HomeSpawnPlus plugin) {
-		this.plugin = plugin;
-		this.log = plugin.getLogger();
-		this.logPrefix = plugin.getLogPrefix();
+		log.info(msg);
 	}
 	
 	/** By default, strategy is assumed valid. Subclass can override to do

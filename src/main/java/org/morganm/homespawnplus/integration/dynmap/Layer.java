@@ -46,13 +46,16 @@ import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
  *
  */
 public class Layer {
+    private final Logger log = LoggerFactory.getLogger(Layer.class);
+
 	private final DynmapModule module;
     private final MarkerAPI markerapi;
     private final LocationManager mgr;
@@ -87,7 +90,7 @@ public class Layer {
 		else
 			set.setMarkerSetLabel(cfg.getString("name", deflabel));
 		
-		Debug.getInstance().devDebug("Layer.init() created dynmap layer hsp.",id,", set name=","layer.",id,".name");
+		log.debug("Layer.init() created dynmap layer hsp.{}, set name=","layer.{}.name", id, id);
 		
 		if(set == null) {
 			module.severe("Error creating " + deflabel + " marker set");
@@ -95,7 +98,8 @@ public class Layer {
 		}
 		set.setLayerPriority(cfg.getInt("layerprio", 10));
 		set.setHideByDefault(cfg.getBoolean("hidebydefault", false));
-		Debug.getInstance().devDebug("Layer.init() id=",id,", layerprio=",set.getLayerPriority(),", hideByDefault=",set.getHideByDefault());
+		log.debug("Layer.init() id={}, layerprio={}, hideByDefault={}",
+		        id, set.getLayerPriority(), set.getHideByDefault());
 		
 		int minzoom = cfg.getInt("minzoom", 0);
 		if(minzoom > 0) /* Don't call if non-default - lets us work with pre-0.28 dynmap */
@@ -114,7 +118,7 @@ public class Layer {
 		if(lst != null)
 			hidden = new HashSet<String>(lst);
 		online_only = cfg.getBoolean("online-only", false);
-		Debug.getInstance().devDebug("Layer.init() id=",id,", online-only=",online_only); 
+		log.debug("Layer.init() id={}, online-only={}",id, online_only); 
 		
 //		if(online_only) {
 //			OurPlayerListener lsnr = new OurPlayerListener();
@@ -170,7 +174,7 @@ public class Layer {
 				if( !nl.isEnabled(cfg) )
 					continue;
 				
-				Debug.getInstance().devDebug("updateMarkerSet() name=",name,", loc=",loc);
+				log.debug("updateMarkerSet() name={}, loc={}", name, loc);
 				/* If not world specific list, we may get locations for other worlds - skip them */
 				if(loc.getWorld() != w)
 					continue;
@@ -180,33 +184,33 @@ public class Layer {
 				/* If online only, check if player is online */
 				if(online_only) {
 					String playerName = nl.getPlayerName();
-					Debug.getInstance().devDebug("updateMarkerSet() name=",name,", playerName=",playerName);
+					log.debug("updateMarkerSet() name={}, playerName={}", name, playerName);
 					
 					if(module.getServer().getPlayerExact(playerName) == null) {
-						Debug.getInstance().devDebug("updateMarkerSet() name=",name,", player is offline, skipping");
+						log.debug("updateMarkerSet() name={}, player is offline, skipping", name);
 						continue;
 					}
 				}
 				String id = wname + "/" + name;
 
-				Debug.getInstance().devDebug("updateMarkerSet() name=",name," is visible, formatting label");
+				log.debug("updateMarkerSet() name={} is visible, formatting label", name);
 				String label = labelfmt.replace("%name%", name);
-				Debug.getInstance().devDebug("updateMarkerSet() name=",name,", label=",label);
+				log.debug("updateMarkerSet() name={}, label={}", name, label);
 
 				/* See if we already have marker */
 				Marker m = markers.remove(id);
 				if(m == null) { /* Not found?  Need new one */
 					m = set.createMarker(id, label, wname, loc.getX(), loc.getY(), loc.getZ(), deficon, false);
-					Debug.getInstance().devDebug("updateMarkerSet() name=",name," creating new marker");
+					log.debug("updateMarkerSet() name={} creating new marker", name);
 				}
 				else {  /* Else, update position if needed */
 					m.setLocation(wname, loc.getX(), loc.getY(), loc.getZ());
 					m.setLabel(label);
 					m.setMarkerIcon(deficon);
-					Debug.getInstance().devDebug("updateMarkerSet() name=",name," updating existing marker");
+					log.debug("updateMarkerSet() name={} updating existing marker", name);
 				}
 
-				Debug.getInstance().devDebug("updateMarkerSet() name=",name," adding to map");
+				log.debug("updateMarkerSet() name={} adding to map", name);
 				newmap.put(id, m);    /* Add to new map */
 			}
 		}
@@ -244,7 +248,7 @@ public class Layer {
         }
         public void run() {
             if((!stop) && (mgr != null)) {
-            	Debug.getInstance().debug("OurPlayerListener.run() updating marker set");
+            	log.debug("OurPlayerListener.run() updating marker set");
             	updateMarkerSet();
             }
         }

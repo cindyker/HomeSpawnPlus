@@ -3,8 +3,6 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
-import javax.inject.Inject;
-
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.World;
@@ -18,7 +16,6 @@ import org.morganm.homespawnplus.server.api.World;
 public class BukkitPlayer implements Player {
     private org.bukkit.entity.Player bukkitPlayer;
     
-    @Inject
     public BukkitPlayer(org.bukkit.entity.Player bukkitPlayer) {
         this.bukkitPlayer = bukkitPlayer;
     }
@@ -88,5 +85,19 @@ public class BukkitPlayer implements Player {
         // if BukkitPlayer is in use, it's because we're running on a Bukkit Server so
         // we can safely assume the incoming object is a BukkitLocation
         bukkitPlayer.teleport( ((BukkitLocation) location).getBukkitLocation() );
+    }
+    
+    public boolean equals(Object o) {
+        if( o == null )
+            return false;
+        if( !(o instanceof Player) )
+            return false;
+        String name = ((Player) o).getName();
+        return getName().equals(name);
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return bukkitPlayer.isSneaking();
     }
 }

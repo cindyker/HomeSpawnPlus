@@ -35,7 +35,10 @@ package org.morganm.homespawnplus.strategies;
 
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
@@ -47,6 +50,9 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class SpawnRandomNamed extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+
 	private Random random = new Random(System.currentTimeMillis());
 	private String[] names;
 
@@ -61,9 +67,9 @@ public class SpawnRandomNamed extends BaseStrategy {
 			throw new StrategyException("no named spawns given");
 		
 		for(int i=0; i < names.length; i++) {
-			Spawn spawn = plugin.getUtil().getSpawnByName(names[i]);
+			Spawn spawn = storage.getSpawnDAO().findSpawnByName(names[i]);
 			if( spawn == null )
-				log.warning(logPrefix+" strategy "+getStrategyConfigName()+" references named spawn \""+names[i]+"\", which doesn't exist");
+				log.warn("strategy {} references named spawn \"{}\", which doesn't exist", getStrategyConfigName(), names[i]);
 		}
 	}
 	
@@ -72,9 +78,9 @@ public class SpawnRandomNamed extends BaseStrategy {
 		int number = random.nextInt(names.length);
 		String name = names[number];
 		
-		Spawn spawn = plugin.getUtil().getSpawnByName(name);
+		Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
 		if( spawn == null )
-			log.warning(logPrefix+" No spawn found for name \""+name+"\" for \""+getStrategyConfigName()+"\" strategy");
+			log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
 
 		return new StrategyResult(spawn);
 	}

@@ -35,16 +35,24 @@ package org.morganm.homespawnplus.strategies;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
+import org.morganm.homespawnplus.server.api.Factory;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.Teleport;
+import org.morganm.homespawnplus.server.api.TeleportOptions;
+import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.util.Teleport;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -55,6 +63,19 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  *
  */
 public class SpawnRegionRandom extends BaseStrategy {
+    protected SpawnUtil spawnUtil;
+    protected Storage storage;
+    private WorldGuardIntegration worldGuard;
+    private Teleport teleport;
+    private Server server;
+    private Factory factory;
+    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject public void setWorldGuardIntegration(WorldGuardIntegration worldGuard) { this.worldGuard = worldGuard; }
+    @Inject public void setTeleport(Teleport teleport) { this.teleport = teleport; }
+    @Inject public void setServer(Server server) { this.server = server; }
+    @Inject public void setFactory(Factory factory) { this.factory = factory; }
+    
 	private String world;
 	private String region;
 	private WorldGuardInterface wgInterface;
@@ -75,14 +96,14 @@ public class SpawnRegionRandom extends BaseStrategy {
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		if( wgInterface == null || !plugin.getWorldGuardIntegration().isEnabled() )
+		if( wgInterface == null || !worldGuard.isEnabled() )
 			return null;
 		
 		World theWorld = null;
 		if( world != null ) {
-			theWorld = Bukkit.getWorld(world);
+			theWorld = server.getWorld(world);
 			if( theWorld == null ) {
-				log.warning(logPrefix+" found null value when looking for world: "+world);
+				log.warn("found null value when looking for world: {}", world);
 				return null;
 			}
 		}
@@ -98,25 +119,25 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( region == null )
 			return null;
 
-		Teleport.Bounds yBounds = context.getTeleportOptions();
-		if( yBounds == null )
-			yBounds = Teleport.getInstance().getDefaultBounds();
+		TeleportOptions teleportOptions = context.getTeleportOptions();
+//		if( yBounds == null )
+//			yBounds = Teleport.getInstance().getDefaultBounds();
 		
 		BlockVector bvMin = wgRegion.getMinimumPoint();
 		// minimum Y never goes below yBounds
 		int minY = bvMin.getBlockY();
-		if( yBounds.minY > minY )
-			minY = yBounds.minY;
-		Location min = new Location(theWorld, bvMin.getBlockX(), minY, bvMin.getBlockZ());
+		if( teleportOptions.getMinY() > minY )
+			minY = teleportOptions.getMinY();
+		Location min = factory.newLocation(theWorld.getName(), bvMin.getBlockX(), minY, bvMin.getBlockZ(), 0, 0);
 		
 		BlockVector bvMax = wgRegion.getMaximumPoint();
 		// maximum Y never goes above yBounds
 		int maxY = bvMax.getBlockY();
-		if( yBounds.maxY > maxY )
-			maxY = yBounds.maxY;
-		Location max = new Location(theWorld, bvMax.getBlockX(), maxY, bvMax.getBlockZ());
+		if( teleportOptions.getMaxY() > maxY )
+			maxY = teleportOptions.getMaxY();
+		Location max = factory.newLocation(theWorld.getName(), bvMax.getBlockX(), maxY, bvMax.getBlockZ(), 0, 0);
 		
-		Location loc = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
+		Location loc = teleport.findRandomSafeLocation(min, max, teleportOptions);
 		if( loc == null )
 			return null;
 
@@ -129,32 +150,34 @@ public class SpawnRegionRandom extends BaseStrategy {
 		if( p == null )
 			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
 		else {
-			wgInterface = plugin.getWorldGuardIntegration().getWorldGuardInterface();
+			wgInterface = worldGuard.getWorldGuardInterface();
 			
 			// look for the region and print a warning if we didn't find one, so the admin
 			// has a heads up they may have misconfigured the strategy
 			boolean foundRegion = false;
 			if( world == null ) {		// null world, then check all
-				List<World> worlds = Bukkit.getWorlds();
+				List<World> worlds = server.getWorlds();
 				for(World world : worlds) {
 					if( wgInterface.getWorldGuardRegion(world, region) != null )
 						foundRegion = true;
 				}
 			}
 			else {
-				World bukkitWorld = Bukkit.getWorld(this.world);
-				if( bukkitWorld == null )
+				World theWorld = server.getWorld(this.world);
+				if( theWorld == null )
 					throw new StrategyException("Strategy "+getStrategyConfigName()+" references world \""+world+"\", which doesn't exist.");
 				
-				if( wgInterface.getWorldGuardRegion(bukkitWorld, region) != null )
+				if( wgInterface.getWorldGuardRegion(theWorld, region) != null )
 					foundRegion = true;
 			}
 
 			if( !foundRegion ) {
 				if( world != null )
-					log.warning(logPrefix+" Strategy "+getStrategyConfigName()+" references region \""+region+"\" on world \""+world+"\", but no region by that name was found. Strategy will silently fail; this may be an error in your config");
+					log.warn("Strategy {} references region \"{}\" on world \"{}\", but no region by that name was found. Strategy will silently fail; this may be an error in your config",
+					        getStrategyConfigName(), region, world);
 				else
-					log.warning(logPrefix+" Strategy "+getStrategyConfigName()+" references region \""+region+"\", but no region by that name was found in any world. Strategy will silently fail; this may be an error in your config");
+					log.warn("Strategy {} references region \"{}\", but no region by that name was found in any world. Strategy will silently fail; this may be an error in your config",
+					        getStrategyConfigName(), region);
 			}
 		}
 	}

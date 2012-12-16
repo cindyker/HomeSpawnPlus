@@ -17,7 +17,8 @@ import org.morganm.homespawnplus.server.api.ServerConfig;
 import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.homespawnplus.server.api.command.CommandConfig;
 import org.morganm.homespawnplus.server.api.command.CommandRegister;
-import org.morganm.homespawnplus.server.api.events.EventDispatcher;
+import org.morganm.homespawnplus.server.api.event.EventDispatcher;
+import org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher;
 import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.server.bukkit.BukkitScheduler;
 import org.morganm.homespawnplus.server.bukkit.BukkitServer;
@@ -56,7 +57,8 @@ public class BukkitModule extends AbstractModule {
         bind(Server.class)
             .to(BukkitServer.class);
         bind(EventDispatcher.class)
-            .to(org.morganm.homespawnplus.server.bukkit.EventDispatcher.class);
+            .to(BukkitEventDispatcher.class)
+            .in(Scopes.SINGLETON);
         
         bind(CommandRegister.class)
             .to(org.morganm.homespawnplus.server.bukkit.command.BukkitCommandRegister.class);

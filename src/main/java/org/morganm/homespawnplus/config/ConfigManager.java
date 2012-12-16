@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.config;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
+@Singleton
 public class ConfigManager {
     private final Logger log = LoggerFactory.getLogger(ConfigManager.class);
     

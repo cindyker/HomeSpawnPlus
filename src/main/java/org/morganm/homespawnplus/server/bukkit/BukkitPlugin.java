@@ -3,30 +3,40 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
-import org.bukkit.plugin.java.JavaPlugin;
-import org.morganm.homespawnplus.HSPNew;
+import java.io.File;
+
 import org.morganm.homespawnplus.server.api.Plugin;
 
-/** This class is the interface to Bukkit's Plugin interface. This is abstracted from
- * the rest of the plugin so as to minimize impact to the code when Bukkit makes
- * API changes and to simplify migrating to MC-API someday.
+/** 
  * 
  * @author morganm
  *
  */
-public class BukkitPlugin extends JavaPlugin implements Plugin
+public class BukkitPlugin implements Plugin
 {
-    private HSPNew mainClass;
+    private final HSPBukkit plugin;
     
-    @Override
-    public void onEnable() {
-        mainClass = new HSPNew();
-        mainClass.onEnable();
+    public BukkitPlugin(HSPBukkit plugin) {
+        this.plugin = plugin;
     }
-    
+
     @Override
-    public void onDisable() {
-        if( mainClass != null )
-            mainClass.onDisable();
+    public File getDataFolder() {
+        return plugin.getDataFolder();
+    }
+
+    @Override
+    public File getJarFile() {
+        return plugin._getJarFile();
+    }
+
+    @Override
+    public String getName() {
+        return plugin.getDescription().getName();
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return plugin._getClassLoader();
     }
 }

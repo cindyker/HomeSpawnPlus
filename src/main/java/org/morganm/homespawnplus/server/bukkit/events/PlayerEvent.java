@@ -14,6 +14,10 @@ import org.morganm.homespawnplus.server.bukkit.BukkitPlayer;
 public abstract class PlayerEvent {
     protected org.bukkit.event.player.PlayerEvent bukkitPlayerEvent;
     protected Player player;
+    
+    public PlayerEvent(org.bukkit.event.player.PlayerEvent bukkitPlayerEvent) {
+        this.bukkitPlayerEvent = bukkitPlayerEvent;
+    }
 
     public Player getPlayer() {
         if( player == null )

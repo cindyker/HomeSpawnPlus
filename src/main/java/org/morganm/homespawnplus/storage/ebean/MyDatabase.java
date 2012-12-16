@@ -7,7 +7,6 @@ package org.morganm.homespawnplus.storage.ebean;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.morganm.homespawnplus.server.api.Plugin;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
@@ -26,8 +28,9 @@ import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 
+@Singleton
 public abstract class MyDatabase {
-    private JavaPlugin javaPlugin;
+    private Plugin plugin;
     private ClassLoader classLoader;
     private Level loggerLevel;
     private boolean usingSQLite;
@@ -37,24 +40,12 @@ public abstract class MyDatabase {
     /**
      * Create an instance of MyDatabase
      * 
-     * @param javaPlugin Plugin instancing this database
+     * @param plugin Plugin instancing this database
      */
-    public MyDatabase(JavaPlugin javaPlugin) {
-        //Store the JavaPlugin
-        this.javaPlugin = javaPlugin;
-
-        //Try to get the ClassLoader of the plugin using Reflection
-        try {
-            //Find the "getClassLoader" method and make it "public" instead of "protected"
-            Method method = JavaPlugin.class.getDeclaredMethod("getClassLoader");
-            method.setAccessible(true);
-
-            //Store the ClassLoader
-            this.classLoader = (ClassLoader)method.invoke(javaPlugin);
-        }
-        catch(Exception ex ) {
-            throw new RuntimeException("Failed to retrieve the ClassLoader of the plugin using Reflection", ex);
-        }
+    @Inject
+    public MyDatabase(Plugin plugin) {
+        this.plugin = plugin;
+        this.classLoader = plugin.getClassLoader();
     }
 
     /**
@@ -249,8 +240,8 @@ public abstract class MyDatabase {
     }
 
     private String replaceDatabaseString(String input) {
-        input = input.replaceAll("\\{DIR\\}", javaPlugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
-        input = input.replaceAll("\\{NAME\\}", javaPlugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
+        input = input.replaceAll("\\{DIR\\}", plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
+        input = input.replaceAll("\\{NAME\\}", plugin.getName().replaceAll("[^\\w_-]", ""));
 
         return input;
     }

@@ -3,9 +3,6 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -21,19 +19,10 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigWarmup implements ConfigInterface {
-    private final YamlFile yaml;
-    private final File file;
-    
+public class ConfigWarmup extends AbstractConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigWarmup(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("warmup.yml");
-    }
-
-    @Override
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+        super("warmup.yml", "warmup", yaml);
     }
 
     /**
@@ -42,7 +31,7 @@ public class ConfigWarmup implements ConfigInterface {
      * @return true if warmups are enabled.
      */
     public boolean isEnabled() {
-        return yaml.getBoolean("enabled");
+        return super.getBoolean("enabled");
     }
     
     /**
@@ -51,7 +40,7 @@ public class ConfigWarmup implements ConfigInterface {
      * @return true if warmups should be canceled on damage
      */
     public boolean isCanceledOnDamage() {
-        return yaml.getBoolean("onDamageCancel");
+        return super.getBoolean("onDamageCancel");
     }
     
     /**
@@ -60,7 +49,7 @@ public class ConfigWarmup implements ConfigInterface {
      * @return true if warmups should be canceled on movement
      */
     public boolean isCanceledOnMovement() {
-        return yaml.getBoolean("onMoveCancel");
+        return super.getBoolean("onMoveCancel");
     }
     
     /**
@@ -72,14 +61,14 @@ public class ConfigWarmup implements ConfigInterface {
     public Set<String> getPerPermissionWarmups(String warmup) {
         Set<String> returnPerms = new LinkedHashSet<String>();
         
-        Set<String> entries = yaml.getKeys("permission");
+        Set<String> entries = super.getKeys("permission");
         for(String entry : entries) {
             // skip warmup entries that don't apply to this warmup
-            final int warmupValue = yaml.getInt("permission."+entry+"."+warmup);
+            final int warmupValue = super.getInt("permission."+entry+"."+warmup);
             if( warmupValue <= 0 )
                 continue;
             
-            List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+            List<String> perms = super.getStringList("permission."+entry+".permissions");
             if( perms == null ) {
                 perms = new ArrayList<String>(1);
             }
@@ -99,14 +88,14 @@ public class ConfigWarmup implements ConfigInterface {
      * @return
      */
     public int getPerPermissionWarmup(String warmup, String permission) {
-        Set<String> entries = yaml.getKeys("permission");
+        Set<String> entries = super.getKeys("permission");
         for(String entry : entries) {
             // skip warmup entries that don't apply to this warmup
-            final int warmupValue = yaml.getInt("permission."+entry+"."+warmup);
+            final int warmupValue = super.getInt("permission."+entry+"."+warmup);
             if( warmupValue <= 0 )
                 continue;
 
-            List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+            List<String> perms = super.getStringList("permission."+entry+".permissions");
             if( perms == null ) {
                 perms = new ArrayList<String>(1);
             }
@@ -128,7 +117,7 @@ public class ConfigWarmup implements ConfigInterface {
      * @return
      */
     public int getPerWorldWarmup(String warmup, String world) {
-        final int warmupValue = yaml.getInt("world."+world+"."+warmup);
+        final int warmupValue = super.getInt("world."+world+"."+warmup);
         if( warmupValue > 0 )
             return warmupValue;
         else
@@ -143,7 +132,7 @@ public class ConfigWarmup implements ConfigInterface {
      * @return
      */
     public int getGlobalWarmup(String warmup) {
-        final int warmupValue = yaml.getInt(warmup);
+        final int warmupValue = super.getInt(warmup);
         if( warmupValue > 0 )
             return warmupValue;
         else

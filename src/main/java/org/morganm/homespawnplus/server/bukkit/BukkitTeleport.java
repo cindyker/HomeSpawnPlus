@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
+import javax.inject.Singleton;
+
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Teleport;
@@ -12,6 +14,7 @@ import org.morganm.homespawnplus.server.api.TeleportOptions;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitTeleport implements Teleport {
 
     /* (non-Javadoc)

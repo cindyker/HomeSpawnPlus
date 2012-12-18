@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.server.bukkit;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -22,8 +23,14 @@ public class HSPBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        mainClass = new HomeSpawnPlus();
-        mainClass.onEnable();
+        mainClass = new HomeSpawnPlus(this);
+        try {
+            mainClass.onEnable();
+        }
+        catch(Exception e) {
+            getLogger().log(Level.SEVERE, "Caught exception loading plugin, shutting down", e);
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
     
     @Override
@@ -38,10 +45,11 @@ public class HSPBukkit extends JavaPlugin {
     }
     
     public File _getJarFile() {
-        return getFile();
+        System.out.println("_getJarFile()="+super.getFile());
+        return super.getFile();
     }
 
     public ClassLoader _getClassLoader() {
-        return getClassLoader();
+        return super.getClassLoader();
     }
 }

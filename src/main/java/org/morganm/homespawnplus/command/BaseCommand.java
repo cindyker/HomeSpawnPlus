@@ -143,7 +143,7 @@ public abstract class BaseCommand implements Command {
 	}
 
     @Inject
-    public void setSerer(Server server) {
+    public void setServer(Server server) {
         this.server = server;
     }
     

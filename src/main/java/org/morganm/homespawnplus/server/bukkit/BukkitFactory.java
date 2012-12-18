@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Factory;
@@ -22,6 +23,7 @@ import com.google.inject.Injector;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitFactory implements Factory {
     private final Injector injector;
     private final Map<String, WeakReference<CommandSender>> senderCache = new HashMap<String, WeakReference<CommandSender>>();

@@ -3,7 +3,6 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -24,18 +24,14 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigCooldown implements ConfigInterface {
+public class ConfigCooldown extends AbstractConfigBase implements ConfigInterface, Initializable {
     private static final String RESET_ON_DEATH = "resetOnDeath";
-    
-    private final YamlFile yaml;
-    private final File file;
     
     private Map<String, PerPermissionCooldownEntry> perPermissionEntries;
     
     @Inject
     public ConfigCooldown(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("cooldown.yml");
+        super("cooldown.yml", "cooldown", yaml);
     }
 
     /**
@@ -44,7 +40,7 @@ public class ConfigCooldown implements ConfigInterface {
      * @throws Exception
      */
     public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+        super.load();
         populatePerPermissionEntries();
     }
 

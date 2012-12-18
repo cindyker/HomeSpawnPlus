@@ -33,14 +33,16 @@
  */
 package org.morganm.homespawnplus.integration.multiverse;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.OldHSP;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,22 +50,26 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
+@Singleton
 public class MultiverseIntegration {
     private static final Logger log = LoggerFactory.getLogger(MultiverseIntegration.class);
     
-	private final OldHSP plugin;
+	private final Plugin plugin;
+    private final ConfigCore configCore;
 	private MultiverseSafeTeleporter teleporter;
 	private MultiverseListener multiverseListener;
 	private String currentTeleporter;
 	private String sourcePortalName;
 	private String destinationPortalName;
 	
-	public MultiverseIntegration(final OldHSP plugin) {
+	@Inject
+	public MultiverseIntegration(ConfigCore configCore, Plugin plugin) {
+	    this.configCore = configCore;
 		this.plugin = plugin;
 	}
 	
 	public boolean isEnabled() {
-		return plugin.getConfig().getBoolean(ConfigOptions.MULTIVERSE_INTEGRATION_ENABLED, false);
+		return configCore.isMultiverseEnabled();
 	}
 	
 	public boolean isMultiverseEnabled() {

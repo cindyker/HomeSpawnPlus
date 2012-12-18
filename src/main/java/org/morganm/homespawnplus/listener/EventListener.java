@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.listener;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.ConfigCore;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
+@Singleton
 public class EventListener implements org.morganm.homespawnplus.server.api.event.EventListener {
     private final Logger log = LoggerFactory.getLogger(EventListener.class);
     private Storage storage;

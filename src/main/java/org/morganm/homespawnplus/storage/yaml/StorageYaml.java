@@ -37,9 +37,9 @@ import java.io.File;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableHome;
@@ -48,7 +48,8 @@ import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayer;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerLastLocation;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializablePlayerSpawn;
 import org.morganm.homespawnplus.storage.yaml.serialize.SerializableSpawn;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Yaml storage back end.
  * 
@@ -56,6 +57,8 @@ import org.morganm.homespawnplus.util.Debug;
  *
  */
 public class StorageYaml implements Storage {
+    private static Logger log = LoggerFactory.getLogger(StorageYaml.class);
+    
 	private static StorageYaml currentlyInitializingInstance = null;
 	
     // These registrations are required for Bukkit's YAML serialization to work
@@ -69,8 +72,7 @@ public class StorageYaml implements Storage {
     }
 
 	@SuppressWarnings("unused")
-	private final OldHSP plugin;
-	private final Debug debug;
+	private final Plugin plugin;
 	
 	// if multiple files are being used, this is the directory they are written to
 	private File dataDirectory;
@@ -94,9 +96,8 @@ public class StorageYaml implements Storage {
 	 * @param file The file to write to or the directory to put files in, depending on
 	 * the value of the first argument.
 	 */
-	public StorageYaml(final OldHSP plugin, final boolean singleFile, final File file) {
+	public StorageYaml(final Plugin plugin, final boolean singleFile, final File file) {
 		this.plugin = plugin;
-		this.debug = Debug.getInstance();
 		if( singleFile )
 			this.singleFile = file;
 		else
@@ -165,7 +166,7 @@ public class StorageYaml implements Storage {
 			// now load the YAML data into memory so it's ready to go when we need it
 			for(int i=0; i < yamlLoadQueue.length; i++) {
 				try {
-					debug.devDebug("calling load on YAML DAO object ",yamlLoadQueue[i]);
+					log.debug("calling load on YAML DAO object {}",yamlLoadQueue[i]);
 					yamlLoadQueue[i].load();
 				}
 				catch(Exception e) {
@@ -241,7 +242,7 @@ public class StorageYaml implements Storage {
 	@Override
 	public void flushAll() throws StorageException {
 		for(int i=0; i < allDAOs.length; i++) {
-			debug.debug("Flushing DAO ",allDAOs[i]);
+			log.debug("Flushing DAO {}",allDAOs[i]);
 			allDAOs[i].flush();
 		}
 	}

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.server.bukkit;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.bukkit.Server;
 import org.morganm.homespawnplus.server.api.Scheduler;
@@ -12,6 +13,7 @@ import org.morganm.homespawnplus.server.api.Scheduler;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitScheduler implements Scheduler {
     private org.bukkit.plugin.Plugin plugin;
     private Server bukkitServer;

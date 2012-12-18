@@ -34,7 +34,7 @@
 package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.event.Listener;
-import org.morganm.homespawnplus.OldHSP;
+import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +52,10 @@ import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 public class MultiverseListener implements Listener {
     private static final Logger log = LoggerFactory.getLogger(MultiverseListener.class);
     
-	final OldHSP plugin;
+	final Plugin plugin;
 	final MultiverseSafeTeleporter teleporter;
 	
-	public MultiverseListener(final OldHSP plugin, final MultiverseSafeTeleporter teleporter) {
+	public MultiverseListener(final Plugin plugin, final MultiverseSafeTeleporter teleporter) {
 		this.plugin = plugin;
 		this.teleporter = teleporter;
 	}

@@ -38,7 +38,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.morganm.homespawnplus.OldHSP;
+import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
@@ -57,12 +58,12 @@ import com.onarandombox.MultiverseCore.enums.TeleportResult;
 public class MultiverseSafeTeleporter implements SafeTTeleporter {
     private static final Logger log = LoggerFactory.getLogger(MultiverseSafeTeleporter.class);
     
-	private final OldHSP hsp;
+	private final Plugin plugin;
 	private final MultiverseCore multiverse;
 	private SafeTTeleporter original;
 	
-	public MultiverseSafeTeleporter(OldHSP hsp, MultiverseCore multiverse) {
-		this.hsp = hsp;
+	public MultiverseSafeTeleporter(Plugin plugi, MultiverseCore multiverse) {
+		this.plugin = plugin;
 		this.multiverse = multiverse;
 	}
 	
@@ -114,11 +115,11 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
     		else
 	    		eventType = EventType.MULTIVERSE_TELEPORT;
 	    	
-			final StrategyContext context = new StrategyContext(hsp);
+			final StrategyContext context = new StrategyContext(plugin);
 	    	context.setPlayer(teleportee);
 	    	context.setEventType(eventType.toString());
 	    	context.setLocation(to);
-			StrategyResult result = hsp.getStrategyEngine().evaluateStrategies(context);
+			StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
 			
 			if( result != null && result.getLocation() != null ) {
 				finalLoc = result.getLocation();
@@ -126,9 +127,9 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 				// if HSP strategies gave us a new location, teleport the player there now
 				if( !finalLoc.equals(newLoc) ) {
 					if( doTeleport ) {
-						hsp.getMultiverseIntegration().setCurrentTeleporter(null);
+						plugin.getMultiverseIntegration().setCurrentTeleporter(null);
 						Teleport.getInstance().setCurrentTeleporter(teleportee.getName());
-						hsp.getUtil().teleport(teleportee, result.getLocation(), TeleportCause.PLUGIN, context);
+						plugin.getUtil().teleport(teleportee, result.getLocation(), TeleportCause.PLUGIN, context);
 					}
 				}
 			}
@@ -155,7 +156,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 			p = (Player) teleportee;
 		
 		if( p != null )
-			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
+			plugin.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
 		log.debug("MultiverseSafeTeleporter() safelyTelport() invoking Multiverse. teleportee={}, p={}", teleportee, p);
 		// let Multiverse do it's business
@@ -191,7 +192,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 			p = (Player) teleportee;
 		
 		if( p != null )
-			hsp.getMultiverseIntegration().setCurrentTeleporter(p.getName());
+			plugin.getMultiverseIntegration().setCurrentTeleporter(p.getName());
 		
 		log.debug("MultiverseSafeTeleporter() safelyTelport() invoking Multiverse. teleportee={}, p={}", teleportee, p);
 		// let Multiverse do it's business

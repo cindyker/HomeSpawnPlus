@@ -3,13 +3,10 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 
@@ -18,36 +15,28 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigCore implements ConfigInterface {
-    private final YamlFile yaml;
-    private final File file;
-    
+public class ConfigCore extends AbstractConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigCore(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("core.yml");
+        super("core.yml", "core", yaml);
     }
 
-    /**
-     * Load (or reload) the configuration from the backing store.
-     * 
-     * @throws Exception
-     */
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+    @Override
+    public int getPriority() {
+        return 0;   // core config has lowest priority
     }
-    
+
     /**
      * Return the configured locale, such as "en", "de", "fr", etc.
      * 
      * @return
      */
     public String getLocale() {
-        return yaml.getString("locale");
+        return super.getString("locale");
     }
     
     public boolean isDebug() {
-        return yaml.getBoolean("debug");
+        return super.getBoolean("debug");
     }
     
     /**
@@ -56,7 +45,7 @@ public class ConfigCore implements ConfigInterface {
      * @return true if verbose logging is enabled
      */
     public boolean isVerboseLogging() {
-        return yaml.getBoolean("verboseLogging");
+        return super.getBoolean("verboseLogging");
     }
     
     /**
@@ -65,7 +54,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isVerboseStrategyLogging() {
-        return yaml.getBoolean("verboseStrategyLogging");
+        return super.getBoolean("verboseStrategyLogging");
     }
     
     /**
@@ -74,7 +63,7 @@ public class ConfigCore implements ConfigInterface {
      * @return true if safe teleport is enabled
      */
     public boolean isSafeTeleport() {
-        return yaml.getBoolean("safeTeleport");
+        return super.getBoolean("safeTeleport");
     }
     
     /**
@@ -83,7 +72,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public int getPerformanceWarnMillis() {
-        return yaml.getInt("warnPerformanceMillis");
+        return super.getInt("warnPerformanceMillis");
     }
     
     /**
@@ -93,7 +82,7 @@ public class ConfigCore implements ConfigInterface {
      * @return true if the last home is the default
      */
     public boolean isLastHomeDefault() {
-        return yaml.getBoolean("lastHomeIsDefault");
+        return super.getBoolean("lastHomeIsDefault");
     }
     
     /**
@@ -103,7 +92,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isTeleportMessages() {
-        return yaml.getBoolean("teleportMessages");
+        return super.getBoolean("teleportMessages");
     }
     
     /**
@@ -114,7 +103,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isSpawnNamedPermissions() {
-        return yaml.getBoolean("spawnNamedPermissions");
+        return super.getBoolean("spawnNamedPermissions");
     }
     
     /**
@@ -125,7 +114,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isOverrideWorld() {
-        return yaml.getBoolean("override_world");
+        return super.getBoolean("override_world");
     }
     
     /**
@@ -136,7 +125,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedHomeOverwriteDefault() {
-        return yaml.getBoolean("bedHomeOverwritesDefault");
+        return super.getBoolean("bedHomeOverwritesDefault");
     }
     
     /**
@@ -146,7 +135,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public String getDefaultColor() {
-        return yaml.getString("defaultMessageColor");
+        return super.getString("defaultMessageColor");
     }
     
     /**
@@ -156,7 +145,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public String getDefaultWorld() {
-        return yaml.getString("defaultWorld");
+        return super.getString("defaultWorld");
     }
     
     /**
@@ -167,7 +156,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isWarnLocationChange() {
-        return yaml.getBoolean("warnLocationChange");
+        return super.getBoolean("warnLocationChange");
     }
     
     /**
@@ -178,7 +167,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedSetHome() {
-        return yaml.getBoolean("bedsethome");
+        return super.getBoolean("bedsethome");
     }
     
     /**
@@ -189,7 +178,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedHomeMustBeNight() {
-        return yaml.getBoolean("bedHomeMustBeNight");
+        return super.getBoolean("bedHomeMustBeNight");
     }
     
     /**
@@ -206,7 +195,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedHomeOriginalBehavior() {
-        return yaml.getBoolean("bedHomeOriginalBehavior");
+        return super.getBoolean("bedHomeOriginalBehavior");
     }
     
     /**
@@ -221,7 +210,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedNeverDisplayNightMessage() {
-        return yaml.getBoolean("bedHomeNeverDisplayNightMessage");
+        return super.getBoolean("bedHomeNeverDisplayNightMessage");
     }
     
     /**
@@ -232,7 +221,7 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isBedHome2Clicks() {
-        return yaml.getBoolean("bedhome2clicks");
+        return super.getBoolean("bedhome2clicks");
     }
     
     /**
@@ -242,6 +231,25 @@ public class ConfigCore implements ConfigInterface {
      * @return
      */
     public boolean isRecordLastLogout() {
-        return yaml.getBoolean("recordLastLogout");
+        return super.getBoolean("recordLastLogout");
+    }
+    
+    /**
+     * Boolean value that determines whether Multiverse integration
+     * is enabled or not.
+     * 
+     * @return
+     */
+    public boolean isMultiverseEnabled() {
+        return super.getBoolean("multiverseEnabled");
+    }
+    
+    /**
+     * Return the configured string for the storage type we should
+     * use. Examples: "ebeans", "yaml"
+     * @return
+     */
+    public String getStorageType() {
+        return super.getString("storage");
     }
 }

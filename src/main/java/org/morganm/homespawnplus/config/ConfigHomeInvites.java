@@ -3,13 +3,10 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -17,23 +14,10 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigHomeInvites implements ConfigInterface {
-    private final YamlFile yaml;
-    private final File file;
-    
+public class ConfigHomeInvites extends AbstractConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigHomeInvites(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("homeInvites.yml");
-    }
-    
-    /**
-     * Load (or reload) the configuration from the backing store.
-     * 
-     * @throws Exception
-     */
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+        super("homeInvites.yml", "homeInvite", yaml);
     }
     
     /**
@@ -42,7 +26,7 @@ public class ConfigHomeInvites implements ConfigInterface {
      * @return
      */
     public int getTimeout() {
-        return yaml.getInt("timeout");
+        return super.getInt("timeout");
     }
     
     /**
@@ -51,7 +35,7 @@ public class ConfigHomeInvites implements ConfigInterface {
      * @return
      */
     public boolean allowBedHomeInvites() {
-        return yaml.getBoolean("allowBedHomeInvites");
+        return super.getBoolean("allowBedHomeInvites");
     }
     
     /**
@@ -61,7 +45,7 @@ public class ConfigHomeInvites implements ConfigInterface {
      * @return
      */
     public boolean useHomeWarmup() {
-        return yaml.getBoolean("useHomeWarmup");
+        return super.getBoolean("useHomeWarmup");
     }
     
     /**
@@ -71,6 +55,6 @@ public class ConfigHomeInvites implements ConfigInterface {
      * @return
      */
     public boolean useHomeCooldown() {
-        return yaml.getBoolean("useHomeCooldown");
+        return super.getBoolean("useHomeCooldown");
     }
 }

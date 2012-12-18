@@ -5,6 +5,9 @@ package org.morganm.homespawnplus.server.bukkit;
 
 import java.io.File;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.morganm.homespawnplus.server.api.Plugin;
 
 /** 
@@ -12,10 +15,12 @@ import org.morganm.homespawnplus.server.api.Plugin;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitPlugin implements Plugin
 {
     private final HSPBukkit plugin;
     
+    @Inject
     public BukkitPlugin(HSPBukkit plugin) {
         this.plugin = plugin;
     }

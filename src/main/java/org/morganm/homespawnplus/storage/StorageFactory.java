@@ -34,12 +34,12 @@
 package org.morganm.homespawnplus.storage;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 
@@ -61,10 +61,12 @@ public class StorageFactory {
 	}
 	
 	private final Injector injector;
+	private final Plugin plugin;
 	
 	@Inject
-	public StorageFactory(Injector injector) {
+	public StorageFactory(Injector injector, Plugin plugin) {
 	    this.injector = injector;
+	    this.plugin = plugin;
 	}
 	
 	/** Ordinarily this is BAD to expose enum ordinal values. Sadly, these
@@ -93,8 +95,8 @@ public class StorageFactory {
 		return Type.EBEANS;		// default to EBEANS
 	}
 	
-	public Storage getInstance(Type storageType, OldHSP plugin)
-		throws StorageException, IOException
+	public Storage getInstance(Type storageType)
+		throws StorageException
 	{
 		Storage storage = null;
 		

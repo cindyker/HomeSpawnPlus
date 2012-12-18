@@ -3,6 +3,9 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -24,10 +27,12 @@ import org.morganm.homespawnplus.server.api.event.EventListener;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.api.event.EventDispatcher, org.bukkit.event.Listener {
     private final EventListener eventListener;
     private final Plugin plugin;
     
+    @Inject
     public BukkitEventDispatcher(EventListener listener, Plugin plugin) {
         this.eventListener = listener;
         this.plugin = plugin;

@@ -50,15 +50,17 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.command.Command;
 import org.morganm.homespawnplus.command.CustomEventCommand;
 import org.morganm.homespawnplus.server.api.command.CommandConfig;
-import org.morganm.homespawnplus.server.api.command.CommandRegister;
 import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.inject.Injector;
 
 /** Class whose job is to register all of HSP commands with Bukkit dynamically,
  * as opposed to through static plugin.yml configurations. This is used by HSP
@@ -67,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
-public class BukkitCommandRegister implements CommandRegister {
+public class BukkitCommandRegister implements Initializable {
     private final Logger log = LoggerFactory.getLogger(BukkitCommandRegister.class);
 
 //	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
@@ -78,12 +80,14 @@ public class BukkitCommandRegister implements CommandRegister {
 	private final Reflections reflections;
 	private final CommandConfig commandConfig;
 	private final BukkitFactory factory;
+	private final Injector injector;
 	
 	@Inject
-	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig, BukkitFactory factory) {
+	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig, BukkitFactory factory, Injector injector) {
 		this.plugin = plugin;
 		this.commandConfig = commandConfig;
 		this.factory = factory;
+		this.injector = injector;
 		
         customClassMap.put("customeventcommand", CustomEventCommand.class);
 
@@ -91,6 +95,16 @@ public class BukkitCommandRegister implements CommandRegister {
     	reflections = Reflections.collect();
 	}
 	
+    @Override
+    public void init() throws Exception {
+        registerAllCommands();
+    }
+
+    @Override
+    public int getPriority() {
+        return 5;
+    }
+
 	@SuppressWarnings("unchecked")
 	private void register(final Command command, Map<String, Object> cmdParams) {
 		String cmdName = command.getCommandName();
@@ -266,7 +280,8 @@ public class BukkitCommandRegister implements CommandRegister {
 	private void registerDefaultCommand(Class<? extends Command> clazz) {
 		try {
 			log.debug("registering command class {}",clazz);
-			Command cmd = (Command) clazz.newInstance();
+	        Command cmd = injector.getInstance(clazz);
+//			Command cmd = (Command) clazz.newInstance();
 			
 			String cmdName = cmd.getCommandName();
 			// do nothing if the command is disabled
@@ -282,11 +297,7 @@ public class BukkitCommandRegister implements CommandRegister {
 		}
 	}
 	
-	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.command.CommandRegisterInterface#registerAllCommands()
-     */
-	@Override
-    public void registerAllCommands() {
+    private void registerAllCommands() {
 		// loop through all config-defined command and load them up
 		Set<String> commands = commandConfig.getDefinedCommands();
 		for(String cmd : commands) {

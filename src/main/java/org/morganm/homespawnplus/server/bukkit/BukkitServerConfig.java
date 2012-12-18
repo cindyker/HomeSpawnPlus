@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.server.bukkit;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.ServerConfig;
@@ -13,6 +14,7 @@ import org.morganm.mBukkitLib.i18n.Colors;
  * @author morganm
  *
  */
+@Singleton
 public class BukkitServerConfig implements ServerConfig {
     private final ConfigCore configCore;
     private final Colors colors;

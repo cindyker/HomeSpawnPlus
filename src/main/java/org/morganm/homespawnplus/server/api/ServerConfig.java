@@ -3,7 +3,6 @@
  */
 package org.morganm.homespawnplus.server.api;
 
-import javax.inject.Singleton;
 
 /** Interface for configuration items that might return different
  * values depending on the implementation.
@@ -11,7 +10,6 @@ import javax.inject.Singleton;
  * @author morganm
  *
  */
-@Singleton
 public interface ServerConfig {
     /**
      * Return a string that represents the default color in a format

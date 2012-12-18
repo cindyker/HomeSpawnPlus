@@ -3,13 +3,10 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -17,22 +14,13 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigDynmap implements ConfigInterface {
-    private final YamlFile yaml;
-    private final File file;
-    
+public class ConfigDynmap extends AbstractConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigDynmap(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("dynmap.yml");
-    }
-
-    @Override
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+        super("dynmap.yml", "dynmap", yaml);
     }
 
     public boolean isEnabled() {
-        return yaml.getBoolean("enabled");
+        return super.getBoolean("enabled");
     }
 }

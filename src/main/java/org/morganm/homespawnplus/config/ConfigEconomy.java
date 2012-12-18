@@ -3,14 +3,12 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /** Configuration related to economy costs.
@@ -19,19 +17,10 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigEconomy implements ConfigInterface {
-    private final YamlFile yaml;
-    private final File file;
-    
+public class ConfigEconomy extends AbstractConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigEconomy(YamlFile yaml) {
-        this.yaml = yaml;
-        this.file = new File("economy.yml");
-    }
-
-    @Override
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        yaml.load(file);
+        super("economy.yml", "cost", yaml);
     }
 
     /**
@@ -40,7 +29,7 @@ public class ConfigEconomy implements ConfigInterface {
      * @return true if economy is enabled
      */
     public boolean isEnabled() {
-        return yaml.getBoolean("enabled");
+        return super.getBoolean("enabled");
     }
 
     /**
@@ -49,7 +38,7 @@ public class ConfigEconomy implements ConfigInterface {
      * @return true if verbose messages should be used
      */
     public boolean isVerboseOnCharge() {
-        return yaml.getBoolean("verbose");
+        return super.getBoolean("verbose");
     }
     
     /**

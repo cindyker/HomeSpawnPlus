@@ -1,0 +1,34 @@
+# While the comments in here try to be helpful, the most up-to-date
+# documentation for these options can always be found on the web at:
+#
+# 'http://dev.bukkit.org/server-mods/homespawnplus/pages/config-params'
+#
+# This config_defaults.yml is NOT USED by HSP in any way and is
+# overwritten everytime HSP starts up. It is simply here for reference
+# to the full set of options available in HSP as well as their
+# default values. Copy any sections you want here into your config.yml
+# to make changes.
+
+# This defines which permission system HSP uses. Vault and WEPIF
+# (WEPIF is built into WorldEdit) are preferred, they both provide
+# a nice interface to all other permission systems. If you don't have
+# or don't want to use either of those, there is some native support
+# for a few other permission systems that you can use. These are
+# checked in the order they are listed for existence, and the
+# first one to match is used.
+permissions:
+  - vault
+  - wepif
+  - pex
+  - perm2-compat
+  - superperms
+  - ops
+
+# you can define your own custom commands. Refer
+# to documentation on web: http://goo.gl/wCMM7
+commands:
+  # you can disable individual built-in commands here
+#  disabledCommands:
+#    - home
+#    - sethome
+#    - spawn

@@ -260,7 +260,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <outputFile>${project.build.directory}/${artifactId}-uber.jar</outputFile>
+              <outputFile>${project.build.directory}/${project.artifactId}-uber.jar</outputFile>
               <artifactSet>
                 <includes>
                   <include>org.reflections:reflections</include>
@@ -271,8 +271,18 @@
                   <include>org.morganm.mBukkitLib:mBukkitLib</include>
                   <include>org.slf4j:slf4j-api</include>
                   <include>org.slf4j:slf4j-jdk14</include>
+                  <include>net.milkbowl.vault:Vault</include>
                 </includes>
               </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>net.milkbowl.vault:Vault</artifact>
+                  <includes>
+                    <include>net/milkbowl/vault/economy/Economy.class</include>
+                  </includes>
+                </filter>
+              </filters>
 
               <relocations>
                 <relocation>
@@ -306,7 +316,7 @@
             </goals>
             <phase>process-classes</phase>
             <configuration>
-              <includeExclude>+org.morganm.homespawnplus.commands\..*</includeExclude>
+              <includeExclude>+org\.morganm\.homespawnplus\..*</includeExclude>
             </configuration>
           </execution>
         </executions>
@@ -343,7 +353,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-          <finalName>${artifactId}-with-dependencies</finalName>
+          <finalName>${project.artifactId}-with-dependencies</finalName>
           <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
           <appendAssemblyId>false</appendAssemblyId> 
         </configuration>

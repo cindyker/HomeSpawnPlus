@@ -44,7 +44,6 @@ import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigManager;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
-import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
 

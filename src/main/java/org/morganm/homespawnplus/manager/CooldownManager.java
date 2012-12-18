@@ -45,7 +45,7 @@ import org.morganm.homespawnplus.config.ConfigCooldown;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
-import org.morganm.homespawnplus.util.General;
+import org.morganm.mBukkitLib.General;
 import org.slf4j.LoggerFactory;
 
 
@@ -60,11 +60,13 @@ public class CooldownManager {
     private final Server server;
     private final ConfigCooldown config;
     private final Hashtable<String, Long> cooldowns;
+    private final General generalUtil;
 
     @Inject
-    public CooldownManager(Server server, ConfigCooldown config) {
+    public CooldownManager(Server server, ConfigCooldown config, General generalUtil) {
         this.server = server;
         this.config = config;
+        this.generalUtil = generalUtil;
     	cooldowns = new Hashtable<String, Long>();
     }
     
@@ -94,7 +96,7 @@ public class CooldownManager {
 		{
 		    p.sendMessage( server.getLocalizedMessage(HSPMessages.COOLDOWN_IN_EFFECT,
 					"name", cooldownName,
-					"time", General.getInstance().displayTimeString(cooldownTimeLeft*1000,
+					"time", generalUtil.displayTimeString(cooldownTimeLeft*1000,
 							false, null)) );
 			return false;
 		}

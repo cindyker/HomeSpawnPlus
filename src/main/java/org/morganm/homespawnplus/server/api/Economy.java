@@ -48,5 +48,5 @@ public interface Economy {
      * @param command the command whose costs are being checked
      * @return
      */
-    public int getCommandCost(String playerName, String command);
+    public int getCommandCost(Player player, String command);
 }

@@ -34,9 +34,11 @@
 package org.morganm.homespawnplus.server.bukkit.command;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +104,7 @@ public class BukkitCommandRegister implements Initializable {
 
     @Override
     public int getPriority() {
-        return 5;
+        return 6;
     }
 
 	@SuppressWarnings("unchecked")
@@ -333,6 +335,13 @@ public class BukkitCommandRegister implements Initializable {
     		log.error("No command classes found, HSP will not be able to register commands!");
     	}
     	
+        // filter out any abstract classes
+        for(Iterator<Class<? extends Command>> i = commandClasses.iterator(); i.hasNext();) {
+            Class<? extends Command> commandClass = i.next();
+            if( Modifier.isAbstract(commandClass.getModifiers()) )
+                i.remove();
+        }
+
     	return commandClasses;
 	}
 

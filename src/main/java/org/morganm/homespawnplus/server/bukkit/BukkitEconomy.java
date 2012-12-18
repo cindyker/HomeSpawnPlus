@@ -6,9 +6,13 @@ package org.morganm.homespawnplus.server.bukkit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.server.api.impl.EconomyAbstractImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,17 +21,17 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public class BukkitEconomy implements org.morganm.homespawnplus.server.api.Economy {
+public class BukkitEconomy extends EconomyAbstractImpl implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(BukkitEconomy.class);
 
     private net.milkbowl.vault.economy.Economy vaultEconomy;
     
     @Inject
     public BukkitEconomy() {
-        
     }
     
-    public void foo() {
+    @Override
+    public void init() throws Exception {
         if( vaultEconomy == null ) {
             Plugin vault = Bukkit.getServer().getPluginManager().getPlugin("Vault");
             if( vault != null ) {
@@ -42,49 +46,32 @@ public class BukkitEconomy implements org.morganm.homespawnplus.server.api.Econo
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Economy#isEnabled()
-     */
+    @Override
+    public int getPriority() {
+        return 6;
+    }
+
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return false;
+        return vaultEconomy != null;
     }
 
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Economy#format(double)
-     */
     @Override
     public String format(double amount) {
-        // TODO Auto-generated method stub
-        return null;
+        return vaultEconomy.format(amount);
     }
 
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Economy#getBalance(java.lang.String)
-     */
     @Override
     public double getBalance(String playerName) {
-        // TODO Auto-generated method stub
-        return 0;
+        return vaultEconomy.getBalance(playerName);
     }
 
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Economy#withdrawPlayer(java.lang.String, double)
-     */
     @Override
     public String withdrawPlayer(String playerName, double amount) {
-        // TODO Auto-generated method stub
-        return null;
+        EconomyResponse response = vaultEconomy.withdrawPlayer(playerName, amount);
+        if( !response.transactionSuccess() )
+            return response.errorMessage;
+        else
+            return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Economy#getCommandCost(java.lang.String, java.lang.String)
-     */
-    @Override
-    public int getCommandCost(String playerName, String command) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
 }

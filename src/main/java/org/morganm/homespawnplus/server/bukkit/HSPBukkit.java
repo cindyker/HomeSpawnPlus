@@ -5,7 +5,10 @@ package org.morganm.homespawnplus.server.bukkit;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -23,6 +26,8 @@ public class HSPBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        enableDebug();
+
         mainClass = new HomeSpawnPlus(this);
         try {
             mainClass.onEnable();
@@ -38,18 +43,37 @@ public class HSPBukkit extends JavaPlugin {
         if( mainClass != null )
             mainClass.onDisable();
     }
-    
+
     @Override
     public List<Class<?>> getDatabaseClasses() {
         return StorageEBeans.getDatabaseClasses();
     }
     
     public File _getJarFile() {
-        System.out.println("_getJarFile()="+super.getFile());
         return super.getFile();
     }
 
     public ClassLoader _getClassLoader() {
         return super.getClassLoader();
+    }
+
+    // TODO: move to an interface
+    private void enableDebug() {
+        getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.FINEST);
+//        Logger debugLog = Logger.getLogger("org.morganm.homespawnplus");
+//        debugLog.setLevel(Level.FINEST);
+//        debugLog.setUseParentHandlers(true);
+    }
+    private Handler getConsoleHandler(Logger log) {
+        Handler[] handlers = log.getHandlers();
+        for(int i=0; i < handlers.length; i++)
+            if( handlers[i] instanceof ConsoleHandler )
+                return handlers[i];
+
+        Logger parent = log.getParent();
+        if( parent != null )
+            return getConsoleHandler(parent);
+        else
+            return null;
     }
 }

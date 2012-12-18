@@ -44,7 +44,7 @@ import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
-import org.morganm.homespawnplus.util.General;
+import org.morganm.mBukkitLib.General;
 
 /**
  * @author morganm
@@ -52,6 +52,7 @@ import org.morganm.homespawnplus.util.General;
  */
 public class HomeInviteList extends BaseCommand {
     @Inject private ConfigHomeInvites config;
+    @Inject private General general;
     
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hil"}; }
@@ -70,7 +71,7 @@ public class HomeInviteList extends BaseCommand {
 				p.sendMessage("(id "+invite.getId()+") -> Invite for home "+homeName
 						+" to player "+invite.getInvitedPlayer()
 						+" [expires: "+(invite.getExpires() != null ?
-								General.getInstance().displayTimeString(
+						        general.displayTimeString(
 										invite.getExpires().getTime()-System.currentTimeMillis(), true, "m") :
 								"never")
 						+"]"
@@ -91,7 +92,7 @@ public class HomeInviteList extends BaseCommand {
 				p.sendMessage("(id "+invite.getId()+") -> Invite to home "+homeName
 						+" from player "+playerName
 						+" [expires: "+(invite.getExpires() != null ?
-								General.getInstance().displayTimeString(
+						        general.displayTimeString(
 										invite.getExpires().getTime()-System.currentTimeMillis(), true, "m") :
 								"never")
 						+"]"

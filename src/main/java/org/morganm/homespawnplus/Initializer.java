@@ -13,6 +13,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
@@ -22,6 +24,8 @@ import com.google.inject.Injector;
  */
 @Singleton
 public class Initializer {
+    private static final Logger log = LoggerFactory.getLogger(Initializer.class);
+
     private final Reflections reflections;
     private final Injector injector;
     
@@ -33,7 +37,7 @@ public class Initializer {
 
     public void initAll() throws Exception {
         for(Initializable init : getSortedInitObjects()) {
-            System.out.println("Initializing "+init);
+            log.debug("Initializing {}",init);
             init.init();
         }
     }

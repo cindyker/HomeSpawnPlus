@@ -210,7 +210,7 @@ public abstract class BaseCommand implements Command {
 	}
 	
 	protected int getPrice(Player p) {
-		return economy.getCommandCost(p.getName(), getCommandName());
+		return economy.getCommandCost(p, getCommandName());
 	}
 	
 	protected void printInsufficientFundsMessage(Player p) {

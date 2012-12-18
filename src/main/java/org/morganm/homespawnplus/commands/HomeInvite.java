@@ -46,8 +46,8 @@ import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
-import org.morganm.homespawnplus.util.General;
 import org.morganm.homespawnplus.util.HomeUtil;
+import org.morganm.mBukkitLib.General;
 
 /**
  * @author morganm
@@ -57,6 +57,7 @@ public class HomeInvite extends BaseCommand {
     @Inject private HomeUtil homeUtil;
     @Inject private HomeInviteManager homeInviteManager;
     @Inject private ConfigHomeInvites config;
+    @Inject private General general;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hi"}; }
@@ -150,14 +151,14 @@ public class HomeInvite extends BaseCommand {
 						lengthOfTime.append(" ");
 					lengthOfTime.append(args[i]);
 				}
-				long timeInMilliseconds = General.getInstance().parseTimeInput(lengthOfTime.toString());
+				long timeInMilliseconds = general.parseTimeInput(lengthOfTime.toString());
 				if( timeInMilliseconds < 60000 ) {		// minimum time is 1 minute
 				    server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_BAD_TIME,
 							"badTime", lengthOfTime.toString());
 					return true;
 				}
 				else
-					expireTimeAsString = General.getInstance().displayTimeString(timeInMilliseconds, false, null);
+					expireTimeAsString = general.displayTimeString(timeInMilliseconds, false, null);
 				
 				expiresTime = System.currentTimeMillis() + timeInMilliseconds;
 			}

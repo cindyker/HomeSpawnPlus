@@ -34,18 +34,13 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
         super("cooldown.yml", "cooldown", yaml);
     }
 
-    /**
-     * Load (or reload) the configuration from the backing store.
-     * 
-     * @throws Exception
-     */
     public void load() throws IOException, FileNotFoundException, ConfigException {
         super.load();
         populatePerPermissionEntries();
     }
 
     public boolean isEnabled() {
-        return yaml.getBoolean("enabled");
+        return super.getBoolean("enabled");
     }
     
     /**
@@ -54,7 +49,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public List<String> getSeparateCooldowns() {
-        return yaml.getStringList("separation");
+        return super.getStringList("separation");
     }
     
     /**
@@ -63,7 +58,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public boolean isGlobalResetOnDeath() {
-        return yaml.getBoolean(RESET_ON_DEATH);
+        return super.getBoolean(RESET_ON_DEATH);
     }
     
     /**
@@ -75,7 +70,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public boolean hasWorldResetOnDeathFlag(String world) {
-        return yaml.contains("world."+world+"."+RESET_ON_DEATH);
+        return super.contains("world."+world+"."+RESET_ON_DEATH);
     }
 
     /**
@@ -84,7 +79,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public boolean isWorldResetOnDeath(String world) {
-        return yaml.getBoolean("world."+world+"."+RESET_ON_DEATH);
+        return super.getBoolean("world."+world+"."+RESET_ON_DEATH);
     }
 
     /**
@@ -97,15 +92,15 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
     public Set<String> getPerPermissionCooldownEntries(String[] cooldowns) {
         Set<String> returnPerms = new LinkedHashSet<String>();
         
-        Set<String> entries = yaml.getKeys("permission");
+        Set<String> entries = super.getKeys("permission");
         for(String entry : entries) {
             for(String cooldown : cooldowns) {
                 // skip sections that don't apply to this cooldown
-                final int cooldownValue = yaml.getInt("permission."+entry+"."+cooldown);
+                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
                 if( cooldownValue <= 0 )
                     continue;
                 
-                List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+                List<String> perms = super.getStringList("permission."+entry+".permissions");
                 if( perms == null ) {
                     perms = new ArrayList<String>(1);
                 }
@@ -129,11 +124,11 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
     public Set<String> getPerPermmissionEntryPerms(String entry) {
         for(String cooldown : cooldowns) {
             // skip sections that don't apply to this cooldown
-            final int cooldownValue = yaml.getInt("permission."+entry+"."+cooldown);
+            final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
             if( cooldownValue <= 0 )
                 continue;
             
-            List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+            List<String> perms = super.getStringList("permission."+entry+".permissions");
             if( perms == null ) {
                 perms = new ArrayList<String>(1);
             }
@@ -153,15 +148,15 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      */
     /*
     public int getPerPermissionCooldown(String[] cooldowns, String permission) {
-        Set<String> entries = yaml.getKeys("permission");
+        Set<String> entries = super.getKeys("permission");
         for(String entry : entries) {
             for(String cooldown : cooldowns) {
                 // skip sections that don't apply to this cooldown
-                final int cooldownValue = yaml.getInt("permission."+entry+"."+cooldown);
+                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
                 if( cooldownValue <= 0 )
                     continue;
     
-                List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+                List<String> perms = super.getStringList("permission."+entry+".permissions");
                 if( perms == null ) {
                     perms = new ArrayList<String>(1);
                 }
@@ -185,7 +180,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public int getPerWorldCooldown(String cooldown, String world) {
-        final int cooldownValue = yaml.getInt("world."+world+"."+cooldown);
+        final int cooldownValue = super.getInt("world."+world+"."+cooldown);
         if( cooldownValue > 0 )
             return cooldownValue;
         else
@@ -200,7 +195,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public int getGlobalCooldown(String cooldown) {
-        final int cooldownValue = yaml.getInt(cooldown);
+        final int cooldownValue = super.getInt(cooldown);
         if( cooldownValue > 0 )
             return cooldownValue;
         else
@@ -213,20 +208,20 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public boolean isCooldownPerWorld(String world) {
-        return yaml.getBoolean("world."+world+"."+"cooldownPerWorld");
+        return super.getBoolean("world."+world+"."+"cooldownPerWorld");
     }
     
     /*
     public boolean isCooldownPerPermission(String[] cooldowns, String perm) {
-        Set<String> entries = yaml.getKeys("permission");
+        Set<String> entries = super.getKeys("permission");
         for(String entry : entries) {
             for(String cooldown : cooldowns) {
                 // skip sections that don't apply to this cooldown
-                final int cooldownValue = yaml.getInt("permission."+entry+"."+cooldown);
+                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
                 if( cooldownValue <= 0 )
                     continue;
     
-                List<String> perms = yaml.getStringList("permission."+entry+".permissions");
+                List<String> perms = super.getStringList("permission."+entry+".permissions");
                 if( perms == null ) {
                     perms = new ArrayList<String>(1);
                 }
@@ -255,7 +250,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
 
         perPermissionEntries = new LinkedHashMap<String, PerPermissionCooldownEntry>();
         
-        Set<String> entries = yaml.getKeys(base);
+        Set<String> entries = super.getKeys(base);
         for(String entryName : entries) {
             final String baseEntry = base + "." + entryName;
             
@@ -263,7 +258,7 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
             perPermissionEntries.put(entryName, entry);
             
             // grab permissions related to this entry
-            entry.permissions = yaml.getStringList(baseEntry+".permissions");
+            entry.permissions = super.getStringList(baseEntry+".permissions");
             if( entry.permissions == null ) {
                 entry.permissions = new ArrayList<String>(1);
             }
@@ -273,21 +268,21 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
             entry.permissions = Collections.unmodifiableList(entry.permissions);
 
             // now look for individual cooldown settings
-            for(String key : yaml.getKeys(baseEntry)) {
+            for(String key : super.getKeys(baseEntry)) {
                 if( key.equals("permissions") ) {   // skip, we already got these
                     continue;
                 }
                 if( key.equals("cooldownPerPermission") ) {
-                    entry.cooldownPerPermission = yaml.getBoolean(baseEntry+".cooldownPerPermission");
+                    entry.cooldownPerPermission = super.getBoolean(baseEntry+".cooldownPerPermission");
                     continue;
                 }
                 if( key.equals(RESET_ON_DEATH) ) {
-                    entry.resetOnDeath = yaml.getBoolean(baseEntry+"."+RESET_ON_DEATH);
+                    entry.resetOnDeath = super.getBoolean(baseEntry+"."+RESET_ON_DEATH);
                     continue;
                 }
                 
                 // everything else is a cooldown entry
-                entry.cooldowns.put(key, yaml.getInt(baseEntry+"."+key));
+                entry.cooldowns.put(key, super.getInt(baseEntry+"."+key));
             }
             
             // make map immutable to protect against external changes

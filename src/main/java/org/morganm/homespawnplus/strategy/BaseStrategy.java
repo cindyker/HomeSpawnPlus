@@ -46,10 +46,16 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseStrategy implements Strategy {
 	protected org.slf4j.Logger log = LoggerFactory.getLogger(BaseStrategy.class);
 	protected ConfigCore configCore;
+	protected StrategyResultFactory resultFactory;
 	
 	@Inject
 	public void setConfigCore(ConfigCore configCore) {
 	    this.configCore = configCore;
+	}
+	
+	@Inject
+	public void setStrategyResultFactory(StrategyResultFactory resultFactory) {
+	    this.resultFactory = resultFactory;
 	}
 
 	@Override

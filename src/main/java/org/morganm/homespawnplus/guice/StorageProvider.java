@@ -19,6 +19,7 @@ import com.google.inject.Provider;
 public class StorageProvider implements Provider<Storage> {
     private final ConfigCore config;
     private final StorageFactory factory;
+    private Storage storage;
     
     @Inject
     StorageProvider(ConfigCore config, StorageFactory factory) {
@@ -28,13 +29,15 @@ public class StorageProvider implements Provider<Storage> {
 
     @Override
     public Storage get() {
-        try {
-            return factory.getInstance(factory.getType(config.getStorageType()));
-        } catch (StorageException e) {
-            e.printStackTrace();
+        if( storage == null ) {
+            try {
+                storage = factory.getInstance(factory.getType(config.getStorageType()));
+            } catch (StorageException e) {
+                e.printStackTrace();
+            }
         }
 
-        return null;
+        return storage;
     }
 
 }

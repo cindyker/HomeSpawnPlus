@@ -96,8 +96,16 @@ public abstract class BaseCommand implements Command {
     
     /** By default, commands do not respond to console input. They can override this method
      * if they wish to do so.
+     * 
+	 * @param sender the sender object (usually a Player or Console)
+	 * @param cmd the actual command that was run (if a command supports aliases, this will
+	 * return the exact alias that was used)
+	 * @param args any arguments passed to the command
+	 * 
+	 * @return true if the command was successfully processed, false if not successful. A
+	 * false status will result in usage info being displayed back to the sender.
 	 */
-	public boolean execute(CommandSender sender, String[] args) {
+	public boolean execute(CommandSender sender, String cmd, String[] args) {
 	    if( sender instanceof Player ) {
 	        Player p = (Player) sender;
 	        
@@ -112,6 +120,13 @@ public abstract class BaseCommand implements Command {
 	            log.warn("Caught exception in command /"+getCommandName(), e);
 	            server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
 	        }
+	    }
+	    // In order to respond to console events, a subclass must override this
+	    // method. So if we get here, we know this command does not respond to
+	    // console events and we print a message saying such.
+	    else {
+	        sender.sendMessage("Command /"+cmd+" is not available from the console.");
+	        return true;
 	    }
 
         return false;
@@ -143,37 +158,37 @@ public abstract class BaseCommand implements Command {
 	}
 
     @Inject
-    public void setServer(Server server) {
+    private void setServer(Server server) {
         this.server = server;
     }
     
 	@Inject
-	public void setPlugin(Plugin plugin) {
+	private void setPlugin(Plugin plugin) {
 	    this.plugin = plugin;
 	}
 	
 	@Inject
-	public void setCooldownManager(CooldownManager cooldownManager) {
+	private void setCooldownManager(CooldownManager cooldownManager) {
 	    this.cooldownManager = cooldownManager;
 	}
 	
 	@Inject
-	public void setWarmupManager(WarmupManager warmupManager) {
+	private void setWarmupManager(WarmupManager warmupManager) {
 	    this.warmupManager = warmupManager;
 	}
 	
 	@Inject
-	public void setEconomy(Economy economy) {
+	private void setEconomy(Economy economy) {
 	    this.economy = economy;
 	}
 	
 	@Inject
-	public void setPermissions(Permissions permissions) {
+	private void setPermissions(Permissions permissions) {
 	    this.permissions = permissions;
 	}
 
     @Inject
-    public void setStorage(Storage storage) {
+    private void setStorage(Storage storage) {
         this.storage = storage;
     }
 

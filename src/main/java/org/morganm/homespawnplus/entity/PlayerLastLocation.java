@@ -35,7 +35,6 @@ package org.morganm.homespawnplus.entity;
 
 import java.sql.Timestamp;
 
-import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,7 +45,6 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
@@ -100,9 +98,6 @@ public class PlayerLastLocation implements EntityWithLocation
 	
     @Transient
     private transient Location location;
-    
-    @Transient
-    private transient Factory factory;
     
     public PlayerLastLocation() {}
 
@@ -186,20 +181,9 @@ public class PlayerLastLocation implements EntityWithLocation
 		this.dateCreated = dateCreated;
 	}
 
-    /**
-     *  Allow IoC container to inject factory instance, for use when creating Location
-     *  objects after we've been loaded from the DB by ORM layer.
-     *  
-     * @param server the server object
-     */
-    @Inject
-    public void setFactory(Factory factory) {
-        this.factory = factory;
-    }
-
 	public Location getLocation() {
         if( location == null ) {
-            location = factory.newLocation(world, x, y, z, yaw, pitch);
+            location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
         }
         
         return location;

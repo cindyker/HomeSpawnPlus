@@ -33,6 +33,8 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
@@ -43,7 +45,7 @@ import org.morganm.homespawnplus.server.api.OfflinePlayer;
  *
  */
 public class HomeListOther extends BaseCommand {
-	private HomeList homeListCommand;
+	@Inject private HomeList homeListCommand;
 
 	@Override
 	public String[] getCommandAliases() { return new String[] {"hlo"}; }
@@ -54,13 +56,10 @@ public class HomeListOther extends BaseCommand {
 	}
 
 	@Override
-    public boolean execute(CommandSender p, String[] args) {
+    public boolean execute(CommandSender p, String cmd, String[] args) {
         if( !defaultCommandChecks(p) )
             return false;
         
-        if( homeListCommand == null )
-            homeListCommand = new HomeList();
-
 		String player = null;
 		String world = "all";
 		
@@ -72,8 +71,10 @@ public class HomeListOther extends BaseCommand {
 		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
 		if( otherPlayer != null )
 			player = otherPlayer.getName();
-		else
-			player = args[0];
+		else {
+		    server.sendLocalizedMessage(p, HSPMessages.GENERIC_PLAYER_NOT_FOUND, "player", args[0]);
+		    return true;
+		}
 
 		if( args.length > 1 )
 			world = args[1];

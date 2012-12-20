@@ -38,7 +38,8 @@ import java.util.Map;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
@@ -48,6 +49,8 @@ import org.morganm.homespawnplus.util.Debug;
 public class SerializableSpawn extends AbstractSerializableEntityWithLocation<Spawn>
 implements SerializableYamlObject<Spawn>
 {
+    private final static Logger log = LoggerFactory.getLogger(SerializableSpawn.class);
+
 	private final static String ATTR_NAME = "name";
 	private final static String ATTR_GROUP = "group_name";
 	private final static String ATTR_UPDATED_BY = "updatedBy";
@@ -59,7 +62,7 @@ implements SerializableYamlObject<Spawn>
 	public SerializableSpawn(Map<String, Object> map) {
 		super(map);
 		
-		Debug.getInstance().devDebug("SerializeSpawn constructor, map=",map);
+		log.debug("SerializeSpawn constructor, map={}",map);
 
 		Object o = map.get(ATTR_NAME);
 		if( o instanceof String )

@@ -3,7 +3,7 @@
  */
 package org.morganm.homespawnplus.server.api.impl;
 
-import org.bukkit.Location;
+import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.TeleportOptions;

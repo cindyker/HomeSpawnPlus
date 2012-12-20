@@ -37,7 +37,8 @@ import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
-import org.morganm.homespawnplus.util.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
@@ -47,6 +48,7 @@ import org.morganm.homespawnplus.util.Debug;
 public class SerializablePlayerLastLocation extends AbstractSerializableEntityWithLocation<PlayerLastLocation>
 implements SerializableYamlObject<PlayerLastLocation>
 {
+    private final static Logger log = LoggerFactory.getLogger(SerializablePlayerLastLocation.class);
 	private final static String ATTR_PLAYER_NAME = "player_name";
 	
 	public SerializablePlayerLastLocation(PlayerLastLocation playerLastLocation) {
@@ -56,7 +58,7 @@ implements SerializableYamlObject<PlayerLastLocation>
 	public SerializablePlayerLastLocation(Map<String, Object> map) {
 		super(map);
 		
-		Debug.getInstance().devDebug("SerializablePlayerLastLocation constructor, map=",map);
+		log.debug("SerializablePlayerLastLocation constructor, map={}",map);
 
 		Object o = map.get(ATTR_PLAYER_NAME);
 		if( o instanceof String )

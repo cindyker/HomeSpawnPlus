@@ -38,10 +38,11 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.HomeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Methods that are useful for Home-related strategies.
  * 
@@ -49,6 +50,8 @@ import org.morganm.homespawnplus.util.HomeUtil;
  *
  */
 public abstract class HomeStrategy extends BaseStrategy {
+    protected static Logger log = LoggerFactory.getLogger(HomeStrategy.class);
+
     protected Storage storage;
     protected HomeUtil homeUtil;
     protected BedUtils bedUtil;
@@ -174,14 +177,6 @@ public abstract class HomeStrategy extends BaseStrategy {
 	 * @return true if a bed is nearby, false if not
 	 */
 	public boolean isBedNearby(final Home home) {
-		if( home == null )
-			return false;
-		
-		Location l = home.getLocation();
-		if( l == null )
-			return false;
-		
-		Location bedLoc = bedUtil.findBed(l.getBlock(), 5);
-		return bedLoc != null;
+	    return bedUtil.isBedNearby(home);
 	}
 }

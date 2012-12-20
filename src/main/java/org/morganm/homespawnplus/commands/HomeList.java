@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.Storage;
 
 /**
@@ -57,17 +58,14 @@ public class HomeList extends BaseCommand {
 		return server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
 	}
 
-	@Override
-    public boolean execute(CommandSender sender, String[] args) {
-		if( !defaultCommandChecks(sender) )
-			return true;
-		
-		String world = "all";
-		if( args.length > 0 )
-			world = args[0];
-		
-		return executeCommand(sender, sender.getName(), world);
-	}
+    @Override
+    public boolean execute(Player player, String[] args) {
+        String world = "all";
+        if( args.length > 0 )
+            world = args[0];
+        
+        return executeCommand(player, player.getName(), world);
+    }
 
 	/** Package visibility, code is reused by HomeListOther.
 	 * 

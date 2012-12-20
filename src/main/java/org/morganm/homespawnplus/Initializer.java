@@ -4,8 +4,10 @@
 package org.morganm.homespawnplus;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -47,15 +49,32 @@ public class Initializer {
      * @return
      */
     private Collection<Initializable> getSortedInitObjects() {
-        TreeMap<Integer, Initializable> sortedMap = new TreeMap<Integer, Initializable>();
+        TreeMap<Integer, List<Initializable>> sortedMap = new TreeMap<Integer, List<Initializable>>();
+        
+        // sort into a TreeMap which will maintain order. Items of same priority
+        // are added to a List keyed by that priority
         for(Class<? extends Initializable> initClass : getInitClasses()) {
             Initializable init = injector.getInstance(initClass);
             int priority = init.getPriority();
             if( priority < 0 )
                 priority = 0;
-            sortedMap.put(priority, init);
+            List<Initializable> list = sortedMap.get(priority);
+            if( list == null ) {
+                list = new ArrayList<Initializable>();
+                sortedMap.put(priority, list);
+            }
+            list.add(init);
         }
-        return sortedMap.values();
+        
+        // Now iterate through the map in order of priority and add them
+        // all to a single flat result array that will be all Initializable
+        // objects sorted in order of priority
+        List<Initializable> result = new ArrayList<Initializable>(10);
+        for(List<Initializable> list : sortedMap.values()) {
+            result.addAll(list);
+        }
+
+        return result;
     }
     
     /**

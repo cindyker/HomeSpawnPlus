@@ -1,5 +1,6 @@
 package org.morganm.homespawnplus.util;
 
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
@@ -41,6 +42,13 @@ public interface BedUtils {
      * @param l
      */
     public void setBukkitBedHome(Player player, Location l);
+
+    /** Look for a nearby bed to the given home.
+     * 
+     * @param home
+     * @return true if a bed is nearby, false if not
+     */
+    public boolean isBedNearby(Home home);
 
     /** Called when player right-clicks on a bed. Includes 2-click protection mechanism, if enabled.
      * 

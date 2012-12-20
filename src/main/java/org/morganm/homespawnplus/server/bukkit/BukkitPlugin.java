@@ -44,4 +44,9 @@ public class BukkitPlugin implements Plugin
     public ClassLoader getClassLoader() {
         return plugin._getClassLoader();
     }
+
+    @Override
+    public String getVersion() {
+        return plugin.getDescription().getVersion();
+    }
 }

@@ -64,7 +64,7 @@ public class SpawnList extends BaseCommand {
 	}
 
     @Override
-    public boolean execute(CommandSender p, String[] originalArgs) {
+    public boolean execute(CommandSender p, String cmd, String[] originalArgs) {
         if( !defaultCommandChecks(p) )
             return false;
 

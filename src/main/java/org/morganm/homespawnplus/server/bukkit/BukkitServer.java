@@ -104,7 +104,11 @@ public class BukkitServer implements Server {
     
     @Override
     public Player getPlayer(String playerName) {
-        return new BukkitPlayer(plugin.getServer().getPlayer(playerName));
+        org.bukkit.entity.Player player = plugin.getServer().getPlayer(playerName);
+        if( player != null )
+            return new BukkitPlayer(player);
+        else
+            return null;
     }
 
     /** Given a string, look for the best possible player match. Returned
@@ -163,7 +167,12 @@ public class BukkitServer implements Server {
         }
         else {
             log.debug("getBestMatchPlayer() playerName={}, returning offline player {}", playerName, offlineMatch);
-            return new BukkitOfflinePlayer(offlineMatch);
+            // if the offlineMatch has played before (it's a real player on our server),
+            // then return it. Otherwise return null.
+            if( offlineMatch.hasPlayedBefore() )
+                return new BukkitOfflinePlayer(offlineMatch);
+            else
+                return null;
         }
     }
 

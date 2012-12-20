@@ -7,12 +7,13 @@ import org.bukkit.Bukkit;
 import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.server.api.impl.LocationAbstractImpl;
 
 /**
  * @author morganm
  *
  */
-public class BukkitLocation implements Location {
+public class BukkitLocation extends LocationAbstractImpl implements Location {
     private final org.bukkit.Location bukkitLocation;
 
     public BukkitLocation(org.bukkit.Location bukkitLocation) {
@@ -161,10 +162,4 @@ public class BukkitLocation implements Location {
     public World getWorld() {
         return new BukkitWorld(bukkitLocation.getWorld());
     }
-
-    @Override
-    public String shortLocationString() {
-        // TODO need to tie into util method
-    }
-
 }

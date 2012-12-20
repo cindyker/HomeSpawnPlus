@@ -135,7 +135,7 @@ public class BukkitCommandRegister implements Initializable {
                 public boolean onCommand(CommandSender sender,
                         org.bukkit.command.Command bukkitCommand, String label, String[] args) {
                     org.morganm.homespawnplus.server.api.CommandSender apiSender = factory.getCommandSender(sender);
-                    return command.execute(apiSender, args);
+                    return command.execute(apiSender, label, args);
                 }
             });
 			pc.setLabel(cmdName);

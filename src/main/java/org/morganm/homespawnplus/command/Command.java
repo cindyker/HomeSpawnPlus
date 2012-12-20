@@ -48,12 +48,14 @@ public interface Command {
      * Execute this command.
      * 
      * @param sender the command sender (can be Console or Player)
+     * @param cmd the command that caused this execute to be invoked. If this
+     * command has aliases, this might be different than the command name.
      * @param args the arguments that were passed to the command
      * 
      * @return true if the command executed successfully, false if command execution should
      * continue looking for another command.
      */
-	public boolean execute(CommandSender sender, String[] args);
+	public boolean execute(CommandSender sender, String cmd, String[] args);
 
 	/** If the command allows it's name to be set by external configuration, it
 	 * should implement this call to allow it's name to be changed.

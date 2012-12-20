@@ -54,7 +54,7 @@ public class SpawnDelete extends BaseCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender p, String[] args) {
+	public boolean execute(CommandSender p, String cmd, String[] args) {
 	    if( !defaultCommandChecks(p) )
 	        return false;
 	    

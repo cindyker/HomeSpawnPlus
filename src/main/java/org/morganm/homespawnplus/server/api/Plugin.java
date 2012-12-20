@@ -14,4 +14,5 @@ public interface Plugin {
     public File getJarFile();
     public String getName();
     public ClassLoader getClassLoader();
+    public String getVersion();
 }

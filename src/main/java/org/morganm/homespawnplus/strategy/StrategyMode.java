@@ -33,9 +33,6 @@
  */
 package org.morganm.homespawnplus.strategy;
 
-import java.util.ArrayList;
-
-import org.morganm.homespawnplus.util.Teleport;
 
 /** Different modes that strategies can run under, which can change
  * the behavior of other strategies.
@@ -50,10 +47,10 @@ public enum StrategyMode {
 	MODE_HOME_DEFAULT_ONLY,
 	MODE_HOME_ANY,
 	MODE_HOME_REQUIRES_BED,
-	MODE_NO_WATER (Teleport.FLAG_NO_WATER),
-	MODE_NO_LILY_PAD (Teleport.FLAG_NO_LILY_PAD),
-	MODE_NO_LEAVES (Teleport.FLAG_NO_LEAVES),
-	MODE_NO_ICE (Teleport.FLAG_NO_ICE),
+	MODE_NO_WATER,
+	MODE_NO_LILY_PAD,
+	MODE_NO_LEAVES,
+	MODE_NO_ICE,
 	MODE_YBOUNDS,
 	MODE_DEFAULT,
 	MODE_REMEMBER_SPAWN,
@@ -65,6 +62,7 @@ public enum StrategyMode {
 	MODE_EXCLUDE_NEW_PLAYER_SPAWN,
 	MODE_DISTANCE_LIMITS;
 	
+	/*
 	// associated Teleport safeMode flag, if any
 	private int flagId = 0;
 	
@@ -89,4 +87,5 @@ public enum StrategyMode {
 	public static StrategyMode[] getSafeModes() {
 		return safeModes;
 	}
+	*/
 }

@@ -46,12 +46,11 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  *
  */
 public class HomeAnyWorld extends HomeStrategy {
-
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		// get the Set of homes for this player for ALL worlds
-		Set<Home> homes = plugin.getStorage().getHomeDAO().findHomesByPlayer(context.getPlayer().getName());
-		debug.debug("HomeAnyWorld: homes = ", homes);
+	    Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(context.getPlayer().getName());
+		log.debug("HomeAnyWorld: homes = {}", homes);
 		
 		Home home = null;
 		
@@ -80,7 +79,7 @@ public class HomeAnyWorld extends HomeStrategy {
 			}
 		}
 		
-		return new StrategyResult(home);
+		return resultFactory.create(home);
 	}
 
 	@Override

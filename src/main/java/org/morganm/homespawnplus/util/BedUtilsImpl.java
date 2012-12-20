@@ -148,6 +148,23 @@ public class BedUtilsImpl implements BedUtils {
             player.setBedSpawnLocation(bedLoc);
     }
 
+    /** Look for a nearby bed to the given home.
+     * 
+     * @param home
+     * @return true if a bed is nearby, false if not
+     */
+    public boolean isBedNearby(final Home home) {
+        if( home == null )
+            return false;
+        
+        Location l = home.getLocation();
+        if( l == null )
+            return false;
+        
+        Location bedLoc = findBed(l.getBlock(), 5);
+        return bedLoc != null;
+    }
+
     /* (non-Javadoc)
      * @see org.morganm.homespawnplus.util.BedUtils#doBedClick(org.morganm.homespawnplus.server.api.Player, org.morganm.homespawnplus.server.api.Block)
      */

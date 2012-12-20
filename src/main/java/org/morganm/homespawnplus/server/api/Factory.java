@@ -41,5 +41,10 @@ public interface Factory {
      */
     public StrategyContext newStrategyContext();
     
+    /**
+     * Factory method for creating a new YamlFile
+     * 
+     * @return the new YamlFile object
+     */
     public YamlFile newYamlFile();
 }

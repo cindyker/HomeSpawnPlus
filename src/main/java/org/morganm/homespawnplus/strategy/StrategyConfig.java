@@ -60,7 +60,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class StrategyConfig {
-    private final Logger log = LoggerFactory.getLogger(StrategyConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(StrategyConfig.class);
+
 	private final Map<String, Set<Strategy>> defaultStrategies;
 	private final Map<String, WorldStrategies> worldStrategies;
 	private final Map<String, PermissionStrategies> permissionStrategies;

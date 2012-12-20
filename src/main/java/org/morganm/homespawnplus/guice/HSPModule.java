@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.event.EventListener;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.strategy.StrategyResultFactory;
+import org.morganm.homespawnplus.strategy.StrategyResultFactoryImpl;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.BedUtilsImpl;
 import org.morganm.mBukkitLib.i18n.Locale;
@@ -42,6 +44,8 @@ public class HSPModule extends AbstractModule {
         bind(Locale.class)
             .to(LocaleStringReplacerImpl.class)
             .in(Scopes.SINGLETON);
+        bind(StrategyResultFactory.class)
+            .to(StrategyResultFactoryImpl.class);
     }
 
     @Provides

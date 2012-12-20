@@ -3,8 +3,10 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,6 +17,8 @@ import java.util.Set;
 
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyMode;
@@ -29,14 +33,14 @@ import org.testng.annotations.Test;
  *
  */
 public class HomeAnyWorldTest extends HomeStrategyTest {
+    @InjectMocks
+    private HomeAnyWorld objectUnderTest;
+    
     private Set<Home> homeSet;      // test home set to work with
     private Home bedHome;
     private Home defaultHome;
     private Home namedHome;
 
-    @InjectMocks
-    private HomeAnyWorld objectUnderTest;
-    
     StrategyResult mockResult;
     
     @BeforeClass
@@ -47,8 +51,9 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
          * reference for result expectations. These objects should
          * not be modified in any way by the test methods.
          */
-        // create a few homes in our test data set
         homeSet = new HashSet<Home>();
+
+        // create a few homes as our test data set
         bedHome = mock(Home.class);
         when(bedHome.isBedHome()).thenReturn(true);
         when(bedHome.getName()).thenReturn("bedhome");
@@ -66,10 +71,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     
     @BeforeMethod
     public void beforeMethod() {
-        // debugging tests
-//        when(util.getConfigCore().isVerboseStrategyLogging()).thenReturn(true);
-//        new TestUtil().setDebug();
-        
         MockitoAnnotations.initMocks(this);
         super.beforeMethod();
 
@@ -95,7 +96,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     @Test(dataProvider = "modeDeterministicTests")
     public void testModesDeterministicResults(StrategyMode mode, Home expectedResult) throws Exception {
         // Given
-        // setup context
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
         when(context.isModeEnabled(mode)).thenReturn(true);
@@ -111,7 +111,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     @Test
     public void testModeDefault() throws Exception {
         // Given
-        // setup context
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
         when(context.isDefaultModeEnabled()).thenReturn(true);
@@ -127,7 +126,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     @Test
     public void testModeAny() throws Exception {
         // Given
-        // setup context
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
         when(context.isModeEnabled(StrategyMode.MODE_HOME_ANY)).thenReturn(true);
@@ -143,7 +141,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     @Test
     public void testModeRequiresBedWithBed() throws Exception {
         // Given
-        // setup context
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
         when(context.isDefaultModeEnabled()).thenReturn(true);
@@ -162,7 +159,6 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
     @Test
     public void testModeRequiresBedWithoutBed() throws Exception {
         // Given
-        // setup context
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
         when(context.isDefaultModeEnabled()).thenReturn(true);
@@ -176,25 +172,25 @@ public class HomeAnyWorldTest extends HomeStrategyTest {
         assertEquals(mockResult, result);   // validate we got our expected mock result back
     }
 
-    /*
     @Test
-    public void testModeDefaultOnly() throws Exception {
+    public void testNoHomes() throws Exception {
         // Given
-        // setup context for bed test
         StrategyContext context = mock(StrategyContext.class);
         when(context.getPlayer()).thenReturn(player);
-        when(context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY)).thenReturn(true);
+        when(context.isDefaultModeEnabled()).thenReturn(true);
 
-        // setup mock result and expected new() call
-        StrategyResult mockResult = mock(StrategyResult.class);
-        whenNew(StrategyResult.class).withArguments(defaultHome).thenReturn(mockResult);
+        // return no homes
+        doAnswer(new Answer<Set<Home>>() {
+            public Set<Home> answer(InvocationOnMock invocation) {
+                return null;
+            }})
+            .when(homeDAO).findHomesByPlayer(any(String.class));
 
         // When
         StrategyResult result = objectUnderTest.evaluate(context);
 
         // Then
-        assertNotNull(result);
-        verifyNew(StrategyResult.class).withArguments(defaultHome); // make sure we picked defaultHome
+        verify(resultFactory).create(isNull(Home.class));   // validate no home was chosen
+        assertEquals(mockResult, result);   // validate we got our expected mock result back
     }
-    */
 }

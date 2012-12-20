@@ -62,7 +62,7 @@ public class GroupQuery extends BaseCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String[] args) {
+	public boolean execute(CommandSender sender, String cmd, String[] args) {
 		if( !defaultCommandChecks(sender) )
 			return true;
 		

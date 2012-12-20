@@ -56,7 +56,8 @@ public class PermCheck extends BaseCommand {
 		return server.getLocalizedMessage(HSPMessages.CMD_PERMCHECK_USAGE);
 	}
 
-    public boolean execute(CommandSender sender, String[] args) {
+	@Override
+    public boolean execute(CommandSender sender, String cmd, String[] args) {
         if( !defaultCommandChecks(sender) )
             return false;
 

@@ -15,7 +15,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigEvents extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigEvents extends ConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigEvents(YamlFile yaml) {
         super("events.yml", "events", yaml);

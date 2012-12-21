@@ -14,7 +14,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigDynmap extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigDynmap extends ConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigDynmap(YamlFile yaml) {
         super("dynmap.yml", "dynmap", yaml);

@@ -3,16 +3,14 @@
  */
 package org.morganm.homespawnplus.manager;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.inject.Inject;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.morganm.homespawnplus.OldHSP;
-import org.morganm.homespawnplus.config.old.Config;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigHomeLimits;
+import org.morganm.homespawnplus.config.ConfigHomeLimits.LimitsPerPermission;
+import org.morganm.homespawnplus.config.ConfigHomeLimits.LimitsPerWorld;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.Storage;
@@ -22,8 +20,6 @@ import org.slf4j.LoggerFactory;
 
 /** Manager class for home limits.
  * 
- * TODO: eliminate Bukkit configuration dependency.
- * 
  * @author morganm
  *
  */
@@ -31,6 +27,7 @@ public class HomeLimitsManager {
     private final Logger log = LoggerFactory.getLogger(HomeLimitsManager.class);
     
     @Inject private Storage storage;
+    @Inject private ConfigHomeLimits config;
     
     private LimitReason limitCheck(Player p, String worldName) {
         int limit = getHomeLimit(p, worldName, true);
@@ -105,73 +102,63 @@ public class HomeLimitsManager {
      * @param playerName
      * @param world if world is null, the global value is used instead
      * @param perWorldLimit true if you want the perWorld limit, false if you want the global limit
+     * 
+     * @return --1 if limit is infinite or a number >= 0 that is the limit to be used
      */
     public int getHomeLimit(Player player, String worldName, boolean perWorldLimit) {
-        int limit = -2;
+        Integer limit = null;
         
-        String limitKey = null;
-        if( perWorldLimit )
-            limitKey = ConfigOptions.HOME_LIMITS_PER_WORLD;
-        else
-            limitKey = ConfigOptions.HOME_LIMITS_GLOBAL;
+        log.debug("getHomeLimit() player = {}, worldName = {}, perWorldLimit = {}", player, worldName, perWorldLimit);
         
-        log.debug("getHomeLimit(), player = {}, worldName = {}, limitKey = {}", player, worldName, limitKey);
-        
-        Config config = plugin.getHSPConfig();
-        
-        // check permissions section; we iterate through the permissions of each section
-        // and see if this player has that permission
-        ConfigurationSection section = config.getConfigurationSection(
-                ConfigOptions.HOME_LIMITS_BASE + "permission");
-        if( section != null ) {
-            Set<String> sections = section.getKeys(false);
-            if( sections != null ) {
-                for(String key : sections) {
-                    log.debug("found limit section {}, checking permissions for section", key);
-                    List<String> perms = config.getStringList(ConfigOptions.HOME_LIMITS_BASE
-                            + "permission." + key + ".permissions", null);
-                    if( perms != null ) {
-                        for(String perm : perms) {
-                            log.debug("checking permission {} for player {}", perm, player);
-                            if( player.hasPermission(perm) ) {
-                                limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE
-                                        + "permission." + key + "." + limitKey, -2);
+        // check per-permission entries
+        MATCH_FOUND:
+        for(Map.Entry<String, LimitsPerPermission> entry : config.getPerPermissionEntries().entrySet()) {
+            Integer value = null;
+            if( perWorldLimit )
+                value = entry.getValue().getPerWorld();
+            else
+                value = entry.getValue().getGlobal();
 
-                                log.debug("{} limit for permission {} = {}", limitKey, perm, limit);
-
-                                if( limit != -2 )
-                                    break;
-                            }
-                        }
-                    }
-                    
-                    if( limit != -2 ) {
-                        log.debug("Limit value of {} found as a result of section {}; stopping limit search",
-                                limit, key);
-                        break;
+            // only if there is a limit value for this entry do we do any extra processing
+            if( value != null && value > 0 ) {
+                // ok now check to see if player has a permisson in the list
+                for(String perm : entry.getValue().getPermissions()) {
+                    log.debug("processing per-permission permission {}", perm);
+                    if( player.hasPermission(perm) ) {
+                        limit = value;
+                        break MATCH_FOUND;
                     }
                 }
             }
         }
+        log.debug("getHomeLimit() post-permission limit={}", limit);
         
-        // try specific world setting if we haven't found a limit yet
-        if( limit == -2 ) {
-            limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE + "world." + worldName + "." + limitKey, -2);
-            log.debug("{} limit for world {} = {}", limitKey, worldName, limit);
+        // we only check per-world limits if no per-permission limit was defined
+        if( limit == null && worldName != null ) {
+            LimitsPerWorld entry = config.getPerWorldEntry(worldName);
+            if( perWorldLimit )
+                limit = entry.getPerWorld();
+            else
+                limit = entry.getGlobal();
+
+            log.debug("getHomeLimit() limit for world {} = {}", worldName, limit);
         }
         
-        if( limit == -2 ) {
-            limit = config.getInt(ConfigOptions.HOME_LIMITS_BASE
-                    + ConfigOptions.HOME_LIMITS_DEFAULT + "." + limitKey, -2);
-            log.debug("{} default limit = {}", limitKey, limit);
+        // use default setting if no limit defined yet
+        if( limit == null ) {
+            if( perWorldLimit )
+                limit = config.getDefaultPerWorldLimit();
+            else
+                limit = config.getDefaultGlobalLimit();
+
+            log.debug("getHomeLimit() default limit = {}", limit);
         }
         
         // if we get to here and still haven't found a value, we assume a sane default of 1
-        if( limit == -2 )
+        if( limit == null || limit < 0 )
             limit = 1;
         
-        log.debug("getHomeLimit() returning {} limit {} for player {}", limitKey, limit, player);
-        
+        log.debug("getHomeLimit() returning limit {} for player {}", limit, player);
         return limit;
     }
 
@@ -220,12 +207,7 @@ public class HomeLimitsManager {
      * @return
      */
     public boolean isSingleGlobalHomeEnabled(String world, String playerName) {
-        if( plugin.getHSPConfig().getBoolean(ConfigOptions.SINGLE_GLOBAL_HOME, false) &&
-                !plugin.hasPermission(world, playerName, OldHSP.BASE_PERMISSION_NODE+".singleGlobalHomeExempt") ) {
-            return true;
-        }
-        else
-            return false;
+        return config.isSingleGlobalHome();
     }
     
     private static class LimitReason {

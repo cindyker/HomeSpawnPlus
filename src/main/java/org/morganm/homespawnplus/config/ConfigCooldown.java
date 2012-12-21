@@ -3,20 +3,17 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerPermission;
+import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerWorld;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -24,25 +21,28 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigCooldown extends AbstractConfigBase implements ConfigInterface, Initializable {
-    private static final String RESET_ON_DEATH = "resetOnDeath";
-    
-    private Map<String, PerPermissionCooldownEntry> perPermissionEntries;
-    
+public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, CooldownsPerWorld>
+implements ConfigInterface, Initializable
+{
     @Inject
     public ConfigCooldown(YamlFile yaml) {
         super("cooldown.yml", "cooldown", yaml);
-    }
-
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        super.load();
-        populatePerPermissionEntries();
     }
 
     public boolean isEnabled() {
         return super.getBoolean("enabled");
     }
     
+    @Override
+    protected CooldownsPerPermission newPermissionEntry() {
+        return new CooldownsPerPermission();
+    }
+
+    @Override
+    protected CooldownsPerWorld newWorldEntry() {
+        return new CooldownsPerWorld();
+    }
+
     /**
      * Return a list of cooldowns that are on separate timers.
      * 
@@ -58,135 +58,9 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      * @return
      */
     public boolean isGlobalResetOnDeath() {
-        return super.getBoolean(RESET_ON_DEATH);
-    }
-    
-    /**
-     * Determine if the admin has configured the resetOnDeath flag. For this
-     * check it doesn't matter whether it's set to true or false, only that
-     * it has been explicitly set.
-     * 
-     * @param world
-     * @return
-     */
-    public boolean hasWorldResetOnDeathFlag(String world) {
-        return super.contains("world."+world+"."+RESET_ON_DEATH);
+        return super.getBoolean("resetOnDeath");
     }
 
-    /**
-     * Determine whether a world's cooldowns should reset on death.
-     * @param world
-     * @return
-     */
-    public boolean isWorldResetOnDeath(String world) {
-        return super.getBoolean("world."+world+"."+RESET_ON_DEATH);
-    }
-
-    /**
-     * Return all per-permission permissions related to given cooldowns.
-     * 
-     * @param cooldowns the list of cooldowns to check
-     * @return
-     */
-    /*
-    public Set<String> getPerPermissionCooldownEntries(String[] cooldowns) {
-        Set<String> returnPerms = new LinkedHashSet<String>();
-        
-        Set<String> entries = super.getKeys("permission");
-        for(String entry : entries) {
-            for(String cooldown : cooldowns) {
-                // skip sections that don't apply to this cooldown
-                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
-                if( cooldownValue <= 0 )
-                    continue;
-                
-                List<String> perms = super.getStringList("permission."+entry+".permissions");
-                if( perms == null ) {
-                    perms = new ArrayList<String>(1);
-                }
-                perms.add("hsp.cooldown."+entry);     // add default entry permission
-                
-                returnPerms.addAll(perms);
-            }
-        }
-        
-        return returnPerms;
-    }
-    */
-
-    /**
-     * Given an entry key, return the permissions associated with that entry.
-     * 
-     * @param entry
-     * @return
-     */
-    /*
-    public Set<String> getPerPermmissionEntryPerms(String entry) {
-        for(String cooldown : cooldowns) {
-            // skip sections that don't apply to this cooldown
-            final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
-            if( cooldownValue <= 0 )
-                continue;
-            
-            List<String> perms = super.getStringList("permission."+entry+".permissions");
-            if( perms == null ) {
-                perms = new ArrayList<String>(1);
-            }
-            perms.add("hsp.cooldown."+entry);     // add default entry permission
-            
-            returnPerms.addAll(perms);
-        }
-    }
-    */
-    
-    /**
-     * For a given permission & cooldowns combo, return the applicable timer.
-     * 
-     * @param cooldowns the list of cooldowns to check
-     * @param permission
-     * @return
-     */
-    /*
-    public int getPerPermissionCooldown(String[] cooldowns, String permission) {
-        Set<String> entries = super.getKeys("permission");
-        for(String entry : entries) {
-            for(String cooldown : cooldowns) {
-                // skip sections that don't apply to this cooldown
-                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
-                if( cooldownValue <= 0 )
-                    continue;
-    
-                List<String> perms = super.getStringList("permission."+entry+".permissions");
-                if( perms == null ) {
-                    perms = new ArrayList<String>(1);
-                }
-                perms.add("hsp.cooldown."+entry);     // add default entry permission
-                
-                if( perms.contains(permission) ) {
-                    return cooldownValue;
-                }
-            }
-        }
-        
-        return 0;
-    }
-    */
-
-    /**
-     * For a given world & cooldown combo, return the applicable timer.
-     * 
-     * @param cooldown
-     * @param world
-     * @return
-     */
-    public int getPerWorldCooldown(String cooldown, String world) {
-        final int cooldownValue = super.getInt("world."+world+"."+cooldown);
-        if( cooldownValue > 0 )
-            return cooldownValue;
-        else
-            return 0;
-    }
-    
     /**
      * For a given cooldown, return it's global cooldown time (exclusive of
      * per-permission and per-world cooldown values).
@@ -196,113 +70,94 @@ public class ConfigCooldown extends AbstractConfigBase implements ConfigInterfac
      */
     public int getGlobalCooldown(String cooldown) {
         final int cooldownValue = super.getInt(cooldown);
-        if( cooldownValue > 0 )
-            return cooldownValue;
-        else
-            return 0;
+        return cooldownValue > 0 ? cooldownValue : 0;
     }
-    
+
     /**
      * Determine if cooldown per-world is enabled for a given world.
      * @param world
      * @return
      */
     public boolean isCooldownPerWorld(String world) {
-        return super.getBoolean("world."+world+"."+"cooldownPerWorld");
+        CooldownsPerWorld entry = super.perWorldEntries.get(world);
+        return entry != null ? entry.isCooldownPerWorld() : false;
     }
-    
-    /*
-    public boolean isCooldownPerPermission(String[] cooldowns, String perm) {
-        Set<String> entries = super.getKeys("permission");
-        for(String entry : entries) {
-            for(String cooldown : cooldowns) {
-                // skip sections that don't apply to this cooldown
-                final int cooldownValue = super.getInt("permission."+entry+"."+cooldown);
-                if( cooldownValue <= 0 )
-                    continue;
-    
-                List<String> perms = super.getStringList("permission."+entry+".permissions");
-                if( perms == null ) {
-                    perms = new ArrayList<String>(1);
-                }
-                perms.add("hsp.cooldown."+entry);     // add default entry permission
-                
-                if( perms.contains(permission) ) {
-                    return cooldownValue;
-                }
-            }
-        }
-        
-        return 0;
-    }
-    */
-    
-    public Map<String, PerPermissionCooldownEntry> getPerPermissionEntries() {
-        return perPermissionEntries;
-    }
-    
+
     /**
-     * Method to process the config and load into memory any per-permissions
-     * config data for simple and efficient use later.
+     * For a given world & cooldown combo, return the applicable timer.
+     * 
+     * @param cooldown
+     * @param world
+     * @return
      */
-    private void populatePerPermissionEntries() {
-        final String base = "permission";
+    public int getPerWorldCooldown(String cooldown, String world) {
+        CooldownsPerWorld entry = super.perWorldEntries.get(world);
+        return entry != null ? entry.getCooldowns().get(cooldown) : 0;
+    }
 
-        perPermissionEntries = new LinkedHashMap<String, PerPermissionCooldownEntry>();
+    private static class Entry {
+        boolean hasCooldownPerX = false;
+        boolean isCooldownPerX = false;
+        boolean hasResetOnDeath = false;
+        boolean isResetOnDeath = false;
+        Map<String, Integer> cooldowns = new HashMap<String, Integer>();
         
-        Set<String> entries = super.getKeys(base);
-        for(String entryName : entries) {
-            final String baseEntry = base + "." + entryName;
-            
-            PerPermissionCooldownEntry entry = new PerPermissionCooldownEntry();
-            perPermissionEntries.put(entryName, entry);
-            
-            // grab permissions related to this entry
-            entry.permissions = super.getStringList(baseEntry+".permissions");
-            if( entry.permissions == null ) {
-                entry.permissions = new ArrayList<String>(1);
+        public void setValue(String key, Object o) {
+            if( key.startsWith("cooldownPer") ) {   // cooldownPerPermission and cooldownPerWorld
+                hasCooldownPerX = true;
+                isCooldownPerX = (Boolean) o;
             }
-            entry.permissions.add("hsp.cooldown."+entry);     // add default entry permission
-
-            // make map immutable to protect against external changes
-            entry.permissions = Collections.unmodifiableList(entry.permissions);
-
-            // now look for individual cooldown settings
-            for(String key : super.getKeys(baseEntry)) {
-                if( key.equals("permissions") ) {   // skip, we already got these
-                    continue;
-                }
-                if( key.equals("cooldownPerPermission") ) {
-                    entry.cooldownPerPermission = super.getBoolean(baseEntry+".cooldownPerPermission");
-                    continue;
-                }
-                if( key.equals(RESET_ON_DEATH) ) {
-                    entry.resetOnDeath = super.getBoolean(baseEntry+"."+RESET_ON_DEATH);
-                    continue;
-                }
-                
-                // everything else is a cooldown entry
-                entry.cooldowns.put(key, super.getInt(baseEntry+"."+key));
+            else if( key.equals("resetOnDeath") ) {
+                hasResetOnDeath = true;
+                isResetOnDeath = (Boolean) o;
             }
-            
-            // make map immutable to protect against external changes
-            entry.cooldowns = Collections.unmodifiableMap(entry.cooldowns);
+            else {
+                cooldowns.put(key, (Integer) o);
+            }
         }
         
-        // make map immutable to protect against external changes
-        perPermissionEntries = Collections.unmodifiableMap(perPermissionEntries);
+        public void finishedProcessing() {
+            cooldowns = Collections.unmodifiableMap(cooldowns);
+        }
     }
+
+    public static class CooldownsPerPermission extends PerPermissionEntry {
+        private Entry entry;
         
-    public class PerPermissionCooldownEntry {
-        protected List<String> permissions;
-        protected boolean cooldownPerPermission = false;
-        protected boolean resetOnDeath = false;
+        public boolean hasCooldownPerPermission() { return entry.hasCooldownPerX; }
+        public boolean isCooldownPerPermission() { return entry.isCooldownPerX; }
+        public boolean hasResetOnDeath() { return entry.hasResetOnDeath; }
+        public boolean isResetOnDeath() { return entry.isResetOnDeath; }
+        public Map<String, Integer> getCooldowns() { return entry.cooldowns; }
         
-        protected Map<String, Integer> cooldowns = new HashMap<String, Integer>();
+        @Override
+        public void setValue(String key, Object o) {
+            entry.setValue(key,  o);
+        }
         
-        public List<String> getPermissions() { return permissions; }
-        public boolean isCooldownPerPermission() { return cooldownPerPermission; }
-        public boolean isResetOnDeath() { return resetOnDeath; }
-        public Map<String, Integer> getCooldowns() { return cooldowns; }
+        @Override
+        public void finishedProcessing() {
+            entry.finishedProcessing();
+        }
+    }
+
+    public static class CooldownsPerWorld extends PerWorldEntry {
+        private Entry entry;
+        
+        public boolean hasCooldownPerWorld() { return entry.hasCooldownPerX; }
+        public boolean isCooldownPerWorld() { return entry.isCooldownPerX; }
+        public boolean hasResetOnDeath() { return entry.hasResetOnDeath; }
+        public boolean isResetOnDeath() { return entry.isResetOnDeath; }
+        public Map<String, Integer> getCooldowns() { return entry.cooldowns; }
+        
+        @Override
+        public void setValue(String key, Object o) {
+            entry.setValue(key,  o);
+        }
+        
+        @Override
+        public void finishedProcessing() {
+            entry.finishedProcessing();
+        }
     }
 }

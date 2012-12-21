@@ -25,7 +25,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigEconomy extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigEconomy extends ConfigBase implements ConfigInterface, Initializable {
     private Map<String, PerPermissionEconomyEntry> perPermissionEntries;
     
     @Inject

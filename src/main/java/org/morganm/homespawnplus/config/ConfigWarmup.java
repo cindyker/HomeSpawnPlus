@@ -3,15 +3,16 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerPermission;
+import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerWorld;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
@@ -19,7 +20,9 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigWarmup extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPerWorld>
+implements ConfigInterface, Initializable
+{
     @Inject
     public ConfigWarmup(YamlFile yaml) {
         super("warmup.yml", "warmup", yaml);
@@ -53,63 +56,6 @@ public class ConfigWarmup extends AbstractConfigBase implements ConfigInterface,
     }
     
     /**
-     * Return all per-permission permissions related to a given warmup.
-     * 
-     * @param warmup
-     * @return
-     */
-    public Set<String> getPerPermissionWarmups(String warmup) {
-        Set<String> returnPerms = new LinkedHashSet<String>();
-        
-        Set<String> entries = super.getKeys("permission");
-        for(String entry : entries) {
-            // skip warmup entries that don't apply to this warmup
-            final int warmupValue = super.getInt("permission."+entry+"."+warmup);
-            if( warmupValue <= 0 )
-                continue;
-            
-            List<String> perms = super.getStringList("permission."+entry+".permissions");
-            if( perms == null ) {
-                perms = new ArrayList<String>(1);
-            }
-            perms.add("hsp.warmup."+entry);     // add default entry permission
-            
-            returnPerms.addAll(perms);
-        }
-        
-        return returnPerms;
-    }
-    
-    /**
-     * For a given permission & warmup combo, return the applicable warmup timer.
-     * 
-     * @param warmup
-     * @param permission
-     * @return
-     */
-    public int getPerPermissionWarmup(String warmup, String permission) {
-        Set<String> entries = super.getKeys("permission");
-        for(String entry : entries) {
-            // skip warmup entries that don't apply to this warmup
-            final int warmupValue = super.getInt("permission."+entry+"."+warmup);
-            if( warmupValue <= 0 )
-                continue;
-
-            List<String> perms = super.getStringList("permission."+entry+".permissions");
-            if( perms == null ) {
-                perms = new ArrayList<String>(1);
-            }
-            perms.add("hsp.warmup."+entry);     // add default entry permission
-            
-            if( perms.contains(permission) ) {
-                return warmupValue;
-            }
-        }
-        
-        return 0;
-    }
-
-    /**
      * For a given world & warmup combo, return the applicable warmup timer.
      * 
      * @param warmup
@@ -117,11 +63,8 @@ public class ConfigWarmup extends AbstractConfigBase implements ConfigInterface,
      * @return
      */
     public int getPerWorldWarmup(String warmup, String world) {
-        final int warmupValue = super.getInt("world."+world+"."+warmup);
-        if( warmupValue > 0 )
-            return warmupValue;
-        else
-            return 0;
+        WarmupsPerWorld warmups = perWorldEntries.get(world);
+        return warmups != null ? warmups.getWarmups().get(warmup) : 0;
     }
     
     /**
@@ -133,9 +76,38 @@ public class ConfigWarmup extends AbstractConfigBase implements ConfigInterface,
      */
     public int getGlobalWarmup(String warmup) {
         final int warmupValue = super.getInt(warmup);
-        if( warmupValue > 0 )
-            return warmupValue;
-        else
-            return 0;
+        return warmupValue > 0 ? warmupValue : 0;
     }
+
+    public class WarmupsPerPermission extends PerPermissionEntry {
+        Map<String, Integer> warmups = new HashMap<String, Integer>();
+        public Map<String, Integer> getWarmups() { return warmups; }
+        
+        public void setValue(String key, Object o) {
+            warmups.put(key, (Integer) o);
+        }
+        
+        public void finishedProcessing() {
+            warmups = Collections.unmodifiableMap(warmups);
+        }
+    }
+
+    public class WarmupsPerWorld extends PerWorldEntry {
+        Map<String, Integer> warmups = new HashMap<String, Integer>();
+        public Map<String, Integer> getWarmups() { return warmups; }
+        
+        public void setValue(String key, Object o) {
+            warmups.put(key, (Integer) o);
+        }
+        
+        public void finishedProcessing() {
+            warmups = Collections.unmodifiableMap(warmups);
+        }
+    }
+
+    @Override
+    protected WarmupsPerPermission newPermissionEntry() { return new WarmupsPerPermission(); }
+
+    @Override
+    protected WarmupsPerWorld newWorldEntry() { return new WarmupsPerWorld(); }
 }

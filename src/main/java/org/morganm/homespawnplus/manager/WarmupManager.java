@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -45,6 +45,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigWarmup;
+import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerPermission;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
@@ -139,19 +140,30 @@ public class WarmupManager {
     	log.debug("getWarmupTime(): warmup={}",warmup);
     	
         if( wut.warmupTime <= 0 ) {
-    	    Set<String> perms = configWarmups.getPerPermissionWarmups(warmup);
-            for(String perm : perms) {
-                log.debug("getWarmupTime(): checking permission {}", perm);
+            Map<String, WarmupsPerPermission> entries = configWarmups.getPerPermissionEntries();
+            
+            MATCH_FOUND:
+            // iterate over each per-permission entry
+            for(Map.Entry<String, WarmupsPerPermission> entry : entries.entrySet()) {
+                Integer value = entry.getValue().getWarmups().get(warmup);
 
-                if( player.hasPermission(perm) ) {
-                    wut.warmupTime = configWarmups.getPerPermissionWarmup(warmup, perm);
-                    if( wut.warmupTime > 0 ) {
-                        wut.warmupName = warmup + "." + perm;
-                        break;
+                // only if there is a warmup value for this name do we do any extra processing
+                if( value != null && value > 0 ) {
+                    // ok now check to see if player has a permisson in the list
+                    for(String perm : entry.getValue().getPermissions()) {
+                        log.debug("processing per-permission permission {}", perm);
+                        if( player.hasPermission(perm) ) {
+                            wut.warmupTime = value;
+                            
+                            if( wut.warmupTime > 0 ) {
+                                wut.warmupName = warmup + "." + perm;
+                                break MATCH_FOUND;
+                            }
+                        }
                     }
                 }
             }
-    	    
+            
         	log.debug("getWarmupTime(): post-permission warmup={}, name={}", wut.warmupTime, wut.warmupName);
     	}
     	

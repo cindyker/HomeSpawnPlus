@@ -14,7 +14,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigStorage extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigStorage extends ConfigBase implements ConfigInterface, Initializable {
     public enum Type {
         EBEANS,
         NOTUSED,

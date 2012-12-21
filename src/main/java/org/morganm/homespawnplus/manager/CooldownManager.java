@@ -42,6 +42,7 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.ConfigCooldown;
+import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerWorld;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
@@ -217,11 +218,11 @@ public class CooldownManager {
     	        cn.baseName, cn.extendedName, cn.fullName);
     	
     	if( cdt.cooldownTime <= 0 ) {
-    	    Map<String, ConfigCooldown.PerPermissionCooldownEntry> entries = config.getPerPermissionEntries();
+    	    Map<String, ConfigCooldown.CooldownsPerPermission> entries = config.getPerPermissionEntries();
     	    
     	    MATCH_FOUND:
     	    // iterate over each per-permission entry
-    	    for(Map.Entry<String, ConfigCooldown.PerPermissionCooldownEntry> entry : entries.entrySet()) {
+    	    for(Map.Entry<String, ConfigCooldown.CooldownsPerPermission> entry : entries.entrySet()) {
     	        log.debug("processing per-permission entry {}", entry.getKey());
     	        
     	        // iterate over each possible cooldown name we are processing
@@ -306,17 +307,18 @@ public class CooldownManager {
     	boolean matchFound = false;
 
         // check permission-specific settings
-        Map<String, ConfigCooldown.PerPermissionCooldownEntry> entries = config.getPerPermissionEntries();
+        Map<String, ConfigCooldown.CooldownsPerPermission> entries = config.getPerPermissionEntries();
         MATCH_FOUND:
         // iterate over each per-permission entry. We're looking for the first permission to
         // match the player, and that one (if found), will control the resetOnDeath flag
-        for(Map.Entry<String, ConfigCooldown.PerPermissionCooldownEntry> entry : entries.entrySet()) {
+        for(Map.Entry<String, ConfigCooldown.CooldownsPerPermission> entry : entries.entrySet()) {
             // ok now check to see if player has a permisson in the list
             for(String perm : entry.getValue().getPermissions()) {
                 if( player.hasPermission(perm) ) {
                     matchFound=true;
                     
-                    resetOnDeath = entry.getValue().isResetOnDeath();
+                    if( entry.getValue().hasResetOnDeath() )
+                        resetOnDeath = entry.getValue().isResetOnDeath();
                     break MATCH_FOUND;
                 }
             }
@@ -325,8 +327,9 @@ public class CooldownManager {
     	// check for world-specific setting
     	if( !matchFound ) {
     		final String worldName = player.getLocation().getWorld().getName();
-    		if( config.hasWorldResetOnDeathFlag(worldName) ) {
-    		    resetOnDeath = config.isWorldResetOnDeath(worldName);
+    		CooldownsPerWorld cpw = config.getPerWorldEntry(worldName);
+    		if( cpw != null && cpw.hasResetOnDeath() ) {
+    		    resetOnDeath = cpw.isResetOnDeath();
     		    matchFound = true;
     		}
     	}

@@ -15,7 +15,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigCore extends AbstractConfigBase implements ConfigInterface, Initializable {
+public class ConfigCore extends ConfigBase implements ConfigInterface, Initializable {
     @Inject
     public ConfigCore(YamlFile yaml) {
         super("core.yml", "core", yaml);

@@ -82,6 +82,14 @@ public class BukkitYamlConfigFile implements YamlFile {
     }
 
     @Override
+    public Integer getInteger(String path) {
+        if( yaml.contains(path) )
+            return Integer.valueOf(yaml.getInt(path));
+        else
+            return null;
+    }
+
+    @Override
     public String getString(String path) {
         return yaml.getString(path);
     }

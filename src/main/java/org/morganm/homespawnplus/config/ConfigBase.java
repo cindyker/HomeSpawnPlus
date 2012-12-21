@@ -16,19 +16,21 @@ import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.mBukkitLib.JarUtils;
 
-/**
+/** Abstract base class that implements some common functionality
+ * for config classes.
+ * 
  * @author morganm
  *
  */
-public abstract class AbstractConfigBase implements ConfigInterface, Initializable {
+public abstract class ConfigBase implements ConfigInterface, Initializable {
     protected final YamlFile yaml;
     protected final String fileName;
     protected final String basePath;
     
-    private Plugin plugin;
-    private JarUtils jarUtil;
+    Plugin plugin;
+    JarUtils jarUtil;
 
-    protected AbstractConfigBase(String fileName, String basePath, YamlFile yaml) {
+    protected ConfigBase(String fileName, String basePath, YamlFile yaml) {
         this.fileName = fileName;
         this.basePath = basePath;
         this.yaml = yaml;
@@ -41,7 +43,7 @@ public abstract class AbstractConfigBase implements ConfigInterface, Initializab
     
     @Override
     public int getPriority() {
-        return 1;   // default config priority is 1
+        return 1;   // default config initialization priority is 1
     }
 
     /**
@@ -61,7 +63,7 @@ public abstract class AbstractConfigBase implements ConfigInterface, Initializab
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void installDefaultFile() throws FileNotFoundException, IOException {
+    void installDefaultFile() throws FileNotFoundException, IOException {
         File pluginDir = plugin.getDataFolder();
         // create the config directory if it doesn't exist
         File configDir = new File(pluginDir, "config");
@@ -85,11 +87,11 @@ public abstract class AbstractConfigBase implements ConfigInterface, Initializab
     }
     
     @Inject
-    void setPlugin(Plugin plugin) {
+    public void setPlugin(Plugin plugin) {
         this.plugin = plugin;
     }
     @Inject
-    void setJarUtil(JarUtils jarUtil) {
+    public void setJarUtil(JarUtils jarUtil) {
         this.jarUtil = jarUtil;
     }
 
@@ -104,6 +106,9 @@ public abstract class AbstractConfigBase implements ConfigInterface, Initializab
     }
     protected int getInt(String path) {
         return yaml.getInt(basePath+"."+path);
+    }
+    protected Integer getInteger(String path) {
+        return yaml.getInteger(basePath+"."+path);
     }
     protected double getDouble(String path) {
         return yaml.getDouble(basePath+"."+path);

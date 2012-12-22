@@ -33,16 +33,21 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.server.api.Factory;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.Teleport;
+import org.morganm.homespawnplus.server.api.TeleportOptions;
+import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.util.Debug;
-import org.morganm.homespawnplus.util.Teleport;
 
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.WorldBorder;
@@ -53,7 +58,13 @@ import com.wimbli.WorldBorder.WorldBorder;
  * @author morganm
  *
  */
+@NoArgStrategy
+@OneArgStrategy
 public class SpawnWorldRandom extends BaseStrategy {
+    @Inject private Server server;
+    @Inject private Factory factory;
+    @Inject private Teleport teleport;
+    
 	// most commonly will find a safe location in the first few tries, but we
 	// will try up to 20 times just in case we get a random run of bad
 	// locations
@@ -69,19 +80,21 @@ public class SpawnWorldRandom extends BaseStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		World w = null;
 		if( world != null ) { 
-			w = Bukkit.getWorld(world);
+            w = server.getWorld(world);
 			if( w == null ) {
-				log.warning(logPrefix+" found null value when looking for world: "+world);
+				log.warn("found null value when looking for world: {}", world);
 				return null;
 			}
 		}
 		else
 			w = context.getEventLocation().getWorld();
 		
-		Teleport.Bounds yBounds = context.getTeleportOptions();
-		if( yBounds == null )
-			yBounds = Teleport.getInstance().getDefaultBounds();
-		Debug.getInstance().devDebug("SpawnWorldRandom() minY=",yBounds.minY,", maxY=",yBounds.maxY);
+		TeleportOptions teleportOptions = context.getTeleportOptions();
+		
+//		Teleport.Bounds yBounds = context.getTeleportOptions();
+//		if( yBounds == null )
+//			yBounds = Teleport.getInstance().getDefaultBounds();
+//		log.debug("SpawnWorldRandom() minY=",yBounds.minY,", maxY=",yBounds.maxY);
 		
 		Location result = null;
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
@@ -93,8 +106,8 @@ public class SpawnWorldRandom extends BaseStrategy {
 			double z = border.getZ();
 			int radius = border.getRadius();
 			
-			Location min = new Location(w,x-radius, yBounds.minY, z-radius);
-			Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
+			Location min = factory.newLocation(w.getName(), x-radius, teleportOptions.getMinY(), z-radius, 0, 0);
+			Location max = factory.newLocation(w.getName(), x+radius, teleportOptions.getMaxY(), z+radius, 0, 0);
 			
 			// we loop and try multiple times, because it's possible we randomly select
 			// a location outside of the border. If so, we just loop and guess again.
@@ -103,30 +116,30 @@ public class SpawnWorldRandom extends BaseStrategy {
 			int tries = 0;
 			while( result == null && tries < MAX_TRIES ) {
 				tries++;
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
-				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+				log.debug("SpawnWorldRandom: try=",tries);
+				result = teleport.findRandomSafeLocation(min, max, teleportOptions);
+				log.debug("SpawnWorldRandom: try=",tries,", result=",result);
 				if( result != null && !border.insideBorder(result) )
 					result = null;
 			}
 			
 			if( tries == MAX_TRIES )
-				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
+				log.warn(getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
 		}
 		// no WorldBorder? just assume default min/max of +/- 1000
 		else {
-			Location min = new Location(w, -1000, yBounds.minY, -1000);
-			Location max = new Location(w, 1000, yBounds.maxY, 1000);
+			Location min = factory.newLocation(w.getName(), -1000, teleportOptions.getMinY(), -1000, 0, 0);
+			Location max = factory.newLocation(w.getName(), 1000, teleportOptions.getMaxY(), 1000, 0, 0);
 			int tries = 0;
 			while( result == null && tries < MAX_TRIES ) {
 				tries++;
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
-				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+				log.debug("SpawnWorldRandom: try=",tries);
+				result = teleport.findRandomSafeLocation(min, max, teleportOptions);
+				log.debug("SpawnWorldRandom: try=",tries,", result=",result);
 			}
 
 			if( tries == MAX_TRIES )
-				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
+				log.warn(getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
 		}
 		
 		if( result ==  null )
@@ -138,14 +151,14 @@ public class SpawnWorldRandom extends BaseStrategy {
 	@Override
 	public void validate() throws StrategyException {
 		if( world != null ) {
-			World w = Bukkit.getWorld(world);
+			World w = server.getWorld(world);
 			if( w == null )
 				throw new StrategyException(getStrategyConfigName()+" tried to reference world \""+world+"\", which doesn't exist");
 		}
 		
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
 		if( p == null )
-			log.info(logPrefix+" Using "+getStrategyConfigName()+" strategy but WorldBorder is not installed; assuming maximum of 1000");
+			log.info("Using "+getStrategyConfigName()+" strategy but WorldBorder is not installed; assuming maximum of 1000");
 	}
 
 	@Override

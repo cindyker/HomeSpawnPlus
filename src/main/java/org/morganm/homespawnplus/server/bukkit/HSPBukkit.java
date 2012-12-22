@@ -10,8 +10,10 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
+import org.morganm.homespawnplus.server.bukkit.config.BukkitConfigStorage;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 
 /** This class is the interface to Bukkit's Plugin interface. This is abstracted from
@@ -26,10 +28,14 @@ public class HSPBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Logger.getLogger("org.reflections").setLevel(Level.OFF);
         enableDebug();
 
-        mainClass = new HomeSpawnPlus(this);
         try {
+            YamlConfiguration storageConfig = new YamlConfiguration();
+            storageConfig.load(new File(getDataFolder(), "config/storage.yml"));
+            
+            mainClass = new HomeSpawnPlus(this, new BukkitConfigStorage(storageConfig));
             mainClass.onEnable();
         }
         catch(Exception e) {
@@ -59,7 +65,8 @@ public class HSPBukkit extends JavaPlugin {
 
     // TODO: move to an interface
     private void enableDebug() {
-        getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.FINEST);
+        getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.ALL);
+        Logger.getLogger("org.morganm.homespawnplus").setLevel(Level.ALL);
 //        Logger debugLog = Logger.getLogger("org.morganm.homespawnplus");
 //        debugLog.setLevel(Level.FINEST);
 //        debugLog.setUseParentHandlers(true);

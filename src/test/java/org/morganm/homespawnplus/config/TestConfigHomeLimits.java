@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
@@ -25,21 +24,12 @@ import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.mBukkitLib.JarUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-//import static org.powermock.api.mockito.PowerMockito.mock;
-//import static org.powermock.api.mockito.PowerMockito.spy;
-//import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
-//import static org.powermock.api.mockito.PowerMockito.when;
-//import static org.powermock.api.support.membermodification.MemberMatcher.method;
-//import static org.powermock.api.support.membermodification.MemberModifier.suppress;
-//import org.powermock.core.classloader.annotations.PrepareForTest;
-//import org.powermock.modules.testng.PowerMockTestCase;
 
 /**
  * @author morganm
  *
  */
-//@PrepareForTest(ConfigHomeLimits.class)
-public class ConfigHomeLimitsTest { //extends PowerMockTestCase {
+public class TestConfigHomeLimits {
     private static final String BASE = "homeLimits";
 
     YamlFile yaml;
@@ -51,7 +41,7 @@ public class ConfigHomeLimitsTest { //extends PowerMockTestCase {
     @BeforeMethod
     public void beforeMethod() throws Exception {
         MockitoAnnotations.initMocks(this);
-        yaml = mock(YamlFile.class, withSettings().verboseLogging());
+        yaml = mock(YamlFile.class); //, withSettings().verboseLogging());
         
         // we manually inject dependencies instead of using @InjectMocks
         // because @InjectMocks isn't as smart as Guice to invoke @Inject

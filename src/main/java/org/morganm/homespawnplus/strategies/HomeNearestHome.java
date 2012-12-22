@@ -35,24 +35,26 @@ package org.morganm.homespawnplus.strategies;
 
 import java.util.Set;
 
-import org.bukkit.Location;
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.strategy.StrategyMode;
+import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.strategy.HomeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class HomeNearestHome extends HomeStrategy {
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of homes is relatively small (ie. not in the hundreds or thousands).
-		final Set<Home> allHomes = plugin.getStorage().getHomeDAO().findHomesByWorldAndPlayer(
+		final Set<Home> allHomes = homeDAO.findHomesByWorldAndPlayer(
 				context.getEventLocation().getWorld().getName(), context.getPlayer().getName());
 		final Location playerLoc = context.getEventLocation();
 		

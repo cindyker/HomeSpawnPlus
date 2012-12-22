@@ -60,27 +60,4 @@ public interface Teleport {
      * @return the random safe Location, or null if one couldn't be located
      */
     public Location findRandomSafeLocation(Location min, Location max, TeleportOptions options);
-    
-    /*
-    {
-        if( l == null || p == null )
-            return;
-        if( cause == null )
-            cause = TeleportCause.UNKNOWN;
-        
-        if( plugin.getConfig().getBoolean(ConfigOptions.SAFE_TELEPORT, true) ) {
-            Location safeLocation = null;
-            if( context != null )
-                safeLocation = General.getInstance().getTeleport().safeLocation(l, context.getModeBounds(), context.getModeSafeTeleportFlags());
-            else
-                safeLocation = General.getInstance().getTeleport().safeLocation(l);
-            
-            if( safeLocation != null )
-                l = safeLocation;
-        }
-        
-        Teleport.getInstance().setCurrentTeleporter(p.getName());
-        p.teleport(l, cause);
-        Teleport.getInstance().setCurrentTeleporter(null);
-    }*/
 }

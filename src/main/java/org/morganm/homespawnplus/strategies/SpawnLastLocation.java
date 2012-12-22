@@ -40,6 +40,8 @@ import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
@@ -47,6 +49,8 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
+@OneArgStrategy
 public class SpawnLastLocation extends BaseStrategy {
     protected Storage storage;
     @Inject public void setStorage(Storage storage) { this.storage = storage; }

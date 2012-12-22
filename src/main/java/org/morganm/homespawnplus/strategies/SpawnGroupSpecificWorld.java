@@ -37,6 +37,7 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.SpawnUtil;
@@ -46,11 +47,10 @@ import org.morganm.mBukkitLib.PermissionSystem;
  * @author morganm
  *
  */
+@OneArgStrategy
 public class SpawnGroupSpecificWorld extends BaseStrategy {
-    protected SpawnUtil spawnUtil;
-    protected PermissionSystem perm;
-    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
-    @Inject public void setPermissionSystem(PermissionSystem perm) { this.perm = perm; }
+    @Inject private SpawnUtil spawnUtil;
+    @Inject private PermissionSystem perm;
 
 	private final String worldName;
 	

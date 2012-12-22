@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /** Mode to exclude newPlayer spawn from choice list when selecting
@@ -42,6 +43,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class ModeExcludeNewPlayerSpawn extends ModeStrategy {
 	@Override
 	protected StrategyMode getMode() {

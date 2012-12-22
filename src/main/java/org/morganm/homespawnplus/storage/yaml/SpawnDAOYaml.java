@@ -139,6 +139,10 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 		return spawn;
 	}
 
+    public Spawn getNewPlayerSpawn() {
+        return findSpawnByName(NEW_PLAYER_SPAWN);
+    }
+
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#getSpawnDefinedGroups()
 	 */

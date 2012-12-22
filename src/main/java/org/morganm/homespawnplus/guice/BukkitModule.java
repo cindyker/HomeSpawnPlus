@@ -54,26 +54,19 @@ public class BukkitModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-//        bind(Location.class)
-//            .to(BukkitLocation.class);
         bind(Server.class)
             .to(BukkitServer.class);
         bind(EventDispatcher.class)
             .to(BukkitEventDispatcher.class);
         
-//        bind(CommandRegister.class)
-//            .to(org.morganm.homespawnplus.server.bukkit.command.BukkitCommandRegister.class);
-//        bind(CommandConfig.class)
-//            .to(org.morganm.homespawnplus.server.bukkit.command.BukkitCommandConfig.class);
-        
+        bind(Factory.class)
+            .to(BukkitFactory.class);
         bind(org.bukkit.Server.class)
             .toInstance(plugin.getServer());
         bind(Scheduler.class)
             .to(BukkitScheduler.class);
         bind(ServerConfig.class)
             .to(BukkitServerConfig.class);
-        bind(Factory.class)
-            .to(BukkitFactory.class);
         bind(Teleport.class)
             .to(BukkitTeleport.class);
         bind(org.morganm.homespawnplus.server.api.Plugin.class)

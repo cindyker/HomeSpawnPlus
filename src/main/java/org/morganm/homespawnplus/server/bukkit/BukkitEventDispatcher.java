@@ -31,11 +31,13 @@ import org.morganm.homespawnplus.server.api.event.EventListener;
 public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.api.event.EventDispatcher, org.bukkit.event.Listener {
     private final EventListener eventListener;
     private final Plugin plugin;
+    private final BukkitFactory bukkitFactory;
     
     @Inject
-    public BukkitEventDispatcher(EventListener listener, Plugin plugin) {
+    public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory) {
         this.eventListener = listener;
         this.plugin = plugin;
+        this.bukkitFactory = bukkitFactory;
     }
 
     /**
@@ -54,7 +56,7 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
                             org.morganm.homespawnplus.server.api.events.PlayerJoinEvent apiEvent =
-                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event);
+                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory);
                             eventListener.playerJoin(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);
@@ -70,7 +72,7 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
                             org.morganm.homespawnplus.server.api.events.PlayerRespawnEvent apiEvent =
-                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerRespawnEvent((PlayerRespawnEvent) event);
+                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerRespawnEvent((PlayerRespawnEvent) event, bukkitFactory);
                             eventListener.playerRespawn(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);
@@ -89,7 +91,7 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
                             org.morganm.homespawnplus.server.api.events.PlayerMoveEvent apiEvent =
-                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerMoveEvent((PlayerMoveEvent) event);
+                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerMoveEvent((PlayerMoveEvent) event, bukkitFactory);
                             eventListener.playerMove(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);
@@ -110,13 +112,13 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
     
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
     public void playerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void playerTeleportObserver(org.bukkit.event.player.PlayerTeleportEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
     
@@ -131,27 +133,27 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
             return;
 
         // if we get here, it was a bed right-click event, so fire one
-        org.morganm.homespawnplus.server.api.events.PlayerBedRightClickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedRightClickEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerBedRightClickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedRightClickEvent(event, bukkitFactory);
         eventListener.bedRightClick(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onBedEvent(PlayerBedEnterEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedEnterEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedEnterEvent(event, bukkitFactory);
         eventListener.bedEvent(apiEvent);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
     {
-        org.morganm.homespawnplus.server.api.events.PlayerQuitEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerQuitEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerQuitEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
         eventListener.playerQuit(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
     {
-        org.morganm.homespawnplus.server.api.events.PlayerKickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerKickEvent(event);
+        org.morganm.homespawnplus.server.api.events.PlayerKickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
         eventListener.playerKick(apiEvent);
     }
 }

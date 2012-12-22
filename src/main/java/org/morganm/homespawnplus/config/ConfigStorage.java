@@ -3,33 +3,19 @@
  */
 package org.morganm.homespawnplus.config;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.morganm.homespawnplus.Initializable;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
  * @author morganm
  *
  */
-@Singleton
-public class ConfigStorage extends ConfigBase implements ConfigInterface, Initializable {
+public interface ConfigStorage {
     public enum Type {
         EBEANS,
-        NOTUSED,
+        CACHED_EBEANS,      // NOT USED
         YAML,
         YAML_SINGLE_FILE,
         PERSISTANCE_REIMPLEMENTED_EBEANS;
     };
     
-    @Inject
-    public ConfigStorage(YamlFile yaml) {
-        super("storage.yml", "storage", yaml);
-    }
-    
-    public Type getStorageType() {
-        // TODO: map String to Type
-        return null; 
-    }
+    public Type getStorageType();
 }

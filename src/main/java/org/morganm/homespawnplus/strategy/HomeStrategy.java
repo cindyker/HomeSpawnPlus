@@ -38,7 +38,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.HomeUtil;
 import org.slf4j.Logger;
@@ -52,10 +52,12 @@ import org.slf4j.LoggerFactory;
 public abstract class HomeStrategy extends BaseStrategy {
     protected static Logger log = LoggerFactory.getLogger(HomeStrategy.class);
 
-    protected Storage storage;
+//    protected Storage storage;
+    protected HomeDAO homeDAO;
     protected HomeUtil homeUtil;
     protected BedUtils bedUtil;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+//    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject public void setHomeDAO(HomeDAO homeDAO) { this.homeDAO = homeDAO; }
     @Inject public void setHomeUtil(HomeUtil homeUtil) { this.homeUtil = homeUtil; }
     @Inject public void setBedUtil(BedUtils bedUtil) { this.bedUtil = bedUtil; }
     
@@ -128,7 +130,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 		// TODO: 4/17/12: review of code appears that MODE_HOME_ANY implementation is not
 		// functioning here as intended. Should be fixed and validated to be working.
 		if( home == null && context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
-			Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+			Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
 			// just grab the first one we find
 			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();
@@ -158,7 +160,7 @@ public abstract class HomeStrategy extends BaseStrategy {
     private Home getBedHome(String playerName, String worldName) {
     	Home bedHome = null;
     	
-		Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+		Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
     	if( homes != null && homes.size() != 0 ) {
 	    	for(Home home : homes) {
 	    		if( home.isBedHome() ) {

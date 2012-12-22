@@ -303,30 +303,44 @@ public class StrategyContext {
 		return true;
 	}
 	
-	/** Using currently set modes, return the current bounds (if any).
+	/** Using currently set modes, return the current bounds
 	 * 
-	 * @return current bounds or null if no bounds are set
+	 * @return current bounds, guaranteed not to be null
 	 */
 	public TeleportOptions getTeleportOptions() {
+        TeleportOptions options = factory.newTeleportOptions();
+
 		List<ModeStrategy> modes = getCurrentModes();
 		for(ModeStrategy mode : modes) {
-			if( mode.getMode() == StrategyMode.MODE_YBOUNDS ) {
+		    switch(mode.getMode()) {
+		    case MODE_YBOUNDS:
                 ModeYBounds modeYBounds = (ModeYBounds) mode;
+                options.setMinY(modeYBounds.getMinY());
+                options.setMaxY(modeYBounds.getMaxY());
+		        break;
+		        
+		    case MODE_NO_WATER:
+                options.setNoTeleportOverWater(true);
+                break;
                 
-			    TeleportOptions options = factory.newTeleportOptions();
-			    options.setMinY(modeYBounds.getMinY());
-			    options.setMaxY(modeYBounds.getMaxY());
-			    
-		        options.setNoTeleportOverWater( isModeEnabled(StrategyMode.MODE_NO_WATER) );
-                options.setNoTeleportOverIce( isModeEnabled(StrategyMode.MODE_NO_ICE) );
-                options.setNoTeleportOverLeaves( isModeEnabled(StrategyMode.MODE_NO_LEAVES) );
-                options.setNoTeleportOverLilyPad( isModeEnabled(StrategyMode.MODE_NO_LILY_PAD) );
+		    case MODE_NO_ICE:
+                options.setNoTeleportOverIce(true);
+                break;
                 
-				return options;
-			}
+		    case MODE_NO_LEAVES:
+                options.setNoTeleportOverLeaves(true);
+                break;
+                
+		    case MODE_NO_LILY_PAD:
+                options.setNoTeleportOverLilyPad(true);
+                break;
+                
+            default:
+                // do nothing for any other modes
+		    }
 		}
 		
-		return null;
+		return options;
 	}
 	
     

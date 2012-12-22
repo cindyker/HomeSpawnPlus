@@ -42,6 +42,7 @@ public class BukkitServer implements Server {
     private final Plugin plugin;
     private final Teleport teleport;
     private final Locale locale;
+    private final BukkitFactory bukkitFactory;
     
     /* A cached list of worlds, so we don't have to constantly recreate new world
      * wrapper objects.
@@ -54,11 +55,14 @@ public class BukkitServer implements Server {
     private boolean clearWorldCache = true;
     
     @Inject
-    public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport, Locale locale) {
-        this.dispatcher = new org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher(listener, this.plugin);
+    public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport,
+            Locale locale, BukkitFactory bukkitFactory)
+    {
+        this.dispatcher = new org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher(listener, this.plugin, bukkitFactory);
         this.plugin = plugin;
         this.teleport = teleport;
         this.locale = locale;
+        this.bukkitFactory = bukkitFactory;
         
         this.plugin.getServer().getPluginManager().registerEvents(new WorldListener(), this.plugin);
     }
@@ -106,7 +110,7 @@ public class BukkitServer implements Server {
     public Player getPlayer(String playerName) {
         org.bukkit.entity.Player player = plugin.getServer().getPlayer(playerName);
         if( player != null )
-            return new BukkitPlayer(player);
+            return bukkitFactory.newBukkitPlayer(player);
         else
             return null;
     }

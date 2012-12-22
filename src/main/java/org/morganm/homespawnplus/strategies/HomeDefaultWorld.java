@@ -33,19 +33,25 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.strategy.HomeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
+import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class HomeDefaultWorld extends HomeStrategy {
+    @Inject private SpawnUtil spawnUtil;
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResult( super.getModeHome(context, plugin.getUtil().getDefaultWorld()) );
+		return new StrategyResult( super.getModeHome(context, spawnUtil.getDefaultWorld()) );
 	}
 
 	@Override

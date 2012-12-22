@@ -14,7 +14,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.HomeUtil;
@@ -24,8 +23,6 @@ import org.morganm.homespawnplus.util.HomeUtil;
  *
  */
 public abstract class HomeStrategyTest extends BaseStrategyTest {
-    @Mock
-    protected Storage storage;
     @Mock
     protected HomeUtil homeUtil;
     @Mock
@@ -40,8 +37,6 @@ public abstract class HomeStrategyTest extends BaseStrategyTest {
      * has been called.
      */
     protected void beforeMethod() {
-        when(storage.getHomeDAO()).thenReturn(homeDAO);
-
         when(player.getName()).thenReturn("fooplayer");
 
         doAnswer(new Answer<Set<Home>>() {

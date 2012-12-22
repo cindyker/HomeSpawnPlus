@@ -35,6 +35,7 @@ package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
@@ -42,6 +43,7 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class SpawnWorldGuardRegion extends BaseStrategy {
     private WorldGuardInterface wgInterface;
 

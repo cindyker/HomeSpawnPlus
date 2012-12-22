@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
  * @author morganm
  *
  */
-public class HomeAnyWorldTest extends HomeStrategyTest {
+public class TestHomeAnyWorld extends HomeStrategyTest {
     @InjectMocks
     private HomeAnyWorld objectUnderTest;
     

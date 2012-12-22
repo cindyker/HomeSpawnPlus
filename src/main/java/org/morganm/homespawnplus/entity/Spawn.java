@@ -46,6 +46,7 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
@@ -134,6 +135,15 @@ public class Spawn implements EntityWithLocation {
         }
     	
     	return location;
+    }
+    
+    /**
+     * Return true if this spawn is the new player spawn.
+     * 
+     * @return
+     */
+    public boolean isNewPlayerSpawn() {
+        return SpawnDAO.NEW_PLAYER_SPAWN.equals(getName());
     }
     
 	public int getId() {

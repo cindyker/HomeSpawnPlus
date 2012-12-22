@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +24,11 @@ implements org.morganm.homespawnplus.server.api.events.PlayerJoinEvent
     private final Logger log = LoggerFactory.getLogger(PlayerJoinEvent.class);
     private Plugin plugin;
     private Server server;
+    @SuppressWarnings("unused")
     private org.bukkit.event.player.PlayerJoinEvent event;
 
-    public PlayerJoinEvent(org.bukkit.event.player.PlayerJoinEvent event) {
-        super(event);
+    public PlayerJoinEvent(org.bukkit.event.player.PlayerJoinEvent event, BukkitFactory bukkitFactory) {
+        super(event, bukkitFactory);
         this.event = event;
     }
     
@@ -40,6 +42,15 @@ implements org.morganm.homespawnplus.server.api.events.PlayerJoinEvent
         this.server = server;
     }
 
+    /**
+     * This method doesn't exist on the actual bukkit event, so to simulate it we
+     * setup a delayed teleport. This is not an ideal implementation since multiple
+     * calls to setJoinLocation() will result in multiple delayed teleports. But
+     * it works since HSP only invokes it once.
+     * 
+     * At some point hopefully Bukkit will implement a similar method and then
+     * this method will just call the backing event.
+     */
     @Override
     public void setJoinLocation(Location joinLocation) {
         /*

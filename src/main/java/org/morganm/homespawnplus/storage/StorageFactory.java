@@ -39,9 +39,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.config.ConfigStorage;
+import org.morganm.homespawnplus.config.ConfigStorage.Type;
 import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
@@ -52,19 +56,23 @@ import com.google.inject.Injector;
  */
 @Singleton
 public class StorageFactory {
-	public enum Type {
-		EBEANS,
-		CACHED_EBEANS,
-		YAML,
-		YAML_SINGLE_FILE,
-		PERSISTANCE_REIMPLEMENTED_EBEANS
-	}
+    private static final Logger log = LoggerFactory.getLogger(StorageFactory.class);
+    
+//	public enum Type {
+//		EBEANS,
+//		CACHED_EBEANS,
+//		YAML,
+//		YAML_SINGLE_FILE,
+//		PERSISTANCE_REIMPLEMENTED_EBEANS
+//	}
 	
+    private final ConfigStorage configStorage;
 	private final Injector injector;
 	private final Plugin plugin;
 	
 	@Inject
-	public StorageFactory(Injector injector, Plugin plugin) {
+	public StorageFactory(ConfigStorage configStorage, Injector injector, Plugin plugin) {
+	    this.configStorage = configStorage;
 	    this.injector = injector;
 	    this.plugin = plugin;
 	}
@@ -75,7 +83,7 @@ public class StorageFactory {
 	 * them and so backwards compatibility requires we allow the int values
 	 * to still work.
 	 */
-	public Type getType(int intType) {
+	static public Type getType(int intType) {
 		Type[] types = Type.values();
 		for(int i=0; i < types.length; i++) {
 			if( types[i].ordinal() == intType )
@@ -85,7 +93,7 @@ public class StorageFactory {
 		return Type.EBEANS;		// default to EBEANS
 	}
 	
-	public Type getType(String stringType) {
+	static public Type getType(String stringType) {
 		Type[] types = Type.values();
 		for(int i=0; i < types.length; i++) {
 			if( types[i].toString().equalsIgnoreCase(stringType) )
@@ -95,19 +103,15 @@ public class StorageFactory {
 		return Type.EBEANS;		// default to EBEANS
 	}
 	
-	public Storage getInstance(Type storageType)
-		throws StorageException
+	public Storage getInstance()
 	{
+	    Type storageType = configStorage.getStorageType();
 		Storage storage = null;
+		
+		log.debug("StorageFactory.getInstance(), type = {}", storageType);
 		
 		switch(storageType)
 		{
-		case CACHED_EBEANS:
-			OldHSP.log.warning(OldHSP.logPrefix + " CACHED_EBEANS storage not currently supported, defaulting to regular EBEANS storage");
-		case EBEANS:
-		    storage = injector.getInstance(StorageEBeans.class);
-			break;
-
 		case YAML:
 			storage = new StorageYaml(plugin, false, null);
 			break;
@@ -122,8 +126,15 @@ public class StorageFactory {
             storage = ebeans;
 			break;
 			
-		default:
-			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);
+        case CACHED_EBEANS:
+            OldHSP.log.warning(OldHSP.logPrefix + " CACHED_EBEANS storage not currently supported, defaulting to regular EBEANS storage");
+        case EBEANS:
+        default:                        // default is just to use EBEANS
+            storage = injector.getInstance(StorageEBeans.class);
+            break;
+
+//		default:
+//			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);
 		}
 		
 		return storage;

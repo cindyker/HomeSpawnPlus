@@ -106,6 +106,10 @@ public class SpawnDAOEBean implements SpawnDAO {
 		return query.findUnique();
 	}
 
+    public Spawn getNewPlayerSpawn() {
+        return findSpawnByName(NEW_PLAYER_SPAWN);
+    }
+
 	/** We make the assumption that there are relatively few spawns and group combinations,
 	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
 	 * them for the valid group list.

@@ -14,6 +14,8 @@ import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.PlayerDAO;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,19 +27,21 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class SpawnUtil {
     private final Logger log = LoggerFactory.getLogger(SpawnUtil.class);
-    private final Storage storage;
     private final ConfigCore configCore;
     private final Server server;
+    private final SpawnDAO spawnDAO;
+    private final PlayerDAO playerDAO;
     
     /* A cache for the defaultSpawnWorld once we find it.
      */
     private String defaultSpawnWorld;
     
     @Inject
-    public SpawnUtil(Storage storage, ConfigCore configCore, Server server) {
-        this.storage = storage;
+    public SpawnUtil(ConfigCore configCore, Server server, SpawnDAO spawnDAO, PlayerDAO playerDAO) {
         this.configCore = configCore;
         this.server = server;
+        this.spawnDAO = spawnDAO;
+        this.playerDAO = playerDAO;
     }
     
     /** Set a named spawn at the given location.
@@ -48,7 +52,7 @@ public class SpawnUtil {
      */
     public void setNamedSpawn(String spawnName, Location l, String updatedBy) throws StorageException
     {
-        Spawn spawn = storage.getSpawnDAO().findSpawnByName(spawnName);
+        Spawn spawn = spawnDAO.findSpawnByName(spawnName);
         
         // if we get an object back, we already have a Spawn set for this spawnName, so we
         // just update the x/y/z location of it.
@@ -62,18 +66,16 @@ public class SpawnUtil {
             spawn.setName(spawnName);
         }
         
-        storage.getSpawnDAO().saveSpawn(spawn);
+        spawnDAO.saveSpawn(spawn);
     }
     
     public void setFirstSpawn(Location l, String updatedBy) throws StorageException
     {
-        setNamedSpawn("newPlayerSpawn", l, updatedBy);
+        // terrible implementation leakage, but easiest thing for now; and at least
+        // it's abstracted behind a util method we can easily change later
+        setNamedSpawn(SpawnDAO.NEW_PLAYER_SPAWN, l, updatedBy);
     }
-    public Spawn getFirstSpawn()
-    {
-        return storage.getSpawnDAO().findSpawnByName("newPlayerSpawn");
-    }
-    
+
     /** Set the default spawn for a given world.
      * 
      * @param l
@@ -103,7 +105,7 @@ public class SpawnUtil {
      */
     public void setGroupSpawn(String group, Location l, String updatedBy) throws StorageException
     {
-        Spawn spawn = storage.getSpawnDAO().findSpawnByWorldAndGroup(l.getWorld().getName(), group);
+        Spawn spawn = spawnDAO.findSpawnByWorldAndGroup(l.getWorld().getName(), group);
         
         // if we get an object back, we already have a Spawn set for this world/group combo, so we
         // just update the x/y/z location of it.
@@ -117,7 +119,7 @@ public class SpawnUtil {
             spawn.setGroup(group);
         }
         
-        storage.getSpawnDAO().saveSpawn(spawn);
+        spawnDAO.saveSpawn(spawn);
     }
 
     /** Given a group and world name, find the associated group spawn, if any.
@@ -132,9 +134,9 @@ public class SpawnUtil {
         Spawn spawn = null;
         
         if( group == null )
-            spawn = storage.getSpawnDAO().findSpawnByWorld(worldName);
+            spawn = spawnDAO.findSpawnByWorld(worldName);
         else
-            spawn = storage.getSpawnDAO().findSpawnByWorldAndGroup(worldName, group);
+            spawn = spawnDAO.findSpawnByWorldAndGroup(worldName, group);
         
         if( spawn == null && configCore.isVerboseLogging() )
             log.warn("Could not find or load group spawn for '{}' on world {}!", group, worldName);
@@ -232,12 +234,12 @@ public class SpawnUtil {
             log.debug("updateQuitLocation: updating last logout location for player ",p.getName());
 
             Location quitLocation = p.getLocation();
-            org.morganm.homespawnplus.entity.Player playerStorage = storage.getPlayerDAO().findPlayerByName(p.getName());
+            org.morganm.homespawnplus.entity.Player playerStorage = playerDAO.findPlayerByName(p.getName());
             if( playerStorage == null )
                 playerStorage = new org.morganm.homespawnplus.entity.Player(p);
             playerStorage.updateLastLogoutLocation(quitLocation);
             try {
-                storage.getPlayerDAO().savePlayer(playerStorage);
+                playerDAO.savePlayer(playerStorage);
             }
             catch(StorageException e) {
                 log.warn("Caught exception", e);

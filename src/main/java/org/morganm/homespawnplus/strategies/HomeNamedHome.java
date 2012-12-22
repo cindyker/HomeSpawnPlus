@@ -35,6 +35,8 @@ package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.strategy.HomeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.StrategyResult;
@@ -43,6 +45,8 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
+@OneArgStrategy
 public class HomeNamedHome extends HomeStrategy {
 	private String homeName;
 	
@@ -61,12 +65,12 @@ public class HomeNamedHome extends HomeStrategy {
 		if( name == null )
 			name = homeName;
 		
-		debug.debug("HomeNamedHome: name=",name);
+		log.debug("HomeNamedHome: name={}",name);
 
 		if( name != null ) {
-			home = plugin.getUtil().getHomeByName(context.getPlayer().getName(), name);
+		    home = homeDAO.findHomeByNameAndPlayer(name, context.getPlayer().getName());
 			
-			debug.debug("HomeNamedHome: home pre-modes=",home,", current modes=",context.getCurrentModes());
+			log.debug("HomeNamedHome: home pre-modes={}, current modes={}", home, context.getCurrentModes());
 			
 			if( context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && !home.isDefaultHome() )
 				home = null;
@@ -80,7 +84,7 @@ public class HomeNamedHome extends HomeStrategy {
 			}
 		}
 		else
-			log.warning(logPrefix+ " Strategy "+getStrategyConfigName()+" was not given a homeName argument, nothing to do");
+			log.warn("Strategy "+getStrategyConfigName()+" was not given a homeName argument, nothing to do");
 		
 		return new StrategyResult(home);
 	}

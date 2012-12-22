@@ -5,18 +5,16 @@ package org.morganm.homespawnplus.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.config.ConfigEconomy.PerPermissionEconomyEntry;
+import org.morganm.homespawnplus.config.ConfigEconomy.PerWorldEconomyEntry;
 import org.morganm.homespawnplus.server.api.YamlFile;
 
 /** Configuration related to economy costs.
@@ -25,9 +23,7 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigEconomy extends ConfigBase implements ConfigInterface, Initializable {
-    private Map<String, PerPermissionEconomyEntry> perPermissionEntries;
-    
+public class ConfigEconomy extends ConfigPerXBase<PerPermissionEconomyEntry, PerWorldEconomyEntry> implements ConfigInterface, Initializable {
     @Inject
     public ConfigEconomy(YamlFile yaml) {
         super("economy.yml", "cost", yaml);
@@ -57,18 +53,28 @@ public class ConfigEconomy extends ConfigBase implements ConfigInterface, Initia
     }
     
     /**
+     * If sethome-multiplier is non-zero, then each additional home past
+     * the first (globally) will cost this much more. Example: sethome cost
+     * is 500, sethome-multiplier is 1.5. First home will cost 500, second
+     * will cost (500*1.5) = 750. 3rd home will cost (500*1.5*1.5) = 1125.
+     * 4th home is (500*1.5*1.5*1.5) = 1687.5, and so on.
+     * 
+     * @return
+     */
+    public double getSethomeMultiplier() {
+        return super.getDouble("sethome-multiplier");
+    }
+
+    /**
      * For a given command, return it's global cost (exclusive of
      * per-permission and per-world cost values).
      * 
      * @param cooldown
      * @return
      */
-    public int getGlobalCooldown(String command) {
+    public int getGlobalCost(String command) {
         final int cost = super.getInt(command);
-        if( cost > 0 )
-            return cost;
-        else
-            return 0;
+        return cost > 0 ? cost : 0;
     }
 
     /**
@@ -77,76 +83,45 @@ public class ConfigEconomy extends ConfigBase implements ConfigInterface, Initia
      * @return The cost for the command, or null if no cost was defined
      */
     public Integer getWorldSpecificCost(String world, String command) {
-        final String key = "world."+world+"."+command;
-        if( super.contains(key) ) {
-            final int cost = super.getInt(key);
-            if( cost > 0 )
-                return cost;
-            else
-                return 0;
-        }
-        else
-            return null;
+        PerWorldEconomyEntry pwee = getPerWorldEntry(world);
+        return pwee != null ? pwee.getCosts().get(command) : null;
     }
 
-    /**
-     * Return permission-specific costs.
-     * 
-     * @return
-     */
-    public Map<String, PerPermissionEconomyEntry> getPerPermissionEntries() {
-        return perPermissionEntries;
-    }
-    
-    /**
-     * Method to process the config and load into memory any per-permissions
-     * config data for simple and efficient use later.
-     */
-    private void populatePerPermissionEntries() {
-        final String base = "permission";
-
-        perPermissionEntries = new LinkedHashMap<String, PerPermissionEconomyEntry>();
-        
-        Set<String> entries = super.getKeys(base);
-        for(String entryName : entries) {
-            final String baseEntry = base + "." + entryName;
-            
-            PerPermissionEconomyEntry entry = new PerPermissionEconomyEntry();
-            perPermissionEntries.put(entryName, entry);
-            
-            // grab permissions related to this entry
-            entry.permissions = super.getStringList(baseEntry+".permissions");
-            if( entry.permissions == null ) {
-                entry.permissions = new ArrayList<String>(1);
-            }
-            entry.permissions.add("hsp.cost."+entry);     // add default entry permission
-
-            // make map immutable to protect against external changes
-            entry.permissions = Collections.unmodifiableList(entry.permissions);
-
-            // now look for individual entry settings
-            for(String key : super.getKeys(baseEntry)) {
-                if( key.equals("permissions") ) {   // skip, we already got these
-                    continue;
-                }
-                
-                // everything else is a cost entry
-                entry.costs.put(key, super.getInt(baseEntry+"."+key));
-            }
-            
-            // make map immutable to protect against external changes
-            entry.costs = Collections.unmodifiableMap(entry.costs);
-        }
-        
-        // make map immutable to protect against external changes
-        perPermissionEntries = Collections.unmodifiableMap(perPermissionEntries);
-    }
-
-    public class PerPermissionEconomyEntry {
-        protected List<String> permissions;
+    public class PerPermissionEconomyEntry extends PerPermissionEntry {
         protected Map<String, Integer> costs = new HashMap<String, Integer>();
-        
-        public List<String> getPermissions() { return permissions; }
         public Map<String, Integer> getCosts() { return costs; }
+
+        @Override
+        void setValue(String key, Object o) {
+            costs.put(key, (Integer) o);
+        }
+
+        public void finishedProcessing() {
+            costs = Collections.unmodifiableMap(costs);
+        }
+    }
+
+    public class PerWorldEconomyEntry extends PerWorldEntry {
+        protected Map<String, Integer> costs = new HashMap<String, Integer>();
+        public Map<String, Integer> getCosts() { return costs; }
+
+        @Override
+        void setValue(String key, Object o) {
+            costs.put(key, (Integer) o);
+        }
+
+        public void finishedProcessing() {
+            costs = Collections.unmodifiableMap(costs);
+        }
+    }
+
+    @Override
+    protected PerPermissionEconomyEntry newPermissionEntry() {
+        return new PerPermissionEconomyEntry();
+    }
+
+    @Override
+    protected PerWorldEconomyEntry newWorldEntry() {
+        return new PerWorldEconomyEntry();
     }
 }

@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.server.bukkit.events;
 
 import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
 import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 
 /**
@@ -16,8 +17,8 @@ public class PlayerTeleportEvent extends PlayerEvent implements org.morganm.home
     private Location from;
     private Location to;
     
-    public PlayerTeleportEvent(org.bukkit.event.player.PlayerTeleportEvent bukkitEvent) {
-        super(bukkitEvent);
+    public PlayerTeleportEvent(org.bukkit.event.player.PlayerTeleportEvent bukkitEvent, BukkitFactory bukkitFactory) {
+        super(bukkitEvent, bukkitFactory);
         this.bukkitEvent = bukkitEvent;
     }
 

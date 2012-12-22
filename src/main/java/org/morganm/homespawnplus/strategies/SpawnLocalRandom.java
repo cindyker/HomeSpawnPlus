@@ -39,10 +39,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.config.old.ConfigOptions;
 import org.morganm.homespawnplus.entity.Spawn;
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.StrategyResult;
@@ -54,9 +54,9 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class SpawnLocalRandom extends BaseStrategy {
-    protected Storage storage;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject protected SpawnDAO spawnDAO;
 
 	private Random random = new Random(System.currentTimeMillis());
 	
@@ -67,11 +67,11 @@ public class SpawnLocalRandom extends BaseStrategy {
 		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
 		
 		String playerLocalWorld = context.getEventLocation().getWorld().getName();
-		Set<Spawn> allSpawns = storage.getSpawnDAO().findAllSpawns();
+		Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
 		ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
 		for(Spawn theSpawn : allSpawns) {
 			// skip newPlayerSpawn if so directed
-			if( excludeNewPlayerSpawn && ConfigOptions.VALUE_NEW_PLAYER_SPAWN.equals(theSpawn.getName()) ) {
+			if( excludeNewPlayerSpawn && theSpawn.isNewPlayerSpawn() ) {
 				log.debug("Skipped spawn choice {} because mode {} is enabled",
 				        theSpawn, StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
 				continue;

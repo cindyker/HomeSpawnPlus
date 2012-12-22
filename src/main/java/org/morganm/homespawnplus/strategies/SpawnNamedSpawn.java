@@ -38,6 +38,8 @@ import javax.inject.Inject;
 import org.morganm.homespawnplus.entity.Spawn;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
@@ -45,6 +47,8 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
+@OneArgStrategy
 public class SpawnNamedSpawn extends BaseStrategy {
     protected Storage storage;
     @Inject public void setStorage(Storage storage) { this.storage = storage; }

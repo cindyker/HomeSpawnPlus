@@ -33,67 +33,32 @@
  */
 package org.morganm.homespawnplus.strategy;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.morganm.homespawnplus.OldHSP;
-import org.morganm.homespawnplus.strategies.Default;
-import org.morganm.homespawnplus.strategies.HomeAnyWorld;
-import org.morganm.homespawnplus.strategies.HomeDefaultWorld;
-import org.morganm.homespawnplus.strategies.HomeLocalWorld;
-import org.morganm.homespawnplus.strategies.HomeMultiWorld;
-import org.morganm.homespawnplus.strategies.HomeNamedHome;
-import org.morganm.homespawnplus.strategies.HomeNearestHome;
-import org.morganm.homespawnplus.strategies.HomeSpecificWorld;
-import org.morganm.homespawnplus.strategies.ModeDefault;
-import org.morganm.homespawnplus.strategies.ModeDistanceLimits;
-import org.morganm.homespawnplus.strategies.ModeExcludeNewPlayerSpawn;
-import org.morganm.homespawnplus.strategies.ModeHomeAny;
-import org.morganm.homespawnplus.strategies.ModeHomeBedOnly;
-import org.morganm.homespawnplus.strategies.ModeHomeDefaultOnly;
-import org.morganm.homespawnplus.strategies.ModeHomeNoBed;
-import org.morganm.homespawnplus.strategies.ModeHomeNormal;
-import org.morganm.homespawnplus.strategies.ModeHomeRequiresBed;
-import org.morganm.homespawnplus.strategies.ModeInRegion;
-import org.morganm.homespawnplus.strategies.ModeMultiverseDestinationPortal;
-import org.morganm.homespawnplus.strategies.ModeMultiverseSourcePortal;
-import org.morganm.homespawnplus.strategies.ModeNoIce;
-import org.morganm.homespawnplus.strategies.ModeNoLeaves;
-import org.morganm.homespawnplus.strategies.ModeNoLilyPad;
-import org.morganm.homespawnplus.strategies.ModeNoWater;
-import org.morganm.homespawnplus.strategies.ModeRememberLocation;
-import org.morganm.homespawnplus.strategies.ModeRememberSpawn;
-import org.morganm.homespawnplus.strategies.ModeSourceWorld;
-import org.morganm.homespawnplus.strategies.ModeYBounds;
-import org.morganm.homespawnplus.strategies.NearestHomeOrSpawn;
-import org.morganm.homespawnplus.strategies.SpawnDefaultWorld;
-import org.morganm.homespawnplus.strategies.SpawnGroup;
-import org.morganm.homespawnplus.strategies.SpawnGroupSpecificWorld;
-import org.morganm.homespawnplus.strategies.SpawnLastLocation;
-import org.morganm.homespawnplus.strategies.SpawnLocalPlayerSpawn;
-import org.morganm.homespawnplus.strategies.SpawnLocalRandom;
-import org.morganm.homespawnplus.strategies.SpawnLocalWorld;
-import org.morganm.homespawnplus.strategies.SpawnNamedSpawn;
-import org.morganm.homespawnplus.strategies.SpawnNearestSpawn;
-import org.morganm.homespawnplus.strategies.SpawnNewPlayer;
-import org.morganm.homespawnplus.strategies.SpawnRandomNamed;
-import org.morganm.homespawnplus.strategies.SpawnRegionRandom;
-import org.morganm.homespawnplus.strategies.SpawnSpecificWorld;
-import org.morganm.homespawnplus.strategies.SpawnWorldGuardRegion;
-import org.morganm.homespawnplus.strategies.SpawnWorldRandom;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.morganm.homespawnplus.Initializable;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Injector;
 
 /**
  * @author morganm
  *
  */
-public class StrategyFactory {
-	private static final Map<String, Class<? extends Strategy>> noArgStrategies;
-	private static final Map<String, Class<? extends Strategy>> oneArgStrategies;
-	
-	/* Replace these static definitions with annotations at some point.
-	 */
+@Singleton
+public class StrategyFactory implements Initializable {
+    private static final Logger log = LoggerFactory.getLogger(StrategyFactory.class);
+
+	/*
 	static {
 		noArgStrategies = new HashMap<String, Class<? extends Strategy>>(20);
 		noArgStrategies.put(new HomeAnyWorld().getStrategyConfigName().toLowerCase(), HomeAnyWorld.class);
@@ -159,8 +124,80 @@ public class StrategyFactory {
 		oneArgStrategies.put(new ModeSourceWorld(null).getStrategyConfigName().toLowerCase(), ModeSourceWorld.class);
         oneArgStrategies.put(new ModeDistanceLimits(null).getStrategyConfigName().toLowerCase(), ModeDistanceLimits.class);
 	}
+	*/
 	
+	private final Injector injector;
+	private final Reflections reflections;
+    private final Map<String, Class<? extends Strategy>> noArgStrategies;
+    private final Map<String, Class<? extends Strategy>> oneArgStrategies;
+    
 	
+	@Inject
+	public StrategyFactory(Injector injector, Reflections reflections) {
+	    this.injector = injector;
+	    this.reflections = reflections;
+
+        noArgStrategies = new HashMap<String, Class<? extends Strategy>>(30);
+        oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(15);
+	}
+
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
+    @Override
+    public void init() throws Exception {
+        initStrategies(NoArgStrategy.class, noArgStrategies);
+        initStrategies(OneArgStrategy.class, oneArgStrategies);
+    }
+	
+    @SuppressWarnings("unchecked")
+    private void initStrategies(Class<? extends Annotation> annotationClass,
+            Map<String, Class<? extends Strategy>> targetMap)
+            throws InstantiationException
+    {
+        log.debug("initStrategies(): invoked");
+
+        Set<Class<?>> oneArgStrats = reflections.getTypesAnnotatedWith(annotationClass);
+        for(Class<?> clazz : oneArgStrats) {
+            if( Strategy.class.isAssignableFrom(clazz) ) {
+                Class<? extends Strategy> strategyClass = (Class<? extends Strategy>) clazz;
+                log.debug("initStrategies(): adding {} to strategy map", strategyClass);
+
+                Strategy strategyObject = null;
+
+                // we are only instantiating the strategy to grab it's configName,
+                // so we don't IoC Inject it here since we don't care about dependencies,
+                // the object will be discarded immediately.
+                // Just loop through available constructors to find one that will
+                // load the current object; we don't care about anything except that
+                // the loaded object can respond to getStrategyConfigName()
+                Constructor<?>[] constructors = strategyClass.getConstructors(); 
+                for(int i=0; i < constructors.length; i++) {
+                    try {
+                        if( constructors[i].getParameterTypes().length == 0 ) {
+                            strategyObject = (Strategy) constructors[i].newInstance();
+                        }
+                        else {
+                            Object[] args = new Object[constructors[i].getParameterTypes().length];
+                            strategyObject = (Strategy) constructors[i].newInstance(args);
+                        }
+                    }
+                    catch(Exception e) {
+                        // silently catch and drop any exception, we just try
+                        // each constructor
+                    }
+                }
+                
+                if( strategyObject == null )
+                    throw new InstantiationException("Could not instantiate class "+strategyClass);
+                
+                targetMap.put(strategyObject.getStrategyConfigName().toLowerCase(), strategyClass);
+            }
+        }
+    }
+
 	/** Given a Strategy class, return an instantiated instance of that class.
 	 * 
 	 * @param clazz
@@ -168,12 +205,13 @@ public class StrategyFactory {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public static Strategy newStrategy(Class<? extends Strategy> clazz)
+	public Strategy newStrategy(Class<? extends Strategy> clazz)
 			throws StrategyException
 	{
 		try {
-			Strategy strategy = clazz.newInstance();
-			strategy.setPlugin(OldHSP.getInstance());
+            Strategy strategy = injector.getInstance(clazz);
+//			Strategy strategy = clazz.newInstance();
+//            injector.injectMembers(strategy);
 			strategy.validate();
 			return strategy;
 		}
@@ -185,14 +223,15 @@ public class StrategyFactory {
 		}
 	}
 	
-	public static Strategy newStrategy(Class<? extends Strategy> clazz, String arg)
+	public Strategy newStrategy(Class<? extends Strategy> clazz, String arg)
 			throws StrategyException
 	{
 		try {
-			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
-			Strategy strategy = constructor.newInstance(arg);
+		    Strategy strategy = injector.getInstance(clazz);
+//			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
+//			Strategy strategy = constructor.newInstance(arg);
+//			injector.injectMembers(strategy);
 			
-			strategy.setPlugin(OldHSP.getInstance());
 			strategy.validate();
 			
 			return strategy;
@@ -215,7 +254,7 @@ public class StrategyFactory {
 	 * @param strategyName
 	 * @return
 	 */
-	public static Strategy newStrategy(final String strategyName) throws StrategyException {
+	public Strategy newStrategy(final String strategyName) throws StrategyException {
 		for(Entry<String, Class<? extends Strategy>> entry : oneArgStrategies.entrySet()) {
 			if( strategyName.toLowerCase().startsWith(entry.getKey().toLowerCase()) ) {
 				String[] strings = strategyName.split(":");

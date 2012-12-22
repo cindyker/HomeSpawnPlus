@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.HomeStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
@@ -41,6 +42,7 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@OneArgStrategy
 public class HomeSpecificWorld extends HomeStrategy {
 	private final String worldName;
 	

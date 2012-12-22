@@ -43,10 +43,18 @@ import org.morganm.homespawnplus.storage.StorageException;
  *
  */
 public interface SpawnDAO {
+    public static final String NEW_PLAYER_SPAWN = "newPlayerSpawn";
+
 	public Spawn findSpawnByWorld(String world);
 	public Spawn findSpawnByWorldAndGroup(String world, String group);
 	public Spawn findSpawnByName(String name);
 	public Spawn findSpawnById(int id);
+	
+	/** Return the single spawn defined as new player spawn; if any.
+	 * 
+	 * @return new player spawn or null
+	 */
+	public Spawn getNewPlayerSpawn();
 	
 	/** Return full set of defined spawn groups.
 	 * 

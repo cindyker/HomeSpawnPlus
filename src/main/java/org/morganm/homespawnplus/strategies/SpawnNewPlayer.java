@@ -36,30 +36,28 @@ package org.morganm.homespawnplus.strategies;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Spawn;
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class SpawnNewPlayer extends BaseStrategy
 {
-    protected SpawnUtil spawnUtil;
-    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
-    protected Storage storage;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
-
+    @Inject private SpawnDAO spawnDAO;
+    
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		Spawn spawn = null;
 		
 		if( context.getPlayer().isNewPlayer() ) {
 			logVerbose("player is detemined to be a new player");
-			spawn = spawnUtil.getFirstSpawn();
+			spawn = spawnDAO.getNewPlayerSpawn();
 		}
 		else 
 			logVerbose("player is detemined to NOT be a new player");

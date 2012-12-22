@@ -34,6 +34,8 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
@@ -41,6 +43,8 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  * @author morganm
  *
  */
+@NoArgStrategy
+@OneArgStrategy
 public class ModeYBounds extends ModeStrategy {
 	private String arg;
 	private int minY = 1;

@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /** Mode that specifies teleports should not be done above lily pads.
@@ -41,6 +42,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class ModeNoLilyPad extends ModeStrategy {
 	@Override
 	public String getStrategyConfigName() {

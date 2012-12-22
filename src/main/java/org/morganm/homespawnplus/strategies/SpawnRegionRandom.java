@@ -49,6 +49,7 @@ import org.morganm.homespawnplus.server.api.TeleportOptions;
 import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
@@ -62,19 +63,12 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  * @author morganm
  *
  */
+@OneArgStrategy
 public class SpawnRegionRandom extends BaseStrategy {
-    protected SpawnUtil spawnUtil;
-    protected Storage storage;
-    private WorldGuardIntegration worldGuard;
-    private Teleport teleport;
-    private Server server;
-    private Factory factory;
-    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
-    @Inject public void setWorldGuardIntegration(WorldGuardIntegration worldGuard) { this.worldGuard = worldGuard; }
-    @Inject public void setTeleport(Teleport teleport) { this.teleport = teleport; }
-    @Inject public void setServer(Server server) { this.server = server; }
-    @Inject public void setFactory(Factory factory) { this.factory = factory; }
+    @Inject private WorldGuardIntegration worldGuard;
+    @Inject private Teleport teleport;
+    @Inject private Server server;
+    @Inject private Factory factory;
     
 	private String world;
 	private String region;

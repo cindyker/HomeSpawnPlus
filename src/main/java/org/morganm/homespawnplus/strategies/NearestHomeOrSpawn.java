@@ -33,11 +33,12 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
-import org.morganm.homespawnplus.strategy.StrategyException;
-import org.morganm.homespawnplus.strategy.StrategyFactory;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /** Strategy to return the nearest home or spawn, whichever is closer.
@@ -45,14 +46,10 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class NearestHomeOrSpawn extends BaseStrategy {
-	private final HomeNearestHome nearestHome;
-	private final SpawnNearestSpawn nearestSpawn;
-	
-	public NearestHomeOrSpawn() throws StrategyException {
-		nearestHome = (HomeNearestHome) StrategyFactory.newStrategy(HomeNearestHome.class);
-		nearestSpawn = (SpawnNearestSpawn) StrategyFactory.newStrategy(SpawnNearestSpawn.class);
-	}
+	@Inject private HomeNearestHome nearestHome;
+	@Inject private SpawnNearestSpawn nearestSpawn;
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {

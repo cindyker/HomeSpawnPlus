@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.server.bukkit.events;
 
 import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.bukkit.BukkitBlock;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
 
 /**
  * @author morganm
@@ -15,8 +16,8 @@ implements org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent
 {
     private org.bukkit.event.player.PlayerBedEnterEvent bukkitEvent;
     
-    public PlayerBedEnterEvent(org.bukkit.event.player.PlayerBedEnterEvent bukkitEvent) {
-        super(bukkitEvent);
+    public PlayerBedEnterEvent(org.bukkit.event.player.PlayerBedEnterEvent bukkitEvent, BukkitFactory bukkitFactory) {
+        super(bukkitEvent, bukkitFactory);
         this.bukkitEvent = bukkitEvent;
     }
 

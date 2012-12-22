@@ -23,7 +23,7 @@ public class ConfigCore extends ConfigBase implements ConfigInterface, Initializ
 
     @Override
     public int getPriority() {
-        return 0;   // core config has lowest priority
+        return 2;   // core config has lower priority than default
     }
 
     /**
@@ -251,5 +251,30 @@ public class ConfigCore extends ConfigBase implements ConfigInterface, Initializ
      */
     public String getStorageType() {
         return super.getString("storage");
+    }
+    
+    public enum NewPlayerStrategy {
+        ORIGINAL,
+        BUKKIT,
+        PLAYER_DAT
+    }
+    /**
+     * Return the strategy used to determine if a player is new.
+     * @return
+     */
+    public NewPlayerStrategy getNewPlayerStrategy() {
+        String strategyString = super.getString("newPlayerStrategy");
+        
+        // default strategy if no other valid strategy is specified
+        NewPlayerStrategy strategy = NewPlayerStrategy.PLAYER_DAT;
+
+        if( NewPlayerStrategy.ORIGINAL.toString().equals(strategyString) )
+            strategy = NewPlayerStrategy.ORIGINAL;
+        else if( NewPlayerStrategy.BUKKIT.toString().equals(strategyString) )
+            strategy = NewPlayerStrategy.BUKKIT;
+        else if( NewPlayerStrategy.PLAYER_DAT.toString().equals(strategyString) )
+            strategy = NewPlayerStrategy.PLAYER_DAT;
+        
+        return strategy;
     }
 }

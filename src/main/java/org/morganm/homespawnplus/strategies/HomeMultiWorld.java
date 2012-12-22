@@ -33,25 +33,21 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
-import org.morganm.homespawnplus.strategy.StrategyException;
-import org.morganm.homespawnplus.strategy.StrategyFactory;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class HomeMultiWorld extends BaseStrategy {
-
-	private HomeLocalWorld homeLocalWorld;
-	private HomeDefaultWorld homeDefaultWorld;
-	
-	public HomeMultiWorld() throws StrategyException {
-		homeLocalWorld = (HomeLocalWorld) StrategyFactory.newStrategy(HomeLocalWorld.class);
-		homeDefaultWorld = (HomeDefaultWorld) StrategyFactory.newStrategy(HomeDefaultWorld.class);
-	}
+	@Inject private HomeLocalWorld homeLocalWorld;
+	@Inject private HomeDefaultWorld homeDefaultWorld;
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {

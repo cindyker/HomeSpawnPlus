@@ -15,6 +15,8 @@ import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.YamlFile;
 import org.morganm.mBukkitLib.JarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Abstract base class that implements some common functionality
  * for config classes.
@@ -23,6 +25,8 @@ import org.morganm.mBukkitLib.JarUtils;
  *
  */
 public abstract class ConfigBase implements ConfigInterface, Initializable {
+    protected static final Logger log = LoggerFactory.getLogger(ConfigBase.class);
+    
     protected final YamlFile yaml;
     protected final String fileName;
     protected final String basePath;
@@ -43,7 +47,7 @@ public abstract class ConfigBase implements ConfigInterface, Initializable {
     
     @Override
     public int getPriority() {
-        return 1;   // default config initialization priority is 1
+        return 3;   // default config initialization priority is 3
     }
 
     /**
@@ -53,6 +57,7 @@ public abstract class ConfigBase implements ConfigInterface, Initializable {
      */
     @Override
     public void load() throws IOException, FileNotFoundException, ConfigException {
+        log.debug("config "+getClass()+" loading");
         installDefaultFile();
         yaml.load(new File(fileName));
     }

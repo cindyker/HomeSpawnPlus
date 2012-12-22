@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /** Strategy to avoid spawning over leaves.
@@ -41,6 +42,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class ModeNoLeaves extends ModeStrategy {
 
 	@Override

@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.guice;
 
+import org.morganm.homespawnplus.config.ConfigStorage;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -23,10 +25,10 @@ public class InjectorFactory {
      * 
      * @return
      */
-    public static Injector createInjector(Object originalPluginObject) {
+    public static Injector createInjector(Object originalPluginObject, ConfigStorage configStorage) {
         // in the future this will choose different injectors based on the
         // environment. For now the only environment we support is Bukkit.
-        Injector injector = Guice.createInjector(new HSPModule(), new BukkitModule(originalPluginObject));
+        Injector injector = Guice.createInjector(new HSPModule(configStorage), new BukkitModule(originalPluginObject));
         return injector;
     }
 }

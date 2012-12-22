@@ -35,25 +35,23 @@ package org.morganm.homespawnplus.strategies;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.util.SpawnUtil;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class SpawnLocalWorld extends BaseStrategy {
-    protected SpawnUtil spawnUtil;
-    protected Storage storage;
-    @Inject public void setSpawnUtil(SpawnUtil spawnUtil) { this.spawnUtil = spawnUtil; }
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject private SpawnDAO spawnDAO;
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResult( storage.getSpawnDAO().findSpawnByWorld(context.getPlayer().getWorld().getName()) );
+		return new StrategyResult( spawnDAO.findSpawnByWorld(context.getPlayer().getWorld().getName()) );
 	}
 
 	@Override

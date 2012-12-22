@@ -91,6 +91,14 @@ public class StorageEBeans implements Storage {
 	    this.ebeanUtils = ebeanUtils;
 	    this.plugin = plugin;
 		this.usePersistanceReimplemented = false;
+
+        homeDAO = new HomeDAOEBean(getDatabase());
+        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this);
+        spawnDAO = new SpawnDAOEBean(getDatabase());
+        playerDAO = new PlayerDAOEBean(getDatabase());
+        versionDAO = new VersionDAOEBean(getDatabase());
+        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
+        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
 	}
 	
 	public void setUsePersistanceReimplemented(boolean usePersistanceReimplemented) {
@@ -172,14 +180,6 @@ public class StorageEBeans implements Storage {
 //	            plugin.installDatabaseDDL();
 	        }
 		}
-        
-        homeDAO = new HomeDAOEBean(getDatabase());
-        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this);
-        spawnDAO = new SpawnDAOEBean(getDatabase());
-        playerDAO = new PlayerDAOEBean(getDatabase());
-        versionDAO = new VersionDAOEBean(getDatabase());
-        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
-        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
         
         try {
         	upgradeDatabase();

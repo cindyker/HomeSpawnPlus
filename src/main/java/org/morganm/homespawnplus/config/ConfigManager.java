@@ -36,13 +36,12 @@ public class ConfigManager {
     private final Plugin plugin;
     
     @Inject
-    public ConfigManager(Injector injector, JarUtils jarUtil, Plugin plugin)
+    public ConfigManager(Injector injector, JarUtils jarUtil, Plugin plugin, Reflections reflections)
     {
         this.injector = injector;
         this.jarUtil = jarUtil;
         this.plugin = plugin;
-        
-        reflections = Reflections.collect();
+        this.reflections = reflections;
     }
     
     public void installDefaults() throws FileNotFoundException, IOException {

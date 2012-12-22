@@ -34,12 +34,14 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
 /**
  * @author morganm
  *
  */
+@NoArgStrategy
 public class ModeDefault extends ModeStrategy {
 
 	@Override

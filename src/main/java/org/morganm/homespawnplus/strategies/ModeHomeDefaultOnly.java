@@ -33,6 +33,7 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 import org.morganm.homespawnplus.strategy.ModeStrategy;
 
@@ -40,8 +41,8 @@ import org.morganm.homespawnplus.strategy.ModeStrategy;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class ModeHomeDefaultOnly extends ModeStrategy {
-
 	@Override
 	public String getStrategyConfigName() {
 		return "modeHomeDefaultOnly";

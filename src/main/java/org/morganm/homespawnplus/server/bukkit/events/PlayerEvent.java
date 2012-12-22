@@ -4,7 +4,9 @@
 package org.morganm.homespawnplus.server.bukkit.events;
 
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.homespawnplus.server.bukkit.BukkitPlayer;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
+
+import com.google.inject.Inject;
 
 /** Base class that represents an event about a player.
  * 
@@ -12,16 +14,19 @@ import org.morganm.homespawnplus.server.bukkit.BukkitPlayer;
  *
  */
 public abstract class PlayerEvent {
-    protected org.bukkit.event.player.PlayerEvent bukkitPlayerEvent;
+    protected final org.bukkit.event.player.PlayerEvent bukkitPlayerEvent;
+    protected final BukkitFactory bukkitFactory;
     protected Player player;
     
-    public PlayerEvent(org.bukkit.event.player.PlayerEvent bukkitPlayerEvent) {
+    @Inject
+    public PlayerEvent(org.bukkit.event.player.PlayerEvent bukkitPlayerEvent, BukkitFactory bukkitFactory) {
         this.bukkitPlayerEvent = bukkitPlayerEvent;
+        this.bukkitFactory = bukkitFactory;
     }
 
     public Player getPlayer() {
         if( player == null )
-            player = new BukkitPlayer(bukkitPlayerEvent.getPlayer());
+            player = bukkitFactory.newBukkitPlayer(bukkitPlayerEvent.getPlayer());
         
         return player;
     }

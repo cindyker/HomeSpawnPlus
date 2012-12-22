@@ -5,6 +5,7 @@ package org.morganm.homespawnplus;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.config.ConfigStorage;
 import org.morganm.homespawnplus.entity.ObjectFactory;
 import org.morganm.homespawnplus.guice.InjectorFactory;
 import org.morganm.homespawnplus.server.api.Factory;
@@ -27,6 +28,7 @@ public class HomeSpawnPlus {
     private final Logger log = LoggerFactory.getLogger(HomeSpawnPlus.class);
 
     private final Object originalPluginObject;
+    private final ConfigStorage configStorage;
     private PermissionSystem permSystem;
     private EventDispatcher eventDispatcher;
     private Initializer initializer;
@@ -38,12 +40,14 @@ public class HomeSpawnPlus {
     private String version = "undef";
     private int buildNumber = -1;
     
-    public HomeSpawnPlus(Object originalPluginObject) {
+    public HomeSpawnPlus(Object originalPluginObject, ConfigStorage configStorage) {
         this.originalPluginObject = originalPluginObject;
+        this.configStorage = configStorage;
     }
 
     public void onEnable() throws Exception {
-        final Injector injector = InjectorFactory.createInjector(originalPluginObject);     // IoC container
+//        GuiceDebug.enable();
+        final Injector injector = InjectorFactory.createInjector(originalPluginObject, configStorage); // IoC container
         injector.injectMembers(this);   // inject all dependencies for this object
 
         buildNumber = jarUtil.getBuildNumber();
@@ -56,10 +60,12 @@ public class HomeSpawnPlus {
         storage.initializeStorage();
         eventDispatcher.registerEvents();
         
+//        GuiceDebug.disable();
         log.info("version "+version+", build "+buildNumber+" is enabled");
     }
     
     public void onDisable() {
+//        GuiceDebug.disable();
         log.info("version "+version+", build "+buildNumber+" is disabled");
     }
 

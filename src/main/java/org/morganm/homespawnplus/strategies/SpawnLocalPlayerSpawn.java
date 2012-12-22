@@ -37,9 +37,9 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.PlayerSpawn;
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
+import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
@@ -47,9 +47,9 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
  * @author morganm
  *
  */
+@NoArgStrategy
 public class SpawnLocalPlayerSpawn extends BaseStrategy {
-    protected Storage storage;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    @Inject private PlayerSpawnDAO playerSpawnDAO;
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
@@ -59,8 +59,7 @@ public class SpawnLocalPlayerSpawn extends BaseStrategy {
 		String worldName = context.getEventLocation().getWorld().getName();
 		log.debug("SpawnLocalPlayerSpawn.evaluate() worldName={}",worldName);
 		
-		PlayerSpawnDAO dao = storage.getPlayerSpawnDAO();
-		PlayerSpawn ps = dao.findByWorldAndPlayerName(worldName, p.getName());
+		PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
 		
 		if( ps != null ) {
 			if( ps.getSpawn() != null )

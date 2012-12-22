@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.morganm.homespawnplus.strategy.ModeStrategy;
+import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyMode;
 
@@ -44,6 +45,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  * @author morganm
  *
  */
+@OneArgStrategy
 public class ModeDistanceLimits extends ModeStrategy {
 	private String arg;
 	private int minDistance = 0;

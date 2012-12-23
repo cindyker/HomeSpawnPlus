@@ -3,19 +3,15 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigEconomy.PerPermissionEconomyEntry;
 import org.morganm.homespawnplus.config.ConfigEconomy.PerWorldEconomyEntry;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /** Configuration related to economy costs.
  * 
@@ -23,17 +19,8 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigEconomy extends ConfigPerXBase<PerPermissionEconomyEntry, PerWorldEconomyEntry> implements ConfigInterface, Initializable {
-    @Inject
-    public ConfigEconomy(YamlFile yaml) {
-        super("economy.yml", "cost", yaml);
-    }
-
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        super.load();
-        populatePerPermissionEntries();
-    }
-
+@ConfigOptions(fileName="economy.yml", basePath="cost")
+public class ConfigEconomy extends ConfigPerXBase<PerPermissionEconomyEntry, PerWorldEconomyEntry> implements Initializable {
     /**
      * Determine whether or not economy has been enabled by admin.
      * 

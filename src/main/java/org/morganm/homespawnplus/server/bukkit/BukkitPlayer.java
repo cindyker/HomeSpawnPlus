@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
@@ -27,6 +28,7 @@ public class BukkitPlayer implements Player {
     private ConfigCore configCore;
     private PlayerDAO playerDAO;
     private org.bukkit.entity.Player bukkitPlayer;
+    private Permissions perm;
     
     /** Package private, should only be invoked from BukkitFactory.
      * 
@@ -34,9 +36,10 @@ public class BukkitPlayer implements Player {
      * @param playerDAO
      * @param bukkitPlayer
      */
-    BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO, org.bukkit.entity.Player bukkitPlayer) {
+    BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO, Permissions perm, org.bukkit.entity.Player bukkitPlayer) {
         this.configCore = configCore;
         this.playerDAO = playerDAO;
+        this.perm = perm;
         this.bukkitPlayer = bukkitPlayer;
     }
 
@@ -94,10 +97,10 @@ public class BukkitPlayer implements Player {
         return new BukkitLocation(bukkitPlayer.getLocation());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean hasPermission(String permission) {
-        // TODO: upgrade to HSP permission system
-        return bukkitPlayer.hasPermission(permission);
+        return perm.hasPermission(this, permission);
     }
 
     @Override

@@ -25,8 +25,6 @@ import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.World;
-import org.morganm.homespawnplus.server.api.event.EventDispatcher;
-import org.morganm.homespawnplus.server.api.event.EventListener;
 import org.morganm.mBukkitLib.i18n.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +36,6 @@ import org.slf4j.LoggerFactory;
 public class BukkitServer implements Server {
     private final Logger log = LoggerFactory.getLogger(BukkitServer.class);
 
-    private final org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher dispatcher;
     private final Plugin plugin;
     private final Teleport teleport;
     private final Locale locale;
@@ -55,10 +52,8 @@ public class BukkitServer implements Server {
     private boolean clearWorldCache = true;
     
     @Inject
-    public BukkitServer(EventListener listener, Plugin plugin, Teleport teleport,
-            Locale locale, BukkitFactory bukkitFactory)
+    public BukkitServer(Plugin plugin, Teleport teleport, Locale locale, BukkitFactory bukkitFactory)
     {
-        this.dispatcher = new org.morganm.homespawnplus.server.bukkit.BukkitEventDispatcher(listener, this.plugin, bukkitFactory);
         this.plugin = plugin;
         this.teleport = teleport;
         this.locale = locale;
@@ -67,11 +62,6 @@ public class BukkitServer implements Server {
         this.plugin.getServer().getPluginManager().registerEvents(new WorldListener(), this.plugin);
     }
 
-    @Override
-    public EventDispatcher getEventDispatcher() {
-        return dispatcher;
-    }
-    
     @Override
     public void delayedTeleport(Player player, Location location) {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
@@ -233,5 +223,15 @@ public class BukkitServer implements Server {
             offlinePlayers[i] = new BukkitOfflinePlayer(bukkitOffline[i]);
         }
         return offlinePlayers;
+    }
+
+    @Override
+    public Player[] getOnlinePlayers() {
+        org.bukkit.entity.Player[] bukkitOnline = plugin.getServer().getOnlinePlayers();
+        Player[] players = new Player[bukkitOnline.length];
+        for(int i=0; i < bukkitOnline.length; i++) {
+            players[i] = bukkitFactory.newBukkitPlayer(bukkitOnline[i]); 
+        }
+        return players;
     }
 }

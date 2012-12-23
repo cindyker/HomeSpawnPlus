@@ -6,11 +6,6 @@ package org.morganm.homespawnplus.server.bukkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -20,12 +15,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.config.ConfigException;
 import org.morganm.homespawnplus.server.api.YamlFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author morganm
  *
  */
 public class BukkitYamlConfigFile implements YamlFile {
+    private static final Logger log = LoggerFactory.getLogger(BukkitYamlConfigFile.class);
+
     private final YamlConfiguration yaml;
     private final Plugin plugin;
     
@@ -40,84 +39,63 @@ public class BukkitYamlConfigFile implements YamlFile {
      * @param file
      * @return
      */
-    private File configFile(File file) {
-        File dataDir = plugin.getDataFolder();
-        File configDir = new File(dataDir, "config");
-        return new File(configDir, file.getName());
-    }
+//    private File configFile(File file) {
+//        File dataDir = plugin.getDataFolder();
+//        File configDir = new File(dataDir, "config");
+//        return new File(configDir, file.getName());
+//    }
 
     @Override
     public void save(File file) throws IOException {
-        yaml.save(configFile(file));
+        yaml.save(file);
     }
 
     @Override
     public void load(File file) throws FileNotFoundException, IOException, ConfigException {
         try {
-            yaml.load(configFile(file));
+            yaml.load(file);
         }
         catch(InvalidConfigurationException e) {
             throw new ConfigException(e);
         }
     }
-    
-    @Override
-    public boolean contains(String path) {
-        return yaml.contains(path);
-    }
 
     @Override
-    public Object get(String path) {
-        return yaml.get(path);
-    }
-
-    @Override
-    public boolean getBoolean(String path) {
-        return yaml.getBoolean(path);
-    }
-
-    @Override
-    public int getInt(String path) {
-        return yaml.getInt(path);
-    }
-
-    @Override
-    public Integer getInteger(String path) {
-        if( yaml.contains(path) )
-            return Integer.valueOf(yaml.getInt(path));
-        else
-            return null;
-    }
-
-    @Override
-    public String getString(String path) {
-        return yaml.getString(path);
-    }
-
-    private static final Set<String> emptySet = Collections.unmodifiableSet(new HashSet<String>());
-    @Override
-    public Set<String> getKeys(String path) {
-        ConfigurationSection cs = yaml.getConfigurationSection(path);
-        if( cs != null ) {
-            return cs.getKeys(false);
+    public org.morganm.homespawnplus.server.api.ConfigurationSection getConfigurationSection(String path) {
+        ConfigurationSection section = yaml.getConfigurationSection(path);
+        log.debug("getConfigurationSection() path={}, section={}", path, section);
+        if( section != null ) {
+            return new BukkitConfigurationSection(section);
         }
+        // try defaults
         else {
-            return emptySet;
+            ConfigurationSection rootSection = plugin.getConfig().getDefaults();
+//            ConfigurationSection rootSection = yaml.getDefaultSection();
+            if( rootSection != null )
+                section = rootSection.getConfigurationSection(path);
+            log.debug("getConfigurationSection() tried defaults, path={}, section={}", path, section);
+            if( section != null )
+                return new BukkitConfigurationSection(section);
+            else
+                return null;
         }
-    }
-    
-    private static final List<String> emptyList = Collections.unmodifiableList(new ArrayList<String>());
-    @Override
-    public List<String> getStringList(String path) {
-        List<String> list = yaml.getStringList(path);
-        if( list != null )
-            return list;
-        else
-            return emptyList;
     }
 
     @Override
-    public double getDouble(String path) {
-        return yaml.getDouble(path);
+    public org.morganm.homespawnplus.server.api.ConfigurationSection getRootConfigurationSection() {
+        ConfigurationSection section = yaml.getRoot();
+        log.debug("getRootConfigurationSection() section={}", section);
+        if( section != null ) {
+            return new BukkitConfigurationSection(section);
+        }
+        // try defaults
+        else {
+            section = plugin.getConfig().getDefaults();
+            log.debug("getConfigurationSection() tried defaults, section={}", section);
+            if( section != null )
+                return new BukkitConfigurationSection(section);
+            else
+                return null;
+        }
     }
 }

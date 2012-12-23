@@ -224,6 +224,19 @@ public class SpawnUtil {
     }
 
     /**
+     * Called on plugin shutdown to update the logout location of all
+     * players. Can also be called periodically to do the same so that
+     * we have a recently recorded location in the event of a server
+     * crash.
+     */
+    public void updateAllPlayerLocations() {
+        Player[] players = server.getOnlinePlayers();
+        for(int i=0; i < players.length;i++) {
+            updateQuitLocation(players[i]);
+        }
+    }
+
+    /**
      * Update the logout location of a player, if enabled.
      * 
      * @param p

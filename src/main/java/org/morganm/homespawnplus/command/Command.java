@@ -86,7 +86,9 @@ public interface Command {
 	
 //	public void setPlugin(Plugin plugin);
 	
-	/** Return the permission node name required to use this command (if any).
+	/** If there is a custom permission node for this command, it should be
+	 * returned here. If this returns null, the default command permission
+	 * will be used.
 	 * 
 	 * @return
 	 */

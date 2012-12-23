@@ -6,14 +6,15 @@ package org.morganm.homespawnplus.listener;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
 import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
+import org.morganm.homespawnplus.manager.WarmupManager;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent;
+import org.morganm.homespawnplus.server.api.events.PlayerDamageEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerJoinEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerKickEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerMoveEvent;
@@ -48,6 +49,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
     private Teleport teleport;
     private SpawnUtil spawnUtil;
     private BedUtils bedUtil;
+    private WarmupManager warmupManager;
     
     /** We record the last known player/location for common events so that we can
      * later check at a MONITOR priority to see if it changed.
@@ -65,7 +67,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
             MultiverseIntegration multiVerse, Teleport teleport, SpawnUtil spawnUtil,
-            BedUtils bedUtil) {
+            BedUtils bedUtil, WarmupManager warmupManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -74,6 +76,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
         this.teleport = teleport;
         this.spawnUtil = spawnUtil;
         this.bedUtil = bedUtil;
+        this.warmupManager = warmupManager;
     }
     
     @Override
@@ -83,7 +86,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
         
         if( isNewPlayer ) {
             if( config.isVerboseLogging() )
-                OldHSP.log.info(OldHSP.logPrefix + " New player "+p.getName()+" detected.");
+                log.info("New player {} detected.", p.getName());
         }
         
         // if they don't have a player record yet, create one.
@@ -310,6 +313,11 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
         spawnUtil.updateQuitLocation(event.getPlayer());
     }
     
+    @Override
+    public void playerDamage(PlayerDamageEvent event) {
+        warmupManager.processEntityDamage(event);
+    }
+
     @Override
     public void playerMove(PlayerMoveEvent event) {
         // TODO Auto-generated method stub

@@ -3,16 +3,12 @@
  */
 package org.morganm.homespawnplus.config;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /** This class generically implements the "config-per-world"
  * and "config-per-permission" patterns for use by other
@@ -25,18 +21,9 @@ public abstract class ConfigPerXBase<P extends PerPermissionEntry, W extends Per
     protected Map<String, P> perPermissionEntries = new LinkedHashMap<String, P>();
     protected Map<String, W> perWorldEntries = new LinkedHashMap<String, W>();
 
-    /**
-     * 
-     * @param fileName the default filename of the config file, such as "cooldown.yml"
-     * @param basePath the root path of the YAML file, such as "cooldowns"
-     * @param yaml the yaml file to use
-     */
-    protected ConfigPerXBase(String fileName, String basePath, YamlFile yaml) {
-        super(fileName, basePath, yaml);
-    }
-
-    public void load() throws IOException, FileNotFoundException, ConfigException {
-        super.load();
+    @Override
+    public void init() throws Exception {
+        super.init();
         populatePerWorldEntries();
         populatePerPermissionEntries();
     }
@@ -99,7 +86,7 @@ public abstract class ConfigPerXBase<P extends PerPermissionEntry, W extends Per
             if( permissions == null || permissions.size() == 0 ) {
                 permissions = new ArrayList<String>(3);
                 
-                permissions.add("hsp."+basePath+"."+entryName);         // add basePath permission
+                permissions.add("hsp."+getBasePath()+"."+entryName);    // add basePath permission
                 permissions.add("hsp.entry."+entryName);                // add default entry permission
                 permissions.add("group."+entryName);                    // add convenience group entry
             }

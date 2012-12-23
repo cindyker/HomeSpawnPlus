@@ -7,27 +7,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerPermission;
 import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerWorld;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
  * @author morganm
  *
  */
 @Singleton
-public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPerWorld>
-implements ConfigInterface, Initializable
-{
-    @Inject
-    public ConfigWarmup(YamlFile yaml) {
-        super("warmup.yml", "warmup", yaml);
-    }
-
+@ConfigOptions(fileName="warmup.yml", basePath="warmup")
+public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPerWorld> implements Initializable {
     /**
      * Determine if warmups are enabled.
      * 

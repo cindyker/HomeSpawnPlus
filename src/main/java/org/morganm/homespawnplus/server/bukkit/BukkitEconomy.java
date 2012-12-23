@@ -47,7 +47,7 @@ public class BukkitEconomy extends EconomyAbstractImpl implements Initializable 
     }
 
     @Override
-    public int getPriority() {
+    public int getInitPriority() {
         return 6;
     }
 
@@ -73,5 +73,9 @@ public class BukkitEconomy extends EconomyAbstractImpl implements Initializable 
             return response.errorMessage;
         else
             return null;
+    }
+
+    @Override
+    public void shutdown() throws Exception {
     }
 }

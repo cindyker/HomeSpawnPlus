@@ -24,6 +24,13 @@ public abstract class PlayerEvent {
         this.bukkitFactory = bukkitFactory;
     }
 
+    @Inject
+    public PlayerEvent(org.bukkit.entity.Player player, BukkitFactory bukkitFactory) {
+        this.bukkitFactory = bukkitFactory;
+        this.player = bukkitFactory.newBukkitPlayer(player);
+        this.bukkitPlayerEvent = null;
+    }
+
     public Player getPlayer() {
         if( player == null )
             player = bukkitFactory.newBukkitPlayer(bukkitPlayerEvent.getPlayer());

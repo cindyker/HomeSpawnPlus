@@ -3,23 +3,17 @@
  */
 package org.morganm.homespawnplus.config;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
  * @author morganm
  *
  */
 @Singleton
-public class ConfigHomeInvites extends ConfigBase implements ConfigInterface, Initializable {
-    @Inject
-    public ConfigHomeInvites(YamlFile yaml) {
-        super("homeInvites.yml", "homeInvite", yaml);
-    }
-    
+@ConfigOptions(fileName="homeInvites.yml", basePath="homeInvite")
+public class ConfigHomeInvites extends ConfigBase implements Initializable {
     /**
      * Return the time (in seconds) for a sent invite to expire.
      * 

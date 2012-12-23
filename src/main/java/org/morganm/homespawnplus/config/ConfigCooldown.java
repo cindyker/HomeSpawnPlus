@@ -8,27 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerPermission;
 import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerWorld;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
  * @author morganm
  *
  */
 @Singleton
-public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, CooldownsPerWorld>
-implements ConfigInterface, Initializable
-{
-    @Inject
-    public ConfigCooldown(YamlFile yaml) {
-        super("cooldown.yml", "cooldown", yaml);
-    }
-
+@ConfigOptions(fileName="cooldown.yml", basePath="cooldown")
+public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, CooldownsPerWorld> implements Initializable {
     public boolean isEnabled() {
         return super.getBoolean("enabled");
     }

@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.server.bukkit.config.BukkitConfigStorage;
 import org.morganm.homespawnplus.storage.ebean.StorageEBeans;
+import org.morganm.homespawnplus.util.LogUtil;
 
 /** This class is the interface to Bukkit's Plugin interface. This is abstracted from
  * the rest of the plugin so as to minimize impact to the code when Bukkit makes
@@ -28,7 +29,9 @@ public class HSPBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // disable reflections spam; it's a bug that prints warnings that look alarming
         Logger.getLogger("org.reflections").setLevel(Level.OFF);
+        
         enableDebug();
 
         try {
@@ -65,12 +68,15 @@ public class HSPBukkit extends JavaPlugin {
 
     // TODO: move to an interface
     private void enableDebug() {
+        LogUtil.enableDebug();
+        
         getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.ALL);
         Logger.getLogger("org.morganm.homespawnplus").setLevel(Level.ALL);
 //        Logger debugLog = Logger.getLogger("org.morganm.homespawnplus");
 //        debugLog.setLevel(Level.FINEST);
 //        debugLog.setUseParentHandlers(true);
     }
+    
     private Handler getConsoleHandler(Logger log) {
         Handler[] handlers = log.getHandlers();
         for(int i=0; i < handlers.length; i++)

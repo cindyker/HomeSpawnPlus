@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.mBukkitLib.JarUtils;
 
 /** 
  * 
@@ -19,10 +20,13 @@ import org.morganm.homespawnplus.server.api.Plugin;
 public class BukkitPlugin implements Plugin
 {
     private final HSPBukkit plugin;
+    private final JarUtils jarUtil;
+    private int buildNumber = -1;
     
     @Inject
-    public BukkitPlugin(HSPBukkit plugin) {
+    public BukkitPlugin(HSPBukkit plugin, JarUtils jarUtil) {
         this.plugin = plugin;
+        this.jarUtil = jarUtil;
     }
 
     @Override
@@ -48,5 +52,12 @@ public class BukkitPlugin implements Plugin
     @Override
     public String getVersion() {
         return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public int getBuildNumber() {
+        if( buildNumber == -1 )
+            buildNumber = jarUtil.getBuildNumber();
+        return buildNumber;
     }
 }

@@ -6,14 +6,10 @@ package org.morganm.homespawnplus;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.config.ConfigStorage;
-import org.morganm.homespawnplus.entity.ObjectFactory;
 import org.morganm.homespawnplus.guice.InjectorFactory;
-import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.event.EventDispatcher;
-import org.morganm.homespawnplus.storage.Storage;
-import org.morganm.mBukkitLib.JarUtils;
-import org.morganm.mBukkitLib.PermissionSystem;
+import org.morganm.homespawnplus.util.SpawnUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,18 +23,15 @@ import com.google.inject.Injector;
 public class HomeSpawnPlus {
     private final Logger log = LoggerFactory.getLogger(HomeSpawnPlus.class);
 
+    // members that are passed in to us when instantiated
     private final Object originalPluginObject;
     private final ConfigStorage configStorage;
-    private PermissionSystem permSystem;
-    private EventDispatcher eventDispatcher;
-    private Initializer initializer;
-    private Storage storage;
-    private Factory factory;
-    private JarUtils jarUtil;
-    private Plugin plugin;
-    
-    private String version = "undef";
-    private int buildNumber = -1;
+
+    // members that are injected by the IoC container
+    @Inject private Initializer initializer;
+    @Inject private EventDispatcher eventDispatcher;
+    @Inject private Plugin plugin;
+    @Inject private SpawnUtil spawnUtil;
     
     public HomeSpawnPlus(Object originalPluginObject, ConfigStorage configStorage) {
         this.originalPluginObject = originalPluginObject;
@@ -50,57 +43,19 @@ public class HomeSpawnPlus {
         final Injector injector = InjectorFactory.createInjector(originalPluginObject, configStorage); // IoC container
         injector.injectMembers(this);   // inject all dependencies for this object
 
-        buildNumber = jarUtil.getBuildNumber();
-        version = plugin.getVersion();
-        
         initializer.initAll();
-        ObjectFactory.setFactory(factory);
-
-        permSystem.setupPermissions();
-        storage.initializeStorage();
         eventDispatcher.registerEvents();
         
-//        GuiceDebug.disable();
-        log.info("version "+version+", build "+buildNumber+" is enabled");
+        log.info("version {}, build {} is enabled", plugin.getVersion(), plugin.getBuildNumber());
     }
     
     public void onDisable() {
-//        GuiceDebug.disable();
-        log.info("version "+version+", build "+buildNumber+" is disabled");
-    }
+        // unhook multiverse (if needed)
+//        multiverse.onDisable();
 
-    @Inject
-    private void setPermissionSystem(PermissionSystem permSystem) {
-        this.permSystem = permSystem;
-    }
-    
-    @Inject
-    private void setEventDispatcher(EventDispatcher eventDispatcher) {
-        this.eventDispatcher = eventDispatcher;
-    }
-    
-    @Inject
-    private void setInitializer(Initializer initializer) {
-        this.initializer = initializer;
-    }
-    
-    @Inject
-    private void setStorage(Storage storage) {
-        this.storage = storage;
-    }
+        spawnUtil.updateAllPlayerLocations();
+        initializer.shutdownAll();
 
-    @Inject
-    private void setFactory(Factory factory) {
-        this.factory = factory;
-    }
-    
-    @Inject
-    private void setJarUtils(JarUtils jarUtil) {
-        this.jarUtil = jarUtil;
-    }
-
-    @Inject
-    private void setPlugin(Plugin plugin) {
-        this.plugin = plugin;
+        log.info("version {}, build {} is disabled", plugin.getVersion(), plugin.getBuildNumber());
     }
 }

@@ -41,8 +41,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigWarmup;
 import org.morganm.homespawnplus.config.ConfigWarmup.WarmupsPerPermission;
@@ -51,6 +49,7 @@ import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Scheduler;
 import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.events.PlayerDamageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,10 +266,7 @@ public class WarmupManager {
 	 * 
 	 * @param event
 	 */
-	public void processEntityDamage(EntityDamageEvent event) {
-		if( event.isCancelled() )
-			return;
-		
+	public void processEntityDamage(PlayerDamageEvent event) {
 		// if we aren't supposed to cancel on damage, no further processing required
 		if( !configWarmups.isCanceledOnDamage() )
 			return;
@@ -279,11 +275,7 @@ public class WarmupManager {
 		if( warmupsPending.isEmpty() )
 			return;
 		
-		Entity e = event.getEntity();
-		Player p = null;
-		if( e instanceof Player ) {
-			p = (Player) e;
-		}
+		Player p = event.getPlayer();
 		
 		if( p != null ) {
 			String playerName = p.getName();

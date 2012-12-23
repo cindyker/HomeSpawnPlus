@@ -44,10 +44,10 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.config.ConfigEvents;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
 import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.World;
 import org.slf4j.Logger;
@@ -65,11 +65,20 @@ public class StrategyConfig {
 	private final Map<String, Set<Strategy>> defaultStrategies;
 	private final Map<String, WorldStrategies> worldStrategies;
 	private final Map<String, PermissionStrategies> permissionStrategies;
+	
 	private final Server server;
+	private final ConfigEvents configEvents;
+	private final StrategyFactory strategyFactory;
+	
+	// TODO: empty stub for now, code that uses plugin is integration-related, needs to
+	// be changed to chose integration solution
+	private Plugin plugin;
 	
 	@Inject
-	public StrategyConfig(final Server server) {
+	public StrategyConfig(final Server server, ConfigEvents configEvents, StrategyFactory strategyFactory) {
 		this.server = server;
+		this.configEvents = configEvents;
+		this.strategyFactory = strategyFactory;
 		
 		defaultStrategies = new HashMap<String, Set<Strategy>>();
 		worldStrategies = new HashMap<String, WorldStrategies>();
@@ -129,17 +138,13 @@ public class StrategyConfig {
 		worldStrategies.clear();
 		permissionStrategies.clear();
 		
-		final FileConfiguration config = plugin.getConfig();
-
-		ConfigurationSection section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE);
+        ConfigurationSection section = configEvents.getBaseSection();
 		loadDefaultStrategies(section);
 		
-		section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE
-				+ "." + ConfigOptions.SETTING_EVENTS_WORLDBASE);
+		section = configEvents.getWorldSection();
 		loadWorldStrategies(section);
 		
-		section = config.getConfigurationSection(ConfigOptions.SETTING_EVENTS_BASE
-				+ "." + ConfigOptions.SETTING_EVENTS_PERMBASE);
+        section = configEvents.getPermissionSection();
 		loadPermissionStrategies(section);
 
 		log.debug("loadConfig() finished loading");
@@ -154,15 +159,18 @@ public class StrategyConfig {
 		int count=0;
 		log.debug("loadDefaultStrategies() loading default strategies");
 
-		Set<String> eventTypes = section.getKeys(false);
+		Set<String> eventTypes = section.getKeys();
 		for(String eventType : eventTypes) {
 			// get config children, then use lowercase to make configs case-insensitive
 			List<String> strategies = section.getStringList(eventType);
 			eventType = eventType.toLowerCase();
 			
 			// skip special sections
-			if( eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_PERMBASE)
-					|| eventType.equalsIgnoreCase(ConfigOptions.SETTING_EVENTS_WORLDBASE) )
+			// this is an ugly leakage of concerns from the config object, and a good
+			// reason to eventually move the majority of this functionality into
+			// the config object instead. 12/22/12 -andune
+			if( eventType.equalsIgnoreCase(ConfigEvents.SETTING_EVENTS_PERMBASE)
+					|| eventType.equalsIgnoreCase(ConfigEvents.SETTING_EVENTS_WORLDBASE) )
 				continue;
 			
 			if( strategies != null && strategies.size() > 0) {
@@ -176,7 +184,7 @@ public class StrategyConfig {
 
 				for(String item : strategies) {
 					try {
-						Strategy strategy = StrategyFactory.newStrategy(item);
+						Strategy strategy = strategyFactory.newStrategy(item);
 						set.add(strategy);
 						count++;
 					} catch (StrategyException e) {
@@ -198,7 +206,7 @@ public class StrategyConfig {
 		int count=0;
 		log.debug("loadWorldStrategies() loading world-specific strategies");
 		
-		Set<String> eventWorlds = section.getKeys(false);
+		Set<String> eventWorlds = section.getKeys();
 		if( eventWorlds == null ) {
 			log.debug("loadWorldStrategies() world section keys are null, skipping");
 			return;
@@ -212,7 +220,7 @@ public class StrategyConfig {
 			}
 			
 			ConfigurationSection worldSection = section.getConfigurationSection(world);
-			Set<String> types = worldSection.getKeys(false);
+			Set<String> types = worldSection.getKeys();
 			if( types != null && types.size() > 0 ) {
 				for(String eventType : types) {
 					// get config children, then use lowercase to make configs case-insensitive
@@ -230,7 +238,7 @@ public class StrategyConfig {
 						
 						for(String item : strategies) {
 							try {
-								Strategy strategy = StrategyFactory.newStrategy(item);
+								Strategy strategy = strategyFactory.newStrategy(item);
 								set.add(strategy);
 								count++;
 							} catch (StrategyException e) {
@@ -258,7 +266,7 @@ public class StrategyConfig {
 		int count=0;
 		log.debug("loadPermissionStrategies() loading permission-specific strategies");
 		
-		Set<String> permEntries = section.getKeys(false);
+		Set<String> permEntries = section.getKeys();
 		if( permEntries == null ) {
 			log.debug("loadPermissionStrategies() permission section keys are null, skipping");
 			return;
@@ -281,7 +289,7 @@ public class StrategyConfig {
 			permStrat.permissions = perms;
 
 			ConfigurationSection entrySection = section.getConfigurationSection(entry);
-			Set<String> entryKeys = entrySection.getKeys(false);
+			Set<String> entryKeys = entrySection.getKeys();
 			
 			for(String eventType : entryKeys) {
 				// get config children, then use lowercase to make configs case-insensitive
@@ -303,7 +311,7 @@ public class StrategyConfig {
 
 					for(String item : strategies) {
 						try {
-							Strategy strategy = StrategyFactory.newStrategy(item);
+							Strategy strategy = strategyFactory.newStrategy(item);
 							set.add(strategy);
 							count++;
 						} catch (StrategyException e) {

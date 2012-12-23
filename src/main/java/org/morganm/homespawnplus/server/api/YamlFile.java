@@ -6,8 +6,6 @@ package org.morganm.homespawnplus.server.api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 import org.morganm.homespawnplus.config.ConfigException;
 
@@ -23,13 +21,18 @@ public interface YamlFile {
     public void save(File file) throws IOException;
     public void load(File file) throws FileNotFoundException, IOException, ConfigException;
     
-    public boolean contains(String path);
-    public Object get(String path);
-    public boolean getBoolean(String path);
-    public int getInt(String path);
-    public Integer getInteger(String path);
-    public double getDouble(String path);
-    public String getString(String path);
-    public Set<String> getKeys(String path);
-    public List<String> getStringList(String path);
+    /**
+     * Gets the requested ConfigurationSection by path.
+     *
+     * @param path Path of the ConfigurationSection to get.
+     * @return Requested ConfigurationSection.
+     */
+    public ConfigurationSection getConfigurationSection(String path);
+    
+    /**
+     * Returns the root configuration section for this file.
+     * 
+     * @return root ConfigurationSection.
+     */
+    public ConfigurationSection getRootConfigurationSection();
 }

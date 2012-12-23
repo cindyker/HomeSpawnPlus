@@ -1,4 +1,4 @@
-package org.morganm.homespawnplus;
+package org.morganm.homespawnplus.server.bukkit;
 
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
@@ -44,22 +44,27 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import javax.inject.Inject;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.morganm.homespawnplus.strategy.StrategyConfig;
+import org.bukkit.scheduler.BukkitTask;
+import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.mBukkitLib.PermissionSystem;
+import org.morganm.mBukkitLib.i18n.Locale;
 
 /**
  * Tooling to post to metrics.griefcraft.com
  */
-public class Metrics {
+public class Metrics implements Initializable {
 
     /**
      * The metrics revision number
@@ -98,11 +103,6 @@ public class Metrics {
     private final Object optOutLock = new Object();
 
     /**
-     * The plugin this metrics submits for
-     */
-    private final Plugin plugin;
-
-    /**
      * A map of all of the graphs for each plugin
      */
     private Map<Plugin, Set<Graph>> graphs = Collections.synchronizedMap(new HashMap<Plugin, Set<Graph>>());
@@ -115,12 +115,17 @@ public class Metrics {
     /**
      * The plugin configuration file
      */
-    private final YamlConfiguration configuration;
+    private YamlConfiguration configuration;
 
     /**
      * The plugin configuration file
      */
-    private final File configurationFile;
+    private File configurationFile;
+
+    /**
+     * The plugin this metrics submits for
+     */
+    private final Plugin plugin;
 
     /**
      * Id of the scheduled task
@@ -131,14 +136,35 @@ public class Metrics {
      * Unique server id
      */
     private String guid;
+    
+    private final PermissionSystem permSystem;
+    private final Locale locale;
+    private final Storage storage;
 
-    public Metrics(final Plugin plugin) throws IOException {
-        if (plugin == null) {
-            throw new IllegalArgumentException("Plugin cannot be null");
-        }
-
+    @Inject
+    public Metrics(Plugin plugin, PermissionSystem permSystem, Locale locale, Storage storage) {
         this.plugin = plugin;
-
+        this.permSystem = permSystem;
+        this.locale = locale;
+        this.storage = storage;
+    }
+    
+    @Override
+    public void init() throws Exception {
+        loadConfiguration();
+        findCustomData();
+        start();
+    }
+    
+    @Override
+    public void shutdown() throws Exception {}
+    
+    @Override
+    public int getInitPriority() {
+        return 9;
+    }
+    
+    private void loadConfiguration() throws IOException {
         // load the config
         configurationFile = new File(CONFIG_FILE);
         configuration = YamlConfiguration.loadConfiguration(configurationFile);
@@ -188,10 +214,10 @@ public class Metrics {
      * 
      * @param hsp
      */
-    public void findCustomData(final OldHSP hsp) {
+    public void findCustomData() {
         // Create our Permission Graph and Add our permission Plotters
         Graph permGraph = createGraph(plugin, Graph.Type.Pie, "Permission");
-        final String permName = hsp.getPermissionSystem().getSystemInUseString();
+        final String permName = permSystem.getSystemInUseString();
         permGraph.addPlotter(new Metrics.Plotter(permName) {
 
             @Override
@@ -201,9 +227,9 @@ public class Metrics {
         });
 
         Graph localGraph = createGraph(plugin, Graph.Type.Pie, "Locale");
-        final String locale = hsp.getLocale().getLocale();
+        final String strLocale = locale.getLocale();
         // Add our Chat Plotters
-        localGraph.addPlotter(new Metrics.Plotter(locale) {
+        localGraph.addPlotter(new Metrics.Plotter(strLocale) {
             @Override
             public int getValue() {
                 return 1;
@@ -211,7 +237,7 @@ public class Metrics {
         });
         
         Graph storageGraph = createGraph(plugin, Graph.Type.Pie, "Storage");
-        final String storageName = hsp.getStorage().getImplName();
+        final String storageName = storage.getImplName();
         // Add our Chat Plotters
         storageGraph.addPlotter(new Metrics.Plotter(storageName) {
             @Override
@@ -220,6 +246,7 @@ public class Metrics {
             }
         });
 
+        /*
         // Create our Strategy Graph and Add our strategy Plotters
         Graph strategyGraph = createGraph(plugin, Graph.Type.Column, "Strategy");
         StrategyConfig sc = hsp.getStrategyEngine().getStrategyConfig();
@@ -262,6 +289,7 @@ public class Metrics {
                 return 1;
             }
         });
+        */
     }
 
     /**
@@ -301,7 +329,7 @@ public class Metrics {
             }
 
             // Begin hitting the server with glorious data
-            taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
                 private boolean firstPost = true;
 
@@ -328,8 +356,9 @@ public class Metrics {
                         Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
                     }
                 }
-            }, 0, PING_INTERVAL * 1200);
+            }, PING_INTERVAL * 1200);
 
+            taskId = task.getTaskId();
             return true;
         }
     }

@@ -6,6 +6,7 @@ package org.morganm.homespawnplus;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.command.Command;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.mBukkitLib.PermissionSystem;
@@ -17,7 +18,7 @@ import org.morganm.mBukkitLib.PermissionSystem;
  *
  */
 @Singleton
-public class Permissions {
+public class Permissions implements Initializable {
     /**
      * The base permission prefix - all HSP permissions start with this prefix. 
      */
@@ -30,6 +31,38 @@ public class Permissions {
         this.permSystem = permSystem;
     }
     
+
+    @Override
+    public void init() throws Exception {
+        permSystem.setupPermissions();
+    }
+
+    @Override
+    public void shutdown() throws Exception {}
+    
+    @Override
+    public int getInitPriority() {
+        return 6;
+    }
+
+    /**
+     * Determine if a sender has a given permission.
+     * 
+     * @deprecated you should use one of the specific permission methods
+     * or add one if possible, to minimize the spread of permission concerns
+     * throughout the plugin code. This method is only set public still
+     * to serve the need of config-exposed permissions, where admins can
+     * directly choose the permissions and therefore the plugin must test
+     * those permissions as-is.
+     * 
+     * @param sender
+     * @param perm
+     * @return
+     */
+    public boolean hasPermission(CommandSender sender, String perm) {
+        return permSystem.has(sender.getName(), perm);
+    }
+
     /**
      * Prepend the PREFIX and check if a player has a given permission node. 
      * 
@@ -39,11 +72,27 @@ public class Permissions {
      * @return true if the player has the permission
      */
     private boolean permCheck(CommandSender sender, String perm) {
-        return permSystem.has(sender.getName(), PERM_PREFIX+ perm);
+        return hasPermission(sender, PERM_PREFIX+ perm);
     }
 
     public boolean hasCommandPermission(CommandSender sender, String command) {
         return permCheck(sender,  "command." + command);
+    }
+    
+    /**
+     * Check for custom command permission first, if there is none, check the
+     * default command permission.
+     * 
+     * @param sender
+     * @param command
+     * @return true if the sender has permission, false if not
+     */
+    public boolean hasCommandPermission(CommandSender sender, Command command) {
+        String customPerm = command.getCommandPermissionNode();
+        if( customPerm != null )
+            return permCheck(sender, customPerm);
+        else 
+            return hasCommandPermission(sender,  command.getCommandName());
     }
     
     public boolean hasSetHomeNamed(Player player) {
@@ -71,6 +120,28 @@ public class Permissions {
         return permCheck(player, "WarmupExempt."+warmup);
     }
     
+    /**
+     * Determine if the player should be exempt from a given cooldown.
+     * 
+     * @param player
+     * @param cooldown
+     * @return
+     */
+    public boolean isCooldownExempt(Player player, String cooldown) {
+        return permCheck(player, "CooldownExempt."+cooldown);
+    }
+
+    /**
+     * Determine if the player should be exempt from a given cost.
+     * 
+     * @param player
+     * @param cooldown
+     * @return
+     */
+    public boolean isCostExempt(Player player, String cost) {
+        return permCheck(player, "CostExempt."+cost);
+    }
+
     /**
      * Determine if a player has permission to specify an argument to 
      * groupspawn commands, such as "/groupspawn somegroup" 
@@ -110,6 +181,14 @@ public class Permissions {
     
     public boolean hasHomeInviteOtherWorld(Player player) {
         return hasCommandPermission(player, "homeinvitetp.otherworld");
+    }
+    
+    public boolean hasHomeOtherWorld(Player player) {
+        return hasCommandPermission(player, "home.otherworld");
+    }
+    
+    public boolean hasHomeNamed(Player player) {
+        return hasCommandPermission(player, "home.named");
     }
     
     /**

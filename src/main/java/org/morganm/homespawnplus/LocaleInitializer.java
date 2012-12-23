@@ -39,8 +39,11 @@ public class LocaleInitializer implements Initializable {
     }
 
     @Override
-    public int getPriority() {
+    public int getInitPriority() {
         return 5;
     }
 
+    @Override
+    public void shutdown() throws Exception {
+    }
 }

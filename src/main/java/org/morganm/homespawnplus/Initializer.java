@@ -14,13 +14,16 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.config.ConfigBase;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
-/**
+/** This class is used to initialize all classes within HSP that
+ * implement the Initializable interface, in order of priority.
+ * 
  * @author morganm
  *
  */
@@ -38,14 +41,47 @@ public class Initializer {
     }
 
     public void initAll() throws Exception {
+        long startupBegin = System.currentTimeMillis();
         for(Initializable init : getSortedInitObjects()) {
-            log.debug("Initializing {}",init);
+            log.debug("[Startup Timer] starting {} (t+{})", init, System.currentTimeMillis()-startupBegin);
+            long startupTimer = System.currentTimeMillis();
+            
             init.init();
+            
+            log.debug("[Startup Timer] {} finished in {}ms", init, System.currentTimeMillis()-startupTimer);
+        }
+    }
+    
+    /**
+     * Called to initialize Config objects only, useful for reloading
+     * configuration files.
+     * 
+     * @throws Exception
+     */
+    public void initConfigs() throws Exception {
+        for(Initializable init : getSortedInitObjects()) {
+            if( init instanceof ConfigBase )
+                init.init();
+        }
+    }
+
+    public void shutdownAll()  {
+        Collection<Initializable> collection = getSortedInitObjects();
+        Initializable[] objects = collection.toArray(new Initializable[] {});
+
+        // shut them down in reverse order of startup
+        for(int i = objects.length-1; i >= 0 ; i--) {
+            try {
+                objects[i].shutdown();
+            }
+            catch(Exception e) {
+                log.error("Caught exception in shutdownAll()", e);
+            }
         }
     }
 
     /**
-     * Return all Initializable in their proper loading order.
+     * Return all Initializable objects in their proper loading order.
      * @return
      */
     private Collection<Initializable> getSortedInitObjects() {
@@ -55,7 +91,7 @@ public class Initializer {
         // are added to a List keyed by that priority
         for(Class<? extends Initializable> initClass : getInitClasses()) {
             Initializable init = injector.getInstance(initClass);
-            int priority = init.getPriority();
+            int priority = init.getInitPriority();
             if( priority < 0 )
                 priority = 0;
             List<Initializable> list = sortedMap.get(priority);

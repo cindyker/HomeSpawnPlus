@@ -7,12 +7,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -20,6 +22,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.config.ConfigWarmup;
 import org.morganm.homespawnplus.server.api.event.EventListener;
 
 /** Bridge class between Bukkit event system and HSP API event interface.
@@ -32,12 +35,14 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
     private final EventListener eventListener;
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
+    private final ConfigWarmup configWarmup;
     
     @Inject
-    public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory) {
+    public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory, ConfigWarmup configWarmup) {
         this.eventListener = listener;
         this.plugin = plugin;
         this.bukkitFactory = bukkitFactory;
+        this.configWarmup = configWarmup;
     }
 
     /**
@@ -80,6 +85,23 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
                     }
                 },
                 plugin);
+
+        // only hook EntityDamageEvent if it's needed by warmups
+        if( configWarmup.isEnabled() && configWarmup.isCanceledOnDamage() ) {
+            plugin.getServer().getPluginManager().registerEvent(EntityDamageEvent.class,
+                    this,
+                    EventPriority.MONITOR,
+                    new EventExecutor() {
+                        public void execute(Listener listener, Event event) throws EventException {
+                            try {
+                                onEntityDamage((EntityDamageEvent) event);
+                            } catch (Throwable t) {
+                                throw new EventException(t);
+                            }
+                        }
+                    },
+                    plugin);
+        }
     }
     
     @Override
@@ -112,13 +134,15 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
     
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
     public void playerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void playerTeleportObserver(org.bukkit.event.player.PlayerTeleportEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerTeleportEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
     
@@ -133,27 +157,44 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
             return;
 
         // if we get here, it was a bed right-click event, so fire one
-        org.morganm.homespawnplus.server.api.events.PlayerBedRightClickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedRightClickEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerBedRightClickEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerBedRightClickEvent(event, bukkitFactory);
         eventListener.bedRightClick(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onBedEvent(PlayerBedEnterEvent event) {
-        org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerBedEnterEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerBedEnterEvent(event, bukkitFactory);
         eventListener.bedEvent(apiEvent);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
     {
-        org.morganm.homespawnplus.server.api.events.PlayerQuitEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerQuitEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
         eventListener.playerQuit(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
     {
-        org.morganm.homespawnplus.server.api.events.PlayerKickEvent apiEvent = new org.morganm.homespawnplus.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
+        org.morganm.homespawnplus.server.api.events.PlayerKickEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
         eventListener.playerKick(apiEvent);
+    }
+
+    // this event is dynamically hooked only if needed
+    public void onEntityDamage(org.bukkit.event.entity.EntityDamageEvent event)
+    {
+        if( event.isCancelled() )
+            return;
+        if( !(event.getEntity() instanceof org.bukkit.entity.Player) )
+            return;
+
+        org.morganm.homespawnplus.server.api.events.PlayerDamageEvent apiEvent =
+                new org.morganm.homespawnplus.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
+        eventListener.playerDamage(apiEvent);
     }
 }

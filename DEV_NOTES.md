@@ -36,7 +36,9 @@ a fairly complex plugin.
 HSP leverages Object Relational Mapping (ORM) concepts to avoid hard-coding SQL to store
 data to a backing database. In addition, HSP uses the DAO (data access object) pattern to
 abstract the data back-end such that new back-ends can be added without having to change
-any other code - in this way a YAML back-end was added to HSP.
+any other code - in this way a YAML back-end was added to HSP with no changes to the
+majority of the codebase; a new YAML-based DAO layer was written and wired into the
+StorageFactory with a few lines of code.
 
 ## Bukkit abstraction
 
@@ -45,7 +47,7 @@ they are "Bukkit plugins" after all, but this has a few major downsides.
 
 * Small changes in Bukkit can break your plugin or require massive recoding on your part.
 For example, Bukkit changed it's configuration API. While the new API was "semi-compatible",
-any plugins which dependend heavily on the previous config API had a large refactor and
+any plugins which dependend heavily on the previous config API had another refactor and
 testing effort ahead of them. 
 * It's difficult to write tests. The Bukkit API weaves a complex web of dependencies,
 many of them with unique challenges to test frameworks (such as being final classes). This
@@ -57,9 +59,10 @@ when Bukkit is superceded by MC-API.
 
 A simple abstraction over Bukkit nullfies all of these problems. WorldEdit paved the way
 with this thinking, and as a result, as Bukkit has evolved and changed over the years,
-sometimes breaking lots (or in some cases, all) plugins out there, WorldEdit has been
+sometimes breaking many (or in some cases, all) plugins out there, WorldEdit has been
 able to adapt quickly, often having new versions ready within *minutes* of Bukkit
-publishing breaking API changes. That's a well-designed plugin.
+publishing breaking API changes. That's a well-designed plugin and HSP now follows a
+similar design pattern.
 
 == IoC
 
@@ -71,7 +74,7 @@ dependencies throughout your entire plugin. This leads to more maintanable code 
 also facilitates good unit tests.
 
 HSP leverages Google's Guice IoC container, because of it's relatively small footprint
-and straightforward design, particularly it's natural binding to JSR-330 javax.inject
+and straightforward design, particularly its natural binding to JSR-330 javax.inject
 annotations.
 
 == Test Framework
@@ -86,10 +89,10 @@ that if s/he accidentally breaks something, tests will fail. And if they don't b
 code breaks anyway, it's easy to add another test to be sure that regression doesn't
 happen again.
 
-HSP uses Junit and PowerMock (based on Mockito) to write test cases. HSP further tries
-to follow good design practices of OOP (encapsulation and abstraction) and modular
-design in order to have small classes with minimal dependencies to facilitate simple
-addition of test cases, encouraging increased test coverage.
+HSP uses TestNG and Mockito to write test cases. HSP further tries to follow good
+design practices of OOP (encapsulation and abstraction) and modular design in order
+to have small classes with minimal dependencies to facilitate simple addition of
+test cases, encouraging increased test coverage.
 
 == Internationalization (i18n)
 
@@ -118,7 +121,7 @@ JDK14. Further, SLF4J offers a fantastic plugin system so that admins can decide
 what logging facility they want to use at runtime (such as log4j or logback). It
 would be great if Bukkit used this mature logging framework instead, perhaps MC-API
 will change this. In the meantime, HSP chooses to bind itself to a highly
-performant future-proof logging framework rather than a slow performing one simply
+performant future-proof logging framework rather than a less performant one simply
 for convenience.
 
 == Maven
@@ -159,6 +162,22 @@ responds to those events. This primarily involves these modules:
 * Plugin integrations (WorldGuard, Multiverse, Dynmap, etc)
 
 == HSP Modules
+
+=== Startup
+
+The server-specific module (such as Bukkit) is responsible for receiving the start
+signal from the server environment, doing some minimal setup and then invoking the
+main plugin class.
+
+The main plugin class has the job of starting up the IoC container, which then
+wires all of the plugin dependencies ("object graph") together.
+
+Next, the plugin class will kick of the Initializer, which automatically finds and
+initializes all classes that implement the appropriate interface. This results in
+a lightweight onEnable() that doesn't have to be hand-maintained as the plugin changes.
+
+Last, the main plugin class registers events with the backing server so that it
+is ready to start processing any incoming events.
 
 === Event Processor
 

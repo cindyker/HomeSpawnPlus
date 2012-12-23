@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Factory;
@@ -28,15 +29,17 @@ import com.google.inject.Injector;
 @Singleton
 public class BukkitFactory implements Factory {
     private final Injector injector;
-    private ConfigCore configCore;
-    private PlayerDAO playerDAO;
+    private final ConfigCore configCore;
+    private final PlayerDAO playerDAO;
+    private final Permissions perm;
     private final Map<String, WeakReference<CommandSender>> senderCache = new HashMap<String, WeakReference<CommandSender>>();
     
     @Inject
-    BukkitFactory(Injector injector, ConfigCore configCore, PlayerDAO playerDAO) {
+    BukkitFactory(Injector injector, ConfigCore configCore, PlayerDAO playerDAO, Permissions perm) {
         this.injector = injector;
         this.configCore = configCore;
         this.playerDAO = playerDAO;
+        this.perm = perm;
     }
 
     @Override
@@ -79,6 +82,6 @@ public class BukkitFactory implements Factory {
     }
     
     public BukkitPlayer newBukkitPlayer(org.bukkit.entity.Player bukkitPlayer) {
-        return new BukkitPlayer(configCore, playerDAO, bukkitPlayer);
+        return new BukkitPlayer(configCore, playerDAO, perm, bukkitPlayer);
     }
 }

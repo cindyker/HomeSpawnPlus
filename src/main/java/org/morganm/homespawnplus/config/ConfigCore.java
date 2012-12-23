@@ -3,11 +3,9 @@
  */
 package org.morganm.homespawnplus.config;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 
 /**
@@ -15,16 +13,10 @@ import org.morganm.homespawnplus.server.api.YamlFile;
  *
  */
 @Singleton
-public class ConfigCore extends ConfigBase implements ConfigInterface, Initializable {
-    @Inject
-    public ConfigCore(YamlFile yaml) {
-        super("core.yml", "core", yaml);
-    }
-
+@ConfigOptions(fileName="core.yml", basePath="core")
+public class ConfigCore extends ConfigBase implements Initializable {
     @Override
-    public int getPriority() {
-        return 2;   // core config has lower priority than default
-    }
+    public int getInitPriority() { return 2; }  // core config has lower priority than default
 
     /**
      * Return the configured locale, such as "en", "de", "fr", etc.

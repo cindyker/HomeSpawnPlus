@@ -3,6 +3,9 @@
  */
 package org.morganm.homespawnplus.entity;
 
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 
@@ -21,8 +24,18 @@ import org.morganm.homespawnplus.server.api.Location;
  * @author morganm
  *
  */
-public class ObjectFactory {
+public class ObjectFactory implements Initializable {
     private static Factory factory;
+    
+    /**
+     * Private constructor, for use by IoC injector only.
+     * 
+     * @param factory
+     */
+    @Inject
+    private ObjectFactory(Factory factory) {
+        ObjectFactory.factory = factory;
+    }
     
     /**
      * To be invoked during initialization to setup a reference to
@@ -49,4 +62,21 @@ public class ObjectFactory {
     static Location newLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
         return factory.newLocation(worldName, x, y, z, yaw, pitch);
     }
+
+    /**
+     * We don't do anything, the Initializer will force an instance
+     * to be created and injected with the factory, which then assigns
+     * that static factory member.
+     */
+    @Override
+    public void init() throws Exception {
+    }
+
+    @Override
+    public int getInitPriority() {
+        return 7;
+    }
+
+    @Override
+    public void shutdown() throws Exception {}
 }

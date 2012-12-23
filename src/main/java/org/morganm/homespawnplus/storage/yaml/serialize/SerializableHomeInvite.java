@@ -36,10 +36,12 @@ package org.morganm.homespawnplus.storage.yaml.serialize;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
 
 /**
  * @author morganm
@@ -53,6 +55,9 @@ implements SerializableYamlObject<HomeInvite>
 	private final static String ATTR_INVITED_PLAYER = "invitedPlayer";
 	private final static String ATTR_EXPIRES = "expires";
 	
+	// TODO: need to figure out injection or a factory for this object..
+    @Inject private HomeDAO homeDAO;
+    
 	public SerializableHomeInvite(HomeInvite homeInvite) {
 		super(homeInvite);
 	}
@@ -62,7 +67,7 @@ implements SerializableYamlObject<HomeInvite>
 		
 		Object o = map.get(ATTR_HOME);
 		if( o instanceof Integer ) {
-			Home h = OldHSP.getInstance().getStorage().getHomeDAO().findHomeById((Integer) o);
+			Home h = homeDAO.findHomeById((Integer) o);
 			if( h != null )
 				getObject().setHome(h);
 		}

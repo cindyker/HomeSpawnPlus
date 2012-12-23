@@ -6,8 +6,6 @@ package org.morganm.homespawnplus.server.api;
 import java.util.List;
 
 import org.morganm.homespawnplus.i18n.HSPMessages;
-import org.morganm.homespawnplus.server.api.event.EventDispatcher;
-
 
 /**
  * @author morganm
@@ -29,8 +27,6 @@ public interface Server {
      */
     public List<World> getWorlds();
 
-    public EventDispatcher getEventDispatcher();
-    
     /**
      * Schedule a teleport to happen at the next possible time on the
      * main thread. This can be used to safely teleport a player on an async
@@ -90,6 +86,13 @@ public interface Server {
      * @return Array containing all players
      */
     public OfflinePlayer[] getOfflinePlayers();
+
+    /**
+     * Gets a list of all currently logged in players
+     *
+     * @return An array of Players that are currently online
+     */
+    public Player[] getOnlinePlayers();
 
     /**
      * Translates color codes in a string using the '&' character code. For example,

@@ -26,6 +26,16 @@ public interface Initializable {
     public void init() throws Exception;
 
     /**
+     * That which can be started up can also be shutdown. This
+     * is called when the plugin is disabled so the object can
+     * do any necessary cleanup.
+     * 
+     * @throws Exception any thrown Exception will be printed
+     * to the console and then ignored
+     */
+    public void shutdown() throws Exception;
+
+    /**
      * Initialization priority, this should be a number where
      * 0 is the highest priority. Negative numbers are equivalent
      * to 0. Objects are loaded in order of priority.
@@ -37,5 +47,5 @@ public interface Initializable {
      * 
      * @return
      */
-    public int getPriority();
+    public int getInitPriority();
 }

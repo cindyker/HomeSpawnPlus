@@ -57,80 +57,10 @@ import com.google.inject.Injector;
 @Singleton
 public class StrategyFactory implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(StrategyFactory.class);
-
-	/*
-	static {
-		noArgStrategies = new HashMap<String, Class<? extends Strategy>>(20);
-		noArgStrategies.put(new HomeAnyWorld().getStrategyConfigName().toLowerCase(), HomeAnyWorld.class);
-		noArgStrategies.put(new HomeDefaultWorld().getStrategyConfigName().toLowerCase(), HomeDefaultWorld.class);
-		noArgStrategies.put(new HomeLocalWorld().getStrategyConfigName().toLowerCase(), HomeLocalWorld.class);
-		noArgStrategies.put(new HomeNearestHome().getStrategyConfigName().toLowerCase(), HomeNearestHome.class);
-		
-		noArgStrategies.put(new ModeHomeAny().getStrategyConfigName().toLowerCase(), ModeHomeAny.class);
-		noArgStrategies.put(new ModeHomeBedOnly().getStrategyConfigName().toLowerCase(), ModeHomeBedOnly.class);
-		noArgStrategies.put(new ModeHomeDefaultOnly().getStrategyConfigName().toLowerCase(), ModeHomeDefaultOnly.class);
-		noArgStrategies.put(new ModeHomeNoBed().getStrategyConfigName().toLowerCase(), ModeHomeNoBed.class);
-		noArgStrategies.put(new ModeHomeNormal().getStrategyConfigName().toLowerCase(), ModeHomeNormal.class);
-		noArgStrategies.put(new ModeHomeRequiresBed().getStrategyConfigName().toLowerCase(), ModeHomeRequiresBed.class);
-		noArgStrategies.put(new ModeNoWater().getStrategyConfigName().toLowerCase(), ModeNoWater.class);
-		noArgStrategies.put(new ModeNoLilyPad().getStrategyConfigName().toLowerCase(), ModeNoLilyPad.class);
-		noArgStrategies.put(new ModeNoLeaves().getStrategyConfigName().toLowerCase(), ModeNoLeaves.class);
-		noArgStrategies.put(new ModeNoIce().getStrategyConfigName().toLowerCase(), ModeNoIce.class);
-		noArgStrategies.put(new ModeDefault().getStrategyConfigName().toLowerCase(), ModeDefault.class);
-		noArgStrategies.put(new ModeRememberSpawn().getStrategyConfigName().toLowerCase(), ModeRememberSpawn.class);
-		noArgStrategies.put(new ModeRememberLocation().getStrategyConfigName().toLowerCase(), ModeRememberLocation.class);
-		noArgStrategies.put(new ModeExcludeNewPlayerSpawn().getStrategyConfigName().toLowerCase(), ModeExcludeNewPlayerSpawn.class);
-		
-		noArgStrategies.put(new SpawnDefaultWorld().getStrategyConfigName().toLowerCase(), SpawnDefaultWorld.class);
-		noArgStrategies.put(new SpawnLocalRandom().getStrategyConfigName().toLowerCase(), SpawnLocalRandom.class);
-		noArgStrategies.put(new SpawnLocalWorld().getStrategyConfigName().toLowerCase(), SpawnLocalWorld.class);
-		noArgStrategies.put(new SpawnNearestSpawn().getStrategyConfigName().toLowerCase(), SpawnNearestSpawn.class);
-		noArgStrategies.put(new SpawnNewPlayer().getStrategyConfigName().toLowerCase(), SpawnNewPlayer.class);
-		noArgStrategies.put(new SpawnWorldGuardRegion().getStrategyConfigName().toLowerCase(), SpawnWorldGuardRegion.class);
-		noArgStrategies.put(new SpawnLocalPlayerSpawn().getStrategyConfigName().toLowerCase(), SpawnLocalPlayerSpawn.class);
-		noArgStrategies.put(new Default().getStrategyConfigName().toLowerCase(), Default.class);
-		try {
-			noArgStrategies.put(new HomeMultiWorld().getStrategyConfigName().toLowerCase(), HomeMultiWorld.class);
-			noArgStrategies.put(new SpawnGroup().getStrategyConfigName().toLowerCase(), SpawnGroup.class);
-			noArgStrategies.put(new NearestHomeOrSpawn().getStrategyConfigName().toLowerCase(), NearestHomeOrSpawn.class);
-		}
-		catch(StrategyException e) {
-			e.printStackTrace();
-		}
-		
-		oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(10);
-		
-		// Special strategies that can be both a noArg and a 1-arg strategy
-		noArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
-		oneArgStrategies.put(new HomeNamedHome().getStrategyConfigName().toLowerCase(), HomeNamedHome.class);
-		noArgStrategies.put(new SpawnNamedSpawn().getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
-		oneArgStrategies.put(new SpawnNamedSpawn().getStrategyConfigName().toLowerCase(), SpawnNamedSpawn.class);
-		noArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
-		oneArgStrategies.put(new SpawnWorldRandom().getStrategyConfigName().toLowerCase(), SpawnWorldRandom.class);
-		noArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
-		oneArgStrategies.put(new SpawnLastLocation().getStrategyConfigName().toLowerCase(), SpawnLastLocation.class);
-
-		// 1-arg Strategies
-		oneArgStrategies.put(new HomeSpecificWorld(null).getStrategyConfigName().toLowerCase(), HomeSpecificWorld.class);
-		oneArgStrategies.put(new SpawnSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnSpecificWorld.class);
-		oneArgStrategies.put(new SpawnGroupSpecificWorld(null).getStrategyConfigName().toLowerCase(), SpawnGroupSpecificWorld.class);
-		oneArgStrategies.put(new SpawnRandomNamed(null).getStrategyConfigName().toLowerCase(), SpawnRandomNamed.class);
-		oneArgStrategies.put(new SpawnRegionRandom(null).getStrategyConfigName().toLowerCase(), SpawnRegionRandom.class);
-		
-		oneArgStrategies.put(new ModeYBounds().getStrategyConfigName().toLowerCase(), ModeYBounds.class);
-		oneArgStrategies.put(new ModeMultiverseSourcePortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseSourcePortal.class);
-		oneArgStrategies.put(new ModeMultiverseDestinationPortal(null).getStrategyConfigName().toLowerCase(), ModeMultiverseDestinationPortal.class);
-		oneArgStrategies.put(new ModeInRegion(null).getStrategyConfigName().toLowerCase(), ModeInRegion.class);
-		oneArgStrategies.put(new ModeSourceWorld(null).getStrategyConfigName().toLowerCase(), ModeSourceWorld.class);
-        oneArgStrategies.put(new ModeDistanceLimits(null).getStrategyConfigName().toLowerCase(), ModeDistanceLimits.class);
-	}
-	*/
-	
 	private final Injector injector;
 	private final Reflections reflections;
     private final Map<String, Class<? extends Strategy>> noArgStrategies;
     private final Map<String, Class<? extends Strategy>> oneArgStrategies;
-    
 	
 	@Inject
 	public StrategyFactory(Injector injector, Reflections reflections) {
@@ -142,7 +72,7 @@ public class StrategyFactory implements Initializable {
 	}
 
     @Override
-    public int getPriority() {
+    public int getInitPriority() {
         return 1;
     }
 
@@ -197,6 +127,9 @@ public class StrategyFactory implements Initializable {
             }
         }
     }
+
+    @Override
+    public void shutdown() throws Exception {}
 
 	/** Given a Strategy class, return an instantiated instance of that class.
 	 * 

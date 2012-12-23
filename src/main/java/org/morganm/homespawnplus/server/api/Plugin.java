@@ -15,4 +15,5 @@ public interface Plugin {
     public String getName();
     public ClassLoader getClassLoader();
     public String getVersion();
+    public int getBuildNumber();
 }

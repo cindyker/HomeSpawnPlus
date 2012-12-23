@@ -39,9 +39,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.bukkit.command.ConsoleCommandSender;
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.Initializer;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.config.ConfigManager;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -52,11 +51,18 @@ import org.morganm.homespawnplus.storage.yaml.StorageYaml;
  *
  */
 public class HSP extends BaseCommand {
-    @Inject ConfigManager configManager;
+    @Inject Initializer initializer;
+    private File backupFile;
     
 	@Override
 	public String getUsage() {
 		return server.getLocalizedMessage(HSPMessages.CMD_HSP_USAGE);
+	}
+	
+	private File getYamlBackupFile() {
+	    if( backupFile == null )
+	        backupFile = new File(plugin.getDataFolder(), "backup.yml");
+	    return backupFile;
 	}
 
     @Override
@@ -70,7 +76,7 @@ public class HSP extends BaseCommand {
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
 			try {
-			    configManager.loadAll();
+			    initializer.initConfigs();
 				
 				// also call hookWarmups, in case admin changed the warmup settings
 //				plugin.hookWarmups();
@@ -157,7 +163,7 @@ public class HSP extends BaseCommand {
 		}
 		*/
 		else if( args[0].startsWith("backup") ) {
-			File backupFile = new File(OldHSP.YAML_BACKUP_FILE);
+			File backupFile = getYamlBackupFile();
 			if( backupFile.exists() )
 				backupFile.delete();
 			
@@ -185,8 +191,8 @@ public class HSP extends BaseCommand {
 
 				backupStorage.flushAll();
 	
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", OldHSP.YAML_BACKUP_FILE);
-				log.info("Data backed up to file {}", OldHSP.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", getYamlBackupFile());
+				log.info("Data backed up to file {}", getYamlBackupFile());
 			}
 			catch(StorageException e) {
 				log.warn("Error saving backup file", e);
@@ -196,10 +202,10 @@ public class HSP extends BaseCommand {
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || (!"OVERWRITE".equals(args[1])
 					&& !("me".equals(args[1]) && p instanceof ConsoleCommandSender)) ) {	// testing shortcut
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", OldHSP.YAML_BACKUP_FILE);
+				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", getYamlBackupFile());
 			}
 			else {
-				File backupFile = new File(OldHSP.YAML_BACKUP_FILE);
+				File backupFile = getYamlBackupFile();
 				if( backupFile.exists() ) {
 					try {
 						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
@@ -243,11 +249,11 @@ public class HSP extends BaseCommand {
 						storage.setDeferredWrites(false);
 					}
 					
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", OldHSP.YAML_BACKUP_FILE);
-					log.info("Existing data wiped and data restored from file "+OldHSP.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", getYamlBackupFile());
+					log.info("Existing data wiped and data restored from file "+getYamlBackupFile());
 				}
 				else
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", OldHSP.YAML_BACKUP_FILE);
+					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", getYamlBackupFile());
 //					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
 			}
 		}

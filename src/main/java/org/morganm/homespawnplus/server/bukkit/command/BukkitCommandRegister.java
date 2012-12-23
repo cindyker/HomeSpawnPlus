@@ -64,9 +64,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
-/** Class whose job is to register all of HSP commands with Bukkit dynamically,
+/** Class whose job is to register all of HSP commands with the server dynamically,
  * as opposed to through static plugin.yml configurations. This is used by HSP
- * to give admins maximum flexibility in naming their commands however they like.
+ * to give admins maximum flexibility in naming their commands however they like
+ * or creating their own custom commands.
  * 
  * @author morganm
  *
@@ -103,7 +104,10 @@ public class BukkitCommandRegister implements Initializable {
     }
 
     @Override
-    public int getPriority() {
+    public void shutdown() throws Exception {}
+
+    @Override
+    public int getInitPriority() {
         return 6;
     }
 
@@ -344,73 +348,4 @@ public class BukkitCommandRegister implements Initializable {
 
     	return commandClasses;
 	}
-
-    /** Given a specific commandName, find the matching command and
-     * register it. This is useful in command usurping.
-     * 
-     * No longer used since command usurping is no longer used. -11/16/12 morganm
-     * 
-     * @param commandName
-     */
-    /*
-    private boolean registerCommand(String commandName) {
-        if( isDefinedConfigCommand(commandName) ) {
-            registerConfigCommand(commandName);
-            return true;
-        }
-        else {
-            Class<? extends Command> clazz = findDefaultCommand(commandName);
-            if( clazz != null ) {
-                registerDefaultCommand(clazz);
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    */
-
-    /** Given a commandName, find the default command which matches.
-     * 
-     * @param cmdName
-     * @return
-     */
-    /*
-    private Class<? extends Command> findDefaultCommand(String cmdName) {
-        Set<Class<? extends Command>> classes = getCommandClasses();
-        
-        for(Class<? extends Command> clazz : classes) {
-            try {
-                Command cmd = (Command) clazz.newInstance();
-                if( cmd.getCommandName().equals(cmdName) )
-                    return clazz;
-                
-                String[] aliases = cmd.getCommandAliases();
-                if( aliases != null && aliases.length > 0 ) {
-                    for(String alias : aliases) {
-                        if( alias.equals(cmdName) )
-                            return clazz;
-                    }
-                }
-            }
-            catch(Exception e) {
-                log.severe(e, "Caught exception in findDefaultCommand for command "+cmdName);
-            }
-        }
-        
-        return null;
-    }
-    */
-    
-    /** Return true if the given command is defined as a custom command
-     * by the admin in the config file.
-     * 
-     * @param cmd
-     * @return
-     */
-    /*
-    private boolean isDefinedConfigCommand(String cmd) {
-        return commandConfig.getDefinedCommands().contains(cmd);
-    }
-    */
 }

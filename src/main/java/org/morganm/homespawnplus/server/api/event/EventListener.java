@@ -5,6 +5,7 @@ package org.morganm.homespawnplus.server.api.event;
 
 import org.morganm.homespawnplus.server.api.events.PlayerBedEnterEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerBedRightClickEvent;
+import org.morganm.homespawnplus.server.api.events.PlayerDamageEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerJoinEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerKickEvent;
 import org.morganm.homespawnplus.server.api.events.PlayerMoveEvent;
@@ -25,6 +26,7 @@ public interface EventListener {
     public void playerMove(PlayerMoveEvent event);
     public void playerQuit(PlayerQuitEvent event);
     public void playerKick(PlayerKickEvent event);
+    public void playerDamage(PlayerDamageEvent event);
     
     /**
      * Called when a player right-clicks a bed.

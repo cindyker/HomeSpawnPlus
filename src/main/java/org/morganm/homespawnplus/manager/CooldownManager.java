@@ -40,7 +40,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigCooldown;
 import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerWorld;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -62,18 +62,20 @@ public class CooldownManager {
     private final ConfigCooldown config;
     private final Hashtable<String, Long> cooldowns;
     private final General generalUtil;
+    private final Permissions perm;
 
     @Inject
-    public CooldownManager(Server server, ConfigCooldown config, General generalUtil) {
+    public CooldownManager(Server server, ConfigCooldown config, General generalUtil, Permissions perm) {
         this.server = server;
         this.config = config;
         this.generalUtil = generalUtil;
+        this.perm = perm;
     	cooldowns = new Hashtable<String, Long>();
     }
     
     private boolean isExemptFromCooldown(Player p, String cooldown) {
     	final CooldownNames cn = parseCooldownNames(cooldown);
-    	if( p.hasPermission(OldHSP.BASE_PERMISSION_NODE+".CooldownExempt."+cn.baseName) )
+    	if( perm.isCooldownExempt(p, cn.baseName) )
     		return true;
     	else
     		return false;

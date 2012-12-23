@@ -35,7 +35,6 @@ package org.morganm.homespawnplus.commands;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -149,7 +148,7 @@ public class Spawn extends BaseCommand
 			}
     	}
     	else
-    		OldHSP.log.warning(OldHSP.logPrefix + " ERROR; not able to find a spawn location");
+    		log.warn("ERROR; not able to find a spawn location");
     	
 		return true;
 	}

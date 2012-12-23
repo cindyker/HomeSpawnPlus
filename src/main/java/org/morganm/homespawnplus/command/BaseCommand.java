@@ -37,7 +37,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigEconomy;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -207,7 +206,7 @@ public abstract class BaseCommand implements Command {
 		if( economy == null )
 			returnValue = true;
 		
-		if( !returnValue && p.hasPermission(OldHSP.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName()) )
+		if( !returnValue && permissions.isCostExempt(p, getCommandName()) )
 			returnValue = true;
 
 		if( !returnValue ) {
@@ -246,12 +245,9 @@ public abstract class BaseCommand implements Command {
 		if( economy == null || configEconomy.isEnabled() == false )
 			returnValue = true;
 		
-		final String perm = OldHSP.BASE_PERMISSION_NODE + ".CostExempt." + getCommandName();
-		if( !returnValue && p.hasPermission(perm) )
+        if( !returnValue && permissions.isCostExempt(p, getCommandName()) )
 		    returnValue = true;
-		
-		log.debug("applyCost: player={}, exempt permissionChecked={}, exempt returnValue={}",
-		        p, perm, returnValue);
+		log.debug("applyCost: player={}, exempt returnValue={}", p, returnValue);
 
 		if( !costCheck(p) ) {
 			printInsufficientFundsMessage(p);
@@ -439,10 +435,6 @@ public abstract class BaseCommand implements Command {
 		if( permissionNode == null ) {
 			// set permission node from config params, if set
 			permissionNode = getStringParam("permission");
-			
-			// otherwise use default permission node
-			if( permissionNode == null )
-				permissionNode = OldHSP.BASE_PERMISSION_NODE + ".command." + getCommandName();
 		}
 		
 		return permissionNode;
@@ -455,7 +447,7 @@ public abstract class BaseCommand implements Command {
 	 * @return
 	 */
 	protected boolean hasPermission(Player p) {
-	    if( permissions.hasCommandPermission(p, getCommandName()) ) {
+	    if( permissions.hasCommandPermission(p, this) ) {
 		    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 			return false;
 		}

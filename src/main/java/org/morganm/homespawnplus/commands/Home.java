@@ -35,7 +35,6 @@ package org.morganm.homespawnplus.commands;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.OldHSP;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.i18n.HSPMessages;
@@ -56,24 +55,11 @@ import org.morganm.homespawnplus.util.HomeUtil;
  */
 public class Home extends BaseCommand
 {
-	private static final String OTHER_WORLD_PERMISSION = OldHSP.BASE_PERMISSION_NODE + ".command.home.otherworld";
-	private static final String NAMED_HOME_PERMISSION = OldHSP.BASE_PERMISSION_NODE + ".command.home.named";
-	
-	private StrategyEngine engine;
-	private ConfigCore configCore;
+	@Inject private StrategyEngine engine;
+	@Inject private ConfigCore configCore;
 	@Inject private Teleport teleport;
 	@Inject private HomeUtil homeUtil;
 	
-	@Inject
-	public void setStrategyEngine(StrategyEngine engine) {
-	    this.engine = engine;
-	}
-	
-	@Inject
-	public void setConfigCore(ConfigCore configCore) {
-	    this.configCore = configCore;
-	}
-
 	@Override
 	public String getUsage() {
 		return server.getLocalizedMessage(HSPMessages.CMD_HOME_USAGE);
@@ -100,7 +86,7 @@ public class Home extends BaseCommand
 			String homeName = null;
 			
 			if( args[0].startsWith("w:") ) {
-				if( !p.hasPermission(OTHER_WORLD_PERMISSION) ) {
+			    if( !permissions.hasHomeOtherWorld(p) ) {
 				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION) );
 	    			return true;
 				}
@@ -113,7 +99,7 @@ public class Home extends BaseCommand
 				}
 			}
 			else {
-				if( !p.hasPermission(NAMED_HOME_PERMISSION) ) {
+				if( !permissions.hasHomeNamed(p) ) {
 				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_NAMED_HOME_PERMISSION) );
 					return true;
 				}
@@ -160,7 +146,7 @@ public class Home extends BaseCommand
     		// player gave input for another world; admin-directed strategies
     		// always allow cross-world locations regardless of permissions.
     		if( playerDirectedArg && !p.getWorld().getName().equals(l.getWorld().getName()) &&
-    				!p.hasPermission(OTHER_WORLD_PERMISSION) ) {
+    				!permissions.hasHomeOtherWorld(p) ) {
     		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_OTHERWORLD_PERMISSION) );
     			return true;
     		}

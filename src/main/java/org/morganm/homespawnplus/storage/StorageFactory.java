@@ -38,7 +38,7 @@ import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigStorage;
 import org.morganm.homespawnplus.config.ConfigStorage.Type;
 import org.morganm.homespawnplus.server.api.Plugin;
@@ -55,7 +55,7 @@ import com.google.inject.Injector;
  *
  */
 @Singleton
-public class StorageFactory {
+public class StorageFactory implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(StorageFactory.class);
     
 //	public enum Type {
@@ -69,6 +69,8 @@ public class StorageFactory {
     private final ConfigStorage configStorage;
 	private final Injector injector;
 	private final Plugin plugin;
+	
+	private Storage storageInstance;
 	
 	@Inject
 	public StorageFactory(ConfigStorage configStorage, Injector injector, Plugin plugin) {
@@ -105,39 +107,54 @@ public class StorageFactory {
 	
 	public Storage getInstance()
 	{
+	    if( storageInstance != null )
+	        return storageInstance;
+
 	    Type storageType = configStorage.getStorageType();
-		Storage storage = null;
-		
 		log.debug("StorageFactory.getInstance(), type = {}", storageType);
 		
 		switch(storageType)
 		{
 		case YAML:
-			storage = new StorageYaml(plugin, false, null);
+		    storageInstance = new StorageYaml(plugin, false, null);
 			break;
 			
 		case YAML_SINGLE_FILE:
-			storage = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
+		    storageInstance = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
 			break;
 			
 		case PERSISTANCE_REIMPLEMENTED_EBEANS:
             StorageEBeans ebeans = injector.getInstance(StorageEBeans.class);
             ebeans.setUsePersistanceReimplemented(true);
-            storage = ebeans;
+            storageInstance = ebeans;
 			break;
 			
         case CACHED_EBEANS:
-            OldHSP.log.warning(OldHSP.logPrefix + " CACHED_EBEANS storage not currently supported, defaulting to regular EBEANS storage");
+            log.warn("CACHED_EBEANS storage is no longer supported, defaulting to regular EBEANS storage");
         case EBEANS:
         default:                        // default is just to use EBEANS
-            storage = injector.getInstance(StorageEBeans.class);
+            storageInstance = injector.getInstance(StorageEBeans.class);
             break;
 
 //		default:
 //			throw new StorageException("Unable to create Storage interface, invalid type given: "+storageType);
 		}
 		
-		return storage;
+		return storageInstance;
 	}
 
+    @Override
+    public void init() throws Exception {
+        getInstance().initializeStorage();
+    }
+
+    @Override
+    public int getInitPriority() {
+        return 8;
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        getInstance().flushAll();
+    }
 }

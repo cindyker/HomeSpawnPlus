@@ -3,27 +3,19 @@
  */
 package org.morganm.homespawnplus.config;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigHomeLimits.LimitsPerPermission;
 import org.morganm.homespawnplus.config.ConfigHomeLimits.LimitsPerWorld;
-import org.morganm.homespawnplus.server.api.YamlFile;
 
 /**
  * @author morganm
  *
  */
 @Singleton
-public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, LimitsPerWorld>
-implements ConfigInterface, Initializable
-{
-    @Inject
-    public ConfigHomeLimits(YamlFile yaml) {
-        super("homeLimits.yml", "homeLimits", yaml);
-    }
-
+@ConfigOptions(fileName="homeLimits.yml", basePath="homeLimits")
+public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, LimitsPerWorld> implements Initializable {
     /**
      * Determine if single global home setting is enabled.
      * 

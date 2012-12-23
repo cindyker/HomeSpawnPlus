@@ -161,26 +161,6 @@ public class HSP extends BaseCommand {
 //			CommandRegister register = new CommandRegister(plugin);
 //			register.register(new HspTest());
 //		}
-		else if( args[0].equals("cmdmap") ) {
-		    org.bukkit.craftbukkit.v1_4_5.CraftServer cs = (org.bukkit.craftbukkit.v1_4_5.CraftServer) Bukkit.getServer();
-			SimpleCommandMap commandMap = cs.getCommandMap();
-			
-			for(Command cmd : commandMap.getCommands()) {
-				PluginCommand pc = null;
-				if( cmd instanceof PluginCommand )
-					pc = (PluginCommand) cmd;
-
-				String cmdName = cmd.getName();
-				
-				if( pc != null ) {
-					Plugin plugin = pc.getPlugin();
-					p.sendMessage(cmdName+": "+plugin.getName());
-				}
-//				else {
-//					p.sendMessage(cmdName+": (no plugin mapped?)");
-//				}
-			}
-		}
 		else if( args[0].startsWith("backup") ) {
 			Storage storage = plugin.getStorage();
 

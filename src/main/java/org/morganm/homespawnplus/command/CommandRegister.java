@@ -99,7 +99,7 @@ public class CommandRegister {
 		if( loadedCommands.contains(cmdName) )
 			return;
 		
-		org.bukkit.craftbukkit.v1_4_5.CraftServer cs = (org.bukkit.craftbukkit.v1_4_5.CraftServer) Bukkit.getServer();
+		org.bukkit.craftbukkit.v1_4_6.CraftServer cs = (org.bukkit.craftbukkit.v1_4_6.CraftServer) Bukkit.getServer();
 		SimpleCommandMap commandMap = cs.getCommandMap();
 		
 		try {

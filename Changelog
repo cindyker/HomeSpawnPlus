@@ -1,3 +1,6 @@
+v1.7.3.2 - Dec 23, 2012
+* compatible with CraftBukkit v1.4.6 ONLY
+
 v1.7.3.1 - Dec 9, 2012
 * Update to be compatible with latest CraftBukkit development releases (intentional break by Bukkit team) Details here: http://goo.gl/bFH0W
 * Maven adjusted to always use CraftBukkit LATEST, and there are only two references to CraftBukkit code in HSP so future API breaks can be updated and new plugin built in about 30 seconds, by myself or anyone else

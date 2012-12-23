@@ -37,9 +37,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigEconomy;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.CooldownManager;
 import org.morganm.homespawnplus.manager.WarmupManager;
 import org.morganm.homespawnplus.manager.WarmupRunner;

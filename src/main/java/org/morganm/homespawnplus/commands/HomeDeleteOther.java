@@ -35,8 +35,8 @@ package org.morganm.homespawnplus.commands;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -58,9 +58,6 @@ public class HomeDeleteOther extends BaseCommand {
 		return server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETEOTHER_USAGE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(Player p, String[] args) {
 		if( !defaultCommandChecks(p) )

@@ -40,10 +40,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigCooldown;
 import org.morganm.homespawnplus.config.ConfigCooldown.CooldownsPerWorld;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.mBukkitLib.General;

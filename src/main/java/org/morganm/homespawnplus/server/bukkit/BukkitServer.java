@@ -17,7 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;

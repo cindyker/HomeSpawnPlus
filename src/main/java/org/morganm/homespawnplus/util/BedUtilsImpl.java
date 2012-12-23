@@ -12,10 +12,10 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Permissions;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Block;
 import org.morganm.homespawnplus.server.api.BlockFace;
 import org.morganm.homespawnplus.server.api.Location;

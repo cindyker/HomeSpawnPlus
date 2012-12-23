@@ -38,9 +38,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.config.ConfigHomeInvites;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.HomeInviteManager;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
@@ -67,9 +67,6 @@ public class HomeInvite extends BaseCommand {
 		return	server.getLocalizedMessage(HSPMessages.CMD_HOMEINVITE_USAGE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(final Player p, final String[] args) {
 		if( args.length < 1 )

@@ -35,7 +35,7 @@ package org.morganm.homespawnplus.command;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.manager.WarmupRunner;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;

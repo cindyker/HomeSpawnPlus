@@ -35,8 +35,8 @@ package org.morganm.homespawnplus.commands;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.Player;
@@ -57,9 +57,6 @@ public class SetHomeOther extends BaseCommand {
 		return server.getLocalizedMessage(HSPMessages.CMD_SETHOMEOTHER_USAGE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(final Player p, String[] args) {
 		if(args.length < 1) {

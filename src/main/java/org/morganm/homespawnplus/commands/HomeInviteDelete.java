@@ -33,8 +33,8 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 
@@ -52,9 +52,6 @@ public class HomeInviteDelete extends BaseCommand {
 		return	server.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_DELETE_USAGE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.command.Command#execute(org.bukkit.entity.Player, org.bukkit.command.Command, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(Player p, String[] args) {
 		if( args.length < 1 ) {

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;
 import org.morganm.homespawnplus.server.api.World;
@@ -81,11 +82,12 @@ public class Essentials29 extends BaseConverter
 		for(File file : files) {
 		    YamlFile userData = factory.newYamlFile();
 		    userData.load(file);
+		    ConfigurationSection section = userData.getRootConfigurationSection();
 		    
-			Set<String> homes = userData.getKeys("homes");
+			Set<String> homes = section.getKeys("homes");
 			if( homes != null && homes.size() > 0 ) {
 				for(String home : homes) {
-					String worldName = userData.getString("homes."+home+".world");
+					String worldName = section.getString("homes."+home+".world");
 					// if there's no world, this user doesn't have a home set.  Skip it.
 					if( worldName == null )
 						continue;
@@ -95,11 +97,11 @@ public class Essentials29 extends BaseConverter
 						continue;
 					}
 					
-					Double x = userData.getDouble("homes."+home+".x");
-					Double y = userData.getDouble("homes."+home+".y");
-					Double z = userData.getDouble("homes."+home+".z");
-					Double yaw = userData.getDouble("homes."+home+".yaw");
-					Double pitch = userData.getDouble("homes."+home+".pitch");
+					Double x = section.getDouble("homes."+home+".x");
+					Double y = section.getDouble("homes."+home+".y");
+					Double z = section.getDouble("homes."+home+".z");
+					Double yaw = section.getDouble("homes."+home+".yaw");
+					Double pitch = section.getDouble("homes."+home+".pitch");
 					
 					String lowerCaseName = file.getName();
 					lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));

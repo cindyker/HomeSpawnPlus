@@ -58,4 +58,36 @@ public class HomeSpawnPlus {
 
         log.info("version {}, build {} is disabled", plugin.getVersion(), plugin.getBuildNumber());
     }
+
+    /** Routine to detect other plugins that use the same commands as HSP and
+     * often cause conflicts and create confusion.
+     * 
+     */
+    /* only method left from old plugin class, probably should put this into the integration
+     * classes when I build them.
+     * 
+    private void detectAndWarn() {
+        // do nothing if warning is disabled
+        if( !getConfig().getBoolean(ConfigOptions.WARN_CONFLICTS, true) )
+            return;
+        
+        if( getServer().getPluginManager().getPlugin("Essentials") != null ) {
+            log.warning(logPrefix+" Essentials found. It is likely your HSP /home and /spawn commands will"
+                    + " end up going to Essentials instead.");
+            log.warning(logPrefix+" Also note that HSP can convert your homes from Essentials for you. Just"
+                    + " run the command \"/hspconvert essentials\" (must have hsp.command.admin permission)");
+            log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
+                    + " this warning.");
+        }
+        
+        if( getServer().getPluginManager().getPlugin("CommandBook") != null ) {
+            log.warning(logPrefix+" CommandBook found. It is likely your HSP /home and /spawn commands will"
+                    + " end up going to CommandBook instead. Please add \"homes\" and"
+                    + " \"spawn-locations\" to your CommandBook config.yml \"components.disabled\" section.");
+            log.warning(logPrefix+" Set \"core.warnConflicts\" to false in your HSP config.yml to disable"
+                    + " this warning.");
+        }
+    }
+    */
+
 }

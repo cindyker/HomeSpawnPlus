@@ -38,10 +38,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.bukkit.command.ConsoleCommandSender;
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Initializer;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
@@ -200,8 +199,7 @@ public class HSP extends BaseCommand {
 			}
 		}
 		else if( args[0].startsWith("restore") ) {
-			if( args.length < 2 || (!"OVERWRITE".equals(args[1])
-					&& !("me".equals(args[1]) && p instanceof ConsoleCommandSender)) ) {	// testing shortcut
+			if( args.length < 2 || (!"OVERWRITE".equals(args[1])) ) {
 				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", getYamlBackupFile());
 			}
 			else {

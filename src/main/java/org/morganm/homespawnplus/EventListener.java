@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.listener;
+package org.morganm.homespawnplus;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -31,7 +31,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.i18n;
+package org.morganm.homespawnplus;
 
 /** This is the only class in this package specific to HSP. Just provide your
  * own and use it in your own implementation.

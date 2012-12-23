@@ -9,9 +9,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.manager.HomeLimitsManager;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;

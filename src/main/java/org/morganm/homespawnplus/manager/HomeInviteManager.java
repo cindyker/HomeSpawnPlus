@@ -40,9 +40,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.config.ConfigHomeInvites;
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.storage.Storage;

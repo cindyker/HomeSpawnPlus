@@ -3,6 +3,8 @@
  */
 package org.morganm.homespawnplus.config;
 
+import java.util.List;
+
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.Initializable;
@@ -250,6 +252,7 @@ public class ConfigCore extends ConfigBase implements Initializable {
         BUKKIT,
         PLAYER_DAT
     }
+
     /**
      * Return the strategy used to determine if a player is new.
      * @return
@@ -268,5 +271,16 @@ public class ConfigCore extends ConfigBase implements Initializable {
             strategy = NewPlayerStrategy.PLAYER_DAT;
         
         return strategy;
+    }
+    
+    /**
+     * Return default permission list. These permissions will be true for all
+     * players, regardless of what permission system is in use (even if none at
+     * all). Note this only applies to HSP permission checks.
+     * 
+     * @return
+     */
+    public List<String> getDefaultPermissions() {
+        return super.getStringList("defaultPermissions");
     }
 }

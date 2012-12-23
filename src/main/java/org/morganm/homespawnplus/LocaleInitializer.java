@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.Plugin;
+import org.morganm.mBukkitLib.i18n.Colors;
 import org.morganm.mBukkitLib.i18n.Locale;
 import org.morganm.mBukkitLib.i18n.LocaleConfig;
 
@@ -33,8 +34,10 @@ public class LocaleInitializer implements Initializable {
 
     @Override
     public void init() throws Exception {
+        Colors colors = new Colors();
+        colors.setDefaultColor(configCore.getDefaultColor());
         LocaleConfig localeConfig = new LocaleConfig(configCore.getLocale(),
-                plugin.getDataFolder(), "hsp", plugin.getJarFile(), null);        
+                plugin.getDataFolder(), "hsp", plugin.getJarFile(), colors);        
         locale.load(localeConfig);
     }
 

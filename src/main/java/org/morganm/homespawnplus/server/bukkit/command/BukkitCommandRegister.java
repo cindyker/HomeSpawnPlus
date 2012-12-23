@@ -50,7 +50,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.command.BaseCommand;

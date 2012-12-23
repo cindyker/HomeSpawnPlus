@@ -44,7 +44,7 @@ public class HSPModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(EventListener.class)
-            .to(org.morganm.homespawnplus.listener.EventListener.class);
+            .to(org.morganm.homespawnplus.EventListener.class);
         bind(BedUtils.class)
             .to(BedUtilsImpl.class);
         bind(Locale.class)

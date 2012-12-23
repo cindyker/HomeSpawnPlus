@@ -5,7 +5,7 @@ package org.morganm.homespawnplus.server.api;
 
 import java.util.List;
 
-import org.morganm.homespawnplus.i18n.HSPMessages;
+import org.morganm.homespawnplus.HSPMessages;
 
 /**
  * @author morganm
@@ -46,7 +46,7 @@ public interface Server {
      * system like Google gettext-commons, where the key values are unecessary
      * and the text can be embedded and translated directly in the original code.
      *
-     * @param key the key value, @see {@link org.morganm.homespawnplus.i18n.HSPMessages}
+     * @param key the key value, @see {@link org.morganm.homespawnplus.HSPMessages}
      * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
      * @return
      */
@@ -57,7 +57,7 @@ public interface Server {
      * message to a given player or console.
      *
      * @param sender the player to send the message to
-     * @param key the key value, @see {@link org.morganm.homespawnplus.i18n.HSPMessages}
+     * @param key the key value, @see {@link org.morganm.homespawnplus.HSPMessages}
      * @param args varargs key-value pairs, ie. {"player", "fluffybunny", "amount", 42}
      * @return
      */

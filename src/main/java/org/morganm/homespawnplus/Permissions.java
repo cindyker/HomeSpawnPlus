@@ -3,10 +3,13 @@
  */
 package org.morganm.homespawnplus;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.command.Command;
+import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.mBukkitLib.PermissionSystem;
@@ -25,10 +28,12 @@ public class Permissions implements Initializable {
     private static final String PERM_PREFIX = "hsp.";
     
     private final PermissionSystem permSystem;
+    private final ConfigCore configCore;
     
     @Inject
-    public Permissions(PermissionSystem permSystem) {
+    public Permissions(PermissionSystem permSystem, ConfigCore configCore) {
         this.permSystem = permSystem;
+        this.configCore = configCore;
     }
     
 
@@ -60,7 +65,16 @@ public class Permissions implements Initializable {
      * @return
      */
     public boolean hasPermission(CommandSender sender, String perm) {
-        return permSystem.has(sender.getName(), perm);
+        boolean result = permSystem.has(sender.getName(), perm);
+
+        // support legacy HSP "defaultPermissions" setting
+        if( !result ) {
+            List<String> defaultPerms = configCore.getDefaultPermissions();
+            if( defaultPerms != null && defaultPerms.contains(perm) )
+                result = true;
+        }
+
+        return result;
     }
 
     /**

@@ -13,6 +13,8 @@ import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageFactory;
 import org.morganm.homespawnplus.storage.dao.PlayerDAO;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
+import org.morganm.homespawnplus.strategy.StrategyEngineImpl;
 import org.morganm.homespawnplus.strategy.StrategyResultFactory;
 import org.morganm.homespawnplus.strategy.StrategyResultFactoryImpl;
 import org.morganm.homespawnplus.util.BedUtils;
@@ -54,6 +56,8 @@ public class HSPModule extends AbstractModule {
             .to(StrategyResultFactoryImpl.class);
         bind(TeleportOptions.class)
             .to(TeleportOptionsImpl.class);
+        bind(StrategyEngine.class)
+            .to(StrategyEngineImpl.class);
         
 //        bind(Storage.class)
 //            .toProvider(StorageProvider.class);

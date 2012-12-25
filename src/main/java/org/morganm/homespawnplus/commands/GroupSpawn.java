@@ -47,7 +47,7 @@ import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.SpawnUtil;
-import org.morganm.mBukkitLib.PermissionSystem;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 
 
 /**

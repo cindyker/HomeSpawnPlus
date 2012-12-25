@@ -10,11 +10,4 @@ package org.morganm.homespawnplus.server.api.event;
  */
 public interface EventDispatcher {
     public void registerEvents();
-
-    /**
-     * Move event is high frequency and only used in the event that
-     * a WorldGuard strategy that requires it is used. So we register
-     * it separately, only if needed.
-     */
-    public void registerMoveEvent();
 }

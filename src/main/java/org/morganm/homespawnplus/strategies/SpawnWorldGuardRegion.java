@@ -33,31 +33,40 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
+import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
-/**
+/** Spawn inside the WorldGuard region using the WorldGuard flag.
+ * 
+ * This strategy requires WorldGuard and is specific to Bukkit.
+ * 
  * @author morganm
  *
  */
 @NoArgStrategy
 public class SpawnWorldGuardRegion extends BaseStrategy {
+    @Inject private WorldGuardModule worldGuard;
     private WorldGuardInterface wgInterface;
 
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
+        if( !worldGuard.isEnabled() ) {
+            log.warn("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
+            return null;
+        }
+        
 		if( wgInterface == null )
-			wgInterface = plugin.getWorldGuardIntegration().getWorldGuardInterface();
-		
-		if( !plugin.getWorldGuardIntegration().isEnabled() ) {
-			log.warning("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
-			return null;
-		}
-		
-		return new StrategyResult( wgInterface.getWorldGuardSpawnLocation(context.getPlayer()) );
+			wgInterface = worldGuard.getWorldGuardInterface();
+
+		org.bukkit.Location bukkitLocation = wgInterface.getWorldGuardSpawnLocation(context.getPlayer());
+		return new StrategyResult( new BukkitLocation(bukkitLocation) );
 	}
 
 	@Override

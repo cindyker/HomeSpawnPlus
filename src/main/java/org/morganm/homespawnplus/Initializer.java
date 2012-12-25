@@ -90,6 +90,7 @@ public class Initializer {
         // sort into a TreeMap which will maintain order. Items of same priority
         // are added to a List keyed by that priority
         for(Class<? extends Initializable> initClass : getInitClasses()) {
+            log.debug("Initializer: getting class intance for {}", initClass);
             Initializable init = injector.getInstance(initClass);
             int priority = init.getInitPriority();
             if( priority < 0 )

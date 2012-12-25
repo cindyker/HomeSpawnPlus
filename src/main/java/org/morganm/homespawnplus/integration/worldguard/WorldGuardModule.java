@@ -33,8 +33,13 @@
  */
 package org.morganm.homespawnplus.integration.worldguard;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 
 /** Abstraction layer for WorldGuardInterface. This allows this class (and
  * therefore HSP) to load even if WorldGuard isn't installed on the server.
@@ -42,13 +47,21 @@ import org.morganm.homespawnplus.OldHSP;
  * @author morganm
  *
  */
-public class WorldGuardIntegration {
-	private final OldHSP plugin;
+@Singleton
+public class WorldGuardModule {
+	private final Plugin plugin;
+    private final BukkitFactory factory;
+    private final StrategyEngine strategyEngine;
 	private WorldGuardInterface worldGuardInterface;
 	private WorldGuardRegion worldGuardRegion;
+	private Server server;
 	
-	public WorldGuardIntegration(OldHSP plugin) {
+	@Inject
+	public WorldGuardModule(Plugin plugin, BukkitFactory factory,
+	        StrategyEngine strategyEngine, Server server) {
 		this.plugin = plugin;
+		this.factory = factory;
+		this.strategyEngine = strategyEngine;
 	}
 	
 	public boolean isEnabled() {
@@ -57,6 +70,14 @@ public class WorldGuardIntegration {
 			return p.isEnabled();
 		else
 			return false;
+	}
+	
+	public String getVersion() {
+        Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+        if( p != null )
+            return p.getDescription().getVersion();
+        else
+            return null;
 	}
 	
 	public void init() {
@@ -78,7 +99,7 @@ public class WorldGuardIntegration {
 			return null;
 
 		if( worldGuardRegion == null )
-			worldGuardRegion = new WorldGuardRegion(plugin);
+			worldGuardRegion = new WorldGuardRegion(plugin, this, factory, strategyEngine, server);
 		return worldGuardRegion;
 	}
 }

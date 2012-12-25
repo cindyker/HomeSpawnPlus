@@ -41,6 +41,10 @@ import javax.inject.Inject;
 import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Initializer;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.integration.WorldBorder;
+import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
+import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
@@ -51,6 +55,10 @@ import org.morganm.homespawnplus.storage.yaml.StorageYaml;
  */
 public class HSP extends BaseCommand {
     @Inject Initializer initializer;
+    @Inject MultiverseModule multiverse;
+    @Inject DynmapModule dynmap;
+    @Inject WorldBorder worldBorder;
+    @Inject WorldGuardModule worldGuard;
     private File backupFile;
     
 	@Override
@@ -65,8 +73,8 @@ public class HSP extends BaseCommand {
 	}
 
     @Override
-    public boolean execute(CommandSender p, String cmd, String[] args) {
-        if( permissions.isAdmin(p) )
+    public boolean execute(CommandSender sender, String cmd, String[] args) {
+        if( !permissions.isAdmin(sender) )
 			return false;
 		
 		if( args.length < 1 ) {
@@ -84,12 +92,36 @@ public class HSP extends BaseCommand {
 			}
 			catch(Exception e) {
 			    log.error("Caught exception reloading config", e);
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_ERROR_RELOADING);
+				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_ERROR_RELOADING);
 			}
 			
 			if( success )
-			    server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_CONFIG_RELOADED);
+			    server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_CONFIG_RELOADED);
 		}
+        else if( args[0].startsWith("modules") ) {
+            sender.sendMessage("Multiverse module "
+                    + (multiverse.isEnabled() ? "enabled" : "disabled"));
+            if( multiverse.isEnabled() ) {
+                sender.sendMessage("  Multiverse-Core "
+                        + (multiverse.isMultiverseEnabled() ? "enabled" : "disabled")
+                        + ", version " + multiverse.getCoreVersion());
+                sender.sendMessage("  Multiverse-Portals "
+                        + (multiverse.isMultiversePortalsEnabled() ? "enabled" : "disabled")
+                        + ", version " + multiverse.getPortalsVersion());
+            }
+            
+            sender.sendMessage("Dynmap module "
+                    + (dynmap.isEnabled() ? "enabled" : "disabled")
+                    + ", version " + dynmap.getVersion());
+            
+            sender.sendMessage("WorldBorder module "
+                    + (worldBorder.isEnabled() ? "enabled" : "disabled")
+                    + ", version " + worldBorder.getVersion());
+
+            sender.sendMessage("WorldGuard module "
+                    + (worldGuard.isEnabled() ? "enabled" : "disabled")
+                    + ", version " + worldGuard.getVersion());
+        }
 		/*
 		else if( args[0].startsWith("reloadd") || args[0].equals("rd") ) {
 			// purge the existing cache
@@ -190,17 +222,17 @@ public class HSP extends BaseCommand {
 
 				backupStorage.flushAll();
 	
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", getYamlBackupFile());
+				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", getYamlBackupFile());
 				log.info("Data backed up to file {}", getYamlBackupFile());
 			}
 			catch(StorageException e) {
 				log.warn("Error saving backup file", e);
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
+				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
 			}
 		}
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || (!"OVERWRITE".equals(args[1])) ) {
-				server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", getYamlBackupFile());
+				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", getYamlBackupFile());
 			}
 			else {
 				File backupFile = getYamlBackupFile();
@@ -240,18 +272,18 @@ public class HSP extends BaseCommand {
 						storage.flushAll();
 					}
 					catch(StorageException e) {
-						p.sendMessage("Caught exception: "+e.getMessage());
+						sender.sendMessage("Caught exception: "+e.getMessage());
 						log.warn("Error caught in /"+getCommandName()+": "+e.getMessage(), e);
 					}
 					finally {
 						storage.setDeferredWrites(false);
 					}
 					
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", getYamlBackupFile());
+					server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", getYamlBackupFile());
 					log.info("Existing data wiped and data restored from file "+getYamlBackupFile());
 				}
 				else
-					server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", getYamlBackupFile());
+					server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", getYamlBackupFile());
 //					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
 			}
 		}

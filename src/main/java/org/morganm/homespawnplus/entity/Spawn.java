@@ -46,6 +46,7 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 
 import com.avaje.ebean.annotation.CreatedTimestamp;
@@ -144,6 +145,15 @@ public class Spawn implements EntityWithLocation {
      */
     public boolean isNewPlayerSpawn() {
         return SpawnDAO.NEW_PLAYER_SPAWN.equals(getName());
+    }
+    
+    /**
+     * Return true if this is the default spawn for the world it is in.
+     * 
+     * @return
+     */
+    public boolean isDefaultSpawn() {
+        return Storage.HSP_WORLD_SPAWN_GROUP.equals(getGroup());
     }
     
 	public int getId() {

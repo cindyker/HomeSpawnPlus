@@ -46,17 +46,20 @@ public class HomeSpawnPlus {
         initializer.initAll();
         eventDispatcher.registerEvents();
         
-        log.info("version {}, build {} is enabled", plugin.getVersion(), plugin.getBuildNumber());
+        log.info("{} version {}, build {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
     }
     
     public void onDisable() {
         // unhook multiverse (if needed)
 //        multiverse.onDisable();
 
-        spawnUtil.updateAllPlayerLocations();
-        initializer.shutdownAll();
+        if( spawnUtil != null )
+            spawnUtil.updateAllPlayerLocations();
+        if( initializer != null )
+            initializer.shutdownAll();
 
-        log.info("version {}, build {} is disabled", plugin.getVersion(), plugin.getBuildNumber());
+        if( plugin != null )
+            log.info("{} version {}, build {} is disabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
     }
 
     /** Routine to detect other plugins that use the same commands as HSP and

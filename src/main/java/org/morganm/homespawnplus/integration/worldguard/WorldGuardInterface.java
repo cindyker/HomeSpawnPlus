@@ -36,10 +36,12 @@ package org.morganm.homespawnplus.integration.worldguard;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.server.api.Location;
+import org.morganm.homespawnplus.server.api.Player;
+import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.server.bukkit.BukkitPlayer;
+import org.morganm.homespawnplus.server.bukkit.BukkitWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +57,9 @@ public class WorldGuardInterface {
 	private static final Logger log = LoggerFactory.getLogger(WorldGuardInterface.class);
 	private static boolean worldGuardError = false;
 	
-	private final OldHSP plugin;
+	private final Plugin plugin;
 	
-	public WorldGuardInterface(OldHSP plugin) {
+	public WorldGuardInterface(Plugin plugin) {
 		this.plugin = plugin;
 //		this.SPAWN_PERM = new RegionGroupFlag("spawn-group", RegionGroupFlag.RegionGroup.MEMBERS);
 	}
@@ -68,7 +70,7 @@ public class WorldGuardInterface {
 	 * @param regionName
 	 * @return
 	 */
-	public boolean isLocationInRegion(org.bukkit.Location l, String regionName) {
+	public boolean isLocationInRegion(Location l, String regionName) {
 		com.sk89q.worldguard.protection.regions.ProtectedRegion region = getWorldGuardRegion(l.getWorld(), regionName);
 		if( region != null )
 			return region.contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
@@ -94,9 +96,11 @@ public class WorldGuardInterface {
 	 * @param player
 	 * @return
 	 */
-	public org.bukkit.Location getWorldGuardSpawnLocation(Player player) {
-		log.debug("getWorldGuardSpawnLocation(): player={}",player);
+	public org.bukkit.Location getWorldGuardSpawnLocation(Player hspPlayer) {
+		log.debug("getWorldGuardSpawnLocation(): hspPlayer={}",hspPlayer);
 		org.bukkit.Location loc = null;
+		
+		org.bukkit.entity.Player player = ((BukkitPlayer) hspPlayer).getBukkitPlayer();
 		
 		try {
 			Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -127,40 +131,7 @@ public class WorldGuardInterface {
 		            		break;
 		            	}
 		            }
-		            
-//		            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
-//		            Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC, localPlayer);
-//
-//					log.debug("getWorldGuardSpawnLocation(): wcfg.useRegion=true, spawn=",spawn);
-//		            if (spawn != null) {
-//		                loc = BukkitUtil.toLocation(player.getWorld(), spawn);
-//		            }
 		        }
-		        
-		        /* old code for pre-5.5 Worldguard
-				if (wcfg.useRegions) {
-					Vector pt = com.sk89q.worldguard.bukkit.BukkitUtil.toVector(location);
-					RegionManager mgr = worldGuard.getGlobalRegionManager().get(player.getWorld());
-					ApplicableRegionSet set = mgr.getApplicableRegions(pt);
-	
-					Vector spawn = set.getFlag(DefaultFlag.SPAWN_LOC);
-	
-					if (spawn != null) {
-						RegionGroup group = set.getFlag(DefaultFlag.SPAWN_PERM);
-						Location spawnLoc = BukkitUtil.toLocation(player.getWorld(), spawn);
-	
-						if (group != null) {
-							LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
-	
-							if (RegionGroupFlag.isMember(set, group, localPlayer)) {
-								loc = spawnLoc;
-							}
-						} else {
-							loc = spawnLoc;
-						}
-					}
-				}
-				*/
 			}
 		}
 		catch(Throwable e) {
@@ -178,11 +149,12 @@ public class WorldGuardInterface {
 	}
 	
 	public com.sk89q.worldguard.protection.regions.ProtectedRegion getWorldGuardRegion(World world, String regionName) {
+	    org.bukkit.World bukkitWorld = ((BukkitWorld) world).getBukkitWorld();
 		try {
 			Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 			if( p != null ) {
 				com.sk89q.worldguard.bukkit.WorldGuardPlugin worldGuard = (com.sk89q.worldguard.bukkit.WorldGuardPlugin) p;
-				com.sk89q.worldguard.protection.managers.RegionManager mgr = worldGuard.getRegionManager(world);
+				com.sk89q.worldguard.protection.managers.RegionManager mgr = worldGuard.getRegionManager(bukkitWorld);
 				return mgr.getRegion(regionName);
 			}
 		}

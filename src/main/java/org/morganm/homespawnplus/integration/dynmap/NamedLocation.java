@@ -34,7 +34,7 @@
 package org.morganm.homespawnplus.integration.dynmap;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
 
 /** Interface for HSP locations.
  * 

@@ -42,6 +42,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +52,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public class MultiverseIntegration {
-    private static final Logger log = LoggerFactory.getLogger(MultiverseIntegration.class);
+public class MultiverseModule implements Initializable {
+    private static final Logger log = LoggerFactory.getLogger(MultiverseModule.class);
     
 	private final Plugin plugin;
     private final ConfigCore configCore;
@@ -63,14 +64,35 @@ public class MultiverseIntegration {
 	private String destinationPortalName;
 	
 	@Inject
-	public MultiverseIntegration(ConfigCore configCore, Plugin plugin) {
+	public MultiverseModule(ConfigCore configCore, Plugin plugin) {
 	    this.configCore = configCore;
 		this.plugin = plugin;
 	}
 	
+    @Override
+    public int getInitPriority() {
+        return 9;
+    }
+
 	public boolean isEnabled() {
 		return configCore.isMultiverseEnabled();
 	}
+	
+	public String getCoreVersion() {
+        Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
+        if( p != null )
+            return p.getDescription().getVersion();
+        else
+            return null;
+	}
+
+    public String getPortalsVersion() {
+        Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
+        if( p != null )
+            return p.getDescription().getVersion();
+        else
+            return "null";
+    }
 	
 	public boolean isMultiverseEnabled() {
 		Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -87,7 +109,8 @@ public class MultiverseIntegration {
 			return false;
 	}
 	
-	public void onEnable() {
+    @Override
+	public void init() {
 		if( !isEnabled() )
 			return;
 		
@@ -98,16 +121,17 @@ public class MultiverseIntegration {
 			
 				if( multiverse != null ) {
 					log.debug("Hooking Multiverse");
-					teleporter = new MultiverseSafeTeleporter(plugin, multiverse);
+					teleporter = new MultiverseSafeTeleporter(multiverse, this);
 					teleporter.install();
-					multiverseListener = new MultiverseListener(plugin, teleporter);
+					multiverseListener = new MultiverseListener(this);
 					registerListeners();
 				}
 			}
 		}
 	}
 	
-	public void onDisable() {
+    @Override
+	public void shutdown() {
 		if( teleporter != null ) {
 			log.debug("Unhooking Multiverse");
 			teleporter.uninstall();

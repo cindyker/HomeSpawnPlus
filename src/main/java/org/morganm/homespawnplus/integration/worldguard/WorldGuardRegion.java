@@ -39,16 +39,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.server.api.Server;
+import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.server.bukkit.BukkitFactory;
+import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.strategy.EventType;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +67,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class WorldGuardRegion implements Listener {
     private static final Logger log = LoggerFactory.getLogger(WorldGuardRegion.class);
     
-	private final OldHSP plugin;
+	private final Plugin plugin;
+	private final WorldGuardModule worldGuard;
+	private final BukkitFactory factory;
+	private final StrategyEngine strategyEngine;
+	private final Server server;
 	private final Map<String, Set<ProtectedRegion>> registered = new HashMap<String, Set<ProtectedRegion>>();
 	/* Set to keep track of any "global" registers that weren't tied to a specific world, so
 	 * we can lookup the original strategies that way.
@@ -72,8 +79,13 @@ public class WorldGuardRegion implements Listener {
 	private final Set<String> globalRegisters = new HashSet<String>();
 	private boolean eventsRegistered = false;
 	
-	public WorldGuardRegion(OldHSP plugin) {
+	public WorldGuardRegion(Plugin plugin, WorldGuardModule worldGuard, BukkitFactory factory,
+	        StrategyEngine strategyEngine, Server server) {
 		this.plugin = plugin;
+		this.worldGuard = worldGuard;
+		this.factory = factory;
+		this.strategyEngine = strategyEngine;
+		this.server = server;
 	}
 	
 	public void registerRegion(World world, String regionName) {
@@ -90,7 +102,7 @@ public class WorldGuardRegion implements Listener {
 		
 		final String worldName = world.getName();
 		
-		WorldGuardInterface wg = plugin.getWorldGuardIntegration().getWorldGuardInterface();
+		WorldGuardInterface wg = worldGuard.getWorldGuardInterface();
 		ProtectedRegion region = wg.getWorldGuardRegion(world, regionName);
 		log.debug("registerRegion(): region={}",region);
 		if( region != null ) {
@@ -109,7 +121,7 @@ public class WorldGuardRegion implements Listener {
 	 */
 	public void registerRegion(String regionName) {
 		globalRegisters.add(regionName);
-		List<World> worlds = Bukkit.getWorlds();
+		List<World> worlds = server.getWorlds();
 		for(World world : worlds) {
 			registerRegion(world, regionName);
 		}
@@ -167,12 +179,14 @@ public class WorldGuardRegion implements Listener {
 			worldName = "";
 		
 		String eventType = baseEventType.toString() + ";" + regionName + worldName;
-		StrategyContext context = new StrategyContext(plugin);
+		StrategyContext context = factory.newStrategyContext();
 		context.setEventType(eventType);
-		context.setPlayer(e.getPlayer());
-		StrategyResult result = plugin.getStrategyEngine().evaluateStrategies(context);
-		if( result != null && result.getLocation() != null )
-			return result.getLocation();
+		context.setPlayer(factory.newBukkitPlayer(e.getPlayer()));
+		StrategyResult result = strategyEngine.evaluateStrategies(context);
+		if( result != null && result.getLocation() != null ) {
+		    BukkitLocation bukkitLocation = (BukkitLocation) result.getLocation();
+			return bukkitLocation.getBukkitLocation();
+		}
 		else
 			return null;
 	}

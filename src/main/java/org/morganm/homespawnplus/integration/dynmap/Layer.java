@@ -41,11 +41,11 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,45 +79,47 @@ public class Layer {
 		this.cfg = cfg;
 //		this.updperiod = updperiod;
 
-		init(id, deflabel, deficon, deflabelfmt);
+		init(id);
 	}
 	
-	private void init(String id, String deflabel, String deficon, String deflabelfmt)
+	private void init(String id) //, String deflabel, String deficon, String deflabelfmt)
 	{
+	    final String label = cfg.getString("name");
+	    
 		set = markerapi.getMarkerSet("hsp." + id);
 		if(set == null)
-			set = markerapi.createMarkerSet("hsp."+id, cfg.getString("name", deflabel), null, false);
+			set = markerapi.createMarkerSet("hsp."+id, label, null, false);
 		else
-			set.setMarkerSetLabel(cfg.getString("name", deflabel));
+			set.setMarkerSetLabel(label);
 		
 		log.debug("Layer.init() created dynmap layer hsp.{}, set name=","layer.{}.name", id, id);
 		
 		if(set == null) {
-			module.severe("Error creating " + deflabel + " marker set");
+			module.severe("Error creating " + label + " marker set");
 			return;
 		}
-		set.setLayerPriority(cfg.getInt("layerprio", 10));
-		set.setHideByDefault(cfg.getBoolean("hidebydefault", false));
+		set.setLayerPriority(cfg.getInt("layerprio"));
+		set.setHideByDefault(cfg.getBoolean("hidebydefault"));
 		log.debug("Layer.init() id={}, layerprio={}, hideByDefault={}",
 		        id, set.getLayerPriority(), set.getHideByDefault());
 		
-		int minzoom = cfg.getInt("minzoom", 0);
+		int minzoom = cfg.getInt("minzoom");
 		if(minzoom > 0) /* Don't call if non-default - lets us work with pre-0.28 dynmap */
 			set.setMinZoom(minzoom);
-		String icon = cfg.getString("deficon", deficon);
+		String icon = cfg.getString("deficon");
 		this.deficon = markerapi.getMarkerIcon(icon);
-		if(this.deficon == null) {
-			module.info("Unable to load default icon '" + icon + "' - using default '"+deficon+"'");
-			this.deficon = markerapi.getMarkerIcon(deficon);
-		}
-		labelfmt = cfg.getString("labelfmt", deflabelfmt);
+//		if(this.deficon == null) {
+//			module.info("Unable to load default icon '" + icon + "' - using default '"+deficon+"'");
+//			this.deficon = markerapi.getMarkerIcon(deficon);
+//		}
+		labelfmt = cfg.getString("labelfmt");
 		List<String> lst = cfg.getStringList("visiblemarkers");
 		if(lst != null)
 			visible = new HashSet<String>(lst);
 		lst = cfg.getStringList("hiddenmarkers");
 		if(lst != null)
 			hidden = new HashSet<String>(lst);
-		online_only = cfg.getBoolean("online-only", false);
+		online_only = cfg.getBoolean("online-only");
 		log.debug("Layer.init() id={}, online-only={}",id, online_only); 
 		
 //		if(online_only) {

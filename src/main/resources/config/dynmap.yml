@@ -38,6 +38,9 @@ dynmap:
       online-only: false
     spawns:
       enable: true
+      # by default, HSP will render named spawns. You can disable it here, or
+      # create separate layers using this flag
+      include-named-spawns: true
       name: "Spawns"
       # Make warp layer hidden by default
       hidebydefault: false

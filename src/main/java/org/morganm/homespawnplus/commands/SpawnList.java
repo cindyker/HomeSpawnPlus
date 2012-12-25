@@ -41,12 +41,12 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.server.api.ChatColor;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.ServerConfig;
 import org.morganm.homespawnplus.server.api.World;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.mBukkitLib.i18n.ChatColor;
 
 /**
  * @author morganm

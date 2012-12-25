@@ -36,4 +36,8 @@ public class BukkitWorld implements World {
     public Location getSpawnLocation() {
         return new BukkitLocation(bukkitWorld.getSpawnLocation());
     }
+    
+    public org.bukkit.World getBukkitWorld() {
+        return bukkitWorld;
+    }
 }

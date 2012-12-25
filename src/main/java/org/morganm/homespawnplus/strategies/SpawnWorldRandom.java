@@ -37,11 +37,11 @@ import javax.inject.Inject;
 
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
-import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.TeleportOptions;
 import org.morganm.homespawnplus.server.api.World;
+import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
@@ -61,6 +61,7 @@ import com.wimbli.WorldBorder.WorldBorder;
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnWorldRandom extends BaseStrategy {
+    @Inject private WorldBorder worldBorder;
     @Inject private Server server;
     @Inject private Factory factory;
     @Inject private Teleport teleport;
@@ -97,9 +98,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 //		log.debug("SpawnWorldRandom() minY=",yBounds.minY,", maxY=",yBounds.maxY);
 		
 		Location result = null;
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
-		if( p != null ) {
-			WorldBorder worldBorder = (WorldBorder) p;
+        if( worldBorder.isEnabled() ) {
 			BorderData border = worldBorder.GetWorldBorder(w.getName());
 			
 			double x = border.getX();
@@ -119,8 +118,13 @@ public class SpawnWorldRandom extends BaseStrategy {
 				log.debug("SpawnWorldRandom: try=",tries);
 				result = teleport.findRandomSafeLocation(min, max, teleportOptions);
 				log.debug("SpawnWorldRandom: try=",tries,", result=",result);
-				if( result != null && !border.insideBorder(result) )
-					result = null;
+				if( result != null ) {
+				    // if the random result isn't located inside the border, then we
+				    // null it out and loop again
+				    BukkitLocation bukkitLocation = (BukkitLocation) result;
+				    if( !border.insideBorder(bukkitLocation.getBukkitLocation()) )
+				        result = null;
+				}
 			}
 			
 			if( tries == MAX_TRIES )
@@ -156,8 +160,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 				throw new StrategyException(getStrategyConfigName()+" tried to reference world \""+world+"\", which doesn't exist");
 		}
 		
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
-		if( p == null )
+		if( !worldBorder.isEnabled() )
 			log.info("Using "+getStrategyConfigName()+" strategy but WorldBorder is not installed; assuming maximum of 1000");
 	}
 

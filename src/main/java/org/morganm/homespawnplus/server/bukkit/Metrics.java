@@ -57,8 +57,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitTask;
 import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 import org.morganm.homespawnplus.storage.Storage;
-import org.morganm.mBukkitLib.PermissionSystem;
 import org.morganm.mBukkitLib.i18n.Locale;
 
 /**
@@ -217,7 +217,7 @@ public class Metrics implements Initializable {
     public void findCustomData() {
         // Create our Permission Graph and Add our permission Plotters
         Graph permGraph = createGraph(plugin, Graph.Type.Pie, "Permission");
-        final String permName = permSystem.getSystemInUseString();
+        final String permName = permSystem.getSystemInUse();
         permGraph.addPlotter(new Metrics.Plotter(permName) {
 
             @Override

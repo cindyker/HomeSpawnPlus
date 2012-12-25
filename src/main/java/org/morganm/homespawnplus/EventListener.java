@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
-import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
+import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
 import org.morganm.homespawnplus.manager.WarmupManager;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
@@ -45,7 +45,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
     private StrategyEngine engine;
     private ConfigCore config;
     private Factory factory;
-    private MultiverseIntegration multiVerse;
+    private MultiverseModule multiVerse;
     private Teleport teleport;
     private SpawnUtil spawnUtil;
     private BedUtils bedUtil;
@@ -66,7 +66,7 @@ public class EventListener implements org.morganm.homespawnplus.server.api.event
     
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
-            MultiverseIntegration multiVerse, Teleport teleport, SpawnUtil spawnUtil,
+            MultiverseModule multiVerse, Teleport teleport, SpawnUtil spawnUtil,
             BedUtils bedUtil, WarmupManager warmupManager) {
         this.config = config;
         this.storage = storage;

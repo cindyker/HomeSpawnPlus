@@ -78,7 +78,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
-      <version>5.4.2</version>
+      <version>5.4.5</version>
       <exclusions>
         <exclusion>
           <groupId>org.spout</groupId>
@@ -91,7 +91,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
-      <version>5.5.3</version>
+      <version>5.6.5</version>
       <exclusions>
         <exclusion>
           <groupId>org.spout</groupId>
@@ -129,7 +129,7 @@
     <dependency>
       <groupId>org.dynmap</groupId>
       <artifactId>dynmap-api</artifactId>
-      <version>0.39</version>
+      <version>[0.80,)</version>
     </dependency>
 
     <!-- MultiVerse -->

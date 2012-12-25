@@ -33,7 +33,9 @@
  */
 package org.morganm.homespawnplus.strategies;
 
-import org.bukkit.plugin.Plugin;
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.strategy.ModeStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyException;
@@ -45,6 +47,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  */
 @OneArgStrategy
 public class ModeInRegion extends ModeStrategy {
+    @Inject WorldGuardModule worldGuard;
 	private String regionName;
 
 	public ModeInRegion(String regionName) {
@@ -57,8 +60,7 @@ public class ModeInRegion extends ModeStrategy {
 
 	@Override
 	public void validate() throws StrategyException {
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-		if( p == null )
+	    if( !worldGuard.isEnabled() )
 			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
 		
 		if( regionName == null )

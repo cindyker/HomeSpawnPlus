@@ -33,6 +33,9 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
+import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
 import org.morganm.homespawnplus.strategy.ModeStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyException;
@@ -46,6 +49,7 @@ import org.morganm.homespawnplus.strategy.StrategyMode;
  */
 @OneArgStrategy
 public class ModeMultiverseSourcePortal extends ModeStrategy {
+    @Inject private MultiverseModule multiverse;
 	private String portalName;
 
 	public ModeMultiverseSourcePortal(String portalName) {
@@ -58,9 +62,9 @@ public class ModeMultiverseSourcePortal extends ModeStrategy {
 	
 	@Override
 	public void validate() throws StrategyException {
-		if( !plugin.getMultiverseIntegration().isMultiverseEnabled() )
+		if( !multiverse.isMultiverseEnabled() )
 			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": Multiverse-Core is not running");
-		if( !plugin.getMultiverseIntegration().isMultiversePortalsEnabled() )
+		if( !multiverse.isMultiversePortalsEnabled() )
 			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": Multiverse-Portals is not running");
 		
 		if( portalName == null )

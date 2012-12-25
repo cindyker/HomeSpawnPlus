@@ -36,12 +36,12 @@ package org.morganm.homespawnplus.strategies;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.SpawnUtil;
-import org.morganm.mBukkitLib.PermissionSystem;
 
 /**
  * @author morganm

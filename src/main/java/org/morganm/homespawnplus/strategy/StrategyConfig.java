@@ -45,9 +45,9 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.config.ConfigEvents;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.ConfigurationSection;
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.World;
 import org.slf4j.Logger;
@@ -69,16 +69,15 @@ public class StrategyConfig {
 	private final Server server;
 	private final ConfigEvents configEvents;
 	private final StrategyFactory strategyFactory;
-	
-	// TODO: empty stub for now, code that uses plugin is integration-related, needs to
-	// be changed to chose integration solution
-	private Plugin plugin;
+	private final WorldGuardModule worldGuard;
 	
 	@Inject
-	public StrategyConfig(final Server server, ConfigEvents configEvents, StrategyFactory strategyFactory) {
+	public StrategyConfig(final Server server, ConfigEvents configEvents, StrategyFactory strategyFactory,
+	        WorldGuardModule worldGuard) {
 		this.server = server;
 		this.configEvents = configEvents;
 		this.strategyFactory = strategyFactory;
+		this.worldGuard = worldGuard;
 		
 		defaultStrategies = new HashMap<String, Set<Strategy>>();
 		worldStrategies = new HashMap<String, WorldStrategies>();
@@ -115,8 +114,8 @@ public class StrategyConfig {
 				world = server.getWorld(worldContext);
 			}
 			
-			if( plugin.getWorldGuardIntegration().isEnabled() ) {
-				plugin.getWorldGuardIntegration().getWorldGuardRegion().registerRegion(world, region);
+			if( worldGuard.isEnabled() ) {
+			    worldGuard.getWorldGuardRegion().registerRegion(world, region);
 			}
 			else {
 				log.warn("eventType ",eventType," depends on WorldGuard which is not present or enabled. Skipping.");

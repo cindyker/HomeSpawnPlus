@@ -18,7 +18,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
@@ -104,25 +103,6 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
         }
     }
     
-    @Override
-    public void registerMoveEvent() {
-        plugin.getServer().getPluginManager().registerEvent(PlayerMoveEvent.class,
-                this,
-                getEventPriority(),
-                new EventExecutor() {
-                    public void execute(Listener listener, Event event) throws EventException {
-                        try {
-                            org.morganm.homespawnplus.server.api.events.PlayerMoveEvent apiEvent =
-                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerMoveEvent((PlayerMoveEvent) event, bukkitFactory);
-                            eventListener.playerMove(apiEvent);
-                        } catch (Throwable t) {
-                            throw new EventException(t);
-                        }
-                    }
-                },
-                plugin);
-    }
-    
     /**
      * Return event priority as defined by the admin in the config file.
      * 
@@ -197,4 +177,26 @@ public class BukkitEventDispatcher implements org.morganm.homespawnplus.server.a
                 new org.morganm.homespawnplus.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
         eventListener.playerDamage(apiEvent);
     }
+
+    /* Not needed, not used outside of WorldGuard module which will register
+     * the event natively if needed.
+    @Override
+    public void registerMoveEvent() {
+        plugin.getServer().getPluginManager().registerEvent(PlayerMoveEvent.class,
+                this,
+                getEventPriority(),
+                new EventExecutor() {
+                    public void execute(Listener listener, Event event) throws EventException {
+                        try {
+                            org.morganm.homespawnplus.server.api.events.PlayerMoveEvent apiEvent =
+                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerMoveEvent((PlayerMoveEvent) event, bukkitFactory);
+                            eventListener.playerMove(apiEvent);
+                        } catch (Throwable t) {
+                            throw new EventException(t);
+                        }
+                    }
+                },
+                plugin);
+    }
+    */
 }

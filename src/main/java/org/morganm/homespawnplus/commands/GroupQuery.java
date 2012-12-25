@@ -39,9 +39,9 @@ import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.OfflinePlayer;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.util.SpawnUtil;
-import org.morganm.mBukkitLib.PermissionSystem;
 
 /** Command to return the group HSP thinks a player is in, based on the underlying
  * Permission system in use.
@@ -102,7 +102,7 @@ public class GroupQuery extends BaseCommand {
 		String group = permSystem.getPlayerGroup(playerWorld, playerName);
 		sender.sendMessage("Player "+playerName+" is in group \""+group+"\" on "+playerWorld
 				+ (playerOffline ? " [player offline]" : "")
-				+ " (using perms "+permSystem.getSystemInUseString()+")");
+				+ " (using perms "+permSystem.getSystemInUse()+")");
 		return true;
 	}
 }

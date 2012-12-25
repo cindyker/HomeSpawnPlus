@@ -34,8 +34,9 @@
 package org.morganm.homespawnplus.integration.dynmap;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.entity.Home;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
+import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 
 /**
  * @author morganm
@@ -51,7 +52,11 @@ public class HomeNamedLocation implements NamedLocation {
 
 	@Override
 	public Location getLocation() {
-		return home.getLocation();
+	    org.morganm.homespawnplus.server.api.Location homeLocation = home.getLocation();
+	    if( homeLocation instanceof BukkitLocation )
+	        return ((BukkitLocation) homeLocation).getBukkitLocation();
+	    else
+	        return null;
 	}
 
 	/** Home "names" on the map are just the player name.
@@ -78,9 +83,9 @@ public class HomeNamedLocation implements NamedLocation {
 	public boolean isEnabled(ConfigurationSection section) {
 		if( home.isDefaultHome() )
 			return true;
-		if( home.isBedHome() && section.getBoolean("include-bed-home", true) )
+		if( home.isBedHome() && section.getBoolean("include-bed-home") )
 			return true;
-		if( section.getBoolean("include-named-homes", true) )
+		if( section.getBoolean("include-named-homes") )
 			return true;
 
 		// if it hasn't been true yet, then we're not supposed to show it

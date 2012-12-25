@@ -34,7 +34,6 @@
 package org.morganm.homespawnplus.integration.multiverse;
 
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +51,10 @@ import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 public class MultiverseListener implements Listener {
     private static final Logger log = LoggerFactory.getLogger(MultiverseListener.class);
     
-	final Plugin plugin;
-	final MultiverseSafeTeleporter teleporter;
+	private final MultiverseModule multiverseModule;
 	
-	public MultiverseListener(final Plugin plugin, final MultiverseSafeTeleporter teleporter) {
-		this.plugin = plugin;
-		this.teleporter = teleporter;
+	public MultiverseListener(final MultiverseModule multiverseModule) {
+		this.multiverseModule = multiverseModule;
 	}
 	
 	public void onMultiverseTeleport(MVTeleportEvent event) {
@@ -65,7 +62,7 @@ public class MultiverseListener implements Listener {
 			return;
 		
 		log.debug("onMultiverseTeleport(): setting entity to {}",event.getTeleportee());
-		plugin.getMultiverseIntegration().setCurrentTeleporter(event.getTeleportee().getName());
+		multiverseModule.setCurrentTeleporter(event.getTeleportee().getName());
 	}
 	
 	public void onMultiversePortalEvent(MVPortalEvent event) {
@@ -75,12 +72,12 @@ public class MultiverseListener implements Listener {
 		log.debug("onMultiversePortalEvent(): setting entity to {}",event.getTeleportee());
 		MVPortal portal = event.getSendingPortal();
 		if( portal != null )
-			plugin.getMultiverseIntegration().setSourcePortalName(portal.getName());
+			multiverseModule.setSourcePortalName(portal.getName());
 		
 		MVDestination destination = event.getDestination();
 		if( destination != null && destination instanceof PortalDestination ) {
 			PortalDestination portalDestination = (PortalDestination) destination;
-			plugin.getMultiverseIntegration().setDestinationPortalName(portalDestination.getName());
+			multiverseModule.setDestinationPortalName(portalDestination.getName());
 		}
 	}
 }

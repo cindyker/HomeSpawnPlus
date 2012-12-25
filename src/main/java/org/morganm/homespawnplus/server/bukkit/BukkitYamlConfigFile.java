@@ -6,6 +6,7 @@ package org.morganm.homespawnplus.server.bukkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -52,11 +53,37 @@ public class BukkitYamlConfigFile implements YamlFile {
 
     @Override
     public void load(File file) throws FileNotFoundException, IOException, ConfigException {
+        log.debug("loading yaml file {}, name = {}", file, file.getName());
         try {
             yaml.load(file);
         }
         catch(InvalidConfigurationException e) {
             throw new ConfigException(e);
+        }
+        
+        // load defaults if possible, if not, ignore any errors
+        String fileName = "config/" + file.getName();
+
+        // try file path with prefix, ie. "config/core.yml"
+        log.debug("loading defaults for file {}", fileName);
+        InputStream defConfigStream = plugin.getResource(fileName);
+        if( defConfigStream != null ) {
+            YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defConfigStream);
+            yaml.addDefaults(defaults);
+            log.debug("defaults loaded for file {}", file);
+        }
+        // if that doesn't work, try file path alone, ie. "core.yml"
+        else {
+            fileName = file.getName();
+
+            // try last two part of file path, ie. "core.yml"
+            log.debug("loading defaults for file {}", fileName);
+            defConfigStream = plugin.getResource(fileName);
+            if( defConfigStream != null ) {
+                YamlConfiguration defaults = YamlConfiguration.loadConfiguration(defConfigStream);
+                yaml.addDefaults(defaults);
+                log.debug("defaults loaded for file {}", file);
+            }
         }
     }
 

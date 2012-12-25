@@ -37,35 +37,34 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.bukkit.Bukkit;
-import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardInterface;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
-import org.morganm.homespawnplus.server.api.Plugin;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.TeleportOptions;
 import org.morganm.homespawnplus.server.api.World;
-import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.util.SpawnUtil;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /** Spawn at a random point inside of a named region.
  * 
+ * Bukkit/WorldGuard-specific strategy, currently will not run on any
+ * server other than Bukkit.
+ * 
  * @author morganm
  *
  */
 @OneArgStrategy
 public class SpawnRegionRandom extends BaseStrategy {
-    @Inject private WorldGuardIntegration worldGuard;
+    @Inject private WorldGuardModule worldGuard;
     @Inject private Teleport teleport;
     @Inject private Server server;
     @Inject private Factory factory;
@@ -140,8 +139,7 @@ public class SpawnRegionRandom extends BaseStrategy {
 	
 	@Override
 	public void validate() throws StrategyException {
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-		if( p == null )
+        if( !worldGuard.isEnabled() )
 			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
 		else {
 			wgInterface = worldGuard.getWorldGuardInterface();

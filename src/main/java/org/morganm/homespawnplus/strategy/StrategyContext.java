@@ -38,8 +38,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.integration.multiverse.MultiverseIntegration;
-import org.morganm.homespawnplus.integration.worldguard.WorldGuardIntegration;
+import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
+import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Player;
@@ -64,8 +64,8 @@ public class StrategyContext {
     
 	private final static ModeStrategy defaultMode = new ModeDefault();
 	private final Factory factory;
-    private final MultiverseIntegration multiVerse;
-    private final WorldGuardIntegration worldGuard;
+    private final MultiverseModule multiVerse;
+    private final WorldGuardModule worldGuard;
 	
 	private String eventType;
 	private Player player;
@@ -83,7 +83,7 @@ public class StrategyContext {
 	private List<ModeStrategy> currentModes;
 	
 	@Inject
-	public StrategyContext(Factory factory, MultiverseIntegration multiVerse, WorldGuardIntegration worldGuard) {
+	public StrategyContext(Factory factory, MultiverseModule multiVerse, WorldGuardModule worldGuard) {
 	    this.factory = factory;
 	    this.multiVerse = multiVerse;
 	    this.worldGuard = worldGuard;

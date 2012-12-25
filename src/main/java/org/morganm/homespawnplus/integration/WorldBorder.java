@@ -33,26 +33,55 @@
  */
 package org.morganm.homespawnplus.integration;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.OldHSP;
+import org.morganm.homespawnplus.Initializable;
 
 /**
  * @author morganm
  *
  */
-public class WorldBorder {
-	@SuppressWarnings("unused")
-	private final OldHSP plugin;
+@Singleton
+public class WorldBorder implements Initializable {
+	private final Plugin plugin;
 	private com.wimbli.WorldBorder.WorldBorder worldBorder;
 	
-	public WorldBorder(OldHSP plugin) {
+	@Inject
+	public WorldBorder(Plugin plugin) {
 		this.plugin = plugin;
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
-		if( p != null )
-			worldBorder = (com.wimbli.WorldBorder.WorldBorder) p;
+	}
+
+    @Override
+    public void init() throws Exception {
+        Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
+        if( p != null )
+            worldBorder = (com.wimbli.WorldBorder.WorldBorder) p;
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        worldBorder = null;
+    }
+
+    @Override
+    public int getInitPriority() {
+        return 9;
+    }
+
+	public boolean isEnabled() {
+	    return worldBorder != null;
+	}
+	
+	public String getVersion() {
+	    if( worldBorder != null )
+	        return worldBorder.getDescription().getVersion();
+	    else
+	        return null;
 	}
 
 	// TODO: finish me

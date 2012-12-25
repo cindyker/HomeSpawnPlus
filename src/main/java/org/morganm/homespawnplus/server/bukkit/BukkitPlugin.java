@@ -4,6 +4,7 @@
 package org.morganm.homespawnplus.server.bukkit;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -59,5 +60,10 @@ public class BukkitPlugin implements Plugin
         if( buildNumber == -1 )
             buildNumber = jarUtil.getBuildNumber();
         return buildNumber;
+    }
+    
+    @Override
+    public InputStream getResource(String filename) {
+        return plugin.getResource(filename);
     }
 }

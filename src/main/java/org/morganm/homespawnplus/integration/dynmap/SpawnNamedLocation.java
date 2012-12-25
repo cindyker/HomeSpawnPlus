@@ -34,8 +34,9 @@
 package org.morganm.homespawnplus.integration.dynmap;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
+import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 
 /**
  * @author morganm
@@ -51,7 +52,11 @@ public class SpawnNamedLocation implements NamedLocation {
 
 	@Override
 	public Location getLocation() {
-		return spawn.getLocation();
+        org.morganm.homespawnplus.server.api.Location spawnLocation = spawn.getLocation();
+        if( spawnLocation instanceof BukkitLocation )
+            return ((BukkitLocation) spawnLocation).getBukkitLocation();
+        else
+            return null;
 	}
 
 	@Override
@@ -71,11 +76,15 @@ public class SpawnNamedLocation implements NamedLocation {
 		return null;
 	}
 	
-	/** No flags exist (yet) to control visibility of spawns; if spawns
-	 * are enabled, all of them will be shown.
-	 */
 	@Override
 	public boolean isEnabled(ConfigurationSection section) {
-		return true;
+        if( spawn.isDefaultSpawn() )
+            return true;
+
+        if( section.getBoolean("include-named-spawns") )
+            return true;
+
+        // if it hasn't been true yet, then we're not supposed to show it
+        return false;
 	}
 }

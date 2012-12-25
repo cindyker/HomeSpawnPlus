@@ -3,7 +3,6 @@
  */
 package org.morganm.homespawnplus.server.bukkit;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -26,7 +25,6 @@ public class BukkitEconomy extends EconomyAbstractImpl implements Initializable 
 
     private net.milkbowl.vault.economy.Economy vaultEconomy;
     
-    @Inject
     public BukkitEconomy() {
     }
     

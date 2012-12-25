@@ -11,8 +11,8 @@ import javax.inject.Singleton;
 import org.morganm.homespawnplus.command.Command;
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.CommandSender;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.mBukkitLib.PermissionSystem;
 
 
 /** All HSP Permissions are defined here.
@@ -21,7 +21,7 @@ import org.morganm.mBukkitLib.PermissionSystem;
  *
  */
 @Singleton
-public class Permissions implements Initializable {
+public class Permissions {
     /**
      * The base permission prefix - all HSP permissions start with this prefix. 
      */
@@ -36,20 +36,6 @@ public class Permissions implements Initializable {
         this.configCore = configCore;
     }
     
-
-    @Override
-    public void init() throws Exception {
-        permSystem.setupPermissions();
-    }
-
-    @Override
-    public void shutdown() throws Exception {}
-    
-    @Override
-    public int getInitPriority() {
-        return 6;
-    }
-
     /**
      * Determine if a sender has a given permission.
      * 
@@ -65,7 +51,7 @@ public class Permissions implements Initializable {
      * @return
      */
     public boolean hasPermission(CommandSender sender, String perm) {
-        boolean result = permSystem.has(sender.getName(), perm);
+        boolean result = permSystem.has(sender, perm);
 
         // support legacy HSP "defaultPermissions" setting
         if( !result ) {

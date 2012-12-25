@@ -31,4 +31,7 @@ public class BukkitCommandSender implements CommandSender {
         return bukkitSender.getName();
     }
 
+    public org.bukkit.command.CommandSender getBukkitSender() {
+        return bukkitSender;
+    }
 }

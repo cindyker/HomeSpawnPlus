@@ -39,7 +39,7 @@ import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.mBukkitLib.PermissionSystem;
+import org.morganm.homespawnplus.server.api.PermissionSystem;
 
 /**
  * @author morganm
@@ -98,7 +98,7 @@ public class PermCheck extends BaseCommand {
 				"permission", permission,
 				"player", playerName,
 				"world", world,
-				"system", permSystem.getSystemInUseString());
+				"system", permSystem.getSystemInUse());
 		
 		return true;
 	}

@@ -31,18 +31,18 @@
 package org.morganm.homespawnplus.integration.dynmap;
 
 import org.bukkit.Server;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.MarkerAPI;
+import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.config.ConfigDynmap;
-import org.morganm.homespawnplus.config.old.ConfigOptions;
+import org.morganm.homespawnplus.server.api.ConfigurationSection;
+import org.morganm.homespawnplus.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +52,12 @@ import org.slf4j.LoggerFactory;
  * @author morganm
  *
  */
-public class DynmapModule {
+public class DynmapModule implements Initializable {
     private final Logger log = LoggerFactory.getLogger(DynmapModule.class);
 
     private final ConfigDynmap config;
-//    private final OldHSP plugin;
+    private final Plugin plugin;
+    private final Storage storage;
     private Plugin dynmap;
     private DynmapAPI api;
     private MarkerAPI markerapi;
@@ -72,14 +73,28 @@ public class DynmapModule {
     private long updperiod;
     private MarkerUpdate markerUpdateObject = null;
     
-    public DynmapModule(ConfigDynmap config) {
+    public DynmapModule(Plugin bukkitPlugin, ConfigDynmap config, Storage storage) {
+        this.plugin = bukkitPlugin;
     	this.config = config;
+    	this.storage = storage;
+    }
+    
+    public boolean isEnabled() {
+        return config.isEnabled() && dynmap != null;
+    }
+    
+    public String getVersion() {
+        if( dynmap != null )
+            return dynmap.getDescription().getVersion();
+        else
+            return null;
     }
 
     /** Previously "onEnable" in CommandBook version. Since this is being coded as an integrated
      * piece of HSP, we change it to an init() method to be invoked by HSP directly.
      * 
      */
+    @Override
     public void init() {
     	// don't do anything if we're not supposed to
     	if( !config.isEnabled() )
@@ -103,6 +118,24 @@ public class DynmapModule {
             activate();
     }
 
+    @Override
+    public void shutdown() throws Exception {
+        if(homelayer != null) {
+            homelayer.stop();
+            homelayer = null;
+        }
+        if(spawnLayer != null) {
+            spawnLayer.stop();
+            spawnLayer = null;
+        }
+        stop = true;
+    }
+
+    @Override
+    public int getInitPriority() {
+        return 9;
+    }
+
     private void activate() {
     	// do nothing if we've already activated
     	if( activated )
@@ -116,21 +149,21 @@ public class DynmapModule {
         }
         
         /* Determine update period */
-        double per = plugin.getConfig().getDouble(ConfigOptions.DYNMAP_INTEGRATION_UPDATE_PERIOD, 5.0);
+        double per = config.getUpdatePeriod();
         if(per < 2.0) per = 2.0;
         updperiod = (long)(per*20.0);
 
         /* Check which is enabled */
-        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_HOMES_ENABLED, true)) {
-            HomeLocationManager mgr = new HomeLocationManager(plugin);
-            ConfigurationSection cfg = plugin.getConfig().getConfigurationSection(ConfigOptions.DYNMAP_INTEGRATION_HOMES);
+        if( config.isHomesEnabled() ) {
+            HomeLocationManager mgr = new HomeLocationManager(storage);
+            ConfigurationSection cfg = config.getHomesConfig();
             /* Now, add marker set for homes */
             homelayer = new Layer(this, mgr, "homes", cfg, "Homes", "house", "%name%(home)", updperiod);
         }
         
-        if(plugin.getConfig().getBoolean(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS_ENABLED, true)) {
-            SpawnLocationManager mgr = new SpawnLocationManager(plugin);
-        	ConfigurationSection cfg = plugin.getConfig().getConfigurationSection(ConfigOptions.DYNMAP_INTEGRATION_SPAWNS);
+        if( config.isSpawnsEnabled() ) {
+            SpawnLocationManager mgr = new SpawnLocationManager(storage);
+            ConfigurationSection cfg = config.getSpawnsConfig();
         	log.debug("spawn cfg={}",cfg);
 	        /* Now, add marker set for spawns */
 	        spawnLayer = new Layer(this, mgr, "spawns", cfg, "Spawns", "spawn", "%name%", updperiod);
@@ -142,18 +175,6 @@ public class DynmapModule {
         
         info("dynmap integration is activated");
         activated = true;
-    }
-
-    public void onDisable() {
-        if(homelayer != null) {
-            homelayer.stop();
-            homelayer = null;
-        }
-        if(spawnLayer != null) {
-            spawnLayer.stop();
-            spawnLayer = null;
-        }
-        stop = true;
     }
 
     private class OurServerListener implements Listener {
@@ -198,11 +219,10 @@ public class DynmapModule {
     public Server getServer() {
     	return plugin.getServer();
     }
-    public JavaPlugin getPlugin() {
+    public Plugin getPlugin() {
     	return plugin;
     }
     public MarkerAPI getMarkerAPI() {
     	return markerapi;
     }
-
 }

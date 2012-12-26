@@ -33,6 +33,8 @@
  */
 package org.morganm.homespawnplus.strategies;
 
+import javax.inject.Inject;
+
 import org.morganm.homespawnplus.strategy.ModeStrategy;
 import org.morganm.homespawnplus.strategy.OneArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyException;
@@ -48,6 +50,7 @@ public class ModeYBounds extends ModeStrategy {
 	private int minY = 1;
 	private int maxY = 255;
 
+	@Inject
 	public ModeYBounds(String arg) {
 		this.arg = arg;
 	}

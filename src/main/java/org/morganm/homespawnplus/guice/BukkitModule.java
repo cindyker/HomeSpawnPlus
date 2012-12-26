@@ -7,9 +7,9 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.config.ConfigDynmap;
-import org.morganm.homespawnplus.integration.WorldBorder;
 import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
 import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
+import org.morganm.homespawnplus.integration.worldborder.WorldBorderModule;
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.Economy;
 import org.morganm.homespawnplus.server.api.Factory;
@@ -127,7 +127,7 @@ public class BukkitModule extends AbstractModule {
     ///////////////
     private BukkitEconomy economy;
     private DynmapModule dynmap;
-    private WorldBorder worldBorder;
+    private WorldBorderModule worldBorder;
     private MultiverseModule multiverse;
     private WorldGuardModule worldGuard;
     
@@ -151,9 +151,9 @@ public class BukkitModule extends AbstractModule {
     }
     
     @Provides
-    protected WorldBorder getWorldBorder() {
+    protected WorldBorderModule getWorldBorder() {
         if( worldBorder == null )
-            worldBorder = new WorldBorder(plugin);
+            worldBorder = new WorldBorderModule(plugin);
         return worldBorder;
     }
     

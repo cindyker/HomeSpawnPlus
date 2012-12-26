@@ -31,47 +31,32 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.integration;
+package org.morganm.homespawnplus.integration.worldborder;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.morganm.homespawnplus.Initializable;
+import org.morganm.homespawnplus.integration.worldborder.WorldBorderModule.BorderData;
 
 /**
  * @author morganm
  *
  */
 @Singleton
-public class WorldBorder implements Initializable {
+public class WorldBorderIntegration {
 	private final Plugin plugin;
 	private com.wimbli.WorldBorder.WorldBorder worldBorder;
 	
-	@Inject
-	public WorldBorder(Plugin plugin) {
+	public WorldBorderIntegration(Plugin plugin) {
 		this.plugin = plugin;
 	}
-
-    @Override
-    public void init() throws Exception {
+	
+	public void init() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
         if( p != null )
             worldBorder = (com.wimbli.WorldBorder.WorldBorder) p;
-    }
-
-    @Override
-    public void shutdown() throws Exception {
-        worldBorder = null;
-    }
-
-    @Override
-    public int getInitPriority() {
-        return 9;
-    }
+	}
 
 	public boolean isEnabled() {
 	    return worldBorder != null;
@@ -87,6 +72,8 @@ public class WorldBorder implements Initializable {
 	// TODO: finish me
 	public BorderData getBorderData(String worldName) {
 		if( worldBorder != null ) {
+            com.wimbli.WorldBorder.BorderData border = worldBorder.GetWorldBorder(worldName);
+            return new BorderDataImpl(border);
 //			com.wimbli.WorldBorder.BorderData border = worldBorder.GetWorldBorder(worldName);
 //			double x = border.getX();
 //			double z = border.getZ();
@@ -94,31 +81,29 @@ public class WorldBorder implements Initializable {
 			
 //			Location min = new Location(w,x-radius, yBounds.minY, z-radius);
 //			Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
-			
-			return null;
 		}
 		else
-			return defaultBorderData(worldName);
+			return null;
 	}
 	
-	private BorderData defaultBorderData(String worldName) {
-		World world = Bukkit.getWorld(worldName);
-		return new BorderData(new Location(world,1000,0,1000), new Location(world,-1000,0,-1000));
-	}
+//	private BorderData defaultBorderData(String worldName) {
+//		World world = Bukkit.getWorld(worldName);
+//		return new BorderDataImpl(new Location(world,1000,0,1000), new Location(world,-1000,0,-1000));
+//	}
 
-	static public class BorderData
+	public static class BorderDataImpl implements BorderData
 	{
 		private com.wimbli.WorldBorder.BorderData worldBorderData;
-		private Location corner1;
-		private Location corner2;
+//		private Location corner1;
+//		private Location corner2;
 		
-		public BorderData(com.wimbli.WorldBorder.BorderData worldBorderData) {
+		public BorderDataImpl(com.wimbli.WorldBorder.BorderData worldBorderData) {
 			this.worldBorderData = worldBorderData;
 		}
-		public BorderData(Location corner1, Location corner2) {
-			this.corner1 = corner1;
-			this.corner2 = corner2;
-		}
+//		public BorderDataImpl(Location corner1, Location corner2) {
+//			this.corner1 = corner1;
+//			this.corner2 = corner2;
+//		}
 		
 		public boolean insideBorder(Location l) {
 			if( worldBorderData != null )
@@ -127,7 +112,17 @@ public class WorldBorder implements Initializable {
 				return true;
 		}
 		
-		public Location getCorner1() { return corner1; }
-		public Location getCorner2() { return corner2; }
+		public double getX() {
+		    return worldBorderData.getX();
+		}
+        public double getZ() {
+            return worldBorderData.getZ();
+        }
+        public int getRadius() {
+            return worldBorderData.getRadius();
+        }
+		
+//		public Location getCorner1() { return corner1; }
+//		public Location getCorner2() { return corner2; }
 	}
 }

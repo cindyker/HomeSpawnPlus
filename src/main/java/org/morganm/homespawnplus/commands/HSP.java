@@ -41,9 +41,9 @@ import javax.inject.Inject;
 import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.Initializer;
 import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.integration.WorldBorder;
 import org.morganm.homespawnplus.integration.dynmap.DynmapModule;
 import org.morganm.homespawnplus.integration.multiverse.MultiverseModule;
+import org.morganm.homespawnplus.integration.worldborder.WorldBorderModule;
 import org.morganm.homespawnplus.integration.worldguard.WorldGuardModule;
 import org.morganm.homespawnplus.server.api.CommandSender;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -57,7 +57,7 @@ public class HSP extends BaseCommand {
     @Inject Initializer initializer;
     @Inject MultiverseModule multiverse;
     @Inject DynmapModule dynmap;
-    @Inject WorldBorder worldBorder;
+    @Inject WorldBorderModule worldBorder;
     @Inject WorldGuardModule worldGuard;
     private File backupFile;
     

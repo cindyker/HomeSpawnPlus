@@ -11,8 +11,12 @@ import org.morganm.homespawnplus.server.api.event.EventListener;
 import org.morganm.homespawnplus.server.api.impl.TeleportOptionsImpl;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageFactory;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.storage.dao.PlayerDAO;
+import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
+import org.morganm.homespawnplus.strategy.StrategyConfig;
+import org.morganm.homespawnplus.strategy.StrategyConfigImpl;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyEngineImpl;
 import org.morganm.homespawnplus.strategy.StrategyResultFactory;
@@ -58,6 +62,8 @@ public class HSPModule extends AbstractModule {
             .to(TeleportOptionsImpl.class);
         bind(StrategyEngine.class)
             .to(StrategyEngineImpl.class);
+        bind(StrategyConfig.class)
+            .to(StrategyConfigImpl.class);
         
 //        bind(Storage.class)
 //            .toProvider(StorageProvider.class);
@@ -93,5 +99,17 @@ public class HSPModule extends AbstractModule {
     @Singleton
     protected PlayerDAO providePlayerDAO(Storage storage) {
         return storage.getPlayerDAO();
+    }
+
+    @Provides
+    @Singleton
+    protected PlayerSpawnDAO providePlayerSpawnDAO(Storage storage) {
+        return storage.getPlayerSpawnDAO();
+    }
+
+    @Provides
+    @Singleton
+    protected HomeDAO provideHomeDAO(Storage storage) {
+        return storage.getHomeDAO();
     }
 }

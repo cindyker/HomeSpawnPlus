@@ -142,9 +142,9 @@ public class StrategyFactory implements Initializable {
 			throws StrategyException
 	{
 		try {
-            Strategy strategy = injector.getInstance(clazz);
-//			Strategy strategy = clazz.newInstance();
-//            injector.injectMembers(strategy);
+//            Strategy strategy = injector.getInstance(clazz);
+			Strategy strategy = clazz.newInstance();
+            injector.injectMembers(strategy);
 			strategy.validate();
 			return strategy;
 		}
@@ -152,7 +152,7 @@ public class StrategyFactory implements Initializable {
 			throw e;	// just re-throw
 		}
 		catch(Exception e) {
-			throw new StrategyException("Error instantiating new 0-arg strategy instance", e);
+			throw new StrategyException("Error instantiating new 0-arg strategy instance for class "+clazz, e);
 		}
 	}
 	
@@ -160,10 +160,10 @@ public class StrategyFactory implements Initializable {
 			throws StrategyException
 	{
 		try {
-		    Strategy strategy = injector.getInstance(clazz);
-//			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
-//			Strategy strategy = constructor.newInstance(arg);
-//			injector.injectMembers(strategy);
+//		    Strategy strategy = injector.getInstance(clazz);
+			Constructor<? extends Strategy> constructor = clazz.getConstructor(String.class);
+			Strategy strategy = constructor.newInstance(arg);
+			injector.injectMembers(strategy);
 			
 			strategy.validate();
 			
@@ -173,7 +173,7 @@ public class StrategyFactory implements Initializable {
 			throw e;	// just re-throw
 		}
 		catch(Exception e) {
-			throw new StrategyException("Error instantiating new 1-arg strategy instance", e);
+			throw new StrategyException("Error instantiating new 1-arg strategy instance for class "+clazz, e);
 		}
 	}
 

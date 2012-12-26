@@ -41,6 +41,7 @@ import org.morganm.homespawnplus.server.bukkit.BukkitLocation;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
 import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
+import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
 /** Spawn inside the WorldGuard region using the WorldGuard flag.
@@ -67,6 +68,12 @@ public class SpawnWorldGuardRegion extends BaseStrategy {
 
 		org.bukkit.Location bukkitLocation = wgInterface.getWorldGuardSpawnLocation(context.getPlayer());
 		return new StrategyResult( new BukkitLocation(bukkitLocation) );
+	}
+	
+	@Override
+	public void validate() throws StrategyException {
+        if( !worldGuard.isEnabled() )
+            throw new StrategyException("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
 	}
 
 	@Override

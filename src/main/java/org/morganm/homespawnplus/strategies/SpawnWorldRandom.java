@@ -35,6 +35,8 @@ package org.morganm.homespawnplus.strategies;
 
 import javax.inject.Inject;
 
+import org.morganm.homespawnplus.integration.worldborder.WorldBorderModule;
+import org.morganm.homespawnplus.integration.worldborder.WorldBorderModule.BorderData;
 import org.morganm.homespawnplus.server.api.Factory;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.server.api.Server;
@@ -49,9 +51,6 @@ import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyException;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 
-import com.wimbli.WorldBorder.BorderData;
-import com.wimbli.WorldBorder.WorldBorder;
-
 /** Spawn at a completely random spot on the local world, obeying WorldBorder
  * limits, if any.
  * 
@@ -61,7 +60,7 @@ import com.wimbli.WorldBorder.WorldBorder;
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnWorldRandom extends BaseStrategy {
-    @Inject private WorldBorder worldBorder;
+    @Inject private WorldBorderModule worldBorder;
     @Inject private Server server;
     @Inject private Factory factory;
     @Inject private Teleport teleport;
@@ -99,7 +98,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 		
 		Location result = null;
         if( worldBorder.isEnabled() ) {
-			BorderData border = worldBorder.GetWorldBorder(w.getName());
+			BorderData border = worldBorder.getBorderData(w.getName());
 			
 			double x = border.getX();
 			double z = border.getZ();

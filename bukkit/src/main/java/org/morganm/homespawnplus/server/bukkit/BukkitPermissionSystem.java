@@ -19,7 +19,7 @@ import org.morganm.homespawnplus.server.api.PermissionSystem;
 public class BukkitPermissionSystem implements PermissionSystem, Initializable {
     private final Plugin plugin;
 
-    private com.andune.minecraft.commonlibommonlib.PermissionSystem permSystem;
+    private com.andune.minecraft.commonlib.PermissionSystem permSystem;
 
     @Inject
     public BukkitPermissionSystem(Plugin plugin) {
@@ -43,7 +43,7 @@ public class BukkitPermissionSystem implements PermissionSystem, Initializable {
 
     @Override
     public void init() throws Exception {
-        permSystecom.andune.minecraft.commonlibecraft.commonlib.PermissionSystem(plugin, plugin.getLogger());
+        permSystem = new com.andune.minecraft.commonlib.PermissionSystem(plugin, plugin.getLogger());
         permSystem.setupPermissions();
     }
 

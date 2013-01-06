@@ -14,7 +14,8 @@ public interface ConfigStorage {
         CACHED_EBEANS,      // NOT USED
         YAML,
         YAML_SINGLE_FILE,
-        PERSISTANCE_REIMPLEMENTED_EBEANS;
+        PERSISTANCE_REIMPLEMENTED_EBEANS,
+        UNKNOWN;
     };
     
     public Type getStorageType();

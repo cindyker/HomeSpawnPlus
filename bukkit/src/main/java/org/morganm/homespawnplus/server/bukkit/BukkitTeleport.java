@@ -26,11 +26,11 @@ public class BukkitTeleport implements Teleport {
     private static final Logger log = LoggerFactory.getLogger(BukkitTeleport.class);
     
     private final Random random = new Random(System.currentTimeMillis());
-    private com.andune.minecraft.commonlibommonlib.Teleport teleportUtil;
+    private com.andune.minecraft.commonlib.Teleport teleportUtil;
     private Factory factory;
     
     @Inject
-    public BukkitTcom.andune.minecraft.commonlibecraft.commonlib.Teleport teleportUtil, Factory factory) {
+    public BukkitTeleport(com.andune.minecraft.commonlib.Teleport teleportUtil, Factory factory) {
         this.teleportUtil = teleportUtil;
         this.factory = factory;
     }
@@ -78,12 +78,13 @@ public class BukkitTeleport implements Teleport {
     private int getFlags(TeleportOptions options) {
         int flags = 0;
 
-        if( options.isNoTcom.andune.minecraft.commonlib         flags |= com.andune.minecraft.commonlib.Teleport.FLAG_NO_ICE;
-        if( options.com.andune.minecraft.commonlib() )
+        if( options.isNoTeleportOverIce() )
+            flags |= com.andune.minecraft.commonlib.Teleport.FLAG_NO_ICE;
+        if( options.isNoTeleportOverLeaves() )
             flags |= com.andune.minecraft.commonlib.Teleport.FLAG_NO_LEAVES;
-        if( ocom.andune.minecraft.commonlibrLilyPad() )
+        if( options.isNoTeleportOverLilyPad() )
             flags |= com.andune.minecraft.commonlib.Teleport.FLAG_NO_LILY_PAD;
-   com.andune.minecraft.commonlibeleportOverWater() )
+        if( options.isNoTeleportOverWater() )
             flags |= com.andune.minecraft.commonlib.Teleport.FLAG_NO_WATER;
         
         return flags;

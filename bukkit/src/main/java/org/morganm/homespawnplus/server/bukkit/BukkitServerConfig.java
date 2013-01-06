@@ -8,8 +8,8 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.config.ConfigCore;
 import org.morganm.homespawnplus.server.api.ServerConfig;
-nimport com.andune.minecraft.commonlib.i18n.Colors;
-.Colors;
+
+import com.andune.minecraft.commonlib.i18n.Colors;
 
 /**
  * @author morganm

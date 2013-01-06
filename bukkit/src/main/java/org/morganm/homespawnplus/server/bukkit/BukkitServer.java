@@ -25,11 +25,10 @@ import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.server.api.Server;
 import org.morganm.homespawnplus.server.api.Teleport;
 import org.morganm.homespawnplus.server.api.World;
-oggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.andune.minecraft.commonlib.i18n
 import com.andune.minecraft.commonlib.i18n.Locale;
-.Locale;
 
 /**
  * @author morganm

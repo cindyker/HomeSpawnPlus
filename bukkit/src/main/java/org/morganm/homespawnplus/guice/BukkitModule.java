@@ -33,12 +33,15 @@ import org.morganm.homespawnplus.server.bukkit.BukkitTeleport;
 import org.morganm.homespawnplus.server.bukkit.BukkitYamlConfigFile;
 import org.morganm.homespawnplus.server.bukkit.HSPBukkit;
 import org.morganm.homespawnplus.server.bukkit.command.BukkitCommandConfig;
+import org.morganm.homespawnplus.storage.BukkitStorageFactory;
 import org.morganm.homespawnplus.storage.Storage;
+import org.morganm.homespawnplus.storage.StorageFactory;
 import org.morganm.homespawnplus.strategy.StrategyEngine;
-aft.commonlib.JarUtils;
-import com.andune.minecraft.commonimport com.andune.minecraft.commonlib.JarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.LoggerImpl;
-lib.LoggerImpl;
 import com.avaje.ebean.EbeanServer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -85,10 +88,12 @@ public class BukkitModule extends AbstractModule {
         
         bind(EbeanServer.class)
             .toInstance(plugin.getDatabase());
+        bind(StorageFactory.class)
+            .to(BukkitStorageFactory.class);
         
         bind(YamlFile.class)
             .to(BukkitYamlConfigFile.class);
-      com.andune.minecraft.commonlibdune.minecraft.commonlib.Logger.class)
+        bind(com.andune.minecraft.commonlib.Logger.class)
             .to(LoggerImpl.class);
     }
 

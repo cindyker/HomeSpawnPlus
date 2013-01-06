@@ -10,8 +10,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.server.api.Plugin;
-Jimport com.andune.minecraft.commonlib.JarUtils;
-arUtils;
+
+import com.andune.minecraft.commonlib.JarUtils;
 
 /** 
  * 

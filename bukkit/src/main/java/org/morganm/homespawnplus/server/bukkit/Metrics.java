@@ -59,8 +59,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.morganm.homespawnplus.Initializable;
 import org.morganm.homespawnplus.server.api.PermissionSystem;
 import org.morganm.homespawnplus.storage.Storage;
-nimport com.andune.minecraft.commonlib.i18n.Locale;
-.Locale;
+
+import com.andune.minecraft.commonlib.i18n.Locale;
 
 /**
  * Tooling to post to metrics.griefcraft.com

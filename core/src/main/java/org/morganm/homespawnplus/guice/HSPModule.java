@@ -23,9 +23,10 @@ import org.morganm.homespawnplus.strategy.StrategyResultFactory;
 import org.morganm.homespawnplus.strategy.StrategyResultFactoryImpl;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.BedUtilsImpl;
-e.minecraft.commonlib.i18n.LocaleStriimport com.andune.minecraft.commonlib.i18n.Locale;
+import org.reflections.Reflections;
+
+import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
-ngReplacerImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -63,9 +64,6 @@ public class HSPModule extends AbstractModule {
             .to(StrategyEngineImpl.class);
         bind(StrategyConfig.class)
             .to(StrategyConfigImpl.class);
-        
-//        bind(Storage.class)
-//            .toProvider(StorageProvider.class);
     }
     
     @Provides

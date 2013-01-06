@@ -45,7 +45,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
 
 import org.morganm.homespawnplus.server.api.Location;
 
@@ -92,8 +91,8 @@ public class PlayerSpawn implements EntityWithLocation
     
     private Float pitch;
 	private Float yaw;
-	
-	@Version
+
+	@javax.persistence.Version
 	private Timestamp lastModified;
 	
 	@CreatedTimestamp
@@ -101,7 +100,7 @@ public class PlayerSpawn implements EntityWithLocation
 	
 	@ManyToOne
 	@Nullable
-	private SpawnImpl spawn;
+	private Spawn spawn;
 	
     @Transient
     private transient Location location;
@@ -116,7 +115,7 @@ public class PlayerSpawn implements EntityWithLocation
 	public Spawn getSpawn() {
 		return spawn;
 	}
-	public void setSpawn(SpawnImpl spawn) {
+	public void setSpawn(Spawn spawn) {
 		this.spawn = spawn;
 	}
 

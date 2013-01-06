@@ -38,7 +38,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.entity.HomeImpl;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.HomeUtil;
@@ -131,7 +130,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 		// TODO: 4/17/12: review of code appears that MODE_HOME_ANY implementation is not
 		// functioning here as intended. Should be fixed and validated to be working.
 		if( home == null && context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
-			Set<HomeImpl> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
+			Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
 			// just grab the first one we find
 			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();
@@ -161,7 +160,7 @@ public abstract class HomeStrategy extends BaseStrategy {
     private Home getBedHome(String playerName, String worldName) {
     	Home bedHome = null;
     	
-		Set<HomeImpl> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
+		Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
     	if( homes != null && homes.size() != 0 ) {
 	    	for(Home home : homes) {
 	    		if( home.isBedHome() ) {

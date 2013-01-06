@@ -44,8 +44,7 @@ import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.server.api.Player;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.HomeInviteDAO;
-.import com.andune.minecraft.commonlib.General;
-General;
+import com.andune.minecraft.commonlib.General;
 
 /**
  * @author morganm

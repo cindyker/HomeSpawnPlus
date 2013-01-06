@@ -30,11 +30,10 @@ import org.morganm.homespawnplus.strategy.StrategyEngine;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.BedUtils;
 import org.morganm.homespawnplus.util.SpawnUtil;
-j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.andune.minecraft.commonlib.T
 import com.andune.minecraft.commonlib.Teleport;
-eleport;
 
 /**
  * @author morganm

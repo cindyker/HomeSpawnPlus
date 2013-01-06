@@ -80,7 +80,7 @@ public class StrategyContextImpl implements StrategyContext {
 	/** As a strategy chain is being evaluated, the current mode might change. This
 	 * is tracked here in the context object.
 	 */
-	private List<ModeStrategyImpl> currentModes;
+	private List<ModeStrategy> currentModes;
 	
 	@Inject
 	public StrategyContextImpl(Factory factory, MultiverseModule multiVerse, WorldGuardModule worldGuard) {
@@ -159,14 +159,14 @@ public class StrategyContextImpl implements StrategyContext {
 	 * @see org.morganm.homespawnplus.strategy.StrategyContext#getCurrentModes()
 	 */
 	@Override
-	public List<ModeStrategyImpl> getCurrentModes() {
+	public List<ModeStrategy> getCurrentModes() {
 		return currentModes;
 	}
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.strategy.StrategyContext#addMode(org.morganm.homespawnplus.strategy.ModeStrategy)
 	 */
 	@Override
-	public void addMode(ModeStrategyImpl mode) {
+	public void addMode(ModeStrategy mode) {
         // if it's not an additive mode, then clear modes to "switch" to new mode
         if( !mode.isAdditive() )
             currentModes.clear();
@@ -180,7 +180,7 @@ public class StrategyContextImpl implements StrategyContext {
 	@Override
 	public void resetCurrentModes() {
 		if( currentModes == null )
-			currentModes = new ArrayList<ModeStrategyImpl>(2);
+			currentModes = new ArrayList<ModeStrategy>(2);
 		else
 			currentModes.clear();
 
@@ -337,7 +337,7 @@ public class StrategyContextImpl implements StrategyContext {
 	public TeleportOptions getTeleportOptions() {
         TeleportOptions options = factory.newTeleportOptions();
 
-		List<ModeStrategyImpl> modes = getCurrentModes();
+		List<ModeStrategy> modes = getCurrentModes();
 		for(ModeStrategy mode : modes) {
 		    switch(mode.getMode()) {
 		    case MODE_YBOUNDS:

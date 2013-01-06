@@ -1,415 +1,49 @@
-<!-- Maven build file for HomeSpawnPlus -->
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.morganm</groupId>
-  <artifactId>HomeSpawnPlus</artifactId>
-  <version>2.0-SNAPSHOT</version>
-  <name>HomeSpawnPlus</name>
-  <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
-  <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.morganm.homespawnplus</groupId>
+    <artifactId>HomeSpawnPlus-parent</artifactId>
+    <name>HomeSpawnPlus</name>
+    <packaging>pom</packaging>
+    <version>2.0-SNAPSHOT</version>
 
-  <scm>
-    <connection>scm:git:git://github.com/morganm/HomeSpawnPlus.git</connection>
-    <url>https://github.com/morganm/HomeSpawnPlus</url>
-    <developerConnection>scm:git:git@github.com:morganm/HomeSpawnPlus.git</developerConnection>
-  </scm>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>morganm-repo-snapshot</id>
-      <name>Morganmc nexus repository</name>
-      <url>http://morganmc.dyndns.org/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <!--
+    <ciManagement>
+        <system>jenkins</system>
+        <url>http://ci.morganmc.org</url>
+    </ciManagement>
+    -->
 
-  <repositories>
-    <repository>
-      <id>morganm-repo</id>
-      <url>http://morganmc.org/nexus/content/groups/public/</url>
-    </repository>
-    <repository>
-      <id>onarandombox</id>
-      <url>http://repo.onarandombox.com/content/groups/public</url>
-    </repository>
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public/</url>
-    </repository>
-    <repository>
-      <id>repobo-snap</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
-  </repositories>
+    <modules>
+<!--
+        <module>api</module>
+-->
+        <module>api</module>
+        <module>bukkit</module>
+        <module>core</module>
+<!--
+        <module>craftbukkit.pre1_4_5</module>
+        <module>craftbukkit.v1_4_5</module>
+        <module>craftbukkit.v1_4_6</module>
+-->
+    </modules>
 
-  <dependencies>
-    <!-- Dependency Injection (guice) -->
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-assistedinject</artifactId>
-      <version>3.0</version>
-    </dependency>
+    <build>
+        <defaultGoal>clean package</defaultGoal>
 
-    <!-- SLF4J Logging API -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-
-    <!-- Common library -->
-    <dependency>
-      <groupId>org.morganm.mBukkitLib</groupId>
-      <artifactId>mBukkitLib</artifactId>
-      <version>0.3-SNAPSHOT</version>
-    </dependency>
-
-    <!-- WorldEdit/WEPIF -->
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>worldedit</artifactId>
-      <version>5.4.5</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- WorldGuard -->
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>worldguard</artifactId>
-      <version>5.6.5</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>net.milkbowl.vault</groupId>
-      <artifactId>Vault</artifactId>
-      <version>1.2.15</version>
-    </dependency>
-
-    <!-- Bukkit -->
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.4.6-R0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.4.6-R0.1</version>
-    </dependency>
-
-    <!-- WorldBorder -->
-    <dependency>
-      <groupId>com.github.brettflan</groupId>
-      <artifactId>WorldBorder</artifactId>
-      <version>1.5.0</version>
-    </dependency>
-
-    <!-- Dynmap -->
-    <dependency>
-      <groupId>org.dynmap</groupId>
-      <artifactId>dynmap-api</artifactId>
-      <version>[0.80,)</version>
-    </dependency>
-
-    <!-- MultiVerse -->
-    <dependency>
-      <groupId>com.onarandombox.multiversecore</groupId>
-      <artifactId>Multiverse-Core</artifactId>
-      <version>2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.onarandombox.multiverseportals</groupId>
-      <artifactId>Multiverse-Portals</artifactId>
-      <version>2.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.8</version>
-    </dependency>
-
-    <!-- Start of Test Dependencies -->
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.3.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-testng</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- End of Test Dependencies -->
-  </dependencies>
-
-  <build>
-    <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-    <finalName>${project.artifactId}</finalName>
-
-    <!-- Resources -->
-    <resources>
-      <resource>
-        <targetPath>.</targetPath>
-        <directory>${basedir}/src/main/resources/</directory>
-      </resource>
-      <resource>
-        <targetPath>.</targetPath>
-        <directory>${basedir}</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>build.number</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>plugin.yml</include>
-        </includes>
-      </resource>
-    </resources>
-
-    <!-- Plugins -->
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version><!--$NO-MVN-MAN-VER$ -->
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <configuration>
-              <target>
-                <buildnumber />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Compile plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <verbose>true</verbose>
-          <fork>true</fork>
-          <source>1.6</source>
-          <target>1.6</target>
-          <compilerVersion>1.6</compilerVersion>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.7.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <outputFile>${project.build.directory}/${project.artifactId}-uber.jar</outputFile>
-              <artifactSet>
-                <includes>
-                  <include>org.reflections:reflections</include>
-                  <!-- <include>javassist:javassist</include> -->
-                  <include>dom4j:dom4j</include>
-                  <include>com.google.inject:guice</include>
-                  <include>com.google.inject.extensions:guice-assistedinject</include>
-                  <include>org.morganm.mBukkitLib:mBukkitLib</include>
-                  <include>org.slf4j:slf4j-api</include>
-                  <include>org.slf4j:slf4j-jdk14</include>
-                  <include>net.milkbowl.vault:Vault</include>
-                </includes>
-              </artifactSet>
-
-              <filters>
-                <filter>
-                  <artifact>net.milkbowl.vault:Vault</artifact>
-                  <includes>
-                    <include>net/milkbowl/vault/economy/Economy.class</include>
-                  </includes>
-                </filter>
-              </filters>
-
-              <relocations>
-                <relocation>
-                  <pattern>org.reflections</pattern>
-                  <shadedPattern>${project.groupId}.reflections</shadedPattern>
-                </relocation>
-                <!-- <relocation> <pattern>javaassist</pattern> <shadedPattern>${project.groupId}.javaassist</shadedPattern> 
-                  </relocation> -->
-                <relocation>
-                  <pattern>dom4j</pattern>
-                  <shadedPattern>${project.groupId}.dom4j</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.google.inject</pattern>
-                  <shadedPattern>${project.groupId}.guice</shadedPattern>
-                </relocation>
-              </relocations>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.reflections</groupId>
-        <artifactId>reflections-maven</artifactId>
-        <version>0.9.8</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>reflections</goal>
-            </goals>
-            <phase>process-classes</phase>
-            <configuration>
-              <includeExclude>+org\.morganm\.homespawnplus\..*</includeExclude>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- <plugin> <groupId>com.google.code.maven-replacer-plugin</groupId> 
-        <artifactId>maven-replacer-plugin</artifactId> <version>1.3.8</version> <executions> 
-        <execution> <phase>prepare-package</phase> <goals> <goal>replace</goal> </goals> 
-        </execution> </executions> <configuration> <file>target/classes/plugin.yml</file> 
-        <replacements> <replacement> <token>maven-version-number</token> <value>${project.version}-b${project.build.number}</value> 
-        </replacement> </replacements> </configuration> </plugin> -->
-
-      <!-- JAR creation plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <addMavenDescriptor>true</addMavenDescriptor>
-            <manifest>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>../lib</classpathPrefix>
-            </manifest>
-            <manifestEntries>
-              <Implementation-Build>${buildNumber}</Implementation-Build>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <!-- Assembly -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <finalName>${project.artifactId}-with-dependencies</finalName>
-          <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
-          <appendAssemblyId>false</appendAssemblyId> 
-        </configuration>
-        <executions>
-          <execution>
-            <id>release</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Release -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.3.2</version><!--$NO-MVN-MAN-VER$ -->
-        <configuration>
-          <preparationGoals>assembly:assembly</preparationGoals>
-          <goals>assembly:assembly</goals>
-          <tagNameFormat>@{project.version}</tagNameFormat>
-        </configuration>
-      </plugin>
-    </plugins>
-
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
-          only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <!-- this silences a benign eclipse error related to org.reflections -->
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.reflections</groupId>
-                    <artifactId>
-                      reflections-maven
-                    </artifactId>
-                    <versionRange>
-                      [0.9.8,)
-                    </versionRange>
-                    <goals>
-                      <goal>reflections</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

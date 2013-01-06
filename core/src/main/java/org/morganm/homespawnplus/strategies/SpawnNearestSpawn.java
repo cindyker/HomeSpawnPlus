@@ -38,7 +38,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.morganm.homespawnplus.entity.Spawn;
-import org.morganm.homespawnplus.entity.SpawnImpl;
 import org.morganm.homespawnplus.server.api.Location;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
 import org.morganm.homespawnplus.strategy.BaseStrategy;
@@ -60,7 +59,7 @@ public class SpawnNearestSpawn extends BaseStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of spawns is relatively small (ie. not in the hundreds or thousands).
-		final Set<SpawnImpl> allSpawns = spawnDAO.findAllSpawns();
+		final Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
 		final Location playerLoc = context.getEventLocation();
 		
 		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
@@ -68,7 +67,7 @@ public class SpawnNearestSpawn extends BaseStrategy {
 		final String playerWorld = playerLoc.getWorld().getName();
 		double shortestDistance = -1;
 		Spawn closestSpawn = null;
-		for(SpawnImpl theSpawn : allSpawns) {
+		for(Spawn theSpawn : allSpawns) {
 			// this fixes a bug in R5+ where non-loaded worlds apparently won't even
 			// return valid location or world objects anymore. So we check the String
 			// world values before we do anything else and skip worlds that the

@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 
 import org.morganm.homespawnplus.HSPMessages;
 import org.morganm.homespawnplus.config.ConfigCore;
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeImpl;
 import org.morganm.homespawnplus.manager.HomeLimitsManager;
 import org.morganm.homespawnplus.server.api.Location;
@@ -54,15 +55,15 @@ public class HomeUtil {
      * @param worldName
      * @return the home location or null if no home is set
      */
-    public HomeImpl getDefaultHome(String playerName, String worldName)
+    public Home getDefaultHome(String playerName, String worldName)
     {
-        HomeImpl home = storage.getHomeDAO().findDefaultHome(worldName, playerName);
+        Home home = storage.getHomeDAO().findDefaultHome(worldName, playerName);
         
         // if there is no default home defined and the LAST_HOME_IS_DEFAULT flag is
         // set, check to see if there is a single home left on the world that we can
         // assume is the default.
         if( home == null && configCore.isLastHomeDefault() ) {
-            Set<HomeImpl> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+            Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
             if( homes != null && homes.size() == 1 )
                 home = homes.iterator().next();
         }
@@ -81,7 +82,7 @@ public class HomeUtil {
      */
     public String setNamedHome(String playerName, Location l, String homeName, String updatedBy)
     {
-        HomeImpl home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
+        Home home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
         
         // could be null if we are working with an offline player
         Player p = server.getPlayer(playerName);
@@ -131,7 +132,7 @@ public class HomeUtil {
     public String setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
     {
         final HomeDAO homeDAO = storage.getHomeDAO();
-        HomeImpl home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
+        Home home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
         
         log.debug("setHome: (defaultHome) home={}",home);
         
@@ -143,9 +144,9 @@ public class HomeUtil {
             // if no bed home was found using existing bed name, check all other bed homes
             // for the bed flag
             if( home != null && !home.isBedHome() ) {
-                Set<HomeImpl> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
+                Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
                 if( homes != null ) {
-                    for(HomeImpl h : homes) {
+                    for(Home h : homes) {
                         if( h.isBedHome() ) {
                             home = h;
                             break;
@@ -236,12 +237,12 @@ public class HomeUtil {
      * @param worldName
      * @return the Home object or null if none found
      */
-    public HomeImpl getBestMatchHome(String playerName, String worldName) {
-        Set<HomeImpl> homes = storage.getHomeDAO().findAllHomes();
+    public Home getBestMatchHome(String playerName, String worldName) {
+        Set<Home> homes = storage.getHomeDAO().findAllHomes();
         
         // first find any possible homes based on the input
-        ArrayList<HomeImpl> possibles = new ArrayList<HomeImpl>();
-        for(HomeImpl home : homes) {
+        ArrayList<Home> possibles = new ArrayList<Home>();
+        for(Home home : homes) {
             String homeOwner = home.getPlayerName();
             if( worldName.equals(home.getWorld()) && homeOwner.contains(playerName) ) {
                 possibles.add(home);
@@ -253,10 +254,10 @@ public class HomeUtil {
         else if( possibles.size() == 1 )
             return possibles.get(0);
         
-        HomeImpl bestMatch = null;
+        Home bestMatch = null;
         // now find the best match out of all the possibilities.  Could have fancier algorithm later,
         // but for now it just returns the first name it finds that startswith the player input.
-        for(HomeImpl home : possibles) {
+        for(Home home : possibles) {
             String homeOwner = home.getPlayerName();
             if( homeOwner.startsWith(playerName) ) {
                 bestMatch = home;

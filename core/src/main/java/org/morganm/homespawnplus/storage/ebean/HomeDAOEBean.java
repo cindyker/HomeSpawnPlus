@@ -35,7 +35,7 @@ package org.morganm.homespawnplus.storage.ebean;
 
 import java.util.Set;
 
-import org.morganm.homespawnplus.entity.HomeImpl;
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.storage.dao.HomeDAO;
 
 import com.avaje.ebean.EbeanServer;
@@ -59,10 +59,10 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	@Override
-	public HomeImpl findHomeById(int id) {
+	public Home findHomeById(int id) {
 		String q = "find home where id = :id";
 		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+		Query<Home> query = ebean.createQuery(Home.class, q);
 		query.setParameter("id", id);
 		
 		return query.findUnique();
@@ -72,10 +72,10 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public HomeImpl findDefaultHome(String world, String playerName) {
+	public Home findDefaultHome(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
 		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+		Query<Home> query = ebean.createQuery(Home.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
@@ -86,10 +86,10 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getBedHome(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public HomeImpl findBedHome(String world, String playerName) {
+	public Home findBedHome(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world = :world and bedHome = 1";
 		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+		Query<Home> query = ebean.createQuery(Home.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
@@ -100,10 +100,10 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getNamedHome(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public HomeImpl findHomeByNameAndPlayer(String homeName, String playerName) {
+	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
 		String q = "find home where playerName = :playerName and name = :name";
 		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+		Query<Home> query = ebean.createQuery(Home.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("name", homeName);
 		
@@ -114,20 +114,20 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public Set<HomeImpl> findHomesByWorldAndPlayer(String world, String playerName) {
+	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world like :world order by world";
 		
 		if( world == null || "all".equals(world) || "*".equals(world) )
 			world = "%";
 		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+		Query<Home> query = ebean.createQuery(Home.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
 		return query.findSet();
 	}
 
-	public Set<HomeImpl> findHomesByPlayer(String playerName) {
+	public Set<Home> findHomesByPlayer(String playerName) {
 		return findHomesByWorldAndPlayer(null, playerName);
 	}
 	
@@ -135,15 +135,15 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getAllHomes()
 	 */
 	@Override
-	public Set<HomeImpl> findAllHomes() {
-		return ebean.find(HomeImpl.class).findSet();
+	public Set<Home> findAllHomes() {
+		return ebean.find(Home.class).findSet();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#writeHome(org.morganm.homespawnplus.entity.Home)
 	 */
 	@Override
-	public void saveHome(HomeImpl home) {
+	public void saveHome(Home home) {
 		final int homeId = home.getId();
 		
 		Transaction tx = ebean.beginTransaction();
@@ -182,7 +182,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	@Override
-	public void deleteHome(HomeImpl home) {
+	public void deleteHome(Home home) {
 		ebean.delete(home);
 	}
 }

@@ -120,7 +120,7 @@ public class SpawnDAOEBean implements SpawnDAO {
 	@Override
 	public java.util.Set<String> getSpawnDefinedGroups() {
 		Set<String> groups = new HashSet<String>();
-		Set<SpawnImpl> spawns = findAllSpawns();
+		Set<? extends Spawn> spawns = findAllSpawns();
 		
 		for(Spawn spawn : spawns) {
 			String group = spawn.getGroup();
@@ -135,7 +135,7 @@ public class SpawnDAOEBean implements SpawnDAO {
 	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findAllSpawns()
 	 */
 	@Override
-	public Set<SpawnImpl> findAllSpawns() {
+	public Set<? extends Spawn> findAllSpawns() {
 		return ebean.find(SpawnImpl.class).findSet();
 	}
 

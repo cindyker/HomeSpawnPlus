@@ -62,7 +62,7 @@ public interface SpawnDAO {
 	 */
 	public Set<String> getSpawnDefinedGroups();
 
-	public Set<Spawn> findAllSpawns();
+	public Set<? extends Spawn> findAllSpawns();
 
 	public void saveSpawn(Spawn spawn) throws StorageException;
 	public void deleteSpawn(Spawn spawn) throws StorageException;

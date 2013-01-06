@@ -36,7 +36,7 @@ package org.morganm.homespawnplus.storage.ebean;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.morganm.homespawnplus.entity.HomeImpl;
+import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -74,7 +74,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 	}
 	
 	@Override
-	public HomeInvite findInviteByHomeAndInvitee(HomeImpl home, String invitee) {
+	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
 		String q = "find homeInvite where home = :home and invitedPlayer = :invitee";
 		
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
@@ -85,7 +85,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 	}
 
 	@Override
-	public Set<HomeInvite> findInvitesByHome(HomeImpl home) {
+	public Set<HomeInvite> findInvitesByHome(Home home) {
 		String q = "find homeInvite where home = :home";
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("home", home.getId());
@@ -107,12 +107,12 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 		Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
 		
 		// first find all homes for this player
-		Set<HomeImpl> homes = storage.getHomeDAO().findHomesByPlayer(player);
+		Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
 		if( homes == null || homes.size() == 0 )
 			return invites;
 
 		// then find all HomeInvites related to any of those homes
-		for(HomeImpl home : homes) {
+		for(Home home : homes) {
 			Set<HomeInvite> homeInvites = findInvitesByHome(home);
 			if( homeInvites != null )
 				invites.addAll(homeInvites);

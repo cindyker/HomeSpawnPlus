@@ -36,7 +36,6 @@ package org.morganm.homespawnplus.strategies;
 import java.util.Set;
 
 import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.entity.HomeImpl;
 import org.morganm.homespawnplus.strategy.HomeStrategy;
 import org.morganm.homespawnplus.strategy.NoArgStrategy;
 import org.morganm.homespawnplus.strategy.StrategyContext;
@@ -52,7 +51,7 @@ public class HomeAnyWorld extends HomeStrategy {
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		// get the Set of homes for this player for ALL worlds
-	    Set<HomeImpl> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
+	    Set<Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
 		log.debug("HomeAnyWorld: homes = {}", homes);
 		
 		Home home = null;

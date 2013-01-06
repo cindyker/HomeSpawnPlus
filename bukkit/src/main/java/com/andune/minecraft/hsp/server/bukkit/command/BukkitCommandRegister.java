@@ -50,7 +50,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
 import org.slf4j.Logger;

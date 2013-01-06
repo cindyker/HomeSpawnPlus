@@ -6,12 +6,11 @@ package com.andune.minecraft.hsp;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.morganm.homespawnplus.config.ConfigCore;
-import org.morganm.homespawnplus.server.api.Plugin;
-nimport com.andune.minecraft.commonlib.i18n.Colors;
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleConfig;
-onlib.i18n.LocaleConfig;
+import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.server.api.Plugin;
 
 /** Class responsible for initializing our Locale object. Priority
  * guarantees it runs after the config files have been loaded, which

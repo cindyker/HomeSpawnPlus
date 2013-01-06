@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerWorld;
-import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -90,7 +90,7 @@ public class HomeLimitsManager {
      */
     public int getHomeCount(String playerName, String worldName)
     {
-        Set<HomeImpl> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+        Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
         
         if( homes != null )
             return homes.size();
@@ -170,11 +170,11 @@ public class HomeLimitsManager {
      * @param playerName
      * @return
      */
-    public HomeImpl enforceSingleGlobalHome(String playerName) {
-        HomeImpl home = null;
+    public Home enforceSingleGlobalHome(String playerName) {
+        Home home = null;
         
         log.debug("enforceSingleGlobalHome() ENTER");
-        Set<HomeImpl> homes = storage.getHomeDAO().findHomesByPlayer(playerName);
+        Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(playerName);
         
         if( homes != null ) {
             // if we find a single home in the DB, move it to the new location
@@ -185,7 +185,7 @@ public class HomeLimitsManager {
             // otherwise, delete all homes and a new one will be created below
             else {
                 log.debug("enforceSingleGlobalHome() found multiple homes, removing them");
-                for(HomeImpl h : homes) {
+                for(Home h : homes) {
                     log.debug("enforceSingleGlobalHome() removing home {}",h);
                     try {
                         storage.getHomeDAO().deleteHome(h);

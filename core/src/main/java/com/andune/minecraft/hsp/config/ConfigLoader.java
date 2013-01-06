@@ -9,13 +9,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.config.ConfigException;
-import org.morganm.homespawnplus.server.api.ConfigurationSection;
-import org.morganm.homespawnplus.server.api.Factory;
-import org.morganm.homespawnplus.server.api.Plugin;
-import org.morganm.homespawnplus.server.api.YamlFile;
-Jimport com.andune.minecraft.commonlib.JarUtils;
-arUtils;
+import com.andune.minecraft.commonlib.JarUtils;
+import com.andune.minecraft.hsp.server.api.ConfigurationSection;
+import com.andune.minecraft.hsp.server.api.Factory;
+import com.andune.minecraft.hsp.server.api.Plugin;
+import com.andune.minecraft.hsp.server.api.YamlFile;
 
 /**
  * @author morganm

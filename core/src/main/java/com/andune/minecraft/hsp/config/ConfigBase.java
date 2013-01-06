@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.config.ConfigException;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /** Abstract base class that implements some common functionality

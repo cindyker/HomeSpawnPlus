@@ -27,8 +27,8 @@
  *
  * Contributors:
  *     Andune - initial API and implementation
- 
  */
+ 
 package org.morganm.homespawnplus.strategy;
 
 import java.util.List;

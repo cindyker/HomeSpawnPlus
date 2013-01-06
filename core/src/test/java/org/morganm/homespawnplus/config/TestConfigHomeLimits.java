@@ -17,10 +17,14 @@ import java.util.HashSet;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.morganm.homespawnplus.config.ConfigHomeLimits.LimitsPerPermission;
-import org.morganm.homespawnplus.server.api.ConfigurationSection;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.andune.minecraft.hsp.config.ConfigHomeLimits;
+import com.andune.minecraft.hsp.config.ConfigLoader;
+import com.andune.minecraft.hsp.config.ConfigOptions;
+import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
+import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /**
  * @author morganm

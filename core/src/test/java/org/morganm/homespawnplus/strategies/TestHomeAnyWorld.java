@@ -19,17 +19,19 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.morganm.homespawnplus.entity.Home;
-import org.morganm.homespawnplus.entity.HomeImpl;
-import org.morganm.homespawnplus.strategy.StrategyContext;
-import org.morganm.homespawnplus.strategy.StrategyContextImpl;
-import org.morganm.homespawnplus.strategy.StrategyMode;
-import org.morganm.homespawnplus.strategy.StrategyResult;
-import org.morganm.homespawnplus.strategy.StrategyResultImpl;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.strategies.HomeAnyWorld;
+import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyContextImpl;
+import com.andune.minecraft.hsp.strategy.StrategyMode;
+import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
 /**
  * @author morganm

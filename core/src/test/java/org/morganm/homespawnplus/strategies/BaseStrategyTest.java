@@ -4,8 +4,9 @@
 package org.morganm.homespawnplus.strategies;
 
 import org.mockito.Mock;
-import org.morganm.homespawnplus.config.ConfigCore;
-import org.morganm.homespawnplus.strategy.StrategyResultFactory;
+
+import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.strategy.StrategyResultFactory;
 
 /**
  * @author morganm

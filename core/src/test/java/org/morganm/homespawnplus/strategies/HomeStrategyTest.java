@@ -12,11 +12,12 @@ import java.util.Set;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.morganm.homespawnplus.entity.HomeImpl;
-import org.morganm.homespawnplus.server.api.Player;
-import org.morganm.homespawnplus.storage.dao.HomeDAO;
-import org.morganm.homespawnplus.util.BedUtils;
-import org.morganm.homespawnplus.util.HomeUtil;
+
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.server.api.Player;
+import com.andune.minecraft.hsp.storage.dao.HomeDAO;
+import com.andune.minecraft.hsp.util.BedUtils;
+import com.andune.minecraft.hsp.util.HomeUtil;
 
 /**
  * @author morganm

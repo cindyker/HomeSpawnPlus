@@ -20,17 +20,12 @@
     -->
 
     <modules>
-<!--
-        <module>api</module>
--->
         <module>api</module>
         <module>bukkit</module>
         <module>core</module>
-<!--
         <module>craftbukkit.pre1_4_5</module>
         <module>craftbukkit.v1_4_5</module>
         <module>craftbukkit.v1_4_6</module>
--->
     </modules>
 
     <build>

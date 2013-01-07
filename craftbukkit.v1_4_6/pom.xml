@@ -1,0 +1,132 @@
+<!-- Maven build file for HomeSpawnPlus -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.andune.minecraft.hsp</groupId>
+  <artifactId>HomeSpawnPlus-craftbukkit-1.4.6</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <name>HomeSpawnPlus-craftbukkit-1.4.6</name>
+
+  <repositories>
+    <repository>
+      <id>andune-repo</id>
+      <url>http://morganmc.org/nexus/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>repobo-snap</id>
+      <url>http://repo.bukkit.org/content/groups/public</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- CraftBukkit -->
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>1.4.6-R0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-bukkit</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- SLF4J Logging API -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+
+    <!-- Start of Test Dependencies -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-testng</artifactId>
+      <version>1.5</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>1.5</version>
+      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- End of Test Dependencies -->
+  </dependencies>
+
+  <build>
+    <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+    <finalName>${project.artifactId}</finalName>
+
+    <!-- Plugins -->
+    <plugins>
+      <!-- Compile plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <verbose>true</verbose>
+          <fork>true</fork>
+          <source>1.6</source>
+          <target>1.6</target>
+          <compilerVersion>1.6</compilerVersion>
+        </configuration>
+      </plugin>
+
+      <!-- JAR creation plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>true</addMavenDescriptor>
+            <manifest>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Release -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.3.2</version><!--$NO-MVN-MAN-VER$ -->
+        <configuration>
+          <preparationGoals>assembly:assembly</preparationGoals>
+          <goals>assembly:assembly</goals>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

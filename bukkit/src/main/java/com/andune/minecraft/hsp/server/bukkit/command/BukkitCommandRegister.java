@@ -45,11 +45,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -61,6 +59,8 @@ import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.command.CustomEventCommand;
 import com.andune.minecraft.hsp.server.api.command.CommandConfig;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
+import com.andune.minecraft.hsp.server.craftbukkit.CraftServer;
+import com.andune.minecraft.hsp.server.craftbukkit.CraftServerFactory;
 import com.google.inject.Injector;
 
 /** Class whose job is to register all of HSP commands with the server dynamically,
@@ -125,8 +125,8 @@ public class BukkitCommandRegister implements Initializable {
 		if( loadedCommands.contains(cmdName) )
 			return;
 		
-		CraftServer cs = (CraftServer) Bukkit.getServer();
-		SimpleCommandMap commandMap = cs.getCommandMap();
+		
+		CraftServer craftServer = CraftServerFactory.getCraftServer();
 		
 		try {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
@@ -183,7 +183,7 @@ public class BukkitCommandRegister implements Initializable {
 			}
 			
 			// register it
-			commandMap.register("hsp", pc);
+			craftServer.registerCommand(pc);
 			loadedCommands.add(cmdName);
 			
 			log.debug("register() command {} registered", command);

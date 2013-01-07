@@ -33,11 +33,7 @@
  */
 package com.andune.minecraft.hsp.commands;
 
-import java.io.File;
-import java.util.Set;
-
 import javax.inject.Inject;
-
 
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Initializer;
@@ -47,8 +43,7 @@ import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
 import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.storage.StorageException;
-import com.andune.minecraft.hsp.storage.yaml.StorageYaml;
+import com.andune.minecraft.hsp.util.BackupUtil;
 
 /**
  * @author morganm
@@ -60,19 +55,13 @@ public class HSP extends BaseCommand {
     @Inject DynmapModule dynmap;
     @Inject WorldBorderModule worldBorder;
     @Inject WorldGuardModule worldGuard;
-    private File backupFile;
+    @Inject BackupUtil backupUtil;
     
 	@Override
 	public String getUsage() {
 		return server.getLocalizedMessage(HSPMessages.CMD_HSP_USAGE);
 	}
 	
-	private File getYamlBackupFile() {
-	    if( backupFile == null )
-	        backupFile = new File(plugin.getDataFolder(), "backup.yml");
-	    return backupFile;
-	}
-
     @Override
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         if( !permissions.isAdmin(sender) )
@@ -195,102 +184,33 @@ public class HSP extends BaseCommand {
 		}
 		*/
 		else if( args[0].startsWith("backup") ) {
-			File backupFile = getYamlBackupFile();
-			if( backupFile.exists() )
-				backupFile.delete();
-			
-			try {
-				StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
-				backupStorage.initializeStorage();
-
-				backupStorage.setDeferredWrites(true);
-				for(com.andune.minecraft.hsp.entity.HomeImpl o : storage.getHomeDAO().findAllHomes()) {
-					log.debug("backing up Home object id ",o.getId());
-					backupStorage.getHomeDAO().saveHome(o);
-				}
-				for(com.andune.minecraft.hsp.entity.SpawnImpl o : storage.getSpawnDAO().findAllSpawns()) {
-					log.debug("backing up Spawn object id ",o.getId());
-					backupStorage.getSpawnDAO().saveSpawn(o);
-				}
-				for(com.andune.minecraft.hsp.entity.Player o : storage.getPlayerDAO().findAllPlayers()) {
-					log.debug("backing up Player object id ",o.getId());
-					backupStorage.getPlayerDAO().savePlayer(o);
-				}
-				for(com.andune.minecraft.hsp.entity.HomeInvite o : storage.getHomeInviteDAO().findAllHomeInvites()) {
-					log.debug("backing up HomeInvite object id ",o.getId());
-					backupStorage.getHomeInviteDAO().saveHomeInvite(o);
-				}
-
-				backupStorage.flushAll();
-	
-				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_BACKED_UP, "file", getYamlBackupFile());
-				log.info("Data backed up to file {}", getYamlBackupFile());
-			}
-			catch(StorageException e) {
-				log.warn("Error saving backup file", e);
-				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_BACKUP_ERROR);
-			}
+		    String errorMessage = backupUtil.backup();
+		    if( errorMessage == null ) {
+	            server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_BACKED_UP,
+	                    "file", backupUtil.getBackupFile());
+		    }
+		    else {
+		        sender.sendMessage(errorMessage);
+		    }
 		}
 		else if( args[0].startsWith("restore") ) {
 			if( args.length < 2 || (!"OVERWRITE".equals(args[1])) ) {
-				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE, "file", getYamlBackupFile());
+				server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_USAGE,
+				        "file", backupUtil.getBackupFile());
 			}
 			else {
-				File backupFile = getYamlBackupFile();
-				if( backupFile.exists() ) {
-					try {
-						StorageYaml backupStorage = new StorageYaml(plugin, true, backupFile);
-						backupStorage.initializeStorage();
-						
-						storage.deleteAllData();
-						storage.setDeferredWrites(true);
-						
-						Set<com.andune.minecraft.hsp.entity.HomeImpl> homes = backupStorage.getHomeDAO().findAllHomes();
-						for(com.andune.minecraft.hsp.entity.HomeImpl home : homes) {
-							log.debug("Restoring home ",home);
-							home.setLastModified(null);
-							storage.getHomeDAO().saveHome(home);
-						}
-						Set<com.andune.minecraft.hsp.entity.SpawnImpl> spawns = backupStorage.getSpawnDAO().findAllSpawns();
-						for(com.andune.minecraft.hsp.entity.SpawnImpl spawn : spawns) {
-							log.debug("Restoring spawn ",spawn);
-							spawn.setLastModified(null);
-							storage.getSpawnDAO().saveSpawn(spawn);
-						}
-						Set<com.andune.minecraft.hsp.entity.Player> players = backupStorage.getPlayerDAO().findAllPlayers();
-						for(com.andune.minecraft.hsp.entity.Player player : players) {
-							log.debug("Restoring player ",player);
-							player.setLastModified(null);
-							storage.getPlayerDAO().savePlayer(player);
-						}
-						Set<com.andune.minecraft.hsp.entity.HomeInvite> homeInvites = backupStorage.getHomeInviteDAO().findAllHomeInvites();
-						for(com.andune.minecraft.hsp.entity.HomeInvite homeInvite : homeInvites) {
-							log.debug("Restoring homeInvite ",homeInvite);
-							homeInvite.setLastModified(null);
-							storage.getHomeInviteDAO().saveHomeInvite(homeInvite);
-						}
-						
-						storage.flushAll();
-					}
-					catch(StorageException e) {
-						sender.sendMessage("Caught exception: "+e.getMessage());
-						log.warn("Error caught in /"+getCommandName()+": "+e.getMessage(), e);
-					}
-					finally {
-						storage.setDeferredWrites(false);
-					}
-					
-					server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS, "file", getYamlBackupFile());
-					log.info("Existing data wiped and data restored from file "+getYamlBackupFile());
-				}
-				else
-					server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_NO_FILE, "file", getYamlBackupFile());
-//					util.sendMessage(p, "Backup file not found, aborting restore (no data deleted). [file = "+HomeSpawnPlus.YAML_BACKUP_FILE+"]");
+	            String errorMessage = backupUtil.restore();
+	            if( errorMessage == null ) {
+	                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_DATA_RESTORE_SUCCESS,
+	                        "file", backupUtil.getBackupFile());
+	            }
+	            else {
+	                sender.sendMessage(errorMessage);
+	            }
 			}
 		}
 		else {
 			return false;
-//			printUsage(p, command);
 		}
 
 		return true;

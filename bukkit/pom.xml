@@ -42,14 +42,33 @@
 
   <dependencies>
     <!-- HomeSpawnPlus modules -->
+<!--
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
       <artifactId>HomeSpawnPlus-api</artifactId>
       <version>2.0-SNAPSHOT</version>
     </dependency>
+-->
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
       <artifactId>HomeSpawnPlus-core</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- CraftBukkit dependencies -->
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-craftbukkit-pre1.4.5</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-craftbukkit-1.4.5</artifactId>
+      <version>2.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-craftbukkit-1.4.6</artifactId>
       <version>2.0-SNAPSHOT</version>
     </dependency>
 
@@ -263,6 +282,9 @@
                   <include>org.slf4j:slf4j-api</include>
                   <include>org.slf4j:slf4j-jdk14</include>
                   <include>net.milkbowl.vault:Vault</include>
+                  <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-pre1.4.5</include>
+                  <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.5</include>
+                  <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.6</include>
                 </includes>
               </artifactSet>
 

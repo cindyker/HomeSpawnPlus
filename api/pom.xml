@@ -109,28 +109,17 @@
     <resources>
       <resource>
         <targetPath>.</targetPath>
-        <directory>${basedir}/src/main/resources/</directory>
-      </resource>
-      <resource>
-        <targetPath>.</targetPath>
         <directory>${basedir}</directory>
         <filtering>true</filtering>
         <includes>
           <include>build.number</include>
         </includes>
       </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>plugin.yml</include>
-        </includes>
-      </resource>
     </resources>
 
     <!-- Plugins -->
     <plugins>
-      <!-- License check; run mvn license:check -->
+      <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>

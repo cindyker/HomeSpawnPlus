@@ -29,52 +29,12 @@
       <artifactId>craftbukkit</artifactId>
       <version>1.4.5-R1.0</version>
     </dependency>
+
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
-      <artifactId>HomeSpawnPlus-bukkit</artifactId>
+      <artifactId>HomeSpawnPlus-craftbukkit-api</artifactId>
       <version>2.0-SNAPSHOT</version>
     </dependency>
-
-    <!-- SLF4J Logging API -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-
-    <!-- Start of Test Dependencies -->
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.3.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-testng</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- End of Test Dependencies -->
   </dependencies>
 
   <build>

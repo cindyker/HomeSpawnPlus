@@ -173,13 +173,18 @@
 
     <!-- Plugins -->
     <plugins>
-      <!-- License check; run mvn license:check -->
+      <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
         <configuration>
           <header>src/main/license/header.txt</header>
           <strictCheck>true</strictCheck>
+          <excludes>
+            <exclude>**/src/main/resources/**</exclude>
+            <exclude>**/src/main/assembly/**</exclude>
+            <exclude>**/src/main/license/**</exclude>
+          </excludes>
         </configuration>
       </plugin>
 

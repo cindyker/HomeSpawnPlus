@@ -130,12 +130,12 @@
 
     <!-- Plugins -->
     <plugins>
-      <!-- License check -->
+      <!-- License check; run mvn license:check -->
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
         <configuration>
-          <header>src/main/resources/header.txt</header>
+          <header>src/main/license/header.txt</header>
           <strictCheck>true</strictCheck>
         </configuration>
       </plugin>

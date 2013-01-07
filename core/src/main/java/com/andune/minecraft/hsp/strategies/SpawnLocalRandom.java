@@ -66,7 +66,7 @@ public class SpawnLocalRandom extends BaseStrategy {
 		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
 		
 		String playerLocalWorld = context.getEventLocation().getWorld().getName();
-		Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
+		Set<? extends Spawn> allSpawns = spawnDAO.findAllSpawns();
 		ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
 		for(Spawn theSpawn : allSpawns) {
 			// skip newPlayerSpawn if so directed

@@ -36,7 +36,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.andune.minecraft.commonlib.Teleport;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
@@ -74,7 +73,6 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
     private ConfigCore config;
     private Factory factory;
     private MultiverseModule multiVerse;
-    private Teleport teleport;
     private SpawnUtil spawnUtil;
     private BedUtils bedUtil;
     private WarmupManager warmupManager;
@@ -94,14 +92,13 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
     
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
-            MultiverseModule multiVerse, Teleport teleport, SpawnUtil spawnUtil,
+            MultiverseModule multiVerse, SpawnUtil spawnUtil,
             BedUtils bedUtil, WarmupManager warmupManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
         this.factory = factory;
         this.multiVerse = multiVerse;
-        this.teleport = teleport;
         this.spawnUtil = spawnUtil;
         this.bedUtil = bedUtil;
         this.warmupManager = warmupManager;
@@ -217,7 +214,10 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
         multiVerse.setCurrentTeleporter(null);
         multiVerse.setSourcePortalName(null);
         multiVerse.setDestinationPortalName(null);
-        teleport.setCurrentTeleporter(null);
+        
+        // code search shows this is no longer used, commenting for now in case
+        // I find a bug later that depends on this..
+//        teleport.setCurrentTeleporter(null);
     }
 
     /** Method to monitor successful cross-world teleports and

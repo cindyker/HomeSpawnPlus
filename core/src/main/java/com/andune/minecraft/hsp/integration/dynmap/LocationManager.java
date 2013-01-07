@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.integration.dynmap;
 
 import java.util.List;
 
-import org.bukkit.World;
+import com.andune.minecraft.hsp.server.api.World;
 
 /** In the original Dynmap-CommandBook plugin, the code uses CommandBook's location
  * manager concept, which is a nice generic interface for querying locations. Since

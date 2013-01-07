@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.integration.dynmap;
 
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
+import com.andune.minecraft.hsp.server.api.Location;
 
 /** Interface for HSP locations.
  * 

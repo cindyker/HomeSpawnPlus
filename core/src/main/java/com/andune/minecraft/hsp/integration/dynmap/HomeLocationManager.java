@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.World;
-
 import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 

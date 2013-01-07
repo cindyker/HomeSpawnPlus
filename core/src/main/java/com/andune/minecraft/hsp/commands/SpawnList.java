@@ -36,15 +36,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.morganm.homespawnplus.HSPMessages;
-import org.morganm.homespawnplus.command.BaseCommand;
-import org.morganm.homespawnplus.server.api.CommandSender;
-import org.morganm.homespawnplus.server.api.Location;
-import org.morganm.homespawnplus.server.api.ServerConfig;
-import org.morganm.homespawnplus.server.api.World;
-import org.morganm.homespawnplus.storage.Storage;
-himport com.andune.minecraft.commonlib.i18n.ChatColor;
-atColor;
+import com.andune.minecraft.commonlib.i18n.ChatColor;
+import com.andune.minecraft.hsp.HSPMessages;
+import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.server.api.CommandSender;
+import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.hsp.server.api.ServerConfig;
+import com.andune.minecraft.hsp.server.api.World;
+import com.andune.minecraft.hsp.storage.Storage;
 
 /**
  * @author morganm
@@ -83,7 +82,7 @@ public class SpawnList extends BaseCommand {
 				world = args.get(0);
 		}
 		
-		final Set<org.morganm.homespawnplus.entity.Spawn> spawns = storage.getSpawnDAO().findAllSpawns();
+		final Set<? extends com.andune.minecraft.hsp.entity.Spawn> spawns = storage.getSpawnDAO().findAllSpawns();
 		
 		boolean displayedSpawn = false;
 		if( spawns != null && spawns.size() > 0 ) {
@@ -116,7 +115,7 @@ public class SpawnList extends BaseCommand {
 				}
 			}
 			
-			for(org.morganm.homespawnplus.entity.Spawn spawn : spawns) {
+			for(com.andune.minecraft.hsp.entity.Spawn spawn : spawns) {
 				if( !world.equals("all") && !world.equals(spawn.getWorld()) )
 					continue;
 					

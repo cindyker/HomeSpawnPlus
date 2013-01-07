@@ -57,7 +57,7 @@ public class SpawnNearestSpawn extends BaseStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of spawns is relatively small (ie. not in the hundreds or thousands).
-		final Set<Spawn> allSpawns = spawnDAO.findAllSpawns();
+		final Set<? extends Spawn> allSpawns = spawnDAO.findAllSpawns();
 		final Location playerLoc = context.getEventLocation();
 		
 		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);

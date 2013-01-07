@@ -90,7 +90,9 @@ public class BukkitTeleport implements Teleport {
      * 
      * @param options
      * @return
-    com.andune.minecraft.commonlibdune.minecraft.commonlib.Teleport.Bounds getBounds(TeleportOptcom.andune.minecraft.commonlib  com.andune.minecraft.commonlcom.andune.minecraft.commonlibnds = new com.andune.minecraft.commonlib.Teleport.Bounds();
+     */
+    private com.andune.minecraft.commonlib.Teleport.Bounds getBounds(TeleportOptions options) {
+        com.andune.minecraft.commonlib.Teleport.Bounds bounds = new com.andune.minecraft.commonlib.Teleport.Bounds();
         bounds.minY = options.getMinY();
         bounds.maxY = options.getMaxY();
         bounds.maxRange = options.getMaxRange();

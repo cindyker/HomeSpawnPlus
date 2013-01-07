@@ -30,11 +30,9 @@
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
-import org.bukkit.Location;
-
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
+import com.andune.minecraft.hsp.server.api.Location;
 
 /**
  * @author morganm
@@ -50,11 +48,7 @@ public class HomeNamedLocation implements NamedLocation {
 
 	@Override
 	public Location getLocation() {
-	    com.andune.minecraft.hsp.server.api.Location homeLocation = home.getLocation();
-	    if( homeLocation instanceof BukkitLocation )
-	        return ((BukkitLocation) homeLocation).getBukkitLocation();
-	    else
-	        return null;
+	    return home.getLocation();
 	}
 
 	/** Home "names" on the map are just the player name.

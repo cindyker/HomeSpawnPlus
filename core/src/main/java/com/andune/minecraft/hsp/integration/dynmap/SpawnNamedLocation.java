@@ -30,11 +30,9 @@
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
-import org.bukkit.Location;
-
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
+import com.andune.minecraft.hsp.server.api.Location;
 
 /**
  * @author morganm
@@ -50,11 +48,7 @@ public class SpawnNamedLocation implements NamedLocation {
 
 	@Override
 	public Location getLocation() {
-        com.andune.minecraft.hsp.server.api.Location spawnLocation = spawn.getLocation();
-        if( spawnLocation instanceof BukkitLocation )
-            return ((BukkitLocation) spawnLocation).getBukkitLocation();
-        else
-            return null;
+        return spawn.getLocation();
 	}
 
 	@Override

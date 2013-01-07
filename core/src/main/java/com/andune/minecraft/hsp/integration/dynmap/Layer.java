@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
@@ -46,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
+import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.hsp.server.api.World;
 
 /**
  * @author morganm

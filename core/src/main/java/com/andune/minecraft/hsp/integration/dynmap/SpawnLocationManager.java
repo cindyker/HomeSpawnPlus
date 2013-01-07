@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.World;
-
 import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
@@ -58,7 +57,7 @@ public class SpawnLocationManager implements LocationManager {
 		String world = w.getName();
 		
 		SpawnDAO dao = storage.getSpawnDAO();
-		Set<Spawn> allSpawns = dao.findAllSpawns();
+		Set<? extends Spawn> allSpawns = dao.findAllSpawns();
 		if( allSpawns != null && allSpawns.size() > 0 ) {
 			for(Spawn spawn : allSpawns) {
 				// skip any spawns that aren't in the given world

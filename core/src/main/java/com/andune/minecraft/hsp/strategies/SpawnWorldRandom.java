@@ -32,16 +32,14 @@ package com.andune.minecraft.hsp.strategies;
 
 import javax.inject.Inject;
 
-
-import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
-import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule.BorderData;
+import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
+import com.andune.minecraft.hsp.integration.worldborder.WorldBorder.BorderData;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.Teleport;
 import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.server.api.World;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;
@@ -59,7 +57,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnWorldRandom extends BaseStrategy {
-    @Inject private WorldBorderModule worldBorder;
+    @Inject private WorldBorder worldBorder;
     @Inject private Server server;
     @Inject private Factory factory;
     @Inject private Teleport teleport;
@@ -119,8 +117,7 @@ public class SpawnWorldRandom extends BaseStrategy {
 				if( result != null ) {
 				    // if the random result isn't located inside the border, then we
 				    // null it out and loop again
-				    BukkitLocation bukkitLocation = (BukkitLocation) result;
-				    if( !border.insideBorder(bukkitLocation.getBukkitLocation()) )
+				    if( !border.insideBorder(result) )
 				        result = null;
 				}
 			}

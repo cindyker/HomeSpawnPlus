@@ -32,10 +32,11 @@ package com.andune.minecraft.hsp.integration.worldborder;
 
 import javax.inject.Singleton;
 
-import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule.BorderData;
+import com.andune.minecraft.hsp.integration.worldborder.WorldBorder.BorderData;
+import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 
 /**
  * @author morganm
@@ -105,7 +106,7 @@ public class WorldBorderIntegration {
 		
 		public boolean insideBorder(Location l) {
 			if( worldBorderData != null )
-				return worldBorderData.insideBorder(l);
+				return worldBorderData.insideBorder(((BukkitLocation) l).getBukkitLocation());
 			else
 				return true;
 		}

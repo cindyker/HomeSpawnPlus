@@ -40,6 +40,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
+import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
 import com.andune.minecraft.hsp.server.api.Economy;
@@ -185,7 +186,7 @@ public class BukkitModule extends AbstractModule {
     }
     
     @Provides
-    protected WorldBorderModule getWorldBorder() {
+    protected WorldBorder getWorldBorder() {
         if( worldBorder == null )
             worldBorder = new WorldBorderModule(plugin);
         return worldBorder;

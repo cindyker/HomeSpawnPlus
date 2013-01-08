@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.7.3.2</version>
+  <version>1.7.4-SNAPSHOT</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>

@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.Initializable;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

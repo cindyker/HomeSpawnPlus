@@ -53,7 +53,7 @@ import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 /** Common routines related to management of Homes.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

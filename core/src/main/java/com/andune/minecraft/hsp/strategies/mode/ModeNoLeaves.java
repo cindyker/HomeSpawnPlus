@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /** Strategy to avoid spawning over leaves.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

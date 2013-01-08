@@ -35,7 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class RegionEnterEvent extends RegionEvent {

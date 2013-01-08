@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerSpawnDAO {

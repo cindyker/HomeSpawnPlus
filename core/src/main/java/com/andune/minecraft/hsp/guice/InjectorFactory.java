@@ -36,7 +36,7 @@ import com.google.inject.Injector;
  * are running in and returning a dependency injector that will
  * build the appropriate object graph for that environment.
  *  
- * @author morganm
+ * @author andune
  *
  */
 public interface InjectorFactory {

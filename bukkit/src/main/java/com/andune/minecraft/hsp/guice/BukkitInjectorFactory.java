@@ -39,7 +39,7 @@ import com.google.inject.Injector;
 
 /** Factory class to create an injector specific to the Bukkit module.
  *  
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitInjectorFactory implements InjectorFactory {

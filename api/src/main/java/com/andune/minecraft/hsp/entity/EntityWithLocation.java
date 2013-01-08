@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.entity;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface EntityWithLocation extends BasicEntity {

@@ -65,13 +65,12 @@ import com.google.inject.Injector;
  * to give admins maximum flexibility in naming their commands however they like
  * or creating their own custom commands.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitCommandRegister implements Initializable {
     private final Logger log = LoggerFactory.getLogger(BukkitCommandRegister.class);
 
-//	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
 	private final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
 	
 	private final Plugin plugin;
@@ -89,8 +88,6 @@ public class BukkitCommandRegister implements Initializable {
 		this.injector = injector;
 		
         customClassMap.put("customeventcommand", CustomEventCommand.class);
-
-//    	reflections = new Reflections(COMMANDS_PACKAGE);
     	reflections = Reflections.collect();
 	}
 	
@@ -196,7 +193,7 @@ public class BukkitCommandRegister implements Initializable {
 	
 	/** Given an unqualified name, find a matching command class. This ignores case,
 	 * so for example if you pass in "homedeleteother", it will find and return the
-	 * class "org.morganm.homespawnplus.commands.HomeDeleteOther". If it can't find
+	 * class "com.andune.minecraft.hsp.commands.HomeDeleteOther". If it can't find
 	 * any matching class, it will return null.
 	 * 
 	 * @param cmd

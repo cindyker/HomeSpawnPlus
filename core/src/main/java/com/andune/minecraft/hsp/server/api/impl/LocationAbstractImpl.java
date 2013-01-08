@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.server.api.World;
 /** Abstract Location methods that don't change between server
  * implementations
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class LocationAbstractImpl implements Location {

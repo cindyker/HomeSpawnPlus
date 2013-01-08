@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteList extends BaseCommand {

@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /** Strategy to return the nearest home or spawn, whichever is closer.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

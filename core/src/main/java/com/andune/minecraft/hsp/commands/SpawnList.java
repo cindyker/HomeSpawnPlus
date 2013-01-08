@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class SpawnList extends BaseCommand {

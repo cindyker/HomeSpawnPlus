@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.server.api.events;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerKickEvent extends PlayerEvent {

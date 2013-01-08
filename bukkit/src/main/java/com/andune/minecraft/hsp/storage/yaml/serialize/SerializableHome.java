@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.storage.yaml.StorageYaml;
 /** Class which maps Home entity to YAML using Bukkit's ConfigurationSerializable
  * interface.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("Home")
@@ -84,7 +84,7 @@ implements SerializableYamlObject<Home>
 			getObject().setDefaultHome((Boolean) o);
 		
 		// tell the currently loading StorageYaml that this object has been
-		// loaded. @see org.morganm.homespawnplus.storage.yaml.HomeDAYYaml.temporaryAllObjects
+		// loaded. @see com.andune.minecraft.hsp.storage.yaml.HomeDAYYaml.temporaryAllObjects
 		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
 			StorageYaml.getCurrentlyInitializingInstance().homeLoaded(getObject());
 		}

@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.util.LogUtil;
  * the rest of the plugin so as to minimize impact to the code when Bukkit makes
  * API changes and to simplify supporting MC-API, Spout or other frameworks.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class HSPBukkit extends JavaPlugin {
@@ -102,8 +102,8 @@ public class HSPBukkit extends JavaPlugin {
         LogUtil.enableDebug();
         
         getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.ALL);
-        Logger.getLogger("org.morganm.homespawnplus").setLevel(Level.ALL);
-//        Logger debugLog = Logger.getLogger("org.morganm.homespawnplus");
+        Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
+//        Logger debugLog = Logger.getLogger("com.andune.minecraft.hsp");
 //        debugLog.setLevel(Level.FINEST);
 //        debugLog.setUseParentHandlers(true);
     }

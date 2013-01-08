@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.strategy;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class StrategyException extends Exception {

@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 /** Dynmap module for HSP, code heavily borrowed from Mike Primm's
  * excellent DynmapCommandBookPlugin and simply adapted for HSP.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitDynmapModule implements DynmapModule, Initializable {

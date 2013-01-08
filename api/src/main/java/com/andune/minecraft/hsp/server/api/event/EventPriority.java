@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.server.api.event;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public enum EventPriority {

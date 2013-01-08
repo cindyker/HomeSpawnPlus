@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.config;
 /** Generic configuration error, usually thrown as a result of an
  * invalid configuration.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class ConfigException extends Exception {

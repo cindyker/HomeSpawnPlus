@@ -38,7 +38,7 @@ import javax.persistence.Table;
 import com.avaje.ebean.validation.NotNull;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Entity()

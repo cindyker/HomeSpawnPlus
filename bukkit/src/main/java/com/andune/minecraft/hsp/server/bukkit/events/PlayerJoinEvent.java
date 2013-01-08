@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 
 /** Bukkit implementation of PlayerJoinEvent API.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerJoinEvent extends PlayerEvent

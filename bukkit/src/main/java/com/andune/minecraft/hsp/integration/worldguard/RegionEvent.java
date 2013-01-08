@@ -35,7 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public abstract class RegionEvent extends Event {

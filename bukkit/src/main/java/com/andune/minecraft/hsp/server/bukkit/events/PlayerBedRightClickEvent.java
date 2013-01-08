@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitBlock;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerBedRightClickEvent extends PlayerEvent

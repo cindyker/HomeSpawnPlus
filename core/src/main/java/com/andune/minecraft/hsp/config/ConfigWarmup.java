@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerWorld;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

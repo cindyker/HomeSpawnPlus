@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.VersionDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class VersionDAOYaml implements VersionDAO, YamlDAOInterface {

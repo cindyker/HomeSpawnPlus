@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 
 /** Class to manage temporary home invites (those that don't hit the database).
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

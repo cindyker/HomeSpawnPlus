@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.server.api.impl.LocationAbstractImpl;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitLocation extends LocationAbstractImpl implements Location {
@@ -63,7 +63,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
     
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getBlock()
+     * @see com.andune.minecraft.hsp.server.api.Location#getBlock()
      */
     @Override
     public Block getBlock() {
@@ -71,7 +71,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#setX(double)
+     * @see com.andune.minecraft.hsp.server.api.Location#setX(double)
      */
     @Override
     public void setX(double x) {
@@ -79,7 +79,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getX()
+     * @see com.andune.minecraft.hsp.server.api.Location#getX()
      */
     @Override
     public double getX() {
@@ -87,7 +87,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getBlockX()
+     * @see com.andune.minecraft.hsp.server.api.Location#getBlockX()
      */
     @Override
     public int getBlockX() {
@@ -95,7 +95,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#setY(double)
+     * @see com.andune.minecraft.hsp.server.api.Location#setY(double)
      */
     @Override
     public void setY(double y) {
@@ -103,7 +103,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getY()
+     * @see com.andune.minecraft.hsp.server.api.Location#getY()
      */
     @Override
     public double getY() {
@@ -111,7 +111,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getBlockY()
+     * @see com.andune.minecraft.hsp.server.api.Location#getBlockY()
      */
     @Override
     public int getBlockY() {
@@ -119,7 +119,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#setZ(double)
+     * @see com.andune.minecraft.hsp.server.api.Location#setZ(double)
      */
     @Override
     public void setZ(double z) {
@@ -127,7 +127,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getZ()
+     * @see com.andune.minecraft.hsp.server.api.Location#getZ()
      */
     @Override
     public double getZ() {
@@ -135,7 +135,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getBlockZ()
+     * @see com.andune.minecraft.hsp.server.api.Location#getBlockZ()
      */
     @Override
     public int getBlockZ() {
@@ -143,7 +143,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#setYaw(float)
+     * @see com.andune.minecraft.hsp.server.api.Location#setYaw(float)
      */
     @Override
     public void setYaw(float yaw) {
@@ -151,7 +151,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getYaw()
+     * @see com.andune.minecraft.hsp.server.api.Location#getYaw()
      */
     @Override
     public float getYaw() {
@@ -159,7 +159,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#setPitch(float)
+     * @see com.andune.minecraft.hsp.server.api.Location#setPitch(float)
      */
     @Override
     public void setPitch(float pitch) {
@@ -167,7 +167,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#getPitch()
+     * @see com.andune.minecraft.hsp.server.api.Location#getPitch()
      */
     @Override
     public float getPitch() {
@@ -175,7 +175,7 @@ public class BukkitLocation extends LocationAbstractImpl implements Location {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Location#distance(org.morganm.homespawnplus.server.api.Location)
+     * @see com.andune.minecraft.hsp.server.api.Location#distance(com.andune.minecraft.hsp.server.api.Location)
      */
     @Override
     public double distance(Location o) {

@@ -34,7 +34,7 @@ package com.andune.minecraft.hsp.server.api;
 /** Interface for configuration items that might return different
  * values depending on the implementation.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface ServerConfig {

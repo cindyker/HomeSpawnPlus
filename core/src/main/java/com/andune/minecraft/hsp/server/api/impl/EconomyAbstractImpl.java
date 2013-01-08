@@ -45,7 +45,7 @@ import com.andune.minecraft.hsp.server.api.Economy;
 import com.andune.minecraft.hsp.server.api.Player;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public abstract class EconomyAbstractImpl implements Economy {

@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 /**
  * Bukkit implementation of Player API.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitPlayer implements Player {

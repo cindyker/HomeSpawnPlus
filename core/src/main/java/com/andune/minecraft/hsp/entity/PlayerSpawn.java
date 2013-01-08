@@ -57,7 +57,7 @@ import com.avaje.ebean.validation.NotNull;
  * with a random spawn point, you might want to record where the
  * player spawns and that's where they always spawn on that world.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Entity()

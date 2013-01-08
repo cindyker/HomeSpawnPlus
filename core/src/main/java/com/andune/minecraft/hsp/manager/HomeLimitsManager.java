@@ -48,7 +48,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 
 /** Manager class for home limits.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class HomeLimitsManager {

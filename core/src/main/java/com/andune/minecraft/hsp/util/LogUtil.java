@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * to detect the logging platform and do whatever is appropriate for that
  * given platform.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class LogUtil {
@@ -51,15 +51,15 @@ public class LogUtil {
     public static void enableDebug() {
         if( !debugEnabled ) {
             debugEnabled = true;
-            previousLevel = Logger.getLogger("org.morganm.homespawnplus").getLevel();
-            Logger.getLogger("org.morganm.homespawnplus").setLevel(Level.ALL);
+            previousLevel = Logger.getLogger("com.andune.minecraft.hsp").getLevel();
+            Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
         }
     }
     
     public static void disableDebug() {
         if( debugEnabled ) {
             debugEnabled = false;
-            Logger.getLogger("org.morganm.homespawnplus").setLevel(previousLevel);
+            Logger.getLogger("com.andune.minecraft.hsp").setLevel(previousLevel);
             previousLevel = null;
         }
     }

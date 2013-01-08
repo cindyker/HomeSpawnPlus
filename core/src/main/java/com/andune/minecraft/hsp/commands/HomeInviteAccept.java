@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Teleport;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteAccept extends BaseCommand {

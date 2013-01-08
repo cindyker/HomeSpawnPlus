@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 /** Mode used for detecting whether or not a Multiverse source portal
  * is involved in the current strategy chain.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @OneArgStrategy

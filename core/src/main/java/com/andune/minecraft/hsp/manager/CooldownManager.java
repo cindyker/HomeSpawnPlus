@@ -49,7 +49,7 @@ import com.andune.minecraft.hsp.server.api.Server;
 
 /** Class which manages player cooldowns.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class CooldownManager {
@@ -359,7 +359,7 @@ public class CooldownManager {
      * It will be broken down into it's component parts and put into the members of this
      * class for processing by the cooldown algorithms.
      * 
-     * @author morganm
+     * @author andune
      *
      */
     class CooldownNames {

@@ -34,7 +34,7 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface Plugin {

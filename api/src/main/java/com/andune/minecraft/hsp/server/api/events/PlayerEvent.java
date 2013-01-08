@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.api.events;
 import com.andune.minecraft.hsp.server.api.Player;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerEvent {

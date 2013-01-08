@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /** Mode that specifies teleports should not be done above lily pads.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class Spawn extends BaseCommand

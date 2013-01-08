@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /** Class to store result data from strategy evaluation.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StrategyResultImpl implements StrategyResult {
@@ -87,7 +87,7 @@ public class StrategyResultImpl implements StrategyResult {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyResult#isSuccess()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyResult#isSuccess()
 	 */
 	@Override
 	public boolean isSuccess() {
@@ -98,21 +98,21 @@ public class StrategyResultImpl implements StrategyResult {
 		return location;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyResult#getHome()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyResult#getHome()
 	 */
 	@Override
 	public Home getHome() {
 		return home;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyResult#getSpawn()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyResult#getSpawn()
 	 */
 	@Override
 	public Spawn getSpawn() {
 		return spawn;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyResult#isExplicitDefault()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyResult#isExplicitDefault()
 	 */
 	@Override
 	public boolean isExplicitDefault() {

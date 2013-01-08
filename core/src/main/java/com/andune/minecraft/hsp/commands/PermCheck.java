@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.server.api.Player;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PermCheck extends BaseCommand {

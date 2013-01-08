@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.config.ConfigCooldown.CooldownsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigCooldown.CooldownsPerWorld;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

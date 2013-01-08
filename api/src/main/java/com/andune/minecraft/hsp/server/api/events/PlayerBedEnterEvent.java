@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.api.events;
 import com.andune.minecraft.hsp.server.api.Block;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerBedEnterEvent extends PlayerEvent {

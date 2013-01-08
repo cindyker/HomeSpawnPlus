@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

@@ -44,7 +44,7 @@ import com.google.inject.Injector;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public abstract class BaseStorageFactory implements Initializable, StorageFactory {
@@ -90,7 +90,7 @@ public abstract class BaseStorageFactory implements Initializable, StorageFactor
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.storage.StorageFactory#getInstance()
+     * @see com.andune.minecraft.hsp.storage.StorageFactory#getInstance()
      */
 	@Override
     public Storage getInstance()

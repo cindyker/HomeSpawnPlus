@@ -54,7 +54,7 @@ import com.andune.minecraft.hsp.server.api.event.EventListener;
 
 /** Bridge class between Bukkit event system and HSP API event interface.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton
@@ -216,8 +216,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
                 new EventExecutor() {
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
-                            org.morganm.homespawnplus.server.api.events.PlayerMoveEvent apiEvent =
-                                    new org.morganm.homespawnplus.server.bukkit.events.PlayerMoveEvent((PlayerMoveEvent) event, bukkitFactory);
+                            com.andune.minecraft.hsp.server.api.events.PlayerMoveEvent apiEvent =
+                                    new com.andune.minecraft.hsp.server.api.events.PlayerMoveEvent((PlayerMoveEvent) event, bukkitFactory);
                             eventListener.playerMove(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);

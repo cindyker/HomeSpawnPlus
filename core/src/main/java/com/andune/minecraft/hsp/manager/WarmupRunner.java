@@ -31,7 +31,7 @@ package com.andune.minecraft.hsp.manager;
 /** Interface used by warmup-related functionality, then used by WarmupManager to manage
  * that warmup through it's lifecycle.
  *  
- * @author morganm
+ * @author andune
  *
  */
 public interface WarmupRunner extends Runnable {

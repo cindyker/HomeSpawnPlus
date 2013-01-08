@@ -52,7 +52,7 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.events.PlayerDamageEvent;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class WarmupManager {

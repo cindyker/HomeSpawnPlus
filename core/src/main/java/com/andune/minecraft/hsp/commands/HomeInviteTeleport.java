@@ -49,7 +49,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 
 /** Cooldown, warmup and teleport logic structured similar to Home command.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteTeleport extends BaseCommand {

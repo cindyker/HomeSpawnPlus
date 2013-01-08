@@ -38,7 +38,7 @@ import org.bukkit.Server;
 import com.andune.minecraft.hsp.server.api.Scheduler;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

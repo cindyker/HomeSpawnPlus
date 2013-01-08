@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.morganm.homespawnplus</groupId>
+    <groupId>com.andune.minecraft.hsp</groupId>
     <artifactId>HomeSpawnPlus-parent</artifactId>
     <name>HomeSpawnPlus</name>
     <packaging>pom</packaging>
@@ -15,7 +15,7 @@
     <!--
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.morganmc.org</url>
+        <url>http://ci.andune.com</url>
     </ciManagement>
     -->
 

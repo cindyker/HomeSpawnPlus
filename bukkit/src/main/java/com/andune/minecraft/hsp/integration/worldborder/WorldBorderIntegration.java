@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

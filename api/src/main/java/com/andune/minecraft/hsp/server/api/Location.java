@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.api;
 
 /** API for handling Location objects.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Location {

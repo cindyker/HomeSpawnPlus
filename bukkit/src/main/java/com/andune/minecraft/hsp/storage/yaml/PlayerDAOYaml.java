@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializablePlayer;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerDAOYaml extends AbstractDAOYaml<Player, SerializablePlayer> implements PlayerDAO {

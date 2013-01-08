@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.server.api.World;
 /**
  *  API implementation for a Bukkit world. Essentially a proxy object.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitWorld implements World {
@@ -47,7 +47,7 @@ public class BukkitWorld implements World {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.World#getName()
+     * @see com.andune.minecraft.hsp.server.api.World#getName()
      */
     @Override
     public String getName() {

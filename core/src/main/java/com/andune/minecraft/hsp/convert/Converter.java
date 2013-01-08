@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.convert;
 import com.andune.minecraft.hsp.server.api.CommandSender;
 
 /** Interface Converters are required to implement.
- * @author morganm
+ * @author andune
  *
  */
 public interface Converter extends Runnable {

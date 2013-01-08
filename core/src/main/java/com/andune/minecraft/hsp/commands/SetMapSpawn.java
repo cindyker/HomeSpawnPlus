@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.World;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class SetMapSpawn extends BaseCommand {

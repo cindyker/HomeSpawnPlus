@@ -37,7 +37,7 @@ import com.google.inject.Inject;
 
 /** Base class that represents an event about a player.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class PlayerEvent {

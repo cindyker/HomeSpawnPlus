@@ -40,7 +40,7 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
@@ -64,7 +64,7 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO#findByWorldAndPlayerName(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO#findByWorldAndPlayerName(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public PlayerSpawn findByWorldAndPlayerName(String world, String playerName) {
@@ -77,7 +77,7 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO#findByPlayerName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO#findByPlayerName(java.lang.String)
 	 */
 	@Override
 	public Set<PlayerSpawn> findByPlayerName(String playerName) {
@@ -89,7 +89,7 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO#findAll()
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO#findAll()
 	 */
 	@Override
 	public Set<PlayerSpawn> findAll() {
@@ -97,7 +97,7 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO#save(org.morganm.homespawnplus.entity.PlayerSpawn)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO#save(com.andune.minecraft.hsp.entity.PlayerSpawn)
 	 */
 	@Override
 	public void save(PlayerSpawn playerSpawn) throws StorageException {
@@ -105,7 +105,7 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO#delete(org.morganm.homespawnplus.entity.PlayerSpawn)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO#delete(com.andune.minecraft.hsp.entity.PlayerSpawn)
 	 */
 	@Override
 	public void delete(PlayerSpawn playerSpawn) throws StorageException {

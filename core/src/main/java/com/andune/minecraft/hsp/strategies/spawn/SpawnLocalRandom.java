@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
  * you have defined "spawn1", "spawn2" and "spawn3" on the local world,
  * this strategy will choose one of them at random.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

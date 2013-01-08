@@ -51,7 +51,7 @@ import com.google.inject.Injector;
 /** This class is used to initialize all classes within HSP that
  * implement the Initializable interface, in order of priority.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

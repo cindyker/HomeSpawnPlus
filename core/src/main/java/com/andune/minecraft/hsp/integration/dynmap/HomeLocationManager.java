@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeLocationManager implements LocationManager {

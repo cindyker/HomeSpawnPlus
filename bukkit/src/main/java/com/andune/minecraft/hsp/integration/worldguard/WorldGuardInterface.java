@@ -48,7 +48,7 @@ import com.sk89q.worldedit.BlockVector;
  * class but this one, and we take care to make this class a soft dependency
  * in any class that it is referenced from.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class WorldGuardInterface {

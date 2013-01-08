@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.config;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface ConfigStorage {

@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.ServerConfig;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

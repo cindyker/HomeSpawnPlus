@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface SerializableYamlObject<T> {

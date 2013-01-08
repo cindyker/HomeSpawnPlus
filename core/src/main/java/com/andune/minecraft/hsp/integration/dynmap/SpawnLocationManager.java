@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class SpawnLocationManager implements LocationManager {

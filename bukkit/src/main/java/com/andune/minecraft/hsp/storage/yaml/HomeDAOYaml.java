@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableHome;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> implements HomeDAO {
@@ -58,7 +58,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findHomeById(int)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findHomeById(int)
 	 */
 	@Override
 	public Home findHomeById(int id) {
@@ -78,7 +78,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findDefaultHome(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findDefaultHome(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findDefaultHome(String world, String playerName) {
@@ -98,7 +98,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findBedHome(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findBedHome(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findBedHome(String world, String playerName) {
@@ -118,7 +118,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findHomeByNameAndPlayer(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findHomeByNameAndPlayer(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
@@ -138,7 +138,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findHomesByWorldAndPlayer(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findHomesByWorldAndPlayer(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName) {
@@ -160,7 +160,7 @@ public class HomeDAOYaml extends AbstractDAOYaml<Home, SerializableHome> impleme
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#findHomesByPlayer(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#findHomesByPlayer(java.lang.String)
 	 */
 	@Override
 	public Set<Home> findHomesByPlayer(String playerName) {

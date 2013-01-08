@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("PlayerLastLocation")

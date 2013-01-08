@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class SpawnDelete extends BaseCommand {

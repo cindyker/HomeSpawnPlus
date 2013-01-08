@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 /** Interface all YAML DAOs adhere to, so they can be generically processed
  * together.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface YamlDAOInterface {

@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
  * 
  * This strategy requires WorldGuard and is specific to Bukkit.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

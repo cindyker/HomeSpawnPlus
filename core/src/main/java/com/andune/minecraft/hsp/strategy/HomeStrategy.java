@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
 
 /** Methods that are useful for Home-related strategies.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class HomeStrategy extends BaseStrategy {

@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp;
 /** This is the only class in this package specific to HSP. Just provide your
  * own and use it in your own implementation.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public enum HSPMessages {

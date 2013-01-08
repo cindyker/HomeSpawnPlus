@@ -28,7 +28,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.strategies;
+package com.andune.minecraft.hsp.strategies;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -61,7 +61,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class TestHomeAnyWorld extends HomeStrategyTest {

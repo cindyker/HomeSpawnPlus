@@ -28,7 +28,7 @@
     <snapshotRepository>
       <id>andune-repo-snapshot</id>
       <name>Andune nexus repository</name>
-      <url>http://morganmc.org/nexus/content/repositories/snapshots/</url>
+      <url>http://andune.com/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 

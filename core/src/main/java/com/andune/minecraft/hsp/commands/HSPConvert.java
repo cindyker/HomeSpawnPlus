@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.api.Scheduler;
 import com.google.inject.Injector;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HSPConvert extends BaseCommand {

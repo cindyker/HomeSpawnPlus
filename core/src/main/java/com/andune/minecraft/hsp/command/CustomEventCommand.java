@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class CustomEventCommand extends BaseCommand {

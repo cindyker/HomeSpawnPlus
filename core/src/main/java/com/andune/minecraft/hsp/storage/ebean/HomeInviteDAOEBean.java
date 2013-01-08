@@ -44,7 +44,7 @@ import com.avaje.ebean.Query;
 import com.avaje.ebean.Transaction;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteDAOEBean implements HomeInviteDAO {

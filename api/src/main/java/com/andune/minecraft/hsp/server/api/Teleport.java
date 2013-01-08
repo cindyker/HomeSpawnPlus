@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.server.api;
 
 /** Interface for handling safe teleports.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Teleport {

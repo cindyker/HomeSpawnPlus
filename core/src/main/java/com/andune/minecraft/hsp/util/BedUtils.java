@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Player;
  * there is in interface involved to proxy.
  * @see com.andune.minecraft.hsp.util.BedUtilsImpl
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface BedUtils {

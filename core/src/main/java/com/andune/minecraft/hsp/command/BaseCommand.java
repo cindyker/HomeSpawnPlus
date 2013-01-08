@@ -54,7 +54,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 /** Abstract class that takes care of some routine tasks for commands, to keep those
  * objects as light as possible and so as to not violate the DRY principle.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class BaseCommand implements Command {

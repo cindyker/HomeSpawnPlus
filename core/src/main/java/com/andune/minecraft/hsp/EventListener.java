@@ -63,7 +63,7 @@ import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

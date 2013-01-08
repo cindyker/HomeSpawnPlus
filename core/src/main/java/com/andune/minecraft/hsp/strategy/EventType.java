@@ -30,7 +30,7 @@ package com.andune.minecraft.hsp.strategy;
 /** The HomeSpawnPlus event types. Strategy chains are defined and
  * based on these event types.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public enum EventType {

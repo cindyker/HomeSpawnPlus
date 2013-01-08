@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.server.api.command.CommandConfig;
  * key pieces of data: any disabled commands, all custom defined commands and all
  * properties related to any custom defined commands.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitCommandConfig implements CommandConfig {
@@ -72,7 +72,7 @@ public class BukkitCommandConfig implements CommandConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.command.CommandConfigInterface#isDisabledCommand(java.lang.String)
+     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#isDisabledCommand(java.lang.String)
      */
 	@Override
     public boolean isDisabledCommand(String command) {
@@ -83,7 +83,7 @@ public class BukkitCommandConfig implements CommandConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.command.CommandConfigInterface#getDefinedCommands()
+     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#getDefinedCommands()
      */
 	@Override
     public Set<String> getDefinedCommands() {
@@ -91,7 +91,7 @@ public class BukkitCommandConfig implements CommandConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.command.CommandConfigInterface#getCommandParameters(java.lang.String)
+     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#getCommandParameters(java.lang.String)
      */
 	@Override
     public Map<String, Object> getCommandParameters(String command) {
@@ -107,7 +107,7 @@ public class BukkitCommandConfig implements CommandConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.command.CommandConfigInterface#loadConfig(org.bukkit.configuration.ConfigurationSection)
+     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#loadConfig(org.bukkit.configuration.ConfigurationSection)
      */
 	@Override
     public void loadConfig() {

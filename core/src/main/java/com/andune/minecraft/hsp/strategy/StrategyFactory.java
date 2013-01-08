@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.google.inject.Injector;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.World;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitBlock implements Block {
@@ -64,7 +64,7 @@ public class BukkitBlock implements Block {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Block#getLocation()
+     * @see com.andune.minecraft.hsp.server.api.Block#getLocation()
      */
     @Override
     public Location getLocation() {
@@ -72,7 +72,7 @@ public class BukkitBlock implements Block {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Block#getTypeId()
+     * @see com.andune.minecraft.hsp.server.api.Block#getTypeId()
      */
     @Override
     public int getTypeId() {
@@ -80,7 +80,7 @@ public class BukkitBlock implements Block {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.server.api.Block#getRelative(org.morganm.homespawnplus.server.api.BlockFace)
+     * @see com.andune.minecraft.hsp.server.api.Block#getRelative(com.andune.minecraft.hsp.server.api.BlockFace)
      */
     @Override
     public Block getRelative(BlockFace face) {

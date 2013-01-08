@@ -38,14 +38,14 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /** Base strategy for Strategy Modes. Implements common logic.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class ModeStrategyImpl extends BaseStrategy implements ModeStrategy {
 	@Override
 	public abstract StrategyMode getMode();
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.ModeStrategy#isAdditive()
+	 * @see com.andune.minecraft.hsp.strategy.ModeStrategy#isAdditive()
 	 */
 	@Override
 	public boolean isAdditive() { return false; }

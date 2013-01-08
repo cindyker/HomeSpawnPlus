@@ -55,7 +55,7 @@ import com.andune.minecraft.hsp.server.api.World;
 /** Class which processes the config file and loads strategy info into memory
  * for use when evaluating strategies at runtime.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StrategyConfigImpl implements Initializable, StrategyConfig {
@@ -342,7 +342,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getDefaultStrategies(java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getDefaultStrategies(java.lang.String)
      */
 	@Override
     public Set<Strategy> getDefaultStrategies(final String event) {
@@ -350,7 +350,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getPermissionStrategies(java.lang.String, org.morganm.homespawnplus.server.api.Player)
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getPermissionStrategies(java.lang.String, com.andune.minecraft.hsp.server.api.Player)
      */
 	@Override
     public List<Set<Strategy>> getPermissionStrategies(final String event, final Player player) {
@@ -372,7 +372,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getWorldStrategies(java.lang.String, java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getWorldStrategies(java.lang.String, java.lang.String)
      */
 	@Override
     public Set<Strategy> getWorldStrategies(final String event, final String world) {
@@ -384,7 +384,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getPermissionStrategyCount()
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getPermissionStrategyCount()
      */
 	@Override
     public int getPermissionStrategyCount() {
@@ -403,7 +403,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getWorldStrategyCount()
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getWorldStrategyCount()
      */
 	@Override
     public int getWorldStrategyCount() {
@@ -422,7 +422,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getDefaultStrategyCount()
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getDefaultStrategyCount()
      */
 	@Override
     public int getDefaultStrategyCount() {
@@ -436,7 +436,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	}
 
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyConfig#getStrategyCountMap()
+     * @see com.andune.minecraft.hsp.strategy.StrategyConfig#getStrategyCountMap()
      */
 	@Override
     public Map<String, Integer> getStrategyCountMap() {

@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerDAO {

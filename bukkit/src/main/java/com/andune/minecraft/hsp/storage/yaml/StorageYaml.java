@@ -51,7 +51,7 @@ import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableSpawn;
 
 /** Yaml storage back end.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StorageYaml implements Storage {

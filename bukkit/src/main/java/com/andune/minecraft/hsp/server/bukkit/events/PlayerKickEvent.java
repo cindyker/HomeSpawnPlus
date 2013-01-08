@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.bukkit.events;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerKickEvent extends PlayerEvent

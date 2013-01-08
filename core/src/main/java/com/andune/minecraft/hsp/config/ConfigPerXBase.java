@@ -41,7 +41,7 @@ import java.util.Set;
  * and "config-per-permission" patterns for use by other
  * config objects.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class ConfigPerXBase<P extends PerPermissionEntry, W extends PerWorldEntry> extends ConfigBase {

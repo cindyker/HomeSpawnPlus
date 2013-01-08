@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.server.api.YamlFile;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class ConfigLoader  {

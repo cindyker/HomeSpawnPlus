@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableSpawn;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> implements SpawnDAO {
@@ -58,7 +58,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findSpawnByWorld(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorld(java.lang.String)
 	 */
 	@Override
 	public Spawn findSpawnByWorld(String world) {
@@ -78,7 +78,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findSpawnByWorldAndGroup(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorldAndGroup(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Spawn findSpawnByWorldAndGroup(String world, String group) {
@@ -98,7 +98,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findSpawnByName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByName(java.lang.String)
 	 */
 	@Override
 	public Spawn findSpawnByName(String name) {
@@ -118,7 +118,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findSpawnById(int)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnById(int)
 	 */
 	@Override
 	public Spawn findSpawnById(int id) {
@@ -142,7 +142,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
     }
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#getSpawnDefinedGroups()
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#getSpawnDefinedGroups()
 	 */
 	@Override
 	public Set<String> getSpawnDefinedGroups() {
@@ -161,7 +161,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#findAllSpawns()
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findAllSpawns()
 	 */
 	/*
 	@Override
@@ -207,7 +207,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#saveSpawn(org.morganm.homespawnplus.entity.Spawn)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#saveSpawn(com.andune.minecraft.hsp.entity.Spawn)
 	 */
 	@Override
 	public void saveSpawn(Spawn spawn) throws StorageException {
@@ -215,7 +215,7 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.SpawnDAO#deleteSpawn(org.morganm.homespawnplus.entity.Spawn)
+	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#deleteSpawn(com.andune.minecraft.hsp.entity.Spawn)
 	 */
 	@Override
 	public void deleteSpawn(Spawn spawn) throws StorageException {

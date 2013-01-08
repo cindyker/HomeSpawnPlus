@@ -42,7 +42,7 @@ import java.util.List;
  * leave room for specific details that change from one config setup to the
  * next.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class PerPermissionEntry extends PerXEntry {

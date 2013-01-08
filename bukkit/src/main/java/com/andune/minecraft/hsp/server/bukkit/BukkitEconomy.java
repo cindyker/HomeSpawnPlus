@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.server.api.impl.EconomyAbstractImpl;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

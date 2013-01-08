@@ -58,7 +58,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 /** Class to monitor for enter/exit to registered WorldGuard regions.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class RegionListener implements Listener {

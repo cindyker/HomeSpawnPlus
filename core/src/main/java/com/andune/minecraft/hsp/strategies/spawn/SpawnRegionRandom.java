@@ -54,7 +54,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
  * Bukkit/WorldGuard-specific strategy, currently will not run on any
  * server other than Bukkit.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @OneArgStrategy

@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
 /** Spawn strategy to spawn a random strategy out of a named list
  * 
- * @author morganm
+ * @author andune
  *
  */
 @OneArgStrategy

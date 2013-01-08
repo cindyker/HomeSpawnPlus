@@ -49,7 +49,7 @@ import com.andune.minecraft.hsp.server.api.Location;
  * Note the factory methods are package-private so this cannot
  * be used outside of the entities that use this pattern.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class ObjectFactory implements Initializable {

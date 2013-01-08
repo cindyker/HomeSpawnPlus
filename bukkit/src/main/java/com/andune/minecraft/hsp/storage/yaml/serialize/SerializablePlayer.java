@@ -37,7 +37,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import com.andune.minecraft.hsp.entity.Player;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("Player")

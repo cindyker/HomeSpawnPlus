@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeList extends BaseCommand {

@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.config.ConfigEconomy.PerWorldEconomyEntry;
 
 /** Configuration related to economy costs.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

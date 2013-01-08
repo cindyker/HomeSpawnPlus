@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.server.api.Plugin;
  * for the purpose of allowing SQLite schema upgrades, which are impossible otherwise
  * with just the Ajave EBeanInterface provided by Bukkit via the JavaPlugin class. 
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

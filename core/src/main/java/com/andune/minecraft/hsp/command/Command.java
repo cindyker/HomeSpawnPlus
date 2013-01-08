@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.server.api.CommandSender;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface Command {

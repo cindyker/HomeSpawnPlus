@@ -48,7 +48,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class Home extends BaseCommand

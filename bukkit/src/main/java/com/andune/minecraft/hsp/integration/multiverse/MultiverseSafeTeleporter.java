@@ -43,7 +43,7 @@ import com.onarandombox.MultiverseCore.api.SafeTTeleporter;
 import com.onarandombox.MultiverseCore.enums.TeleportResult;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class MultiverseSafeTeleporter implements SafeTTeleporter {

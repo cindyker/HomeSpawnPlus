@@ -49,7 +49,7 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.World;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class Layer {
@@ -231,9 +231,9 @@ public class Layer {
      * 
      * Although this mechanism was inherited from the original
      * Dynmap-CommandBook, it appears completely redundant with the existing
-     * update mechanism built into DynmapModule. Commenting out. 6/30/12 morganm
+     * update mechanism built into DynmapModule. Commenting out. 6/30/12 andune
      * 
-     * @author morganm
+     * @author andune
      *
      */
 	/*

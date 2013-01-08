@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
 /** Common routines related to management of spawns.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

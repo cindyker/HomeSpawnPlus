@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 /** Mode to exclude newPlayer spawn from choice list when selecting
  * random or nearby spawns.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.server.api.World;
  * HSP doesn't have a similar abstract location paradigm, we create one here to
  * minimize code change on the original Dynmap-CommandBook algorithms.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface LocationManager {

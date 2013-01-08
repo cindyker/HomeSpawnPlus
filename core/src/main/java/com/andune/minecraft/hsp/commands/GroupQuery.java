@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
 /** Command to return the group HSP thinks a player is in, based on the underlying
  * Permission system in use.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class GroupQuery extends BaseCommand {

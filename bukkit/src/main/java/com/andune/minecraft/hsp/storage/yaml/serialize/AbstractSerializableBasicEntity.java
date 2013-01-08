@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.entity.BasicEntity;
 /** Abstract basic entity data members so the same code doesn't have to be repeated
  * for each entity.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class AbstractSerializableBasicEntity<T extends BasicEntity> implements ConfigurationSerializable {

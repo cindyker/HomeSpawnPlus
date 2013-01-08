@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.server.api.CommandSender;
 import com.andune.minecraft.hsp.server.api.PermissionSystem;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

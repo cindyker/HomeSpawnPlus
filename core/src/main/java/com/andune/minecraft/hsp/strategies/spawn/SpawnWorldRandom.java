@@ -51,7 +51,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 /** Spawn at a completely random spot on the local world, obeying WorldBorder
  * limits, if any.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

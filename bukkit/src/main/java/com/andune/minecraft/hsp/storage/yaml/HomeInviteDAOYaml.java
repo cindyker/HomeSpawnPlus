@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableHomeInvite;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableHomeInvite> implements HomeInviteDAO {

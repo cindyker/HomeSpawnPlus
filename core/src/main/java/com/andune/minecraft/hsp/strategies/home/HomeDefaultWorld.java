@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

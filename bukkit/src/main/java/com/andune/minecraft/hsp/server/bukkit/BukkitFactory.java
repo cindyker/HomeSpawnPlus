@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.google.inject.Injector;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

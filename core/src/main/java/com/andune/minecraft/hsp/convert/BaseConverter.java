@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public abstract class BaseConverter implements Converter {

@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

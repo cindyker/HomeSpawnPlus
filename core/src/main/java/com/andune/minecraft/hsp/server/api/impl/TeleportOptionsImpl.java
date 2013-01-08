@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.server.api.impl;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class TeleportOptionsImpl implements com.andune.minecraft.hsp.server.api.TeleportOptions {

@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.config.ConfigException;
  * specific implementation. So an implementation could be written to
  * bind to Bukkit's YAML, or SnakeYAML, or some other YAML API.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface YamlFile {

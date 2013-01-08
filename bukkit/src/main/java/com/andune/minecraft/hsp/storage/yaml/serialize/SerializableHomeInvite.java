@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("HomeInvite")

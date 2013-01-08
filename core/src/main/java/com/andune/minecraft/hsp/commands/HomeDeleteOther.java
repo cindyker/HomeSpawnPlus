@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeDeleteOther extends BaseCommand {

@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.bukkit;
 import com.andune.minecraft.hsp.server.api.OfflinePlayer;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitOfflinePlayer implements OfflinePlayer {

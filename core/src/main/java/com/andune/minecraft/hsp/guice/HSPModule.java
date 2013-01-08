@@ -60,7 +60,7 @@ import com.google.inject.Scopes;
 
 /** Guice IoC Injector for HomeSpawnPlus.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class HSPModule extends AbstractModule {

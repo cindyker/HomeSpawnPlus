@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.storage.dao;
 import com.andune.minecraft.hsp.entity.Version;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface VersionDAO {

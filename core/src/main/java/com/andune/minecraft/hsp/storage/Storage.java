@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.dao.VersionDAO;
 
 /** Storage interface for stored objects this plugin uses.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Storage {

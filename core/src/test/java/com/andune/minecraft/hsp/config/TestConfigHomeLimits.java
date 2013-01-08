@@ -28,7 +28,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.config;
+package com.andune.minecraft.hsp.config;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -54,7 +54,7 @@ import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class TestConfigHomeLimits {

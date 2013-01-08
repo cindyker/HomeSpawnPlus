@@ -28,7 +28,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.strategies;
+package com.andune.minecraft.hsp.strategies;
 
 import org.mockito.Mock;
 
@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.strategy.StrategyResultFactory;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BaseStrategyTest {

@@ -35,7 +35,7 @@ import com.andune.minecraft.hsp.server.api.Location;
 
 /** Interface for HSP locations.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface NamedLocation {

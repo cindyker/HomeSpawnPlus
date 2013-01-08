@@ -37,7 +37,7 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class VersionDAOEBean implements VersionDAO {
@@ -52,7 +52,7 @@ public class VersionDAOEBean implements VersionDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.VersionDAO#getVersionObject()
+	 * @see com.andune.minecraft.hsp.storage.dao.VersionDAO#getVersionObject()
 	 */
 	@Override
 	public Version getVersionObject() {

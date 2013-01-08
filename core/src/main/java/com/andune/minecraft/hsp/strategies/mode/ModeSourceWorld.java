@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @OneArgStrategy

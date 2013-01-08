@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
 
 /** Converter for original SpawnControl.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class SpawnControl extends BaseConverter

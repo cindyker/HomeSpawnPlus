@@ -45,7 +45,7 @@ import com.andune.minecraft.hsp.strategy.StrategyEngine;
 /** Abstraction layer for WorldGuardInterface. This allows this class (and
  * therefore HSP) to load even if WorldGuard isn't installed on the server.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

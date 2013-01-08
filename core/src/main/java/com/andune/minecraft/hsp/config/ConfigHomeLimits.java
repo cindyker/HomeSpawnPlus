@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerWorld;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

@@ -50,7 +50,7 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class GroupSpawn extends BaseCommand

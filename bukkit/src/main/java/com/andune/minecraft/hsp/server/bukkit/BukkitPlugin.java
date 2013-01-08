@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Plugin;
 
 /** 
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

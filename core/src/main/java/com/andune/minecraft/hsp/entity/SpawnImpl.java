@@ -53,7 +53,7 @@ import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Entity()
@@ -140,7 +140,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
     }
     
     /* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#isNewPlayerSpawn()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#isNewPlayerSpawn()
 	 */
     @Override
 	public boolean isNewPlayerSpawn() {
@@ -148,7 +148,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
     }
     
     /* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#isDefaultSpawn()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#isDefaultSpawn()
 	 */
     @Override
 	public boolean isDefaultSpawn() {
@@ -156,28 +156,28 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
     }
     
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getId()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getId()
 	 */
 	@Override
 	public int getId() {
 		return id;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setId(int)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setId(int)
 	 */
 	@Override
 	public void setId(int id) {
 		this.id = id;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getWorld()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getWorld()
 	 */
 	@Override
 	public String getWorld() {
 		return world;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setWorld(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setWorld(java.lang.String)
 	 */
 	@Override
 	public void setWorld(String world) {
@@ -185,14 +185,14 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getX()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getX()
 	 */
 	@Override
 	public Double getX() {
 		return x;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setX(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setX(java.lang.Double)
 	 */
 	@Override
 	public void setX(Double x) {
@@ -200,14 +200,14 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getY()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getY()
 	 */
 	@Override
 	public Double getY() {
 		return y;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setY(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setY(java.lang.Double)
 	 */
 	@Override
 	public void setY(Double y) {
@@ -215,14 +215,14 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getZ()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getZ()
 	 */
 	@Override
 	public Double getZ() {
 		return z;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setZ(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setZ(java.lang.Double)
 	 */
 	@Override
 	public void setZ(Double z) {
@@ -230,28 +230,28 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getName()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getName()
 	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setName(java.lang.String)
 	 */
 	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getGroup()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getGroup()
 	 */
 	@Override
 	public String getGroup() {
 		return group;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setGroup(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setGroup(java.lang.String)
 	 */
 	@Override
 	public void setGroup(String group) {
@@ -259,7 +259,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getUpdatedBy()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getUpdatedBy()
 	 */
 	@Override
 	public String getUpdatedBy() {
@@ -267,7 +267,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setUpdatedBy(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setUpdatedBy(java.lang.String)
 	 */
 	@Override
 	public void setUpdatedBy(String updatedBy) {
@@ -275,7 +275,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 	
     /* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getPitch()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getPitch()
 	 */
     @Override
 	public Float getPitch() {
@@ -283,7 +283,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setPitch(java.lang.Float)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setPitch(java.lang.Float)
 	 */
 	@Override
 	public void setPitch(Float pitch) {
@@ -292,7 +292,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getYaw()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getYaw()
 	 */
 	@Override
 	public Float getYaw() {
@@ -300,7 +300,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setYaw(java.lang.Float)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setYaw(java.lang.Float)
 	 */
 	@Override
 	public void setYaw(Float yaw) {
@@ -309,7 +309,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 	
     /* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getLastModified()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getLastModified()
 	 */
     @Override
 	public Timestamp getLastModified() {
@@ -317,7 +317,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setLastModified(java.sql.Timestamp)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setLastModified(java.sql.Timestamp)
 	 */
 	@Override
 	public void setLastModified(Timestamp lastModified) {
@@ -325,7 +325,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#getDateCreated()
+	 * @see com.andune.minecraft.hsp.entity.Spawn#getDateCreated()
 	 */
 	@Override
 	public Timestamp getDateCreated() {
@@ -333,7 +333,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Spawn#setDateCreated(java.sql.Timestamp)
+	 * @see com.andune.minecraft.hsp.entity.Spawn#setDateCreated(java.sql.Timestamp)
 	 */
 	@Override
 	public void setDateCreated(Timestamp dateCreated) {

@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 /** Class to process Commandbook home data and convert it into our storage format.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class CommandBook extends BaseConverter

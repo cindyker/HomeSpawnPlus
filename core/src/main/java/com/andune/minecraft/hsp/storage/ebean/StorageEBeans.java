@@ -60,7 +60,7 @@ import com.avaje.ebean.SqlUpdate;
  * or sqlLite depending on what the admin has configured in their bukkit.yml: it makes no
  * difference to us, the API is the same.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton
@@ -150,7 +150,7 @@ public class StorageEBeans implements Storage {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.IStorage#initializeStorage
+	 * @see com.andune.minecraft.hsp.IStorage#initializeStorage
 	 */
 	public void initializeStorage() throws StorageException {
 		if( usePersistanceReimplemented ) {

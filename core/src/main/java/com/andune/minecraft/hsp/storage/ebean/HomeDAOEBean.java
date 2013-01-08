@@ -41,7 +41,7 @@ import com.avaje.ebean.SqlUpdate;
 import com.avaje.ebean.Transaction;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeDAOEBean implements HomeDAO {
@@ -66,7 +66,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findDefaultHome(String world, String playerName) {
@@ -80,7 +80,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getBedHome(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getBedHome(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findBedHome(String world, String playerName) {
@@ -94,7 +94,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getNamedHome(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getNamedHome(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
@@ -108,7 +108,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName) {
@@ -129,7 +129,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#getAllHomes()
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getAllHomes()
 	 */
 	@Override
 	public Set<Home> findAllHomes() {
@@ -137,7 +137,7 @@ public class HomeDAOEBean implements HomeDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.HomeDAO#writeHome(org.morganm.homespawnplus.entity.Home)
+	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#writeHome(com.andune.minecraft.hsp.entity.Home)
 	 */
 	@Override
 	public void saveHome(Home home) {

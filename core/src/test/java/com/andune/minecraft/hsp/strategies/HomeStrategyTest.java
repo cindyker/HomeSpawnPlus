@@ -28,7 +28,7 @@
 /**
  * 
  */
-package org.morganm.homespawnplus.strategies;
+package com.andune.minecraft.hsp.strategies;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -47,7 +47,7 @@ import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public abstract class HomeStrategyTest extends BaseStrategyTest {

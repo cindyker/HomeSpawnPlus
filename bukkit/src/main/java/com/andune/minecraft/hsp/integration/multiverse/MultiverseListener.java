@@ -44,7 +44,7 @@ import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 
 /** Class incomplete, may not be necessary.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

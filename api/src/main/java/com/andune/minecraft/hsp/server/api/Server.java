@@ -35,7 +35,7 @@ import java.util.List;
 import com.andune.minecraft.hsp.HSPMessages;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface Server {

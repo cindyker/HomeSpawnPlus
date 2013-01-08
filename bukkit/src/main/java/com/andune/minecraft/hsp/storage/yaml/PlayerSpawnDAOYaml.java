@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializablePlayerSpawn;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerSpawnDAOYaml extends AbstractDAOYaml<PlayerSpawn, SerializablePlayerSpawn>

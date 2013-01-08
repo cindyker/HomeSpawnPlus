@@ -53,7 +53,7 @@ import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Entity()
@@ -175,42 +175,42 @@ public class HomeImpl implements EntityWithLocation, Home {
     }
     
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getId()
+	 * @see com.andune.minecraft.hsp.entity.Home#getId()
 	 */
 	@Override
 	public int getId() {
 		return id;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setId(int)
+	 * @see com.andune.minecraft.hsp.entity.Home#setId(int)
 	 */
 	@Override
 	public void setId(int id) {
 		this.id = id;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getPlayerName()
+	 * @see com.andune.minecraft.hsp.entity.Home#getPlayerName()
 	 */
 	@Override
 	public String getPlayerName() {
 		return playerName;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setPlayerName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Home#setPlayerName(java.lang.String)
 	 */
 	@Override
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getWorld()
+	 * @see com.andune.minecraft.hsp.entity.Home#getWorld()
 	 */
 	@Override
 	public String getWorld() {
 		return world;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setWorld(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Home#setWorld(java.lang.String)
 	 */
 	@Override
 	public void setWorld(String world) {
@@ -218,14 +218,14 @@ public class HomeImpl implements EntityWithLocation, Home {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getX()
+	 * @see com.andune.minecraft.hsp.entity.Home#getX()
 	 */
 	@Override
 	public Double getX() {
 		return x;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setX(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Home#setX(java.lang.Double)
 	 */
 	@Override
 	public void setX(Double x) {
@@ -233,14 +233,14 @@ public class HomeImpl implements EntityWithLocation, Home {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getY()
+	 * @see com.andune.minecraft.hsp.entity.Home#getY()
 	 */
 	@Override
 	public Double getY() {
 		return y;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setY(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Home#setY(java.lang.Double)
 	 */
 	@Override
 	public void setY(Double y) {
@@ -248,14 +248,14 @@ public class HomeImpl implements EntityWithLocation, Home {
 		location = null;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getZ()
+	 * @see com.andune.minecraft.hsp.entity.Home#getZ()
 	 */
 	@Override
 	public Double getZ() {
 		return z;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setZ(java.lang.Double)
+	 * @see com.andune.minecraft.hsp.entity.Home#setZ(java.lang.Double)
 	 */
 	@Override
 	public void setZ(Double z) {
@@ -264,7 +264,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getUpdatedBy()
+	 * @see com.andune.minecraft.hsp.entity.Home#getUpdatedBy()
 	 */
 	@Override
 	public String getUpdatedBy() {
@@ -272,7 +272,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setUpdatedBy(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Home#setUpdatedBy(java.lang.String)
 	 */
 	@Override
 	public void setUpdatedBy(String updatedBy) {
@@ -280,7 +280,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getLastModified()
+	 * @see com.andune.minecraft.hsp.entity.Home#getLastModified()
 	 */
 	@Override
 	public Timestamp getLastModified() {
@@ -288,7 +288,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setLastModified(java.sql.Timestamp)
+	 * @see com.andune.minecraft.hsp.entity.Home#setLastModified(java.sql.Timestamp)
 	 */
 	@Override
 	public void setLastModified(Timestamp lastModified) {
@@ -296,7 +296,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getDateCreated()
+	 * @see com.andune.minecraft.hsp.entity.Home#getDateCreated()
 	 */
 	@Override
 	public Timestamp getDateCreated() {
@@ -304,7 +304,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setDateCreated(java.sql.Timestamp)
+	 * @see com.andune.minecraft.hsp.entity.Home#setDateCreated(java.sql.Timestamp)
 	 */
 	@Override
 	public void setDateCreated(Timestamp dateCreated) {
@@ -312,7 +312,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getPitch()
+	 * @see com.andune.minecraft.hsp.entity.Home#getPitch()
 	 */
 	@Override
 	public Float getPitch() {
@@ -320,7 +320,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setPitch(java.lang.Float)
+	 * @see com.andune.minecraft.hsp.entity.Home#setPitch(java.lang.Float)
 	 */
 	@Override
 	public void setPitch(Float pitch) {
@@ -329,7 +329,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getYaw()
+	 * @see com.andune.minecraft.hsp.entity.Home#getYaw()
 	 */
 	@Override
 	public Float getYaw() {
@@ -337,7 +337,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setYaw(java.lang.Float)
+	 * @see com.andune.minecraft.hsp.entity.Home#setYaw(java.lang.Float)
 	 */
 	@Override
 	public void setYaw(Float yaw) {
@@ -346,7 +346,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#isBedHome()
+	 * @see com.andune.minecraft.hsp.entity.Home#isBedHome()
 	 */
 	@Override
 	public boolean isBedHome() {
@@ -354,7 +354,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setBedHome(boolean)
+	 * @see com.andune.minecraft.hsp.entity.Home#setBedHome(boolean)
 	 */
 	@Override
 	public void setBedHome(boolean bedHome) {
@@ -362,7 +362,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#isDefaultHome()
+	 * @see com.andune.minecraft.hsp.entity.Home#isDefaultHome()
 	 */
 	@Override
 	public boolean isDefaultHome() {
@@ -370,7 +370,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setDefaultHome(boolean)
+	 * @see com.andune.minecraft.hsp.entity.Home#setDefaultHome(boolean)
 	 */
 	@Override
 	public void setDefaultHome(boolean defaultHome) {
@@ -378,7 +378,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#getName()
+	 * @see com.andune.minecraft.hsp.entity.Home#getName()
 	 */
 	@Override
 	public String getName() {
@@ -386,7 +386,7 @@ public class HomeImpl implements EntityWithLocation, Home {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.entity.Home#setName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.entity.Home#setName(java.lang.String)
 	 */
 	@Override
 	public void setName(String name) {

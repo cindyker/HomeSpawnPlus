@@ -82,7 +82,7 @@ import com.google.inject.Provides;
 
 /** This module defines the interface bindings that are specific to Bukkit.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitModule extends AbstractModule {

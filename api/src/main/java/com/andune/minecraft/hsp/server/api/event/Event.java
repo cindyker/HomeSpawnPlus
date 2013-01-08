@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.server.api.event;
 
 /** Interface all api events extend.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Event {

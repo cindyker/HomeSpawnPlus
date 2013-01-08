@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.server.api;
 
 /** API for manipulating blocks.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Block {

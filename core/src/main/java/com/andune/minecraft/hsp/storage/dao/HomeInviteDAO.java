@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface HomeInviteDAO {

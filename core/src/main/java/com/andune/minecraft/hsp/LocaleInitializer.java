@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.api.Plugin;
  * guarantees it runs after the config files have been loaded, which
  * is important so that we know what locale to use.
  *  
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

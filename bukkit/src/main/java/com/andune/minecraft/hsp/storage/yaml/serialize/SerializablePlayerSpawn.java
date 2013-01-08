@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("PlayerSpawn")

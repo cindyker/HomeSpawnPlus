@@ -34,7 +34,7 @@ import com.andune.minecraft.hsp.server.api.BlockFace;
 
 /** Mapping between abstract API BlockFace and Bukkit BlockFace.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public enum BukkitBlockFace {

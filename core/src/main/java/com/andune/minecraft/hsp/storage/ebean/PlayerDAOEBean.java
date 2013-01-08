@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 import com.avaje.ebean.EbeanServer;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerDAOEBean implements PlayerDAO {
@@ -53,7 +53,7 @@ public class PlayerDAOEBean implements PlayerDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerDAO#findPlayerByName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findPlayerByName(java.lang.String)
 	 */
 	@Override
 	public Player findPlayerByName(String name) {
@@ -61,7 +61,7 @@ public class PlayerDAOEBean implements PlayerDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerDAO#findAllPlayers()
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findAllPlayers()
 	 */
 	@Override
 	public Set<Player> findAllPlayers() {
@@ -69,7 +69,7 @@ public class PlayerDAOEBean implements PlayerDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerDAO#savePlayer(org.morganm.homespawnplus.entity.Player)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#savePlayer(com.andune.minecraft.hsp.entity.Player)
 	 */
 	@Override
 	public void savePlayer(Player player) {

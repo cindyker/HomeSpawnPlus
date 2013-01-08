@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.bukkit;
 import com.andune.minecraft.hsp.server.api.CommandSender;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitCommandSender implements CommandSender {

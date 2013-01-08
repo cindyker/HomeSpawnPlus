@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
 
 /** Annotation for abstracted server events.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Target(ElementType.METHOD)

@@ -43,7 +43,7 @@ import com.google.inject.Injector;
 
 /** Main object that controls plugin startup and shutdown.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class HomeSpawnPlus {

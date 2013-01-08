@@ -52,7 +52,7 @@ import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Entity()

@@ -55,7 +55,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /** Class responsible for processing strategies at run-time.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StrategyEngineImpl implements StrategyEngine {
@@ -82,7 +82,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyEngine#getStrategyResult(org.morganm.homespawnplus.strategy.StrategyContext, java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyEngine#getStrategyResult(com.andune.minecraft.hsp.strategy.StrategyContext, java.lang.String)
      */
 	@Override
     public StrategyResult getStrategyResult(StrategyContext context, String...args) {
@@ -95,7 +95,7 @@ public class StrategyEngineImpl implements StrategyEngine {
     		context.setArg(args[0]);
     	
     	StrategyResult result = evaluateStrategies(context);
-    	// decided these warnings are just annoying and of no value. -morganm 7/26/12
+    	// decided these warnings are just annoying and of no value. -andune 7/26/12
 //    	if( result == null && plugin.getConfig().getBoolean(ConfigOptions.WARN_NULL_STRATEGY, true) ) {
 //			log.info(logPrefix + " strategy result is null for event "+context.getEventType()+"."
 //					+ " This could indicate a configuration mistake."
@@ -121,7 +121,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 			return null;
 	}
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyEngine#getStrategyLocation(org.morganm.homespawnplus.strategy.EventType, org.morganm.homespawnplus.server.api.Player, java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyEngine#getStrategyLocation(com.andune.minecraft.hsp.strategy.EventType, com.andune.minecraft.hsp.server.api.Player, java.lang.String)
      */
 	@Override
     public Location getStrategyLocation(EventType event, Player player, String...args) {
@@ -129,7 +129,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyEngine#getStrategyResult(java.lang.String, org.morganm.homespawnplus.server.api.Player, java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyEngine#getStrategyResult(java.lang.String, com.andune.minecraft.hsp.server.api.Player, java.lang.String)
      */
 	@Override
     public StrategyResult getStrategyResult(String event, Player player, String...args) {
@@ -139,7 +139,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		return getStrategyResult(context, args);
 	}
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyEngine#getStrategyResult(org.morganm.homespawnplus.strategy.EventType, org.morganm.homespawnplus.server.api.Player, java.lang.String)
+     * @see com.andune.minecraft.hsp.strategy.StrategyEngine#getStrategyResult(com.andune.minecraft.hsp.strategy.EventType, com.andune.minecraft.hsp.server.api.Player, java.lang.String)
      */
 	@Override
     public StrategyResult getStrategyResult(EventType event, Player player, String...args) {
@@ -147,7 +147,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 	}
 	
 	/* (non-Javadoc)
-     * @see org.morganm.homespawnplus.strategy.StrategyEngine#evaluateStrategies(org.morganm.homespawnplus.strategy.StrategyContext)
+     * @see com.andune.minecraft.hsp.strategy.StrategyEngine#evaluateStrategies(com.andune.minecraft.hsp.strategy.StrategyContext)
      */
 	@Override
     public StrategyResult evaluateStrategies(StrategyContext context) {
@@ -202,7 +202,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		}
 		
 		if( result == null ) {
-	    	// decided these warnings are just annoying and of no value. -morganm 7/26/12
+	    	// decided these warnings are just annoying and of no value. -andune 7/26/12
 //			log.warning(logPrefix + " Warning: no event strategy defined for event "+context.getEventType()+". If this is intentional, just define the event in config.yml with the single strategy \"default\" to avoid this warning.");
 		}
 		else {

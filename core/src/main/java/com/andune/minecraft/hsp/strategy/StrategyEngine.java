@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
  * fulfills those needs. Thus Guice just binds this interface to the only
  * implementation that exists: StrategyEngineImpl
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface StrategyEngine {

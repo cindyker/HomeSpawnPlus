@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
  * strategies to have to be within the distance bounce specified in order
  * to be used.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @OneArgStrategy

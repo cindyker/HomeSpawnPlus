@@ -43,7 +43,7 @@ import com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent;
 /** API for HSP to implement in order to receive event callbacks from
  * the server implementation.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface EventListener {

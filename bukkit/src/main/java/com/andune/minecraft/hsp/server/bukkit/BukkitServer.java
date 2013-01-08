@@ -58,7 +58,7 @@ import com.andune.minecraft.hsp.server.api.Teleport;
 import com.andune.minecraft.hsp.server.api.World;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitServer implements Server {

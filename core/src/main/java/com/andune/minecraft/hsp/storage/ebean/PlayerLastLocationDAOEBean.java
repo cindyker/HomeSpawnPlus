@@ -40,7 +40,7 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
@@ -55,7 +55,7 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO#findById(int)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO#findById(int)
 	 */
 	@Override
 	public PlayerLastLocation findById(int id) {
@@ -67,7 +67,7 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO#findByWorldAndPlayerName(java.lang.String, java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO#findByWorldAndPlayerName(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public PlayerLastLocation findByWorldAndPlayerName(String world,
@@ -81,7 +81,7 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO#findByPlayerName(java.lang.String)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO#findByPlayerName(java.lang.String)
 	 */
 	@Override
 	public Set<PlayerLastLocation> findByPlayerName(String playerName) {
@@ -93,7 +93,7 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO#findAll()
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO#findAll()
 	 */
 	@Override
 	public Set<PlayerLastLocation> findAll() {
@@ -101,7 +101,7 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO#save(org.morganm.homespawnplus.entity.PlayerLastLocation)
+	 * @see com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO#save(com.andune.minecraft.hsp.entity.PlayerLastLocation)
 	 */
 	@Override
 	public void save(PlayerLastLocation playerLastLocation) throws StorageException {

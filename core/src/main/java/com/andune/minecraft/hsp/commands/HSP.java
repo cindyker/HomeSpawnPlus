@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.server.api.CommandSender;
 import com.andune.minecraft.hsp.util.BackupUtil;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HSP extends BaseCommand {
@@ -107,77 +107,6 @@ public class HSP extends BaseCommand {
                     + (worldGuard.isEnabled() ? "enabled" : "disabled")
                     + ", detected version " + worldGuard.getVersion());
         }
-		/*
-		else if( args[0].startsWith("reloadd") || args[0].equals("rd") ) {
-			// purge the existing cache
-			storage.purgeCache();
-			// now reload it by grabbing all of the objects
-			storage.getHomeDAO().findAllHomes();
-			storage.getSpawnDAO().findAllSpawns();
-
-			server.sendLocalizedMessage(p, HSPMessages.CMD_HSP_DATA_RELOADED);
-		}
-		else if( args[0].equals("test") ) {
-			org.morganm.homespawnplus.entity.Home home = plugin.getStorage().getHomeDAO().findDefaultHome("world", "morganm");
-			p.sendMessage("Found home with id "+home.getId());
-			org.morganm.homespawnplus.entity.Spawn spawn = plugin.getStorage().getSpawnDAO().findSpawnById(1);
-			p.sendMessage("Found spawn with id "+spawn.getId());
-			try {
-				Float yaw = Float.valueOf(new Random(System.currentTimeMillis()).nextInt(360));
-				File file = new File("plugins/HomeSpawnPlus/data.yml");
-				
-				HomeDAOYaml homeDAO = new HomeDAOYaml(file);
-				homeDAO.load();
-				home.setYaw(yaw);
-				homeDAO.saveHome(home);
-				
-				home = homeDAO.findDefaultHome("world", "morganm");
-				p.sendMessage("YML: Found home with yaw "+home.getYaw());
-
-				SpawnDAOYaml spawnDAO = new SpawnDAOYaml(file);
-				spawnDAO.load();
-				spawn.setYaw(yaw);
-				spawnDAO.saveSpawn(spawn);
-				
-				spawn = spawnDAO.findSpawnById(1);
-				p.sendMessage("YML: Found spawn with yaw "+spawn.getYaw());
-			}
-			catch(Exception e) {
-				p.sendMessage("Caught exception: "+e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		else if( args[0].equals("test2") ) {
-			Set<org.morganm.homespawnplus.entity.Home> allHomes = plugin.getStorage().getHomeDAO().findAllHomes();
-			p.sendMessage("allHomes.size="+allHomes.size());
-		}
-//		else if( args[0].equals("domap") ) {
-//			CommandRegister register = new CommandRegister(plugin);
-//			register.register(new HspTest());
-//		}
-        */
-		/*
-		else if( args[0].equals("cmdmap") ) {
-			CraftServer cs = (CraftServer) Bukkit.getServer();
-			SimpleCommandMap commandMap = cs.getCommandMap();
-			
-			for(Command cmd : commandMap.getCommands()) {
-				PluginCommand pc = null;
-				if( cmd instanceof PluginCommand )
-					pc = (PluginCommand) cmd;
-
-				String cmdName = cmd.getName();
-				
-				if( pc != null ) {
-					Plugin plugin = pc.getPlugin();
-					p.sendMessage(cmdName+": "+plugin.getName());
-				}
-//				else {
-//					p.sendMessage(cmdName+": (no plugin mapped?)");
-//				}
-			}
-		}
-		*/
 		else if( args[0].startsWith("backup") ) {
 		    String errorMessage = backupUtil.backup();
 		    if( errorMessage == null ) {

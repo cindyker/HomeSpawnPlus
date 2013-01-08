@@ -34,7 +34,7 @@ package com.andune.minecraft.hsp.config;
 /** Abstract base class for per-world and per-permission config
  * entries.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class PerXEntry {

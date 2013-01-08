@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.entity.EntityWithLocation;
 /** Abstract entity location data so the same code doesn't have to be repeated
  * for each entity.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class AbstractSerializableEntityWithLocation<T extends EntityWithLocation> extends

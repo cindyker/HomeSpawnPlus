@@ -45,7 +45,7 @@ import com.andune.minecraft.hsp.server.api.Player;
 
 /** All HSP Permissions are defined here.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

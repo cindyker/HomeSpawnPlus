@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.entity.SpawnImpl;
 import com.andune.minecraft.hsp.storage.yaml.StorageYaml;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @SerializableAs("Spawn")

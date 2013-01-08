@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.strategy.StrategyContext;
  * objects will be created by the specific server implementation as well
  * as be fully injected by the IoC container.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Factory {

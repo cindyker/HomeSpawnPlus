@@ -54,7 +54,7 @@ import com.andune.minecraft.hsp.strategies.mode.ModeYBounds;
 
 /** The context given to a strategy that is being evaluated.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StrategyContextImpl implements StrategyContext {
@@ -88,14 +88,14 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#getEventType()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#getEventType()
 	 */
 	@Override
 	public String getEventType() {
 		return eventType;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#setEventType(java.lang.String)
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#setEventType(java.lang.String)
 	 */
 	@Override
 	public void setEventType(String eventType) {
@@ -154,14 +154,14 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#getCurrentModes()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#getCurrentModes()
 	 */
 	@Override
 	public List<ModeStrategy> getCurrentModes() {
 		return currentModes;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#addMode(org.morganm.homespawnplus.strategy.ModeStrategy)
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#addMode(com.andune.minecraft.hsp.strategy.ModeStrategy)
 	 */
 	@Override
 	public void addMode(ModeStrategy mode) {
@@ -173,7 +173,7 @@ public class StrategyContextImpl implements StrategyContext {
         isDistanceCheckEnabled = isModeEnabled(StrategyMode.MODE_DISTANCE_LIMITS);
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#resetCurrentModes()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#resetCurrentModes()
 	 */
 	@Override
 	public void resetCurrentModes() {
@@ -194,7 +194,7 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#isInHomeDefaultMode()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#isInHomeDefaultMode()
 	 */
 	@Override
 	public boolean isInHomeDefaultMode() {
@@ -214,7 +214,7 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#isDefaultModeEnabled()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#isDefaultModeEnabled()
 	 */
 	@Override
 	public boolean isDefaultModeEnabled() {
@@ -229,7 +229,7 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#isModeEnabled(org.morganm.homespawnplus.strategy.StrategyMode)
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#isModeEnabled(com.andune.minecraft.hsp.strategy.StrategyMode)
 	 */
 	@Override
 	public boolean isModeEnabled(final StrategyMode mode) {
@@ -239,7 +239,7 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#getMode(org.morganm.homespawnplus.strategy.StrategyMode)
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#getMode(com.andune.minecraft.hsp.strategy.StrategyMode)
 	 */
 	@Override
 	public ModeStrategy getMode(final StrategyMode mode) {
@@ -267,7 +267,7 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#isStrategyProcessingAllowed()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#isStrategyProcessingAllowed()
 	 */
 	@Override
 	public boolean isStrategyProcessingAllowed() {
@@ -409,14 +409,14 @@ public class StrategyContextImpl implements StrategyContext {
     }
 
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#getArg()
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#getArg()
 	 */
 	@Override
 	public String getArg() {
 		return arg;
 	}
 	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.strategy.StrategyContext#setArg(java.lang.String)
+	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#setArg(java.lang.String)
 	 */
 	@Override
 	public void setArg(String arg) {

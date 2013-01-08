@@ -55,7 +55,7 @@ import com.andune.minecraft.hsp.server.api.Server;
 /** Utility methods related to manipulating beds in the environment or
  * player.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton
@@ -85,7 +85,7 @@ public class BedUtilsImpl implements BedUtils {
     }
     
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.util.BedUtils#findBed(org.morganm.homespawnplus.server.api.Block, int)
+     * @see com.andune.minecraft.hsp.util.BedUtils#findBed(com.andune.minecraft.hsp.server.api.Block, int)
      */
     @Override
     public Location findBed(Block b, int maxDepth) {
@@ -153,7 +153,7 @@ public class BedUtilsImpl implements BedUtils {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.util.BedUtils#setBukkitBedHome(org.morganm.homespawnplus.server.api.Player, org.morganm.homespawnplus.server.api.Location)
+     * @see com.andune.minecraft.hsp.util.BedUtils#setBukkitBedHome(com.andune.minecraft.hsp.server.api.Player, com.andune.minecraft.hsp.server.api.Location)
      */
     @Override
     public void setBukkitBedHome(final Player player, final Location l) {
@@ -194,7 +194,7 @@ public class BedUtilsImpl implements BedUtils {
     }
 
     /* (non-Javadoc)
-     * @see org.morganm.homespawnplus.util.BedUtils#doBedClick(org.morganm.homespawnplus.server.api.Player, org.morganm.homespawnplus.server.api.Block)
+     * @see com.andune.minecraft.hsp.util.BedUtils#doBedClick(com.andune.minecraft.hsp.server.api.Player, com.andune.minecraft.hsp.server.api.Block)
      */
     @Override
     public boolean doBedClick(final Player player, final Block bedBlock) {

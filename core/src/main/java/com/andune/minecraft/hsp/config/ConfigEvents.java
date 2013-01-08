@@ -48,7 +48,7 @@ import com.andune.minecraft.hsp.server.api.ConfigurationSection;
  * alignment with purpose in this package. For now it's better to leave the complex and
  * well-tested StrategyConfig class alone.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

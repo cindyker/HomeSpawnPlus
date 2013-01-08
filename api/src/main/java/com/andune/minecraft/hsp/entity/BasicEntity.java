@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.entity;
 import java.sql.Timestamp;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface BasicEntity {

@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 import com.andune.minecraft.hsp.Initializable;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

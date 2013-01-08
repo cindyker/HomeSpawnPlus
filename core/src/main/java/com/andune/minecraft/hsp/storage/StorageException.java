@@ -34,7 +34,7 @@ package com.andune.minecraft.hsp.storage;
  * type such as SQLException or IOException, to give us a consistent exception
  * interface.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class StorageException extends Exception {

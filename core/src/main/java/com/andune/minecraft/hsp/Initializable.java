@@ -34,11 +34,11 @@ package com.andune.minecraft.hsp;
  * Interface for classes to implement if they need initialization
  * on plugin startup.
  * 
- * Any class under org.morganm.homespawnplus implementing this
+ * Any class under com.andune.minecraft.hsp implementing this
  * interface will be automatically picked up and initialized after
  * IoC injection is finished. 
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Initializable {

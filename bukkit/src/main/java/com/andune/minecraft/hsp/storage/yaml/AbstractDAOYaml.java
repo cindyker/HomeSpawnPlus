@@ -48,7 +48,7 @@ import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableYamlObject;
 
 /** Utilities/routines common to YAML DAOs.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class AbstractDAOYaml<T extends BasicEntity, U extends SerializableYamlObject<T>>

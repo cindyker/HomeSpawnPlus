@@ -48,7 +48,7 @@ import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 /** Class to process Essentials 2.9 data and convert it into our database.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public class Essentials29 extends BaseConverter

@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.server.api.CommandSender;
 import com.andune.minecraft.hsp.server.api.OfflinePlayer;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeListOther extends BaseCommand {

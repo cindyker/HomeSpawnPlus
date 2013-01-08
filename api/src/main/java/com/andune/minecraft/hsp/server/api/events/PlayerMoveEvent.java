@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.server.api.events;
 import com.andune.minecraft.hsp.server.api.Location;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface PlayerMoveEvent extends PlayerEvent {

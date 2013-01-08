@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

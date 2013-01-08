@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.strategy;
 
 /** Strategy interface for all strategies.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Strategy {

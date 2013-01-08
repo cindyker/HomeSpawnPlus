@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerTeleportEvent extends PlayerEvent implements com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent

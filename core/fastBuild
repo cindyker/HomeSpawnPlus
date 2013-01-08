@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/bin/mvn -DskipTests -f devpom.xml package; cp target/HomeSpawnPlus.jar ~/minecraft/test/plugins

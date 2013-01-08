@@ -31,7 +31,7 @@
 package com.andune.minecraft.hsp.server.api;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public interface World {

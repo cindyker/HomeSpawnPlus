@@ -54,7 +54,7 @@ import com.avaje.ebean.validation.NotNull;
  * a given world. This allows us to later send them back to that
  * exact same location. 
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Entity()

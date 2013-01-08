@@ -38,7 +38,7 @@ import java.util.Set;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitConfigurationSection implements ConfigurationSection {

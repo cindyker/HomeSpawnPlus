@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.server.api;
 
 /** API to economy. Modeled after Vault API.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface Economy {

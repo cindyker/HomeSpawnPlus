@@ -35,7 +35,7 @@ import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 import com.andune.minecraft.hsp.server.api.Location;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeNamedLocation implements NamedLocation {

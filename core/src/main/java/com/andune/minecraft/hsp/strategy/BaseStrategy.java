@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.strategy.StrategyException;
 
 /** Basic routines common/useful to most all strategies.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class BaseStrategy implements Strategy {

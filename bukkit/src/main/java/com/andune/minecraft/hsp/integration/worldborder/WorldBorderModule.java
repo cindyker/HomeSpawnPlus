@@ -37,7 +37,7 @@ import org.bukkit.plugin.Plugin;
 import com.andune.minecraft.hsp.Initializable;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class WorldBorderModule implements WorldBorder, Initializable {

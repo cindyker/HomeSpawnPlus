@@ -35,7 +35,7 @@ import java.util.Set;
 
 /** Modeled after the Bukkit object of the same name.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface ConfigurationSection {

@@ -49,7 +49,7 @@ import com.avaje.ebean.validation.NotNull;
 
 /** Class to keep track of players we've seen before, so we can tell if it's a new player or not.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Entity()

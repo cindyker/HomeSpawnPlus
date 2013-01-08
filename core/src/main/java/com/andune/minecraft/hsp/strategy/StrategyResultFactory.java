@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
  * used to allow simplicity in testing, since the Factory object
  * can easily be mocked to validate results.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface StrategyResultFactory {

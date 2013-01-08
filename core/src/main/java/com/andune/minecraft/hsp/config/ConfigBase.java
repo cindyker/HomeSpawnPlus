@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 /** Abstract base class that implements some common functionality
  * for config classes.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public abstract class ConfigBase implements Initializable {

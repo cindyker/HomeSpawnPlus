@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.strategy.Strategy;
  * Interface class that exists so Guice can create a temporary proxy to avoid
  * circular dependencies. Only one implementation exists: StrategyConfigImpl
  * 
- * @author morganm
+ * @author andune
  *
  */
 public interface StrategyConfig {

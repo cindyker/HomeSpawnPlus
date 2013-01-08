@@ -37,7 +37,7 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerRespawnEvent extends PlayerEvent

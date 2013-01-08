@@ -38,7 +38,7 @@ import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class HomeInviteDelete extends BaseCommand {

@@ -34,7 +34,7 @@ package com.andune.minecraft.hsp.strategy;
 /** Different modes that strategies can run under, which can change
  * the behavior of other strategies.
  * 
- * @author morganm
+ * @author andune
  *
  */
 public enum StrategyMode {

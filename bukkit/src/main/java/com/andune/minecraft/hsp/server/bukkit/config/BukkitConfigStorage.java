@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.storage.BaseStorageFactory;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class BukkitConfigStorage implements ConfigStorage {

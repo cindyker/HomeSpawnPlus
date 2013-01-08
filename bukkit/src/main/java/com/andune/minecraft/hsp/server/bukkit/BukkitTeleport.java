@@ -45,7 +45,7 @@ import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.google.inject.Inject;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @Singleton

@@ -27,7 +27,7 @@
  */
 /**
  * High level map of HSP package structure:
- * {hsp} is used as an alias for org.morganm.homespawnplus
+ * {hsp} is used as an alias for com.andune.minecraft.hsp
  * 
  * {hsp} - This is the top-level package with the main plugin class and a few
  * other top-level classes like the initializer and permissions.

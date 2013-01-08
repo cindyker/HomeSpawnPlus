@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.server.api.event;
 
 /** API for server to implement in order to setup event hooks.
  *
- * @author morganm
+ * @author andune
  *
  */
 public interface EventDispatcher {

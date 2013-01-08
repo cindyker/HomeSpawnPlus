@@ -9,7 +9,7 @@
   <repositories>
     <repository>
       <id>andune-repo</id>
-      <url>http://morganmc.org/nexus/content/groups/public/</url>
+      <url>http://andune.com/nexus/content/groups/public/</url>
     </repository>
     <repository>
       <id>bukkit-repo</id>

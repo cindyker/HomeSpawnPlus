@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializablePlayerLastLocation;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 public class PlayerLastLocationDAOYaml extends AbstractDAOYaml<PlayerLastLocation, SerializablePlayerLastLocation>

@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
- * @author morganm
+ * @author andune
  *
  */
 @NoArgStrategy

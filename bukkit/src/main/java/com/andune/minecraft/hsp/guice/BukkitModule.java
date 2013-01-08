@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
-import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
+import com.andune.minecraft.hsp.integration.dynmap.BukkitDynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCoreModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseListener;
@@ -166,7 +166,7 @@ public class BukkitModule extends AbstractModule {
     // that don't exist, as is often the case for optional plugin dependencies.
     ///////////////
     private BukkitEconomy economy;
-    private DynmapModule dynmap;
+    private BukkitDynmapModule dynmap;
     private WorldBorderModule worldBorder;
     private MultiverseCoreModule multiverseCore;
     private MultiversePortalsModule multiversePortals;
@@ -186,9 +186,10 @@ public class BukkitModule extends AbstractModule {
     }
 
     @Provides
-    protected DynmapModule getDynmapModule(ConfigDynmap configDynmap, Storage storage) {
+    protected BukkitDynmapModule getDynmapModule(ConfigDynmap configDynmap,
+            Storage storage, Server server) {
         if( dynmap == null )
-            dynmap = new DynmapModule(plugin, configDynmap, storage);
+            dynmap = new BukkitDynmapModule(plugin, configDynmap, storage, server);
         return dynmap;
     }
     

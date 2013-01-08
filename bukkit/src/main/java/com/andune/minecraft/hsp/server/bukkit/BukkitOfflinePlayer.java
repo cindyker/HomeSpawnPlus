@@ -47,4 +47,9 @@ public class BukkitOfflinePlayer implements OfflinePlayer {
     public String getName() {
         return bukkitOfflinePlayer.getName();
     }
+    
+    @Override
+    public boolean isOnline() {
+        return bukkitOfflinePlayer.isOnline();
+    }
 }

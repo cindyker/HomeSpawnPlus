@@ -126,7 +126,7 @@ public class BukkitServer implements Server {
     
     @Override
     public Player getPlayer(String playerName) {
-        org.bukkit.entity.Player player = plugin.getServer().getPlayer(playerName);
+        org.bukkit.entity.Player player = plugin.getServer().getPlayerExact(playerName);
         if( player != null )
             return bukkitFactory.newBukkitPlayer(player);
         else

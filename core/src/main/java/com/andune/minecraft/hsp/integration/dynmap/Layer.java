@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.World;
 
 /**
@@ -54,7 +55,7 @@ import com.andune.minecraft.hsp.server.api.World;
 public class Layer {
     private final Logger log = LoggerFactory.getLogger(Layer.class);
 
-	private final DynmapModule module;
+	private final Server server;
     private final MarkerAPI markerapi;
     private final LocationManager mgr;
 //    private final long updperiod;
@@ -69,11 +70,12 @@ public class Layer {
 	private ConfigurationSection cfg;
     boolean stop = false;
 	
-	public Layer(final DynmapModule module, LocationManager mgr, String id, ConfigurationSection cfg,
+	public Layer(MarkerAPI markerapi, Server server, LocationManager mgr, String id,
+	        ConfigurationSection cfg,
 			String deflabel, String deficon, String deflabelfmt, long updperiod) {
-		this.module = module;
+		this.server = server;
 		this.mgr = mgr;
-		this.markerapi = module.getMarkerAPI();
+		this.markerapi = markerapi;
 		this.cfg = cfg;
 //		this.updperiod = updperiod;
 
@@ -93,7 +95,7 @@ public class Layer {
 		log.debug("Layer.init() created dynmap layer hsp.{}, set name=","layer.{}.name", id, id);
 		
 		if(set == null) {
-			module.severe("Error creating " + label + " marker set");
+			log.error("Error creating " + label + " marker set");
 			return;
 		}
 		set.setLayerPriority(cfg.getInt("layerprio"));
@@ -159,7 +161,7 @@ public class Layer {
 	void updateMarkerSet() {
 		Map<String, Marker> newmap = new HashMap<String, Marker>(); /* Build new map */
 		/* For each world */
-		for(World w : module.getServer().getWorlds()) {
+		for(World w : server.getWorlds()) {
 			String wname = w.getName();
 			List<NamedLocation> loclist = mgr.getLocations(w);  /* Get locations in this world */
 			if(loclist == null) continue;
@@ -186,7 +188,7 @@ public class Layer {
 					String playerName = nl.getPlayerName();
 					log.debug("updateMarkerSet() name={}, playerName={}", name, playerName);
 					
-					if(module.getServer().getPlayerExact(playerName) == null) {
+					if(server.getPlayer(playerName) == null) {
 						log.debug("updateMarkerSet() name={}, player is offline, skipping", name);
 						continue;
 					}

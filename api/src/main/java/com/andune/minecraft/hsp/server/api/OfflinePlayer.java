@@ -41,4 +41,11 @@ public interface OfflinePlayer {
      * @return Player name
      */
     public String getName();
+    
+    /**
+     * True if this player is online, false if offline.
+     * 
+     * @return
+     */
+    public boolean isOnline();
 }

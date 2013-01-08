@@ -180,4 +180,9 @@ public class BukkitPlayer implements Player {
     public boolean isSneaking() {
         return bukkitPlayer.isSneaking();
     }
+
+    @Override
+    public boolean isOnline() {
+        return bukkitPlayer.isOnline();
+    }
 }

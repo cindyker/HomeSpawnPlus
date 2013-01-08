@@ -53,7 +53,7 @@ import org.testng.annotations.Test;
 
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.strategies.HomeAnyWorld;
+import com.andune.minecraft.hsp.strategies.home.HomeAnyWorld;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyContextImpl;
 import com.andune.minecraft.hsp.strategy.StrategyMode;

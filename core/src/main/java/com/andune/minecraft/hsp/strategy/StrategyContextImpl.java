@@ -38,22 +38,19 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
-import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
+import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.TeleportOptions;
-import com.andune.minecraft.hsp.strategies.ModeDefault;
-import com.andune.minecraft.hsp.strategies.ModeDistanceLimits;
-import com.andune.minecraft.hsp.strategies.ModeInRegion;
-import com.andune.minecraft.hsp.strategies.ModeMultiverseDestinationPortal;
-import com.andune.minecraft.hsp.strategies.ModeMultiverseSourcePortal;
-import com.andune.minecraft.hsp.strategies.ModeSourceWorld;
-import com.andune.minecraft.hsp.strategies.ModeYBounds;
-import com.andune.minecraft.hsp.strategy.ModeStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
+import com.andune.minecraft.hsp.strategies.mode.ModeDefault;
+import com.andune.minecraft.hsp.strategies.mode.ModeDistanceLimits;
+import com.andune.minecraft.hsp.strategies.mode.ModeInRegion;
+import com.andune.minecraft.hsp.strategies.mode.ModeMultiverseDestinationPortal;
+import com.andune.minecraft.hsp.strategies.mode.ModeMultiverseSourcePortal;
+import com.andune.minecraft.hsp.strategies.mode.ModeSourceWorld;
+import com.andune.minecraft.hsp.strategies.mode.ModeYBounds;
 
 /** The context given to a strategy that is being evaluated.
  * 
@@ -65,8 +62,8 @@ public class StrategyContextImpl implements StrategyContext {
     
 	private final static ModeStrategyImpl defaultMode = new ModeDefault();
 	private final Factory factory;
-    private final MultiverseModule multiVerse;
-    private final WorldGuardModule worldGuard;
+    private final MultiversePortals multiversePortals;
+    private final WorldGuard worldGuard;
 	
 	private String eventType;
 	private Player player;
@@ -84,9 +81,9 @@ public class StrategyContextImpl implements StrategyContext {
 	private List<ModeStrategy> currentModes;
 	
 	@Inject
-	public StrategyContextImpl(Factory factory, MultiverseModule multiVerse, WorldGuardModule worldGuard) {
+	public StrategyContextImpl(Factory factory, MultiversePortals multiversePortals, WorldGuard worldGuard) {
 	    this.factory = factory;
-	    this.multiVerse = multiVerse;
+	    this.multiversePortals = multiversePortals;
 	    this.worldGuard = worldGuard;
 	}
 
@@ -274,12 +271,12 @@ public class StrategyContextImpl implements StrategyContext {
 	 */
 	@Override
 	public boolean isStrategyProcessingAllowed() {
-		if( multiVerse.isEnabled() ) {
+		if( multiversePortals.isEnabled() ) {
 			ModeStrategy modeStrategy = getMode(StrategyMode.MODE_MULTIVERSE_SOURCE_PORTAL);
 			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseSourcePortal ) {
 				ModeMultiverseSourcePortal mode = (ModeMultiverseSourcePortal) modeStrategy;
 				String strategyPortalName = mode.getPortalName();
-				String sourcePortalName = multiVerse.getSourcePortalName();
+				String sourcePortalName = multiversePortals.getSourcePortalName();
 				if( !strategyPortalName.equals(sourcePortalName) ) {
 					log.debug("isStrategyProcessingAllowed() returning false for source portal check. ",
 							"strategyPortalName=",strategyPortalName,", sourcePortalName=",sourcePortalName);
@@ -291,7 +288,7 @@ public class StrategyContextImpl implements StrategyContext {
 			if( modeStrategy != null && modeStrategy instanceof ModeMultiverseDestinationPortal ) {
 				ModeMultiverseDestinationPortal mode = (ModeMultiverseDestinationPortal) modeStrategy;
 				String strategyPortalName = mode.getPortalName();
-				String destinationPortalName = multiVerse.getDestinationPortalName();
+				String destinationPortalName = multiversePortals.getDestinationPortalName();
 				if( !strategyPortalName.equals(destinationPortalName) ) {
 					log.debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
 							"strategyPortalName=",strategyPortalName,", destinationPortalName=",destinationPortalName);
@@ -306,7 +303,7 @@ public class StrategyContextImpl implements StrategyContext {
 				ModeInRegion mode = (ModeInRegion) modeStrategy;
 				String regionName = mode.getRegionName();
 				
-				if( !worldGuard.getWorldGuardInterface().isLocationInRegion(getEventLocation(), regionName) ) {
+				if( !worldGuard.isLocationInRegion(getEventLocation(), regionName) ) {
 					log.debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
 							"region=",regionName);
 					return false;

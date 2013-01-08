@@ -28,66 +28,44 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
- * 
+/**
  * @author morganm
  *
  */
 @NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
-	
+public class SpawnNewPlayer extends BaseStrategy
+{
+    @Inject private SpawnDAO spawnDAO;
+    
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
+		Spawn spawn = null;
 		
-		Location homeLocation;
-		Location spawnLocation;
-		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
+		if( context.getPlayer().isNewPlayer() ) {
+			logVerbose("player is detemined to be a new player");
+			spawn = spawnDAO.getNewPlayerSpawn();
 		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
+		else 
+			logVerbose("player is detemined to NOT be a new player");
 
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
-		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return new StrategyResultImpl(spawn);
 	}
 
 	@Override
-	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+	public final String getStrategyConfigName() {
+		return "spawnNewPlayer";
 	}
-
 }

@@ -46,13 +46,11 @@ import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.config.ConfigEvents;
-import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
+import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.World;
-import com.andune.minecraft.hsp.strategy.Strategy;
-import com.andune.minecraft.hsp.strategy.StrategyException;
 
 /** Class which processes the config file and loads strategy info into memory
  * for use when evaluating strategies at runtime.
@@ -70,11 +68,11 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 	private final Server server;
 	private final ConfigEvents configEvents;
 	private final StrategyFactory strategyFactory;
-	private final WorldGuardModule worldGuard;
+	private final WorldGuard worldGuard;
 	
 	@Inject
 	public StrategyConfigImpl(final Server server, ConfigEvents configEvents, StrategyFactory strategyFactory,
-	        WorldGuardModule worldGuard) {
+	        WorldGuard worldGuard) {
 		this.server = server;
 		this.configEvents = configEvents;
 		this.strategyFactory = strategyFactory;
@@ -134,7 +132,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 			}
 			
 			if( worldGuard.isEnabled() ) {
-			    worldGuard.getWorldGuardRegion().registerRegion(world, region);
+			    worldGuard.registerRegion(world, region);
 			}
 			else {
 				log.warn("eventType ",eventType," depends on WorldGuard which is not present or enabled. Skipping.");

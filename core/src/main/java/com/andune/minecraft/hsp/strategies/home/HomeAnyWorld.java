@@ -28,66 +28,63 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.home;
 
-import javax.inject.Inject;
+import java.util.Set;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
+import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.strategy.HomeStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyMode;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
- * 
+/**
  * @author morganm
  *
  */
 @NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
-	
+public class HomeAnyWorld extends HomeStrategy {
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
+		// get the Set of homes for this player for ALL worlds
+	    Set<Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
+		log.debug("HomeAnyWorld: homes = {}", homes);
 		
-		Location homeLocation;
-		Location spawnLocation;
+		Home home = null;
 		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
+		if( homes != null && homes.size() > 0 ) {
+			for(Home h: homes) {
+				// skip this home if MODE_HOME_REQUIRES_BED is set and no bed is nearby
+				if( context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(h) ) {
+					logVerbose(" Home ",h," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+					continue;
+				}
+				
+				// in "normal" or "any" mode, we just grab the first home we find
+				if( context.isDefaultModeEnabled() ||
+						context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
+					home = h;
+					break;
+				}
+				else if( context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) && h.isBedHome() ) {
+					home = h;
+					break;
+				}
+				else if( context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && h.isDefaultHome() ) {
+					home = h;
+					break;
+				}
+			}
 		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
-
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
 		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return resultFactory.create(home);
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+		return "homeAnyWorld";
 	}
 
 }

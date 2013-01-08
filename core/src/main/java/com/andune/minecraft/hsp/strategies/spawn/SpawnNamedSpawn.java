@@ -28,66 +28,59 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
+import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
- * 
+/**
  * @author morganm
  *
  */
 @NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
+@OneArgStrategy
+public class SpawnNamedSpawn extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+    
+	private String namedSpawn;
 	
+	public SpawnNamedSpawn() {}
+	public SpawnNamedSpawn(final String namedSpawn) {
+		this.namedSpawn = namedSpawn;
+	}
+
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
-		
-		Location homeLocation;
-		Location spawnLocation;
-		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
-		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
+		// take the name from the argument, if given
+		String name = context.getArg();
+		// otherwise use the name given at instantiation
+		if( name == null )
+			name = namedSpawn;
 
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
+		Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
 		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		// since namedSpawn is very specific, it's usually an error condition if we didn't
+		// find a named spawn that the admin identified, so print a warning so they can
+		// fix the issue.
+		if( spawn == null )
+			log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
+		
+		return new StrategyResultImpl(spawn);
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+		return "spawnNamedSpawn";
 	}
 
 }

@@ -36,9 +36,10 @@ import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Initializer;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
-import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
-import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
-import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
+import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
+import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
+import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.server.api.CommandSender;
 import com.andune.minecraft.hsp.util.BackupUtil;
 
@@ -48,10 +49,11 @@ import com.andune.minecraft.hsp.util.BackupUtil;
  */
 public class HSP extends BaseCommand {
     @Inject Initializer initializer;
-    @Inject MultiverseModule multiverse;
+    @Inject MultiverseCore multiverseCore;
+    @Inject MultiversePortals multiversePortals;
     @Inject DynmapModule dynmap;
-    @Inject WorldBorderModule worldBorder;
-    @Inject WorldGuardModule worldGuard;
+    @Inject WorldBorder worldBorder;
+    @Inject WorldGuard worldGuard;
     @Inject BackupUtil backupUtil;
     
 	@Override
@@ -86,28 +88,24 @@ public class HSP extends BaseCommand {
 			    server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_CONFIG_RELOADED);
 		}
         else if( args[0].startsWith("modules") ) {
-            sender.sendMessage("Multiverse module "
-                    + (multiverse.isEnabled() ? "enabled" : "disabled"));
-            if( multiverse.isEnabled() ) {
-                sender.sendMessage("  Multiverse-Core "
-                        + (multiverse.isMultiverseEnabled() ? "enabled" : "disabled")
-                        + ", version " + multiverse.getCoreVersion());
-                sender.sendMessage("  Multiverse-Portals "
-                        + (multiverse.isMultiversePortalsEnabled() ? "enabled" : "disabled")
-                        + ", version " + multiverse.getPortalsVersion());
-            }
-            
             sender.sendMessage("Dynmap module "
                     + (dynmap.isEnabled() ? "enabled" : "disabled")
-                    + ", version " + dynmap.getVersion());
+                    + ", detected version " + dynmap.getVersion());
+            
+            sender.sendMessage("Multiverse-Core module "
+                    + (multiverseCore.isEnabled() ? "enabled" : "disabled")
+                    + ", detected version " + multiverseCore.getVersion());
+            sender.sendMessage("Multiverse-Portals module "
+                    + (multiversePortals.isEnabled() ? "enabled" : "disabled")
+                    + ", detected version " + multiversePortals.getVersion());
             
             sender.sendMessage("WorldBorder module "
                     + (worldBorder.isEnabled() ? "enabled" : "disabled")
-                    + ", version " + worldBorder.getVersion());
+                    + ", detected version " + worldBorder.getVersion());
 
             sender.sendMessage("WorldGuard module "
                     + (worldGuard.isEnabled() ? "enabled" : "disabled")
-                    + ", version " + worldGuard.getVersion());
+                    + ", detected version " + worldGuard.getVersion());
         }
 		/*
 		else if( args[0].startsWith("reloadd") || args[0].equals("rd") ) {

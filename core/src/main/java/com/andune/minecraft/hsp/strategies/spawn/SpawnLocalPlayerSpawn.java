@@ -28,66 +28,45 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.PlayerSpawn;
+import com.andune.minecraft.hsp.server.api.Player;
+import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
- * 
+/**
  * @author morganm
  *
  */
 @NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
-	
+public class SpawnLocalPlayerSpawn extends BaseStrategy {
+    @Inject private PlayerSpawnDAO playerSpawnDAO;
+
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
+		StrategyResult result = null;
 		
-		Location homeLocation;
-		Location spawnLocation;
+		Player p = context.getPlayer();
+		String worldName = context.getEventLocation().getWorld().getName();
+		log.debug("SpawnLocalPlayerSpawn.evaluate() worldName={}",worldName);
 		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
+		PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
+		
+		if( ps != null ) {
+			if( ps.getSpawn() != null )
+				result = new StrategyResultImpl(ps.getSpawn());
+			else
+				result = new StrategyResultImpl(ps.getLocation());
 		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
-
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
 		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return result;
 	}
-
-	@Override
-	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
-	}
-
 }

@@ -39,9 +39,14 @@ import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
-import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
+import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
+import com.andune.minecraft.hsp.integration.multiverse.MultiverseCoreModule;
+import com.andune.minecraft.hsp.integration.multiverse.MultiverseListener;
+import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.integration.multiverse.MultiversePortalsModule;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
+import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
 import com.andune.minecraft.hsp.server.api.Economy;
 import com.andune.minecraft.hsp.server.api.Factory;
@@ -163,7 +168,9 @@ public class BukkitModule extends AbstractModule {
     private BukkitEconomy economy;
     private DynmapModule dynmap;
     private WorldBorderModule worldBorder;
-    private MultiverseModule multiverse;
+    private MultiverseCoreModule multiverseCore;
+    private MultiversePortalsModule multiversePortals;
+    private MultiverseListener multiverseListener;
     private WorldGuardModule worldGuard;
     
     @Provides
@@ -193,14 +200,27 @@ public class BukkitModule extends AbstractModule {
     }
     
     @Provides
-    protected MultiverseModule getMultiverse(ConfigCore configCore) {
-        if( multiverse == null )
-            multiverse = new MultiverseModule(configCore, plugin);
-        return multiverse;
+    protected MultiverseCore getMultiverseCore(ConfigCore configCore) {
+        if( multiverseCore == null ) {
+            if( multiverseListener == null )
+                multiverseListener = new MultiverseListener();
+            multiverseCore = new MultiverseCoreModule(configCore, plugin, multiverseListener);
+        }
+        return multiverseCore;
     }
     
     @Provides
-    protected WorldGuardModule getWorldGuard(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
+    protected MultiversePortals getMultiversePortals(ConfigCore configCore) {
+        if( multiversePortals == null ) {
+            if( multiverseListener == null )
+                multiverseListener = new MultiverseListener();
+            multiversePortals = new MultiversePortalsModule(configCore, plugin, multiverseListener);
+        }
+        return multiversePortals;
+    }
+
+    @Provides
+    protected WorldGuard getWorldGuard(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
         if( worldGuard == null )
             worldGuard = new WorldGuardModule(plugin, factory, strategyEngine, server);
         return worldGuard;

@@ -28,66 +28,67 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
+
+import java.util.Random;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
+import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
+/** Spawn strategy to spawn a random strategy out of a named list
  * 
  * @author morganm
  *
  */
-@NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
+@OneArgStrategy
+public class SpawnRandomNamed extends BaseStrategy {
+    protected Storage storage;
+    @Inject public void setStorage(Storage storage) { this.storage = storage; }
+
+	private Random random = new Random(System.currentTimeMillis());
+	private String[] names;
+
+	public SpawnRandomNamed(final String arg) {
+		if( arg != null )
+			this.names = arg.split(",");
+	}
+	
+	@Override
+	public void validate() throws StrategyException {
+		if( names == null )
+			throw new StrategyException("no named spawns given");
+		
+		for(int i=0; i < names.length; i++) {
+			Spawn spawn = storage.getSpawnDAO().findSpawnByName(names[i]);
+			if( spawn == null )
+				log.warn("strategy {} references named spawn \"{}\", which doesn't exist", getStrategyConfigName(), names[i]);
+		}
+	}
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
+		int number = random.nextInt(names.length);
+		String name = names[number];
 		
-		Location homeLocation;
-		Location spawnLocation;
-		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
-		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
+		Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
+		if( spawn == null )
+			log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
 
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
-		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return new StrategyResultImpl(spawn);
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+		return "spawnRandomNamed";
 	}
 
 }

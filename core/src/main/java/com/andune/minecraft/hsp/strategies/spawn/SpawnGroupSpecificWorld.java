@@ -28,66 +28,52 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
+import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.util.SpawnUtil;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
- * 
+/**
  * @author morganm
  *
  */
-@NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
+@OneArgStrategy
+public class SpawnGroupSpecificWorld extends BaseStrategy {
+    @Inject private SpawnUtil spawnUtil;
+    @Inject private PermissionSystem perm;
+
+	private final String worldName;
 	
+	public SpawnGroupSpecificWorld(final String worldName) {
+		this.worldName = worldName;
+	}
+
+	public StrategyResult evaluate(final StrategyContext context, final String world) {
+		Spawn spawn = null;
+		
+		String group = perm.getPlayerGroup(world, context.getPlayer().getName());
+		if( group != null )
+			spawn = spawnUtil.getGroupSpawn(group, world);
+
+		return new StrategyResultImpl(spawn);		
+	}
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
-		
-		Location homeLocation;
-		Location spawnLocation;
-		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
-		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
-		}
-
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
-		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return evaluate(context, worldName);
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+		return "spawnGroupSpecificWorld";
 	}
 
 }

@@ -28,66 +28,69 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.strategies;
+package com.andune.minecraft.hsp.strategies.spawn;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyMode;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
-/** Strategy to return the nearest home or spawn, whichever is closer.
+/** Spawn at a random spawn point on the local world. For example, if
+ * you have defined "spawn1", "spawn2" and "spawn3" on the local world,
+ * this strategy will choose one of them at random.
  * 
  * @author morganm
  *
  */
 @NoArgStrategy
-public class NearestHomeOrSpawn extends BaseStrategy {
-	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
+public class SpawnLocalRandom extends BaseStrategy {
+    @Inject protected SpawnDAO spawnDAO;
+
+	private Random random = new Random(System.currentTimeMillis());
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult homeResult = nearestHome.evaluate(context);
-		StrategyResult spawnResult = nearestSpawn.evaluate(context);
+		Spawn spawn = null;
 		
-		Location homeLocation;
-		Location spawnLocation;
+		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
 		
-		// if either one is null, return the other
-		if( homeResult == null )
-			return spawnResult;
-		else {
-			homeLocation = homeResult.getLocation();
-			if( homeLocation == null )
-				return spawnResult;
+		String playerLocalWorld = context.getEventLocation().getWorld().getName();
+		Set<? extends Spawn> allSpawns = spawnDAO.findAllSpawns();
+		ArrayList<Spawn> spawnChoices = new ArrayList<Spawn>(5);
+		for(Spawn theSpawn : allSpawns) {
+			// skip newPlayerSpawn if so directed
+			if( excludeNewPlayerSpawn && theSpawn.isNewPlayerSpawn() ) {
+				log.debug("Skipped spawn choice {} because mode {} is enabled",
+				        theSpawn, StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
+				continue;
+			}
+			
+			if( playerLocalWorld.equals(theSpawn.getWorld()) ) {
+				spawnChoices.add(theSpawn);
+			}
 		}
-		if( spawnResult == null )
-			return homeResult;
-		else {
-			spawnLocation = spawnResult.getLocation();
-			if( spawnLocation == null )
-				return homeResult;
+		if( spawnChoices.size() > 0 ) {
+			int randomChoice = random.nextInt(spawnChoices.size());
+			spawn = spawnChoices.get(randomChoice);
 		}
-
-		double homeDistance = context.getEventLocation().distance(homeLocation);
-		double spawnDistance = context.getEventLocation().distance(spawnLocation);
 		
-		// otherwise, compare the results and return the closer one
-		if( homeDistance < spawnDistance )
-			return homeResult;
-		else
-			return spawnResult;
+		return new StrategyResultImpl(spawn);
 	}
 
 	@Override
 	public String getStrategyConfigName() {
-		return "nearestHomeOrSpawn";
+		return "spawnLocalRandom";
 	}
 
 }

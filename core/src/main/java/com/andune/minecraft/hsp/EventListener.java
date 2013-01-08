@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
-import com.andune.minecraft.hsp.integration.multiverse.MultiverseModule;
+import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
+import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.Location;
@@ -72,7 +73,8 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
     private StrategyEngine engine;
     private ConfigCore config;
     private Factory factory;
-    private MultiverseModule multiVerse;
+    private MultiverseCore multiverseCore;
+    private MultiversePortals multiversePortals;
     private SpawnUtil spawnUtil;
     private BedUtils bedUtil;
     private WarmupManager warmupManager;
@@ -92,13 +94,14 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
     
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
-            MultiverseModule multiVerse, SpawnUtil spawnUtil,
+            MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
             BedUtils bedUtil, WarmupManager warmupManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
         this.factory = factory;
-        this.multiVerse = multiVerse;
+        this.multiverseCore = multiverseCore;
+        this.multiversePortals = multiversePortals;
         this.spawnUtil = spawnUtil;
         this.bedUtil = bedUtil;
         this.warmupManager = warmupManager;
@@ -176,12 +179,15 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
         }
     }
 
+    /** Method to monitor player teleports and possibly change the location
+     * based on HSP strategies.
+     */
     @Override
     public void playerTeleport(PlayerTeleportEvent event) {
         EventType type = null;
         // cross-world teleport event?
         if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
-            if( event.getPlayer().getName().equals(multiVerse.getCurrentTeleporter()) ) {
+            if( event.getPlayer().getName().equals(multiverseCore.getCurrentTeleporter()) ) {
                 type = EventType.MULTIVERSE_TELEPORT_CROSSWORLD;
                 log.debug("multiverse crossworld teleport detected");
             }
@@ -192,7 +198,7 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
             
         }
         // same-world multiVerse teleport?
-        else if( multiVerse.getCurrentTeleporter() != null ) {
+        else if( multiverseCore.getCurrentTeleporter() != null ) {
             type = EventType.MULTIVERSE_TELEPORT;
             log.debug("multiverse same world teleport detected");
         }
@@ -211,9 +217,13 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
         }
         
         // teleport is finished, clear current teleporter
-        multiVerse.setCurrentTeleporter(null);
-        multiVerse.setSourcePortalName(null);
-        multiVerse.setDestinationPortalName(null);
+        if( multiverseCore.isEnabled() ) {
+            multiverseCore.setCurrentTeleporter(null);
+        }
+        if( multiversePortals.isEnabled() ) {
+            multiversePortals.setSourcePortalName(null);
+            multiversePortals.setDestinationPortalName(null);
+        }
         
         // code search shows this is no longer used, commenting for now in case
         // I find a bug later that depends on this..

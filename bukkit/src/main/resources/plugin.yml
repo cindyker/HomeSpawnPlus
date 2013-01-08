@@ -2,7 +2,7 @@ name: ${project.name}
 main: com.andune.minecraft.hsp.server.bukkit.HSPBukkit
 url: ${project.url}
 version: ${project.version}
-author: morganm
+author: andune
 database: true
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
 permissions:

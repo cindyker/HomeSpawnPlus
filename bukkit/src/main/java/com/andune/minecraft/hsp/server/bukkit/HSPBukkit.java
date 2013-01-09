@@ -65,7 +65,16 @@ public class HSPBukkit extends JavaPlugin {
 
         try {
             YamlConfiguration storageConfig = new YamlConfiguration();
-            storageConfig.load(new File(getDataFolder(), "config/storage.yml"));
+            
+            // use file if it exists
+            File storageConfigFile = new File(getDataFolder(), "config/storage.yml");
+            if( storageConfigFile.exists() ) {
+            	storageConfig.load(new File(getDataFolder(), "config/storage.yml"));
+            }
+            // otherwise use the default file in the JAR
+            else {
+	            storageConfig.load(super.getResource("config/storage.yml"));
+            }
             
             BukkitInjectorFactory factory = new BukkitInjectorFactory(this,
                     new BukkitConfigStorage(storageConfig));

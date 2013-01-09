@@ -69,7 +69,7 @@ public class HomeInvite implements BasicEntity {
     @NotNull
     @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @Column(name="home_id")
-    private Home home;
+    private HomeImpl home;
     
     @NotNull
     @Length(max=32)
@@ -101,7 +101,7 @@ public class HomeInvite implements BasicEntity {
 	}
 
 	public void setHome(Home home) {
-		this.home = home;
+		this.home = (HomeImpl) home;
 	}
 
 	public String getInvitedPlayer() {

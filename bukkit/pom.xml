@@ -296,10 +296,12 @@
                   <include>dom4j:dom4j</include>
                   <include>com.google.inject:guice</include>
                   <include>com.google.inject.extensions:guice-assistedinject</include>
-                  <include>com.andune.minecraft.commonlib:commonlib</include>
                   <include>org.slf4j:slf4j-api</include>
                   <include>org.slf4j:slf4j-jdk14</include>
-                  <include>net.milkbowl.vault:Vault</include>
+                  <include>com.andune.minecraft.commonlib:commonlib</include>
+                  <include>com.andune.minecraft.commonlib:commonBukkitlib</include>
+                  <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
+                  <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
                   <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-api</include>
                   <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-pre1.4.5</include>
                   <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.5</include>

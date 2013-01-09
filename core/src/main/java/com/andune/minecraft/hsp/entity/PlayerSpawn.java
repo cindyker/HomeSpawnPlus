@@ -99,7 +99,7 @@ public class PlayerSpawn implements EntityWithLocation
 	
 	@ManyToOne
 	@Nullable
-	private Spawn spawn;
+	private SpawnImpl spawn;
 	
     @Transient
     private transient Location location;
@@ -115,7 +115,7 @@ public class PlayerSpawn implements EntityWithLocation
 		return spawn;
 	}
 	public void setSpawn(Spawn spawn) {
-		this.spawn = spawn;
+		this.spawn = (SpawnImpl) spawn;
 	}
 
 	public int getId() {

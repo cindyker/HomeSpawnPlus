@@ -39,9 +39,9 @@ import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.integration.dynmap.BukkitDynmapModule;
+import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCoreModule;
-import com.andune.minecraft.hsp.integration.multiverse.MultiverseListener;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortalsModule;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
@@ -76,6 +76,8 @@ import com.andune.minecraft.hsp.storage.StorageFactory;
 import com.andune.minecraft.hsp.storage.ebean.BukkitEBeanUtils;
 import com.andune.minecraft.hsp.storage.ebean.EBeanUtils;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
+import com.andune.minecraft.hsp.util.BackupUtil;
+import com.andune.minecraft.hsp.util.BukkitBackupUtil;
 import com.avaje.ebean.EbeanServer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -120,6 +122,8 @@ public class BukkitModule extends AbstractModule {
             .to(BukkitPlugin.class);
         bind(PermissionSystem.class)
             .to(BukkitPermissionSystem.class);
+        bind(BackupUtil.class)
+            .to(BukkitBackupUtil.class);
         
         bind(EbeanServer.class)
             .toInstance(plugin.getDatabase());
@@ -170,7 +174,6 @@ public class BukkitModule extends AbstractModule {
     private WorldBorderModule worldBorder;
     private MultiverseCoreModule multiverseCore;
     private MultiversePortalsModule multiversePortals;
-    private MultiverseListener multiverseListener;
     private WorldGuardModule worldGuard;
     
     @Provides
@@ -192,6 +195,10 @@ public class BukkitModule extends AbstractModule {
             dynmap = new BukkitDynmapModule(plugin, configDynmap, storage, server);
         return dynmap;
     }
+    @Provides
+    protected DynmapModule getDynmapModule(BukkitDynmapModule bukkitDynmapModule) {
+        return bukkitDynmapModule;
+    }
     
     @Provides
     protected WorldBorder getWorldBorder() {
@@ -203,19 +210,15 @@ public class BukkitModule extends AbstractModule {
     @Provides
     protected MultiverseCore getMultiverseCore(ConfigCore configCore) {
         if( multiverseCore == null ) {
-            if( multiverseListener == null )
-                multiverseListener = new MultiverseListener();
-            multiverseCore = new MultiverseCoreModule(configCore, plugin, multiverseListener);
+            multiverseCore = new MultiverseCoreModule(configCore, plugin);
         }
         return multiverseCore;
     }
     
     @Provides
-    protected MultiversePortals getMultiversePortals(ConfigCore configCore) {
+    protected MultiversePortals getMultiversePortals(ConfigCore configCore, MultiverseCoreModule mvCore) {
         if( multiversePortals == null ) {
-            if( multiverseListener == null )
-                multiverseListener = new MultiverseListener();
-            multiversePortals = new MultiversePortalsModule(configCore, plugin, multiverseListener);
+            multiversePortals = new MultiversePortalsModule(configCore, plugin, mvCore);
         }
         return multiversePortals;
     }

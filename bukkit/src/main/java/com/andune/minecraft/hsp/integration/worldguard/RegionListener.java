@@ -99,7 +99,7 @@ public class RegionListener implements Listener {
 		
 		final String worldName = world.getName();
 		
-		ProtectedRegion region = worldGuard.getWorldGuardRegion(world, regionName);
+		ProtectedRegion region = worldGuard.getWorldGuardInterface().getWorldGuardRegion(world, regionName);
 		log.debug("registerRegion(): region={}",region);
 		if( region != null ) {
 			Set<ProtectedRegion> set = registered.get(worldName);

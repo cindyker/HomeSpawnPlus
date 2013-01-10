@@ -28,15 +28,14 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
     private final Plugin plugin;
     private final ConfigCore configCore;
-    private final MultiverseListener multiverseListener;
+    private MultiverseListener multiverseListener;
     private MultiverseSafeTeleporter teleporter;
     private String currentTeleporter;
 
     @Inject
-    public MultiverseCoreModule(ConfigCore configCore, Plugin plugin, MultiverseListener multiverseListener) {
+    public MultiverseCoreModule(ConfigCore configCore, Plugin plugin) {
         this.configCore = configCore;
         this.plugin = plugin;
-        this.multiverseListener = multiverseListener;
     }
 
     @Override
@@ -59,6 +58,15 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
         else
             return null;
     }
+    
+    /**
+     * Package use only.
+     * 
+     * @return
+     */
+    protected MultiverseListener getMultiverseListener() {
+        return multiverseListener;
+    }
 
     @Override
     public void init() throws Exception {
@@ -74,6 +82,7 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
                     log.debug("Hooking Multiverse");
                     teleporter = new MultiverseSafeTeleporter(multiverse, this);
                     teleporter.install();
+                    this.multiverseListener = new MultiverseListener();
 
                     registerListener();
                 }
@@ -83,7 +92,10 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
     @Override
     public void shutdown() throws Exception {
-        teleporter = null;
+        if( teleporter != null ) {
+            teleporter.uninstall();
+            teleporter = null;
+        }
     }
 
     @Override

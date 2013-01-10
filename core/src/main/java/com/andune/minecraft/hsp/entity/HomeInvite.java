@@ -96,7 +96,7 @@ public class HomeInvite implements BasicEntity {
 		this.id = id;
 	}
 
-	public Home getHome() {
+	public HomeImpl getHome() {
 		return home;
 	}
 

@@ -27,6 +27,9 @@
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -50,6 +53,7 @@ import com.andune.minecraft.hsp.storage.Storage;
  * @author andune
  *
  */
+@Singleton
 public class BukkitDynmapModule implements DynmapModule, Initializable {
     private final Logger log = LoggerFactory.getLogger(BukkitDynmapModule.class);
 
@@ -72,6 +76,7 @@ public class BukkitDynmapModule implements DynmapModule, Initializable {
     private long updperiod;
     private MarkerUpdate markerUpdateObject = null;
     
+    @Inject
     public BukkitDynmapModule(Plugin bukkitPlugin, ConfigDynmap config, Storage storage, Server server) {
         this.plugin = bukkitPlugin;
     	this.config = config;

@@ -111,7 +111,7 @@ public class PlayerSpawn implements EntityWithLocation
      * 
      * @return
      */
-	public Spawn getSpawn() {
+	public SpawnImpl getSpawn() {
 		return spawn;
 	}
 	public void setSpawn(Spawn spawn) {

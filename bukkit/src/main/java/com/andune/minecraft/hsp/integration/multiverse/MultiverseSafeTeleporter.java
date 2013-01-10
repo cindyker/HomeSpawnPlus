@@ -65,7 +65,10 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 	}
 	
 	public void uninstall() {
-		multiversePlugin.getCore().setSafeTTeleporter(original);
+	    if( original != null ) {
+	        multiversePlugin.getCore().setSafeTTeleporter(original);
+	        original = null;
+	    }
 	}
 	
 	@Override

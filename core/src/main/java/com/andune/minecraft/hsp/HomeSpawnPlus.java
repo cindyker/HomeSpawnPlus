@@ -57,6 +57,7 @@ public class HomeSpawnPlus {
     @Inject private EventDispatcher eventDispatcher;
     @Inject private Plugin plugin;
     @Inject private SpawnUtil spawnUtil;
+    private boolean initialized = false;
     
     public HomeSpawnPlus(InjectorFactory injectorFactory) {
         this.injectorFactory = injectorFactory;
@@ -71,19 +72,24 @@ public class HomeSpawnPlus {
         eventDispatcher.registerEvents();
         
         log.info("{} version {}, build {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
+        initialized = true;
     }
     
     public void onDisable() {
-        // unhook multiverse (if needed)
-//        multiverse.onDisable();
-
-        if( spawnUtil != null )
-            spawnUtil.updateAllPlayerLocations();
-        if( initializer != null )
-            initializer.shutdownAll();
+        if( initialized ) {
+            // unhook multiverse (if needed)
+    //        multiverse.onDisable();
+    
+            if( spawnUtil != null )
+                spawnUtil.updateAllPlayerLocations();
+            if( initializer != null )
+                initializer.shutdownAll();
+        }
 
         if( plugin != null )
             log.info("{} version {}, build {} is disabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
+        
+        initialized = false;
     }
 
     /** Routine to detect other plugins that use the same commands as HSP and

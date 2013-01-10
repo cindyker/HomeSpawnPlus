@@ -126,7 +126,7 @@ public class WorldGuardModule implements WorldGuard, Initializable {
     /**
      * for internal package use
      */
-    protected com.sk89q.worldguard.protection.regions.ProtectedRegion getWorldGuardRegion(World world, String regionName) {
-        return worldGuardInterface.getWorldGuardRegion(world, regionName);
+    protected WorldGuardInterface getWorldGuardInterface() {
+        return worldGuardInterface;
     }
 }

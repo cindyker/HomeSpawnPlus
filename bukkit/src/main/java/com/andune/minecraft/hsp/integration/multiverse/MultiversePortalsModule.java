@@ -33,10 +33,10 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
     private String destinationPortalName;
 
     @Inject
-    public MultiversePortalsModule(ConfigCore configCore, Plugin plugin, MultiverseListener multiverseListener) {
+    public MultiversePortalsModule(ConfigCore configCore, Plugin plugin, MultiverseCoreModule mvCore) {
         this.configCore = configCore;
         this.plugin = plugin;
-        this.multiverseListener = multiverseListener;
+        this.multiverseListener = mvCore.getMultiverseListener();
     }
 
     @Override

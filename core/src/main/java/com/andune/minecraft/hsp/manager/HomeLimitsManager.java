@@ -117,7 +117,7 @@ public class HomeLimitsManager {
      */
     public int getHomeCount(String playerName, String worldName)
     {
-        Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+        Set<? extends Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
         
         if( homes != null )
             return homes.size();
@@ -201,7 +201,7 @@ public class HomeLimitsManager {
         Home home = null;
         
         log.debug("enforceSingleGlobalHome() ENTER");
-        Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(playerName);
+        Set<? extends Home> homes = storage.getHomeDAO().findHomesByPlayer(playerName);
         
         if( homes != null ) {
             // if we find a single home in the DB, move it to the new location

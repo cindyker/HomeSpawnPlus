@@ -34,6 +34,7 @@ import java.util.Set;
 
 
 import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
@@ -59,7 +60,7 @@ public class HomeDAOEBean implements HomeDAO {
 	public Home findHomeById(int id) {
 		String q = "find home where id = :id";
 		
-		Query<Home> query = ebean.createQuery(Home.class, q);
+		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("id", id);
 		
 		return query.findUnique();
@@ -72,7 +73,7 @@ public class HomeDAOEBean implements HomeDAO {
 	public Home findDefaultHome(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
 		
-		Query<Home> query = ebean.createQuery(Home.class, q);
+		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
@@ -86,7 +87,7 @@ public class HomeDAOEBean implements HomeDAO {
 	public Home findBedHome(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world = :world and bedHome = 1";
 		
-		Query<Home> query = ebean.createQuery(Home.class, q);
+		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
@@ -100,7 +101,7 @@ public class HomeDAOEBean implements HomeDAO {
 	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
 		String q = "find home where playerName = :playerName and name = :name";
 		
-		Query<Home> query = ebean.createQuery(Home.class, q);
+		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("name", homeName);
 		
@@ -111,20 +112,20 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName) {
+	public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName) {
 		String q = "find home where playerName = :playerName and world like :world order by world";
 		
 		if( world == null || "all".equals(world) || "*".equals(world) )
 			world = "%";
 		
-		Query<Home> query = ebean.createQuery(Home.class, q);
+		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
 		query.setParameter("world", world);
 		
 		return query.findSet();
 	}
 
-	public Set<Home> findHomesByPlayer(String playerName) {
+	public Set<? extends Home> findHomesByPlayer(String playerName) {
 		return findHomesByWorldAndPlayer(null, playerName);
 	}
 	
@@ -132,15 +133,17 @@ public class HomeDAOEBean implements HomeDAO {
 	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getAllHomes()
 	 */
 	@Override
-	public Set<Home> findAllHomes() {
-		return ebean.find(Home.class).findSet();
+	public Set<? extends Home> findAllHomes() {
+		return ebean.find(HomeImpl.class).findSet();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#writeHome(com.andune.minecraft.hsp.entity.Home)
 	 */
 	@Override
-	public void saveHome(Home home) {
+	public void saveHome(final Home homeArg) {
+	    HomeImpl home = (HomeImpl) homeArg;
+
 		final int homeId = home.getId();
 		
 		Transaction tx = ebean.beginTransaction();
@@ -180,6 +183,6 @@ public class HomeDAOEBean implements HomeDAO {
 
 	@Override
 	public void deleteHome(Home home) {
-		ebean.delete(home);
+		ebean.delete((HomeImpl) home);
 	}
 }

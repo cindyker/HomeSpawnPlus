@@ -49,7 +49,7 @@ public class HomeAnyWorld extends HomeStrategy {
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {
 		// get the Set of homes for this player for ALL worlds
-	    Set<Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
+	    Set<? extends Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
 		log.debug("HomeAnyWorld: homes = {}", homes);
 		
 		Home home = null;

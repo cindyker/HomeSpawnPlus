@@ -104,7 +104,7 @@ public class HomeInvite extends BaseCommand {
 			
 			// if that didn't work, try to see if they only have 1 total home, and if so, use that one
 			if( home == null ) {
-				Set<com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO().findHomesByPlayer(p.getName());
+				Set<? extends com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO().findHomesByPlayer(p.getName());
 				if( homes.size() == 1 )
 					home = homes.iterator().next();
 			}

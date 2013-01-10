@@ -97,7 +97,7 @@ public class HomeDelete extends BaseCommand {
 				}
 			}
 			else if( homeName.equals("<noname>") ) {
-				Set<com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO()
+				Set<? extends com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO()
 						.findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
 				if( homes != null ) {
 					for(com.andune.minecraft.hsp.entity.Home h : homes) {

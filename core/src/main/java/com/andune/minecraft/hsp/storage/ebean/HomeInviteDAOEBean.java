@@ -104,7 +104,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 		Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
 		
 		// first find all homes for this player
-		Set<Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
+		Set<? extends Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
 		if( homes == null || homes.size() == 0 )
 			return invites;
 

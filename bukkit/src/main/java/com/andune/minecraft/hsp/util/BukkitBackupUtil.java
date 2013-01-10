@@ -118,7 +118,7 @@ public class BukkitBackupUtil implements BackupUtil {
                 storage.deleteAllData();
                 storage.setDeferredWrites(true);
 
-                Set<com.andune.minecraft.hsp.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
+                Set<? extends com.andune.minecraft.hsp.entity.Home> homes = backupStorage.getHomeDAO().findAllHomes();
                 for(com.andune.minecraft.hsp.entity.Home home : homes) {
                     log.debug("Restoring home ",home);
                     home.setLastModified(null);

@@ -91,7 +91,7 @@ public class HomeUtil {
         // set, check to see if there is a single home left on the world that we can
         // assume is the default.
         if( home == null && configCore.isLastHomeDefault() ) {
-            Set<Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
+            Set<? extends Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
             if( homes != null && homes.size() == 1 )
                 home = homes.iterator().next();
         }
@@ -172,7 +172,7 @@ public class HomeUtil {
             // if no bed home was found using existing bed name, check all other bed homes
             // for the bed flag
             if( home != null && !home.isBedHome() ) {
-                Set<Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
+                Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
                 if( homes != null ) {
                     for(Home h : homes) {
                         if( h.isBedHome() ) {
@@ -266,7 +266,7 @@ public class HomeUtil {
      * @return the Home object or null if none found
      */
     public Home getBestMatchHome(String playerName, String worldName) {
-        Set<Home> homes = storage.getHomeDAO().findAllHomes();
+        Set<? extends Home> homes = storage.getHomeDAO().findAllHomes();
         
         // first find any possible homes based on the input
         ArrayList<Home> possibles = new ArrayList<Home>();

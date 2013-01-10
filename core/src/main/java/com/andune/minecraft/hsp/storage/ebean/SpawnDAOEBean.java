@@ -141,7 +141,7 @@ public class SpawnDAOEBean implements SpawnDAO {
 	 */
 	@Override
 	public void saveSpawn(Spawn spawn) {
-        ebean.save(spawn);
+        ebean.save((SpawnImpl) spawn);
 	}
 
 	/* (non-Javadoc)
@@ -149,7 +149,7 @@ public class SpawnDAOEBean implements SpawnDAO {
 	 */
 	@Override
 	public void deleteSpawn(Spawn spawn) {
-		ebean.delete(spawn);
+		ebean.delete((SpawnImpl) spawn);
 	}
 
 }

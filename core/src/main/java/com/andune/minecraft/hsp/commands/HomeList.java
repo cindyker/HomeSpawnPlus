@@ -73,7 +73,7 @@ public class HomeList extends BaseCommand {
 	 * @return
 	 */
 	boolean executeCommand(CommandSender sender, String player, String world) {
-		Set<com.andune.minecraft.hsp.entity.Home> homes;
+		Set<? extends com.andune.minecraft.hsp.entity.Home> homes;
 		
 		homes = storage.getHomeDAO().findHomesByWorldAndPlayer(world, player);
 		

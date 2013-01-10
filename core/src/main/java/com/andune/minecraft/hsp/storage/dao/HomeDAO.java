@@ -52,9 +52,9 @@ public interface HomeDAO {
 	 * @param playerName
 	 * @return
 	 */
-	public Set<Home> findHomesByWorldAndPlayer(String world, String playerName);
-	public Set<Home> findHomesByPlayer(String playerName);
-	public Set<Home> findAllHomes();
+	public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName);
+	public Set<? extends Home> findHomesByPlayer(String playerName);
+	public Set<? extends Home> findAllHomes();
 
 	public void saveHome(Home home) throws StorageException;
 	public void deleteHome(Home home) throws StorageException;

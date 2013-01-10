@@ -57,7 +57,7 @@ public class HomeLocationManager implements LocationManager {
 		String world = w.getName();
 		
 		HomeDAO dao = storage.getHomeDAO();
-		Set<Home> allHomes = dao.findAllHomes();
+		Set<? extends Home> allHomes = dao.findAllHomes();
 		if( allHomes != null && allHomes.size() > 0 ) {
 			for(Home home : allHomes) {
 				// skip any homes that aren't in the given world

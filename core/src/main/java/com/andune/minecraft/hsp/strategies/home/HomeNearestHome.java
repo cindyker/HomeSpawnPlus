@@ -53,7 +53,7 @@ public class HomeNearestHome extends HomeStrategy {
 	public StrategyResult evaluate(StrategyContext context) {
 		// simple algorithm for now, it's not called that often and we assume the list
 		// of homes is relatively small (ie. not in the hundreds or thousands).
-		final Set<Home> allHomes = homeDAO.findHomesByWorldAndPlayer(
+		final Set<? extends Home> allHomes = homeDAO.findHomesByWorldAndPlayer(
 				context.getEventLocation().getWorld().getName(), context.getPlayer().getName());
 		final Location playerLoc = context.getEventLocation();
 		

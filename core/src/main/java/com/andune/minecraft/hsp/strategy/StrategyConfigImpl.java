@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ import com.andune.minecraft.hsp.server.api.World;
  * @author andune
  *
  */
+@Singleton
 public class StrategyConfigImpl implements Initializable, StrategyConfig {
     private static final Logger log = LoggerFactory.getLogger(StrategyConfigImpl.class);
 
@@ -200,6 +202,8 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 
 				for(String item : strategies) {
 					try {
+				        log.debug("loadDefaultStrategies() loading strategy {} for event {}",
+				                item, eventType);
 						Strategy strategy = strategyFactory.newStrategy(item);
 						set.add(strategy);
 						count++;

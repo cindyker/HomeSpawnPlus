@@ -21,6 +21,7 @@
     </file>
   </files>
   <dependencySets>
+
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
       <useTransitiveDependencies>true</useTransitiveDependencies>
@@ -30,18 +31,34 @@
         <include>com.google.inject.extensions:guice-assistedinject</include>
         <include>org.slf4j:slf4j-api</include>
         <include>org.slf4j:slf4j-jdk14</include>
-        <include>com.andune.minecraft.commonlib:commonlib</include>
         <include>org.reflections:reflections</include>
       </includes>
     </dependencySet>
+
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+      <includes>
+        <include>com.andune.minecraft.commonlib:commonlib</include>
+        <include>com.andune.minecraft.commonlib:commonBukkitlib</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-api</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-pre1.4.5</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.5</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.6</include>
+      </includes>
+    </dependencySet>
+
   </dependencySets>
   <fileSets>
     <fileSet>
       <outputDirectory>/plugins/HomeSpawnPlus</outputDirectory>
       <includes>
-        <include>LICENSE.txt</include>
-        <include>README.txt</include>
-        <include>Changelog.txt</include>
+        <include>../LICENSE.txt</include>
+        <include>../README.txt</include>
+        <include>../Changelog.txt</include>
       </includes>
     </fileSet>
   </fileSets>

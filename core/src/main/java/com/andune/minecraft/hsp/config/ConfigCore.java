@@ -268,11 +268,13 @@ public class ConfigCore extends ConfigBase implements Initializable {
     /**
      * Return the configured string for the storage type we should
      * use. Examples: "ebeans", "yaml"
+     * 
      * @return
      */
-    public String getStorageType() {
-        return super.getString("storage");
-    }
+//    @deprecated moved to ConfigStorage
+//    public String getStorageType() {
+//        return super.getString("storage");
+//    }
     
     public enum NewPlayerStrategy {
         ORIGINAL,

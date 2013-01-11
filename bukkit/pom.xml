@@ -6,6 +6,9 @@
   <artifactId>HomeSpawnPlus-bukkit</artifactId>
   <version>2.0-SNAPSHOT</version>
   <name>HomeSpawnPlus-bukkit</name>
+  <properties>
+    <coreBaseDir>../core</coreBaseDir>
+  </properties>
 
 <!--
   <parent>
@@ -208,6 +211,10 @@
     <resources>
       <resource>
         <targetPath>.</targetPath>
+        <directory>${coreBaseDir}/src/main/resources/</directory>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
         <directory>${basedir}/src/main/resources/</directory>
       </resource>
       <resource>
@@ -311,10 +318,11 @@
 
               <filters>
                 <filter>
-                  <artifact>net.milkbowl.vault:Vault</artifact>
-                  <includes>
-                    <include>net/milkbowl/vault/economy/Economy.class</include>
-                  </includes>
+                  <artifact>com.andune.minecraft.commonlib:commonlib</artifact>
+                  <excludes>
+                    <exclude>javax/inject/**</exclude>
+                    <exclude>org/aopalliance/**</exclude>
+                  </excludes>
                 </filter>
               </filters>
 

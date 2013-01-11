@@ -35,6 +35,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
@@ -46,7 +50,10 @@ import com.andune.minecraft.hsp.server.api.YamlFile;
  * @author andune
  *
  */
+@Singleton
 public class ConfigLoader  {
+    private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
+    
     private final Plugin plugin;
     private final Factory factory;
     private final JarUtils jarUtil;
@@ -76,6 +83,7 @@ public class ConfigLoader  {
 
         // load individual config file if single "config.yml" is not in use
         if( yaml == null ) {
+            log.debug("No single config.yml found, using multiple config files");
             File configFileName = new File(plugin.getDataFolder(), "config/"+fileName);
             if( !configFileName.exists() )
                 installDefaultFile(fileName);
@@ -100,6 +108,7 @@ public class ConfigLoader  {
         if( singleConfigFile == null ) {
             File configYml = new File(plugin.getDataFolder(), "config.yml");
             if( configYml.exists() ) {
+                log.debug("Single config.yml file exists, loading file");
                 singleConfigFile = factory.newYamlFile();
                 singleConfigFile.load(configYml);
             }

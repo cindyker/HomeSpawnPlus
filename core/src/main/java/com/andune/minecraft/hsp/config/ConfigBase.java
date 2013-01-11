@@ -60,6 +60,7 @@ public abstract class ConfigBase implements Initializable {
             throw new ConfigException("Annotation @ConfigOptions missing from class "+getClass());
 
         configSection = configLoader.load(configOptions.fileName(), configOptions.basePath());
+        log.debug("configSection = {}", configSection);
     }
     
     protected String getBasePath() {

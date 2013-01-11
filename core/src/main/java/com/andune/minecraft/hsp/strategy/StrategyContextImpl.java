@@ -234,7 +234,7 @@ public class StrategyContextImpl implements StrategyContext {
 	@Override
 	public boolean isModeEnabled(final StrategyMode mode) {
 		boolean ret = getMode(mode) != null;
-		log.debug("isModeEnabled() mode=",mode,", ret=",ret);
+		log.debug("isModeEnabled() mode={}, ret={}", mode, ret);
 		return ret;
 	}
 	
@@ -244,13 +244,13 @@ public class StrategyContextImpl implements StrategyContext {
 	@Override
 	public ModeStrategy getMode(final StrategyMode mode) {
 		ModeStrategy ret = null;
-		log.debug("getMode() check for mode ",mode);
+		log.debug("getMode() check for mode {}",mode);
 		
 		if( currentModes == null || currentModes.size() == 0 ) {
 			if( isDefaultMode(mode) )
 				ret = defaultMode;
 			
-			log.debug("getMode() No modes defined, returning ",ret);
+			log.debug("getMode() No modes defined, returning {}", ret);
 			return ret;
 		}
 		
@@ -262,7 +262,7 @@ public class StrategyContextImpl implements StrategyContext {
 			}
 		}
 		
-		log.debug("getMode() returning ",ret);
+		log.debug("getMode() returning {}", ret);
 		return ret;
 	}
 	
@@ -278,8 +278,8 @@ public class StrategyContextImpl implements StrategyContext {
 				String strategyPortalName = mode.getPortalName();
 				String sourcePortalName = multiversePortals.getSourcePortalName();
 				if( !strategyPortalName.equals(sourcePortalName) ) {
-					log.debug("isStrategyProcessingAllowed() returning false for source portal check. ",
-							"strategyPortalName=",strategyPortalName,", sourcePortalName=",sourcePortalName);
+					log.debug("isStrategyProcessingAllowed() returning false for source portal check. strategyPortalName={}, sourcePortalName={}",
+					        strategyPortalName, sourcePortalName);
 					return false;
 				}
 			}
@@ -290,8 +290,8 @@ public class StrategyContextImpl implements StrategyContext {
 				String strategyPortalName = mode.getPortalName();
 				String destinationPortalName = multiversePortals.getDestinationPortalName();
 				if( !strategyPortalName.equals(destinationPortalName) ) {
-					log.debug("isStrategyProcessingAllowed() returning false for destination portal check. ",
-							"strategyPortalName=",strategyPortalName,", destinationPortalName=",destinationPortalName);
+					log.debug("isStrategyProcessingAllowed() returning false for destination portal check. strategyPortalName={}, destinationPortalName={}",
+					        strategyPortalName, destinationPortalName);
 					return false;
 				}
 			}
@@ -304,8 +304,7 @@ public class StrategyContextImpl implements StrategyContext {
 				String regionName = mode.getRegionName();
 				
 				if( !worldGuard.isLocationInRegion(getEventLocation(), regionName) ) {
-					log.debug("isStrategyProcessingAllowed() returning false for worldguard region check. ",
-							"region=",regionName);
+					log.debug("isStrategyProcessingAllowed() returning false for worldguard region check. region={}", regionName);
 					return false;
 				}
 			}
@@ -317,8 +316,7 @@ public class StrategyContextImpl implements StrategyContext {
 			String sourceWorld = mode.getWorldName();
 			
 			if( getFromLocation() == null || !getFromLocation().getWorld().getName().equals(sourceWorld) ) { 
-				log.debug("isStrategyProcessingAllowed() returning false for sourceWorld. ",
-						"sourceWorld=",sourceWorld,", fromLocation=",fromLocation);
+				log.debug("isStrategyProcessingAllowed() returning false for sourceWorld. sourceWorld={}, fromLocation={}", sourceWorld, fromLocation);
 				return false;
 			}
 		}

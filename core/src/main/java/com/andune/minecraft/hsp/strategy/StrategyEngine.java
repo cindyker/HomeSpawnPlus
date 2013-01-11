@@ -64,6 +64,8 @@ public interface StrategyEngine {
     /** Given a StrategyContext, evaluate the strategies for that context.
      * 
      * @param context
+     * 
+     * @return API contract requires the result is never null
      */
     public StrategyResult evaluateStrategies(StrategyContext context);
 }

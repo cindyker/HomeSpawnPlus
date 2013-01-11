@@ -164,10 +164,12 @@ public class HomeLimitsManager {
         // we only check per-world limits if no per-permission limit was defined
         if( limit == null && worldName != null ) {
             LimitsPerWorld entry = config.getPerWorldEntry(worldName);
-            if( perWorldLimit )
-                limit = entry.getPerWorld();
-            else
-                limit = entry.getGlobal();
+            if( entry != null ) {
+                if( perWorldLimit )
+                    limit = entry.getPerWorld();
+                else
+                    limit = entry.getGlobal();
+            }
 
             log.debug("getHomeLimit() limit for world {} = {}", worldName, limit);
         }

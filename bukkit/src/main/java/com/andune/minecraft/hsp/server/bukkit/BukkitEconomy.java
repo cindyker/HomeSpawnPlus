@@ -30,8 +30,6 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
-import javax.inject.Singleton;
-
 import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
@@ -41,19 +39,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.hsp.config.ConfigEconomy;
+import com.andune.minecraft.hsp.manager.HomeLimitsManager;
 import com.andune.minecraft.hsp.server.api.impl.EconomyAbstractImpl;
 
 /**
  * @author andune
  *
  */
-@Singleton
 public class BukkitEconomy extends EconomyAbstractImpl implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(BukkitEconomy.class);
 
     private net.milkbowl.vault.economy.Economy vaultEconomy;
     
-    public BukkitEconomy() {
+    public BukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm) {
+        super(config, hlm);
     }
     
     @Override

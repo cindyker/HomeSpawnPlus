@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.server.api.CommandSender;
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.World;
@@ -50,7 +51,7 @@ import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
  * @author andune
  *
  */
-public class BukkitPlayer implements Player {
+public class BukkitPlayer extends BukkitCommandSender implements CommandSender, Player {
     private static final Logger log = LoggerFactory.getLogger(BukkitPlayer.class);
     
     private ConfigCore configCore;
@@ -65,6 +66,7 @@ public class BukkitPlayer implements Player {
      * @param bukkitPlayer
      */
     BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO, Permissions perm, org.bukkit.entity.Player bukkitPlayer) {
+        super(bukkitPlayer);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
         this.perm = perm;

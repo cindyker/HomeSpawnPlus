@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
+import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.integration.dynmap.BukkitDynmapModule;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
@@ -48,6 +49,7 @@ import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
+import com.andune.minecraft.hsp.manager.HomeLimitsManager;
 import com.andune.minecraft.hsp.server.api.Economy;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.PermissionSystem;
@@ -177,15 +179,16 @@ public class BukkitModule extends AbstractModule {
     private WorldGuardModule worldGuard;
     
     @Provides
-    protected Economy getEconomy() {
-        return getBukkitEconomy();
-    }
-
-    @Provides
-    protected com.andune.minecraft.hsp.server.bukkit.BukkitEconomy getBukkitEconomy() {
+    @Singleton
+    protected BukkitEconomy getBukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm) {
         if( economy == null )
-            economy = new BukkitEconomy();
+            economy = new BukkitEconomy(config, hlm);
         return economy;
+    }
+    @Provides
+    @Singleton
+    protected Economy getEconomy(BukkitEconomy bukkitEconomy) {
+        return bukkitEconomy;
     }
 
     @Provides

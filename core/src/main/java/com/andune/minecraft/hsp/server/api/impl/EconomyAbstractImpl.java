@@ -33,8 +33,6 @@ package com.andune.minecraft.hsp.server.api.impl;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +48,13 @@ import com.andune.minecraft.hsp.server.api.Player;
  */
 public abstract class EconomyAbstractImpl implements Economy {
     protected static final Logger log = LoggerFactory.getLogger(EconomyAbstractImpl.class);
-    protected ConfigEconomy config;
-    protected HomeLimitsManager homeLimitsManager;
+    protected final ConfigEconomy config;
+    protected final HomeLimitsManager homeLimitsManager;
     
-    @Inject public void setConfigEconomy(ConfigEconomy config) { this.config = config; }
-    @Inject public void setHomeLimitsManager(HomeLimitsManager hlm) { this.homeLimitsManager = hlm; }
+    protected EconomyAbstractImpl(ConfigEconomy config, HomeLimitsManager hlm) {
+        this.config = config;
+        this.homeLimitsManager = hlm;
+    }
     
     public int getCommandCost(Player player, String command) {
         Integer cost = null;

@@ -48,6 +48,8 @@ import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.strategy.StrategyConfig;
 import com.andune.minecraft.hsp.strategy.StrategyConfigImpl;
+import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyContextImpl;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyEngineImpl;
 import com.andune.minecraft.hsp.strategy.StrategyResultFactory;
@@ -83,14 +85,17 @@ public class HSPModule extends AbstractModule {
         bind(Locale.class)
             .to(LocaleStringReplacerImpl.class)
             .in(Scopes.SINGLETON);
-        bind(StrategyResultFactory.class)
-            .to(StrategyResultFactoryImpl.class);
         bind(TeleportOptions.class)
             .to(TeleportOptionsImpl.class);
+        
+        bind(StrategyResultFactory.class)
+            .to(StrategyResultFactoryImpl.class);
         bind(StrategyEngine.class)
             .to(StrategyEngineImpl.class);
         bind(StrategyConfig.class)
             .to(StrategyConfigImpl.class);
+        bind(StrategyContext.class)
+            .to(StrategyContextImpl.class);
     }
     
     @Provides

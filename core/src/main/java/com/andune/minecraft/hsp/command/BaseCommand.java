@@ -179,6 +179,11 @@ public abstract class BaseCommand implements Command {
 	    this.economy = economy;
 	}
 	
+    @Inject
+    private void setConfigEconomy(ConfigEconomy configEconomy) {
+        this.configEconomy = configEconomy;
+    }
+
 	@Inject
 	private void setPermissions(Permissions permissions) {
 	    this.permissions = permissions;

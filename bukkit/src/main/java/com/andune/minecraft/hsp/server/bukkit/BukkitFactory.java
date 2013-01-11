@@ -37,7 +37,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.CommandSender;
@@ -100,7 +99,11 @@ public class BukkitFactory implements Factory {
 
         // if object is null, create a new reference
         if( sender == null ) {
-            WeakReference<CommandSender> wr = new WeakReference<CommandSender>(new BukkitCommandSender(bukkitSender));
+            WeakReference<CommandSender> wr = null;
+            if( bukkitSender instanceof org.bukkit.entity.Player )
+                wr = new WeakReference<CommandSender>(newBukkitPlayer((org.bukkit.entity.Player) bukkitSender));
+            else
+                wr = new WeakReference<CommandSender>(new BukkitCommandSender(bukkitSender));
             sender = wr.get();
             senderCache.put(bukkitSender.getName(), wr);
         }

@@ -65,16 +65,18 @@ public class StrategyEngineImpl implements StrategyEngine {
 	private final Storage storage;
 	private final Teleport teleport;
 	private final Factory factory;
+	private final StrategyResultFactory resultFactory;
 	
 	@Inject
 	public StrategyEngineImpl(ConfigCore config, StrategyConfig strategyConfig, Storage storage,
-	        Teleport teleport, Factory factory)
+	        Teleport teleport, Factory factory, StrategyResultFactory resultFactory)
 	{
 	    this.config = config;
 		this.strategyConfig = strategyConfig;
 		this.storage = storage;
 		this.teleport = teleport;
 		this.factory = factory;
+		this.resultFactory = resultFactory;
 	}
 	
 	public StrategyConfig getStrategyConfig() {
@@ -265,6 +267,13 @@ public class StrategyEngineImpl implements StrategyEngine {
             if( totalTime > warnMillis ) {
             	log.info("**LONG STRATEGY** Strategy took "+totalTime+" ms to run. (> warning threshold of "+warnMillis+"ms) Context: "+context);
             }
+    	}
+
+    	// we guarantee to return a result so the caller never has to worry about
+    	// a null result
+    	if( result == null ) {
+            log.debug("evaluateStrategies: no StrategyResult found, creating empty result");
+    	    result = resultFactory.create(false, false);
     	}
 
 		log.debug("evaluateStrategies: exit result = {}",result);

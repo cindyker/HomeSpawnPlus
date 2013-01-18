@@ -1,5 +1,6 @@
 v1.7.4 - 
 * Ticket #162 - added homeMinecraftBedSpawn
+* compatible with CraftBukkit v1.4.7 ONLY
 
 v1.7.3.2 - Dec 23, 2012
 * compatible with CraftBukkit v1.4.6 ONLY

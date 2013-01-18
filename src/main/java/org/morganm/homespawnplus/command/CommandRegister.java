@@ -44,6 +44,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.util.Debug;
@@ -99,7 +100,7 @@ public class CommandRegister {
 		if( loadedCommands.contains(cmdName) )
 			return;
 		
-		org.bukkit.craftbukkit.v1_4_6.CraftServer cs = (org.bukkit.craftbukkit.v1_4_6.CraftServer) Bukkit.getServer();
+		CraftServer cs = (CraftServer) Bukkit.getServer();
 		SimpleCommandMap commandMap = cs.getCommandMap();
 		
 		try {

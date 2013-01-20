@@ -29,8 +29,6 @@
       <includes>
         <include>com.google.inject:guice</include>
         <include>com.google.inject.extensions:guice-assistedinject</include>
-        <include>org.slf4j:slf4j-api</include>
-        <include>org.slf4j:slf4j-jdk14</include>
         <include>org.reflections:reflections</include>
       </includes>
     </dependencySet>
@@ -48,6 +46,7 @@
         <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-pre1.4.5</include>
         <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.5</include>
         <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4.6</include>
+        <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-1.4_R1</include>
       </includes>
     </dependencySet>
 

@@ -35,8 +35,8 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.config.ConfigEconomy;

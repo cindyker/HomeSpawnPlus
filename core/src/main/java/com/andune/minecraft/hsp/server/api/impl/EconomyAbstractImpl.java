@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.server.api.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.config.ConfigEconomy.PerPermissionEconomyEntry;

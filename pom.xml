@@ -27,6 +27,7 @@
         <module>craftbukkit.pre1_4_5</module>
         <module>craftbukkit.v1_4_5</module>
         <module>craftbukkit.v1_4_6</module>
+        <module>craftbukkit.v1_4_R1</module>
     </modules>
 
     <build>

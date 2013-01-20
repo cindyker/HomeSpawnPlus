@@ -41,7 +41,8 @@ import org.bukkit.plugin.Plugin;
  */
 public class CraftServerFactory {
     private final Plugin plugin;
-    
+    private CraftServer craftServer;
+
     public CraftServerFactory(Plugin plugin) {
         this.plugin = plugin;
     }
@@ -52,6 +53,9 @@ public class CraftServerFactory {
      * @return
      */
     public CraftServer getCraftServer() {
+        if( craftServer != null )
+            return craftServer;
+        
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
         
         // Get full package string of CraftServer.
@@ -66,12 +70,15 @@ public class CraftServerFactory {
             final Class<?> clazz = Class.forName("com.andune.minecraft.hsp.server.craftbukkit." + version + ".CraftServerImpl");
             // Check if we have an implementation class at that location.
             if (CraftServer.class.isAssignableFrom(clazz)) { // Make sure it actually implements our interface
-                return (CraftServer) clazz.getConstructor().newInstance();
+                craftServer = (CraftServer) clazz.getConstructor().newInstance();
             }
         }
         catch (Exception e) {
         }
-
-        return new CraftServerNotAvailable(plugin);
+        
+        if( craftServer == null )
+            craftServer = new CraftServerNotAvailable(plugin);
+        
+        return craftServer;
     }
 }

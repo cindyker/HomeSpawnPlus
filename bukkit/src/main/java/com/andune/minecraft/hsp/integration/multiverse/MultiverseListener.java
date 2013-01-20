@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.integration.multiverse;
 import javax.inject.Singleton;
 
 import org.bukkit.event.Listener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.MultiverseCore.event.MVTeleportEvent;

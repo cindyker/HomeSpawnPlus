@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.server.bukkit.events;
 import javax.inject.Inject;
 
 import org.bukkit.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Server;

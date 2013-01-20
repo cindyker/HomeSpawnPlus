@@ -32,8 +32,8 @@ package com.andune.minecraft.hsp;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.guice.InjectorFactory;
 import com.andune.minecraft.hsp.server.api.Plugin;

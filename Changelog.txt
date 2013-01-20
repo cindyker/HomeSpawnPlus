@@ -1,30 +1,28 @@
-====
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Copyright (c) 2013 Andune (andune.alleria@gmail.com)
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer
-    in the documentation and/or other materials provided with the
-    distribution.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-====
+v2.0 -
+* Major refactor
+  - Primary benefit: Server API abstraction layer - HSP is no longer tightly coupled to Bukkit. MC-API, Spout etc can be supported
+    from 90% of the same codebase, so HSP can support other server platforms from the same code. This follows the pattern of
+    other well-established plugins like dynmap, LWC and WorldEdit.
+  - HSP Bukkit implementation; this is a thin API implementation layer that allows HSP to run on Bukkit
+  - Implement Dependency Injection (IoC pattern) - easier to manage code and write test cases. This make supporting different server
+    environments much easier to do.
+  - Maven modules for different CraftBukkit versions, a single Bukkit JAR supports all CraftBukkit versions
+  - Capability to use separate config files rather than one massive config.yml; easier to focus on one thing at a time
+  - Annotations for strategies, it's now very clean and self-contained for someone to contribute new strategies
+  - The previously monolithic "HomeSpawnUtils" class has been eradicated in favor of OOP principles where it makes sense, or smaller
+    more specific util classes where common algorithms are used across multiple objects. This is much easier code to maintain.
+* Changes an admin might notice from 1.7
+  - if you want to use new multi-file config, just move your config.yml out of the way, HSP will create defaults in config directory
+  - per-permission processing is now consistent across types. 0-values will be respected and only if there is no entry at all will
+    HSP keep looking through the next tier (permission, world, global).
+  - The entry name for per-permission entries is now used as part of default permissions that are checked if no "permissions" section
+    exists.  As an example, for an entry named "entry1", HSP will check for the permissions "hsp.type.entry1" (where type is the
+    type such as homeLimit, cooldown, etc), "hsp.entry.entry1" and "group.entry1". The latter is obviously convenient if you just
+    name your entries after your groups. All 3 are checked so you can just choose the one that makes the most sense for the way you
+    want to use it.
+  - No more explicit PEX or Perm2 support. Use Vault, WEPIF or Superperms.
+  - core.defaultPermissions is now valid for all permission modes. So any permissions listed here will be applied to everyone for
+    HSP permission checks.
 
 v1.7.3 - Nov 14, 2012
 * Ticket #140: fixed Exception when using trailing \ on commands

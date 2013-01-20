@@ -34,8 +34,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
@@ -327,7 +327,7 @@ public abstract class BaseCommand implements Command {
 	 * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
 	 */
 	protected boolean defaultCommandChecks(Player p) {
-		log.trace("defaultCommandChecks()");
+		log.debug("defaultCommandChecks()");
 
 		final boolean hasP = hasPermission(p);
 		log.debug("defaultCommandChecks() hasPermission = {}",hasP);

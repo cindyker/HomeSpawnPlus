@@ -37,9 +37,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.LoggerFactory;
-
 import com.andune.minecraft.commonlib.General;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCooldown;
@@ -53,7 +53,7 @@ import com.andune.minecraft.hsp.server.api.Server;
  *
  */
 public class CooldownManager {
-	private final org.slf4j.Logger log = LoggerFactory.getLogger(CooldownManager.class);
+	private final Logger log = LoggerFactory.getLogger(CooldownManager.class);
 	
     private final Server server;
     private final ConfigCooldown config;

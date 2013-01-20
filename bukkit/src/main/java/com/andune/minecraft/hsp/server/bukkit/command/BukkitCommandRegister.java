@@ -47,9 +47,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.command.Command;
@@ -79,16 +79,19 @@ public class BukkitCommandRegister implements Initializable {
 	private final CommandConfig commandConfig;
 	private final BukkitFactory factory;
 	private final Injector injector;
+	private final CraftServerFactory craftServerFactory;
 	
 	@Inject
-	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig, BukkitFactory factory, Injector injector) {
+	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig,
+	        BukkitFactory factory, Injector injector, Reflections reflections) {
 		this.plugin = plugin;
 		this.commandConfig = commandConfig;
 		this.factory = factory;
 		this.injector = injector;
+		this.reflections = reflections;
 		
+		this.craftServerFactory = new CraftServerFactory(plugin);
         customClassMap.put("customeventcommand", CustomEventCommand.class);
-    	reflections = Reflections.collect();
 	}
 	
     @Override
@@ -119,9 +122,7 @@ public class BukkitCommandRegister implements Initializable {
 		if( loadedCommands.contains(cmdName) )
 			return;
 
-		CraftServerFactory craftServerFactory = new CraftServerFactory(plugin);
 		CraftServer craftServer = craftServerFactory.getCraftServer();
-		
 		try {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);

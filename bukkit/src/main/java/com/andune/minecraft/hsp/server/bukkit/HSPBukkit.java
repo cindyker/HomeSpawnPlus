@@ -61,7 +61,7 @@ public class HSPBukkit extends JavaPlugin {
         // disable reflections spam; it's a bug that prints warnings that look alarming
         Logger.getLogger("org.reflections").setLevel(Level.OFF);
         
-        enableDebug();
+//        enableDebug();
 
         try {
             YamlConfiguration storageConfig = new YamlConfiguration();

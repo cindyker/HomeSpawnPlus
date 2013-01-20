@@ -32,11 +32,9 @@ package com.andune.minecraft.hsp.strategy;
 
 import javax.inject.Inject;
 
-import org.slf4j.LoggerFactory;
-
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.strategy.Strategy;
-import com.andune.minecraft.hsp.strategy.StrategyException;
 
 /** Basic routines common/useful to most all strategies.
  * 
@@ -44,7 +42,7 @@ import com.andune.minecraft.hsp.strategy.StrategyException;
  *
  */
 public abstract class BaseStrategy implements Strategy {
-	protected org.slf4j.Logger log = LoggerFactory.getLogger(BaseStrategy.class);
+	protected Logger log = LoggerFactory.getLogger(BaseStrategy.class);
 	protected ConfigCore configCore;
 	protected StrategyResultFactory resultFactory;
 	

@@ -32,8 +32,8 @@ package com.andune.minecraft.hsp.guice;
 
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.config.ConfigCore;
@@ -102,7 +102,6 @@ public class BukkitModule extends AbstractModule {
     /* (non-Javadoc)
      * @see com.google.inject.AbstractModule#configure()
      */
-    @SuppressWarnings("deprecation")
     @Override
     protected void configure() {
         bind(Server.class)
@@ -137,7 +136,7 @@ public class BukkitModule extends AbstractModule {
         bind(YamlFile.class)
             .to(BukkitYamlConfigFile.class);
         bind(com.andune.minecraft.commonlib.Logger.class)
-            .to(com.andune.minecraft.commonlib.LoggerImpl.class);
+            .to(com.andune.minecraft.commonlib.BukkitLoggerImpl.class);
     }
 
     @Provides

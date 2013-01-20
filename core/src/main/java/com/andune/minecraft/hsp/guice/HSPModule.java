@@ -33,9 +33,11 @@ package com.andune.minecraft.hsp.guice;
 import javax.inject.Singleton;
 
 import org.reflections.Reflections;
+import org.reflections.util.FilterBuilder;
 
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
+import com.andune.minecraft.commonlib.reflections.YamlSerializer;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.server.api.event.EventListener;
@@ -113,8 +115,11 @@ public class HSPModule extends AbstractModule {
     @Provides
     @Singleton
     protected Reflections provideReflections() {
-        if( reflections == null )
-            reflections = Reflections.collect();
+        if( reflections == null ) {
+            this.reflections = Reflections.collect("META-INF/reflections",
+                    new FilterBuilder().include(".*-reflections.yml"),
+                    new YamlSerializer());
+        }
         return reflections;
     }
     

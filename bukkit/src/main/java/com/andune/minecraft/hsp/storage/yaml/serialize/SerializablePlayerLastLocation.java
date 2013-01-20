@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.storage.yaml.serialize;
 import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 

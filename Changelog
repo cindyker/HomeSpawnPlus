@@ -1,6 +1,10 @@
-v1.7.4 - 
-* Ticket #162 - added homeMinecraftBedSpawn
+v1.7.4 - Jan 31, 2013
 * compatible with CraftBukkit v1.4.7 ONLY
+* Ticket #168 - No command classes found (conflict with Honeypot plugin)
+* Ticket #162 - added homeMinecraftBedSpawn
+* Ticket #169 - NPE with dynmap named spawns integration
+* Ticket #164 - command to rename spawns and homes (/spawnrename and /homerename)
+* Ticket #163 - Made ebean player name queries case-insensitive
 
 v1.7.3.2 - Dec 23, 2012
 * compatible with CraftBukkit v1.4.6 ONLY

@@ -75,7 +75,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 	
 	@Override
 	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
-		String q = "find homeInvite where home = :home and invitedPlayer = :invitee";
+		String q = "find homeInvite where home = :home and lower(invitedPlayer) = lower(:invitee)";
 		
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("home", home.getId());
@@ -95,7 +95,7 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 
 	@Override
 	public Set<HomeInvite> findAllAvailableInvites(String invitee) {
-		String q = "find homeInvite where invitedPlayer = :invitee";
+		String q = "find homeInvite where lower(invitedPlayer) = lower(:invitee)";
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("invitee", invitee);
 		

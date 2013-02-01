@@ -50,6 +50,9 @@ import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.Logger;
 import org.reflections.Reflections;
+import org.reflections.util.FilterBuilder;
+
+import com.andune.minecraft.commonlib.reflections.YamlSerializer;
 
 /** Class whose job is to register all of HSP commands with Bukkit dynamically,
  * as opposed to through static plugin.yml configurations. This is used by HSP
@@ -77,8 +80,9 @@ public class CommandRegister {
 		this.log = plugin.getLog();
 		this.commandConfig = new CommandConfig(plugin.getLog());
 		
-//    	reflections = new Reflections(COMMANDS_PACKAGE);
-    	reflections = Reflections.collect();
+        this.reflections = Reflections.collect("META-INF/reflections",
+                new FilterBuilder().include(".*-reflections.yml"),
+                new YamlSerializer());
 	}
 	
 	public void setCommandConfig(CommandConfig commandConfig) {

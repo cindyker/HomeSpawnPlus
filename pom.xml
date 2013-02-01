@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.morganm</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
-  <version>1.7.4-SNAPSHOT</version>
+  <version>1.7.4</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -92,12 +92,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.4.7-R0.1</version>
+      <version>1.4.7-R1.0</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.4.7-R0.1</version>
+      <version>1.4.7-R1.0</version>
     </dependency>
 
     <!-- WorldBorder -->
@@ -124,6 +124,13 @@
       <groupId>com.onarandombox.multiverseportals</groupId>
       <artifactId>Multiverse-Portals</artifactId>
       <version>2.4</version>
+    </dependency>
+
+    <!-- Common library -->
+    <dependency>
+      <groupId>com.andune.minecraft.commonlib</groupId>
+      <artifactId>commonlib</artifactId>
+      <version>0.4-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -209,21 +216,27 @@
               <artifactSet>
                 <includes>
                   <include>org.reflections:reflections</include>
-                  <!-- <include>javassist:javassist</include> -->
-                  <include>dom4j:dom4j</include>
+                  <include>com.andune.minecraft.commonlib:commonlib</include>
                 </includes>
               </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>com.andune.minecraft.commonlib:commonlib</artifact>
+                  <includes>
+                    <include>com/andune/minecraft/commonlib/reflections/YamlSerializer*</include>
+                  </includes>
+                </filter>
+              </filters>
 
               <relocations>
                 <relocation>
                   <pattern>org.reflections</pattern>
-                  <shadedPattern>${project.groupId}.reflections</shadedPattern>
+                  <shadedPattern>${project.groupId}.${project.artifactId}.shade.reflections</shadedPattern>
                 </relocation>
-                <!-- <relocation> <pattern>javaassist</pattern> <shadedPattern>${project.groupId}.javaassist</shadedPattern> 
-                  </relocation> -->
                 <relocation>
-                  <pattern>dom4j</pattern>
-                  <shadedPattern>${project.groupId}.dom4j</shadedPattern>
+                  <pattern>com.andune.minecraft.commonlib</pattern>
+                  <shadedPattern>${project.groupId}.${project.artifactId}.shade.commonlib</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -243,9 +256,23 @@
             <phase>process-classes</phase>
             <configuration>
               <includeExclude>+org.morganm.homespawnplus.commands\..*</includeExclude>
+              <serializer>com.andune.minecraft.commonlib.reflections.YamlSerializer</serializer>
+              <destinations>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.yml</destinations>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.andune.minecraft.commonlib</groupId>
+            <artifactId>commonlib</artifactId>
+            <version>0.4-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.9</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <!-- <plugin> <groupId>com.google.code.maven-replacer-plugin</groupId> 

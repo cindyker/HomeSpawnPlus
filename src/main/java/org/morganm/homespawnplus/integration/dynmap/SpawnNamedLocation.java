@@ -77,11 +77,12 @@ public class SpawnNamedLocation implements NamedLocation {
 	 */
 	@Override
 	public boolean isEnabled(ConfigurationSection section) {
-	    // I dislike the reference to Storage, this should be changed to a member
-	    // method for the 2.0 refactor
-	    if( spawn.getGroup().equals(Storage.HSP_WORLD_SPAWN_GROUP) )
+	    // default spawn is always shown
+	    String group = spawn.getGroup();
+	    if( group != null && group.equals(Storage.HSP_WORLD_SPAWN_GROUP) )
 	        return true;
 
+	    // named spawns are only shown if asked to do so
         if( section.getBoolean("include-named-spawns", true) )
             return true;
 

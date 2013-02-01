@@ -101,8 +101,8 @@ public class Teleport {
 		safeIds[Material.POWERED_RAIL.getId()] = 1;
 		safeIds[Material.DETECTOR_RAIL.getId()] = 1;
 		safeIds[Material.RAILS.getId()] = 1;
-		safeIds[Material.STEP.getId()] = 1;		// half slab
-		safeIds[Material.SNOW.getId()] = 1;
+        safeIds[Material.SIGN_POST.getId()] = 1;
+        safeIds[Material.WALL_SIGN.getId()] = 1;
 	}
 	
 	private Teleport() {
@@ -184,6 +184,18 @@ public class Teleport {
 		
 	}
 	
+	/**
+	 * This is a recursive routine that checks cocentric cubes out from
+	 * the original block that is passed in. This has the effect that this
+	 * algorithm basically looks for the "nearest" safe block to the
+	 * original. 
+	 * 
+	 * @param baseLocation
+	 * @param level
+	 * @param bounds
+	 * @param flags
+	 * @return
+	 */
 	private Location findSafeLocation2(final Location baseLocation, final int level,
 			final Bounds bounds, final int flags)
 	{
@@ -212,35 +224,52 @@ public class Teleport {
 		
 		debug.devDebug("findSafeLocation2(): bounds.maxY=",bounds.maxY,", bounds.minY=",bounds.minY);
 		debug.devDebug("findSafeLocation2(): maxY=",maxY,", minY=",minY);
-		
-		long startTime = System.currentTimeMillis();
-		int checkedBlocks=0;
-		for(int x = maxX; x >= minX; x--) {
-			for(int y=maxY; y >= minY; y--) {
-				for(int z=maxZ; z >= minZ; z--) {
-					// we only check the level that we're at, at least one
-					// of the axis must be at the current level
-					if( x != maxX && x != minX
-							&& y != maxY && y != minY 
-							&& z != maxZ && z != minZ )
-						continue;
-					
-					Block b = w.getBlockAt(x, y, z);
-					if( isSafeBlock(b, flags) ) {
-						// if it's the original location, return it untouched so we preserve
-						// the exact coordinates, pitch, yaw, etc
-						if( level == 0 && x == 0 && y == 0 && z == 0 ) {
-							debug.devDebug("findSafeLocation2(): found safe block (original location) ",b);
-							return baseLocation;
-						}
-						else {
-							debug.devDebug("findSafeLocation2(): found safe block ",b);
-							return b.getLocation();
-						}
-					}
-					checkedBlocks++;
-				}
-			}
+
+        long startTime = System.currentTimeMillis();
+        int checkedBlocks=0;
+
+		// if this is our first time through the loop, we check the block
+		// itself and one above. This has the effect of making spawns appear
+		// correct when they are set on half-slabs.
+		if( level == 0 ) {
+    		Block baseBlock = w.getBlockAt(baseLocation);
+            if( isSafeBlock(baseBlock, flags) ) {
+                debug.devDebug("findSafeLocation2(): found safe block (original location) ", baseBlock);
+                return baseLocation;
+            }
+            else {
+                Block upBlock = baseBlock.getRelative(BlockFace.UP);
+                if( isSafeBlock(upBlock, flags) ) {
+                    debug.devDebug("findSafeLocation2(): found safe block (UP block) ", upBlock);
+                    Location l = upBlock.getLocation();
+                    // maintain original pitch/yaw
+                    l.setPitch(baseLocation.getPitch());
+                    l.setYaw(baseLocation.getYaw());
+                    return l;
+                }
+            }
+		}
+		// otherwise we loop through the current cocentric cube
+		else {
+		    for(int x = maxX; x >= minX; x--) {
+		        for(int y=maxY; y >= minY; y--) {
+		            for(int z=maxZ; z >= minZ; z--) {
+		                // we only check the level that we're at, at least one
+		                // of the axis must be at the current level
+		                if( x != maxX && x != minX
+		                        && y != maxY && y != minY 
+		                        && z != maxZ && z != minZ )
+		                    continue;
+
+		                Block b = w.getBlockAt(x, y, z);
+		                if( isSafeBlock(b, flags) ) {
+	                        debug.devDebug("findSafeLocation2(): found safe block ",b);
+	                        return b.getLocation();
+		                }
+		                checkedBlocks++;
+		            }
+		        }
+		    }
 		}
 		
 		long totalTime = System.currentTimeMillis() - startTime;

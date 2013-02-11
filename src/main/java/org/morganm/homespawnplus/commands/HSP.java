@@ -34,6 +34,8 @@
 package org.morganm.homespawnplus.commands;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
@@ -48,6 +50,7 @@ import org.morganm.homespawnplus.command.BaseCommand;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
+import org.morganm.homespawnplus.storage.dao.HomeDAO;
 import org.morganm.homespawnplus.storage.yaml.HomeDAOYaml;
 import org.morganm.homespawnplus.storage.yaml.SpawnDAOYaml;
 import org.morganm.homespawnplus.storage.yaml.StorageYaml;
@@ -88,6 +91,16 @@ public class HSP extends BaseCommand {
 		if( args.length < 1 ) {
 			return false;
 //			printUsage(p, command);
+		}
+		// admin command to clean up any playerName-case-caused dups
+		else if( args[0].startsWith("dedup") || args[0].equals("dd") ) {
+			p.sendMessage("Starting async HSP database home playerName dup cleanup");
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new DeDupDatabaseRunner(p));
+		}
+		// admin command to switch all database player names to lowercase
+		else if( args[0].startsWith("lowercase") || args[0].equals("lc") ) {
+			p.sendMessage("Starting async HSP database playerName-to-lowercase conversion");
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new LowerCaseDatabaseRunner(p));
 		}
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
@@ -265,6 +278,137 @@ public class HSP extends BaseCommand {
 		}
 
 		return true;
+	}
+	
+	private class DeDupDatabaseRunner implements Runnable {
+		private CommandSender sender;
+		
+		public DeDupDatabaseRunner(CommandSender sender) {
+			this.sender = sender;
+		}
+		
+		public void run() {
+			debug.debug("DeDupDatabaseRunner running");
+			int dupsCleaned=0;
+			try {
+				plugin.getStorage().setDeferredWrites(true);
+				final HomeDAO homeDAO = plugin.getStorage().getHomeDAO();
+
+				// we fix dups by player, so we can keep the most recent home in the
+				// event of duplicates. So we keep track of player homes we have fixed
+				// so we can skip any others we come across as we're iterating the
+				// allHomes hash.
+				HashSet<String> playersFixed = new HashSet<String>(100);
+
+				Set<org.morganm.homespawnplus.entity.Home> allHomes = homeDAO.findAllHomes();
+				for(org.morganm.homespawnplus.entity.Home home : allHomes) {
+					final String lcPlayerName = home.getPlayerName().toLowerCase();
+					if( playersFixed.contains(lcPlayerName) )
+						continue;
+					debug.debug("home check for home name ",lcPlayerName);
+
+					final HashMap<String, org.morganm.homespawnplus.entity.Home> dupCheck = new HashMap<String, org.morganm.homespawnplus.entity.Home>();
+					Set<org.morganm.homespawnplus.entity.Home> playerHomes = homeDAO.findHomesByPlayer(lcPlayerName);
+					// look for duplicates and delete all but the newest if we find any
+					for(org.morganm.homespawnplus.entity.Home playerHome : playerHomes) {
+						final String homeName = playerHome.getName();
+						debug.debug("dup check for home name \"",homeName,"\"");
+						// ignore no-name homes, they don't have to be unique
+						if( homeName == null )
+							continue;
+
+						// have we seen this home before?
+						org.morganm.homespawnplus.entity.Home dup = dupCheck.get(homeName);
+						if( dup != null ) {
+							debug.debug("found dup for home ",homeName);
+							// determine which one is oldest and delete the oldest one
+							if( dup.getLastModified().getTime() < playerHome.getLastModified().getTime() ) {
+								// dup is oldest, delete it
+								log.info("Deleting oldest duplicate home (id "+dup.getId()+", name "+dup.getName()+") for player "+lcPlayerName);
+								homeDAO.deleteHome(dup);
+								dupCheck.put(homeName, playerHome);	// record new record in our dup hash
+							}
+							else {
+								// playerHome is oldest, delete it
+								log.info("Deleting oldest duplicate home (id "+playerHome.getId()+", name "+playerHome.getName()+") for player "+lcPlayerName);
+								homeDAO.deleteHome(playerHome);
+							}
+							dupsCleaned++;
+						}
+						else {
+							debug.debug("no dup found for home ",homeName);
+							dupCheck.put(homeName, playerHome);	// we have now, record it
+						}
+					}
+
+					playersFixed.add(lcPlayerName);
+				}
+
+				plugin.getStorage().flushAll();
+			}
+			catch(StorageException e) {
+				log.log(Level.SEVERE, "Caught exception processing /hsp dedup", e);
+			}
+			finally {
+				plugin.getStorage().setDeferredWrites(false);
+			}
+
+			sender.sendMessage("Database playerName dups have been cleaned up. "+dupsCleaned+" total dups found and cleaned");
+		}
+	}
+	
+	private class LowerCaseDatabaseRunner implements Runnable {
+		private CommandSender sender;
+		
+		public LowerCaseDatabaseRunner(CommandSender sender) {
+			this.sender = sender;
+		}
+		
+		public void run() {
+			debug.debug("LowerCaseDatabaseRunner running");
+			int conversions=0;
+			try {
+				plugin.getStorage().setDeferredWrites(true);
+				final HomeDAO homeDAO = plugin.getStorage().getHomeDAO();
+
+				// we fix names by player, so we can keep the most recent home in the
+				// event of duplicates. So we keep track of player homes we have fixed
+				// so we can skip any others we come across as we're iterating the
+				// allHomes hash.
+				HashSet<String> playersFixed = new HashSet<String>(100);
+
+				Set<org.morganm.homespawnplus.entity.Home> allHomes = homeDAO.findAllHomes();
+				for(org.morganm.homespawnplus.entity.Home home : allHomes) {
+					final String lcPlayerName = home.getPlayerName().toLowerCase();
+					if( playersFixed.contains(lcPlayerName) )
+						continue;
+					debug.debug("home check for home name ",lcPlayerName);
+
+					final Set<org.morganm.homespawnplus.entity.Home> playerHomes = homeDAO.findHomesByPlayer(lcPlayerName);
+					for(org.morganm.homespawnplus.entity.Home playerHome : playerHomes) {
+						// set home playerName to lower case if it's not already
+						if( !lcPlayerName.equals(playerHome.getPlayerName()) ) {
+							log.info("Fixing playerName to lowerCase for home id "+playerHome.getId()+", home name "+playerHome.getName()+" for player "+lcPlayerName);
+							playerHome.setPlayerName(lcPlayerName);
+							homeDAO.saveHome(playerHome);
+							conversions++;
+						}
+					}
+
+					playersFixed.add(lcPlayerName);
+				}
+
+				plugin.getStorage().flushAll();
+			}
+			catch(StorageException e) {
+				log.log(Level.SEVERE, "Caught exception processing /hsp lc conversion", e);
+			}
+			finally {
+				plugin.getStorage().setDeferredWrites(false);
+			}
+
+			sender.sendMessage("Database playerNames converted to lowerCase complete. Processed "+conversions+" conversions");
+		}
 	}
 	
 //	private void printUsage(CommandSender p, Command command) {

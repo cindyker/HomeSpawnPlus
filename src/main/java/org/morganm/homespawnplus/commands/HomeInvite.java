@@ -84,11 +84,13 @@ public class HomeInvite extends BaseCommand {
 			try {
 				int id = Integer.parseInt(homeName);
 				home = plugin.getStorage().getHomeDAO().findHomeById(id);
-				// the name on the home and this player's name must match, else we ignore it
-				if( !p.getName().equals(home.getPlayerName()) )
-					home = null;
-				if( home != null )
-					homeName = home.getName();
+				if( home != null ) {
+					// the name on the home and this player's name must match, else we ignore it
+					if( !p.getName().equals(home.getPlayerName()) )
+						home = null;
+					else
+						homeName = home.getName();
+				}
 			}
 			catch(NumberFormatException e) { /* do nothing, we don't care */ }
 			

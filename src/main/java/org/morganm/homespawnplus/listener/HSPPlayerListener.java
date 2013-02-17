@@ -357,8 +357,10 @@ public class HSPPlayerListener implements Listener {
      * 
      * @param event
      */
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void monitorPlayerTeleport(PlayerTeleportEvent event) {
+        if( event.isCancelled() )
+            return;
+
     	// cross-world teleport event?
     	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
     		 PlayerLastLocationDAO dao = plugin.getStorage().getPlayerLastLocationDAO();
@@ -379,6 +381,7 @@ public class HSPPlayerListener implements Listener {
     	}
     }
 
+    @EventHandler(priority=EventPriority.LOW)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
     	if( event.isCancelled() )
     		return;
@@ -521,14 +524,14 @@ public class HSPPlayerListener implements Listener {
 		        plugin);
 
         // optional event registration
-        if( pm.getPlugin("BananaChunk") == null ) {
+        if( plugin.getConfig().getBoolean(ConfigOptions.RECORD_LAST_LOCATION, true) ) {
             pm.registerEvent(PlayerTeleportEvent.class,
             		this,
-            		EventPriority.LOW,
+            		EventPriority.MONITOR,
             		new EventExecutor() {
             			public void execute(Listener listener, Event event) throws EventException {
             				try {
-            					onPlayerTeleport((PlayerTeleportEvent) event);
+            				    monitorPlayerTeleport((PlayerTeleportEvent) event);
             				} catch (Throwable t) {
             					throw new EventException(t);
             				}
@@ -536,7 +539,5 @@ public class HSPPlayerListener implements Listener {
     		        },
     		        plugin);
         }
-        else
-        	log.info(logPrefix + " BananaChunk found, disabling internal teleport chunk refresh.");
    }
 }

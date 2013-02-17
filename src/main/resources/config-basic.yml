@@ -28,6 +28,13 @@ core:
   warnNullStrategy: true
   warnLocationChange: true
 
+  # Whether or not HSP should record the last location of a player
+  # on teleport, which can later be used by the spawnLastLocation
+  # strategy. WARNING: If you are using storage YAML and have
+  # a decent-sized server (few hundred players), THIS CAN CREATE
+  # TELEPORT LAG. Ebeans does not have this issue.
+  recordLastLocation: true
+
 # Web doc reference for event strategies:
 # http://dev.bukkit.org/server-mods/homespawnplus/pages/strategy-doc/
 #

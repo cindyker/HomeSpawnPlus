@@ -67,6 +67,7 @@ public interface ConfigOptions {
 	public static final String BEDHOME_OVERWRITES_DEFAULT = "core.bedHomeOverwritesDefault";
 	public static final String MULTIVERSE_INTEGRATION_ENABLED = "core.multiverseEnabled";
 	public static final String TELEPORT_MESSAGES = "core.teleportMessages";
+    public static final String RECORD_LAST_LOCATION = "core.recordLastLocation";
 
 	public static final String DYNMAP_INTEGRATION_ENABLED = "dynmap.enabled";
 	public static final String DYNMAP_INTEGRATION_UPDATE_PERIOD = "dynmap.update.period";

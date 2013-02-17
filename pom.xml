@@ -2,17 +2,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.morganm</groupId>
+  <groupId>com.andune.minecraft.hsp</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
+  <packaging>jar</packaging>
   <version>1.7.5-SNAPSHOT</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
 
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>Andune</id>
+      <name>Andune</name>
+      <email>andune.alleria@gmail.com</email>
+    </developer>
+  </developers>
+
   <scm>
-    <connection>scm:git:git://github.com/morganm/HomeSpawnPlus.git</connection>
-    <url>https://github.com/morganm/HomeSpawnPlus</url>
-    <developerConnection>scm:git:git@github.com:morganm/HomeSpawnPlus.git</developerConnection>
+    <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
+    <url>https://github.com/andune/HomeSpawnPlus</url>
   </scm>
 
   <distributionManagement>

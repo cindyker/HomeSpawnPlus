@@ -103,8 +103,10 @@ public class Home extends BaseCommand
 				}
 				
 				result = engine.getStrategyResult(EventType.NAMED_HOME_COMMAND, p, args[0]);
-				theHome = result.getHome();
-				l = result.getLocation();
+				if( result != null ) {
+					theHome = result.getHome();
+					l = result.getLocation();
+				}
 			}
 
 			// no location yet but we have a Home object? grab it from there

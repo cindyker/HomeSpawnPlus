@@ -1,15 +1,15 @@
-/*******************************************************************************
+/**
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Copyright (c) 2013 Mark Morgan.
+ *
+ * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -19,20 +19,21 @@
  * notice, this list of conditions and the following disclaimer
  * in the documentation and/or other materials provided with the
  * distribution.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- ******************************************************************************/
+ */
 /**
  * 
  */
-package org.morganm.homespawnplus.strategies;
+package com.andune.minecraft.hsp.strategies.home;
 
-import org.morganm.homespawnplus.strategy.HomeStrategy;
-import org.morganm.homespawnplus.strategy.StrategyContext;
-import org.morganm.homespawnplus.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.HomeStrategy;
+import com.andune.minecraft.hsp.strategy.StrategyContext;
+import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
 
 /**
  * @author andune
@@ -41,7 +42,7 @@ import org.morganm.homespawnplus.strategy.StrategyResult;
 public class HomeMinecraftBedSpawn extends HomeStrategy {
     @Override
     public StrategyResult evaluate(StrategyContext context) {
-        return new StrategyResult(context.getPlayer().getBedSpawnLocation());
+        return new StrategyResultImpl(context.getPlayer().getBedSpawnLocation());
     }
 
     @Override

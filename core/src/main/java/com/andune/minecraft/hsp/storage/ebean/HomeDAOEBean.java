@@ -71,7 +71,7 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public Home findDefaultHome(String world, String playerName) {
-		String q = "find home where lower(playerName) = :playerName and world = :world and defaultHome = 1";
+		String q = "find home where lower(playerName) = lower(:playerName) and world = :world and defaultHome = 1";
 		
 		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);

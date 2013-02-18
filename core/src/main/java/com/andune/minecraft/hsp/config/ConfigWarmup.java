@@ -116,6 +116,11 @@ public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPe
         public Map<String, Integer> getWarmups() { return warmups; }
         
         public void setValue(String key, Object o) {
+            // warmupPerWorld option is deprecated, in fact it never actually
+            // did anything at all, so we just silently ignore it
+            if( key.equals("warmupPerWorld") )
+                return;
+            
             warmups.put(key, (Integer) o);
         }
         

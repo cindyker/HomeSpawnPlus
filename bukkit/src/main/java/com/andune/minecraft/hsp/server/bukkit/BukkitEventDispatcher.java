@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
+import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigWarmup;
 import com.andune.minecraft.hsp.server.api.event.EventListener;
 
@@ -63,13 +64,16 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
     private final ConfigWarmup configWarmup;
+    private final ConfigCore configCore;
     
     @Inject
-    public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory, ConfigWarmup configWarmup) {
+    public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory,
+            ConfigWarmup configWarmup, ConfigCore configCore) {
         this.eventListener = listener;
         this.plugin = plugin;
         this.bukkitFactory = bukkitFactory;
         this.configWarmup = configWarmup;
+        this.configCore = configCore;
     }
 
     /**
@@ -129,6 +133,27 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
                     },
                     plugin);
         }
+        
+        // player teleport observation controlled by config setting
+        // WARNING: although more efficient to not hook the event, this currently
+        // depends on knowledge that the playerTeleportObserver method is only
+        // used for Last Location recording. If this fact ever changes, this
+        // efficient hook/no-hook approach needs to be changed.
+        if( configCore.isRecordLastLocation() ) {
+            plugin.getServer().getPluginManager().registerEvent(org.bukkit.event.player.PlayerTeleportEvent.class,
+                    this,
+                    EventPriority.MONITOR,
+                    new EventExecutor() {
+                        public void execute(Listener listener, Event event) throws EventException {
+                            try {
+                                playerTeleportObserver((org.bukkit.event.player.PlayerTeleportEvent) event);
+                            } catch (Throwable t) {
+                                throw new EventException(t);
+                            }
+                        }
+                    },
+                    plugin);
+        }
     }
     
     /**
@@ -147,7 +172,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
         eventListener.observePlayerTeleport(apiEvent);
     }
 
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    // this event is dynamically hooked only if needed
     public void playerTeleportObserver(org.bukkit.event.player.PlayerTeleportEvent event) {
         com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent apiEvent =
                 new com.andune.minecraft.hsp.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);

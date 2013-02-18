@@ -312,4 +312,15 @@ public class ConfigCore extends ConfigBase implements Initializable {
     public List<String> getDefaultPermissions() {
         return super.getStringList("defaultPermissions");
     }
+    
+    /**
+     * Boolean value to control whether or not HSP records Last Location
+     * on player teleport. This must be true in order for the SpawnLastLocation
+     * strategy to work properly.
+     * 
+     * @return
+     */
+    public boolean isRecordLastLocation() {
+        return super.getBoolean("recordLastLocation");
+    }
 }

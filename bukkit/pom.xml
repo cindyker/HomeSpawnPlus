@@ -297,6 +297,8 @@
                   <include>org.reflections:reflections</include>
                   <!-- <include>javassist:javassist</include> -->
                   <include>com.google.inject:guice</include>
+                  <include>javax.inject:javax.inject</include>
+                  <include>aopalliance:aopalliance</include>
                   <include>com.google.inject.extensions:guice-assistedinject</include>
                   <include>com.andune.minecraft.commonlib:commonlib</include>
                   <include>com.andune.minecraft.commonlib:commonBukkitlib</include>

@@ -67,8 +67,15 @@ public class Initializer {
         this.injector = injector;
     }
 
+    /**
+     * Initialize all objects in the HSP classpath that implement the
+     * Initializable interface.
+     * 
+     * @throws Exception
+     */
     public void initAll() throws Exception {
         long startupBegin = System.currentTimeMillis();
+        
         for(Initializable init : getSortedInitObjects()) {
             log.debug("[Startup Timer] starting {} (t+{})", init, System.currentTimeMillis()-startupBegin);
             long startupTimer = System.currentTimeMillis();

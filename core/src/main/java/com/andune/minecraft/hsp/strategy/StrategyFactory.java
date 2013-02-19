@@ -151,7 +151,7 @@ public class StrategyFactory implements Initializable {
 			throw e;	// just re-throw
 		}
 		catch(Exception e) {
-			throw new StrategyException("Error instantiating new 0-arg strategy instance for class "+clazz, e);
+			throw new StrategyException("Error instantiating new 0-arg strategy instance for class "+clazz+": "+e.getMessage(), e);
 		}
 	}
 	
@@ -172,7 +172,7 @@ public class StrategyFactory implements Initializable {
 			throw e;	// just re-throw
 		}
 		catch(Exception e) {
-			throw new StrategyException("Error instantiating new 1-arg strategy instance for class "+clazz, e);
+			throw new StrategyException("Error instantiating new 1-arg strategy instance for class "+clazz+": "+e.getMessage(), e);
 		}
 	}
 

@@ -208,7 +208,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 						set.add(strategy);
 						count++;
 					} catch (StrategyException e) {
-                        log.warn("Error loading strategy "+item+": "+e.getMessage());
+                        log.warn("Error loading strategy "+item+": "+e.getMessage(), e);
 					}
 				}
 			}
@@ -262,7 +262,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 								set.add(strategy);
 								count++;
 							} catch (StrategyException e) {
-		                        log.warn("Error loading strategy "+item+": "+e.getMessage());
+		                        log.warn("Error loading strategy "+item+": "+e.getMessage(), e);
 							}
 						}
 					}
@@ -335,7 +335,7 @@ public class StrategyConfigImpl implements Initializable, StrategyConfig {
 							set.add(strategy);
 							count++;
 						} catch (StrategyException e) {
-                            log.warn("Error loading strategy "+item+": "+e.getMessage());
+                            log.warn("Error loading strategy "+item+": "+e.getMessage(), e);
 						}
 					}
 				}

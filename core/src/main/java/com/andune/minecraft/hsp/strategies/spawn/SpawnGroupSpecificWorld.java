@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
+import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
@@ -46,13 +47,15 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
  * @author andune
  *
  */
+@NoArgStrategy
 @OneArgStrategy
 public class SpawnGroupSpecificWorld extends BaseStrategy {
     @Inject private SpawnUtil spawnUtil;
     @Inject private PermissionSystem perm;
 
-	private final String worldName;
+	private String worldName;
 	
+    public SpawnGroupSpecificWorld() {}
 	public SpawnGroupSpecificWorld(final String worldName) {
 		this.worldName = worldName;
 	}

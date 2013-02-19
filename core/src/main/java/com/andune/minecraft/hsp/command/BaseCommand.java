@@ -450,7 +450,7 @@ public abstract class BaseCommand implements Command {
 	 * @return
 	 */
 	protected boolean hasPermission(Player p) {
-	    if( permissions.hasCommandPermission(p, this) ) {
+	    if( !permissions.hasCommandPermission(p, this) ) {
 		    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 			return false;
 		}

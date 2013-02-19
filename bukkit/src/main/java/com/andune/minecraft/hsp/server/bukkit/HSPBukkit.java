@@ -32,8 +32,6 @@ package com.andune.minecraft.hsp.server.bukkit;
 
 import java.io.File;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +59,9 @@ public class HSPBukkit extends JavaPlugin {
         // disable reflections spam; it's a bug that prints warnings that look alarming
         Logger.getLogger("org.reflections").setLevel(Level.OFF);
         
-//        enableDebug();
+        File debugFlagFile = new File(getDataFolder(), "devDebug");
+        if( debugFlagFile.exists() )
+            LogUtil.enableDebug();
 
         try {
             YamlConfiguration storageConfig = new YamlConfiguration();
@@ -104,29 +104,5 @@ public class HSPBukkit extends JavaPlugin {
 
     public ClassLoader _getClassLoader() {
         return super.getClassLoader();
-    }
-
-    // TODO: move to an interface
-    private void enableDebug() {
-        LogUtil.enableDebug();
-        
-        getConsoleHandler(Logger.getLogger("Minecraft")).setLevel(Level.ALL);
-        Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
-//        Logger debugLog = Logger.getLogger("com.andune.minecraft.hsp");
-//        debugLog.setLevel(Level.FINEST);
-//        debugLog.setUseParentHandlers(true);
-    }
-    
-    private Handler getConsoleHandler(Logger log) {
-        Handler[] handlers = log.getHandlers();
-        for(int i=0; i < handlers.length; i++)
-            if( handlers[i] instanceof ConsoleHandler )
-                return handlers[i];
-
-        Logger parent = log.getParent();
-        if( parent != null )
-            return getConsoleHandler(parent);
-        else
-            return null;
     }
 }

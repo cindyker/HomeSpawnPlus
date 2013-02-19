@@ -113,7 +113,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
-      <version>5.4.5</version>
+      <version>5.5.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.spout</groupId>
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.15</version>
+      <version>1.2.23</version>
     </dependency>
 
     <!-- WorldBorder -->

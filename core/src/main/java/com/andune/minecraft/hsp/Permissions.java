@@ -36,6 +36,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.CommandSender;
@@ -50,6 +52,7 @@ import com.andune.minecraft.hsp.server.api.Player;
  */
 @Singleton
 public class Permissions {
+    private static final Logger log = LoggerFactory.getLogger(Permissions.class);
     /**
      * The base permission prefix - all HSP permissions start with this prefix. 
      */
@@ -80,6 +83,7 @@ public class Permissions {
      */
     public boolean hasPermission(CommandSender sender, String perm) {
         boolean result = permSystem.has(sender, perm);
+        log.debug("hasPermission: sender={}, perm={}, result={}", sender, perm, result);
 
         // support legacy HSP "defaultPermissions" setting
         if( !result ) {

@@ -360,6 +360,10 @@ public class HSPPlayerListener implements Listener {
     public void monitorPlayerTeleport(PlayerTeleportEvent event) {
         if( event.isCancelled() )
             return;
+        
+        // don't do anything if RECORD_LAST_LOCATION is disabled
+        if( !plugin.getConfig().getBoolean(ConfigOptions.RECORD_LAST_LOCATION, true) )
+            return;
 
     	// cross-world teleport event?
     	if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {

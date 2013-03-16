@@ -119,7 +119,7 @@ public class HomeDelete extends BaseCommand {
 			// safety check to be sure we aren't deleting someone else's home with this command
 			// (this shouldn't be possible since all checks are keyed to this player's name, but
 			// let's be paranoid anyway)
-			if( !p.getName().equals(home.getPlayerName()) ) {
+			if( !p.getName().equalsIgnoreCase(home.getPlayerName()) ) {
 				util.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME);
 //				util.sendMessage(p, "ERROR: tried to delete another player's home; action not allowed.");
 				log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to delete home for player "+home.getPlayerName());

@@ -76,7 +76,7 @@ public class HomeRename extends BaseCommand {
             // safety check to be sure we aren't renaming someone else's home with this command
             // (this shouldn't be possible since all checks are keyed to this player's name, but
             // let's be paranoid anyway)
-            if( !p.getName().equals(home.getPlayerName()) ) {
+            if( !p.getName().equalsIgnoreCase(home.getPlayerName()) ) {
                 util.sendLocalizedMessage(p, HSPMessages.CMD_HOMERENAME_ERROR_RENAMING_OTHER_HOME);
                 log.warning(logPrefix + " ERROR: Shouldn't be possible! Player "+p.getName()+" tried to rename home for player "+home.getPlayerName());
             }

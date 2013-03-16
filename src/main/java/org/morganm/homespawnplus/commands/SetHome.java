@@ -33,6 +33,7 @@
  */
 package org.morganm.homespawnplus.commands;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
@@ -62,8 +63,6 @@ public class SetHome extends BaseCommand
 		debug.debug("sethome invoked. player=",p,"args=",args);
 		if( !isEnabled() || !hasPermission(p) )
 			return true;
-//		if( !defaultCommandChecks(p) )
-//			return true;
 		
 		String cooldownName = null;
 		String homeName = null;
@@ -76,13 +75,11 @@ public class SetHome extends BaseCommand
 				}
 				else {
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]);
-//					util.sendMessage(p, "Cannot used reserved name "+args[0]);
 					return true;
 				}
 			}
 			else {
 				util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION);
-//				util.sendMessage(p, "You do not have permission to set named homes");
 				return true;
 			}
 		}
@@ -94,19 +91,23 @@ public class SetHome extends BaseCommand
 			printInsufficientFundsMessage(p);
 			return true;
 		}
+		
+		final Location newLocation = p.getLocation();
+		if( newLocation.getY() < 1 || newLocation.getY() > newLocation.getWorld().getMaxHeight()-1 ) {
+            util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
+            return true;
+		}
 
 		if( homeName != null ) {
-			if( util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName()) ) {
+			if( util.setNamedHome(p.getName(), newLocation, homeName, p.getName()) ) {
 				if( applyCost(p, true, cooldownName) )
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName);
-//					util.sendMessage(p, "Home \""+homeName+"\" set successfully.");
 			}
 		}
 		else {
-			if( util.setHome(p.getName(), p.getLocation(), p.getName(), true, false) ) {
+			if( util.setHome(p.getName(), newLocation, p.getName(), true, false) ) {
 				if( applyCost(p, true, cooldownName) )
 					util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET);
-//					util.sendMessage(p, "Default home set successfully.");
 			}
 		}
 

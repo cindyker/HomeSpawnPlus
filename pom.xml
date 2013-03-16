@@ -32,16 +32,16 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>morganm-repo-snapshot</id>
-      <name>Morganmc nexus repository</name>
-      <url>http://morganmc.dyndns.org/nexus/content/repositories/snapshots/</url>
+      <id>andune-repo-snapshot</id>
+      <name>Andune nexus repository</name>
+      <url>http://andune.com/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
   <repositories>
     <repository>
-      <id>morganm-repo</id>
-      <url>http://morganmc.dyndns.org/nexus/content/groups/public/</url>
+      <id>andune-repo</id>
+      <url>http://andune.com/nexus/content/groups/public/</url>
     </repository>
     <repository>
       <id>onarandombox</id>

@@ -4,6 +4,8 @@ v1.7.5 -
 * addition of "/hlo lc" admin command to convert all player names for homes in the database to lowercase. In practice this isn't all that useful right now since HSP currently ignores case when searching player homes, but this might be combined with a future config option to enforce lowercase names instead of proper case for admins that prefer it. Backup your database before running this command!
 * Ticket #175: fix for /home NPE related to using strategies that produce no result
 * addition of "core.recordLastLocation" which can be used to disable Last Location logging
+* ignore case for name safety check in /homedelete and /homerename, only matters for offline servers
+* Ticket #183: Fix for disabling /sethome when falling beneath the world
 
 v1.7.4 - Jan 31, 2013
 * compatible with CraftBukkit v1.4.7 ONLY

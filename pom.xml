@@ -107,12 +107,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.5.1-R0.1</version>
+      <version>1.5.1-R0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.5.1-R0.1</version>
+      <version>1.5.1-R0.2-SNAPSHOT</version>
     </dependency>
 
     <!-- WorldBorder -->
@@ -139,6 +139,13 @@
       <groupId>com.onarandombox.multiverseportals</groupId>
       <artifactId>Multiverse-Portals</artifactId>
       <version>2.4</version>
+    </dependency>
+
+    <!-- AuthMe -->
+    <dependency>
+      <groupId>uk.org.whoami.authme</groupId>
+      <artifactId>AuthMe</artifactId>
+      <version>2.7.13</version>
     </dependency>
 
     <!-- Common library -->

@@ -1,3 +1,6 @@
+v1.7.6 - 
+* support for Multiverse integration with Multiverse 2.5
+
 v1.7.5 - Apr 4, 2013
 * fixed NPE bug with /homeinvite when trying to send an invite to a home you don't own
 * addition of "/hlo dd" admin command to look for any home playerName case dups. For example, if a home "foo" exists for both player "Julie" and "julie", this will delete the oldest of the two. In general this is only caused by servers that have run in offline mode and allowed players to create homes that aren't tied to valid minecraft IDs. Backup your database before running this command!

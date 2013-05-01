@@ -102,8 +102,10 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
         
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
         if( p != null ) {
-            if( p.getDescription().getVersion().startsWith("2.4") ) {
-                com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
+            // we only support specific versions because of the in-depth hooking we do of Multiverse
+            // internals, so there's no guarantee HSP's hooking will work with future versions
+            // until specific support is added and known to work.
+            if( p.getDescription().getVersion().startsWith("2.4") || p.getDescription().getVersion().startsWith("2.5") ) {                com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
             
                 if( multiverse != null ) {
                     log.debug("Hooking Multiverse");
@@ -113,6 +115,9 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
                     registerListener();
                 }
+            }
+            else {
+                log.info("Unsupported version of Multiverse: "+p.getDescription().getVersion());
             }
         }
     }

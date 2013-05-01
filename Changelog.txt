@@ -24,12 +24,17 @@ v2.0 -
   - core.defaultPermissions is now valid for all permission modes. So any permissions listed here will be applied to everyone for
     HSP permission checks.
 
-v1.7.5 - 
+v1.7.6 - 
+* support for Multiverse integration with Multiverse 2.5
+
+v1.7.5 - Apr 4, 2013
 * fixed NPE bug with /homeinvite when trying to send an invite to a home you don't own
 * addition of "/hlo dd" admin command to look for any home playerName case dups. For example, if a home "foo" exists for both player "Julie" and "julie", this will delete the oldest of the two. In general this is only caused by servers that have run in offline mode and allowed players to create homes that aren't tied to valid minecraft IDs. Backup your database before running this command!
 * addition of "/hlo lc" admin command to convert all player names for homes in the database to lowercase. In practice this isn't all that useful right now since HSP currently ignores case when searching player homes, but this might be combined with a future config option to enforce lowercase names instead of proper case for admins that prefer it. Backup your database before running this command!
 * Ticket #175: fix for /home NPE related to using strategies that produce no result
 * addition of "core.recordLastLocation" which can be used to disable Last Location logging
+* ignore case for name safety check in /homedelete and /homerename, only matters for offline servers
+* Ticket #183: Fix for disabling /sethome when falling beneath the world
 
 v1.7.4 - Jan 31, 2013
 * compatible with CraftBukkit v1.4.7 ONLY
@@ -45,7 +50,8 @@ v1.7.3.2 - Dec 23, 2012
 v1.7.3.1 - Dec 9, 2012
 * Update to be compatible with latest CraftBukkit development releases (intentional break by Bukkit team) Details here: http://goo.gl/bFH0W
 * Maven adjusted to always use CraftBukkit LATEST, and there are only two references to CraftBukkit code in HSP so future API breaks can be updated and new plugin built in about 30 seconds, by myself or anyone else
-    
+* Ticket #147: added "include-named-spawns" dynmap option
+
 v1.7.3 - Nov 14, 2012
 * Ticket #140: fixed Exception when using trailing \ on commands
 * added "hsp" prefixed alias for all commands (/hsphome, /hspspawn, /hsphomelist, etc)

@@ -93,6 +93,12 @@ public class SetHome extends BaseCommand
 			return true;
 		}
 
+		final Location newLocation = p.getLocation();
+		if( newLocation.getY() < 1 || newLocation.getY() > newLocation.getWorld().getMaxHeight()-1 ) {
+            util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
+            return true;
+		}
+		
         String errorMsg = null;
 		if( homeName != null ) {
 			errorMsg = util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName());

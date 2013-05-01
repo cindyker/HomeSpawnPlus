@@ -12,12 +12,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!--
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.andune.com</url>
+        <url>http://andune.com/jenkins/</url>
     </ciManagement>
-    -->
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:andune/HomeSpawnPlus.git</developerConnection>
+        <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
+        <url>https://github.com/andune/HomeSpawnPlus</url>
+    </scm>
 
     <modules>
         <module>api</module>

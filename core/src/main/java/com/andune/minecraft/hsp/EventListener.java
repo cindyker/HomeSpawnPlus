@@ -235,6 +235,10 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
      */
     @Override
     public void observePlayerTeleport(PlayerTeleportEvent event) {
+        // don't do anything if recordLastLocation is disabled
+        if( config.isRecordLastLocation() )
+            return;
+
         // cross-world teleport event?
         if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
              PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();

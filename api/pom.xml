@@ -9,14 +9,12 @@
   <description>HomeSpawnPlus for all your Minecraft home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
 
-<!--
   <parent>
-    <groupId>com.andune.homespawnplus</groupId>
+    <groupId>com.andune.minecraft.hsp</groupId>
     <artifactId>HomeSpawnPlus-parent</artifactId>
-    <version>parent</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>2.0-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
--->
 
   <scm>
     <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
@@ -107,16 +105,6 @@
 
     <!-- Plugins -->
     <plugins>
-      <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <configuration>
-          <header>src/main/license/header.txt</header>
-          <strictCheck>true</strictCheck>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>

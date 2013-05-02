@@ -2,9 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.andune.minecraft.hsp</groupId>
   <artifactId>HomeSpawnPlus-core</artifactId>
-  <version>2.0-SNAPSHOT</version>
   <name>HomeSpawnPlus-core</name>
   <description>HomeSpawnPlus for all your Minecraft home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -159,25 +157,6 @@
 
     <!-- Plugins -->
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version><!--$NO-MVN-MAN-VER$ -->
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <configuration>
-              <target>
-                <buildnumber />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Compile plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -238,7 +217,7 @@
               <classpathPrefix>../lib</classpathPrefix>
             </manifest>
             <manifestEntries>
-              <Implementation-Build>${buildNumber}</Implementation-Build>
+              <Implementation-Build>${build.number}</Implementation-Build>
             </manifestEntries>
           </archive>
         </configuration>

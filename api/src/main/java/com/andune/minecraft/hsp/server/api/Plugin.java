@@ -43,7 +43,7 @@ public interface Plugin {
     public String getName();
     public ClassLoader getClassLoader();
     public String getVersion();
-    public int getBuildNumber();
+    public String getBuild();
 
     /**
      * Gets an embedded resource in this plugin

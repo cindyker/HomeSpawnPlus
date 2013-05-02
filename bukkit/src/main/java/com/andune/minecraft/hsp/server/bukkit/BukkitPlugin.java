@@ -50,7 +50,7 @@ public class BukkitPlugin implements Plugin
 {
     private final HSPBukkit plugin;
     private final JarUtils jarUtil;
-    private int buildNumber = -1;
+    private String build = null;
     
     @Inject
     public BukkitPlugin(HSPBukkit plugin, JarUtils jarUtil) {
@@ -84,10 +84,10 @@ public class BukkitPlugin implements Plugin
     }
 
     @Override
-    public int getBuildNumber() {
-        if( buildNumber == -1 )
-            buildNumber = jarUtil.getBuildNumber();
-        return buildNumber;
+    public String getBuild() {
+        if( build == null )
+            build = jarUtil.getBuild();
+        return build;
     }
     
     @Override

@@ -25,15 +25,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-/**
- * 
- */
 package com.andune.minecraft.hsp.strategies.spawn;
 
 import java.util.Set;
 
 import javax.inject.Inject;
-
 
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.server.api.Location;
@@ -50,7 +46,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
  *
  */
 @NoArgStrategy
-public class SpawnNearestSpawn extends BaseStrategy {
+public class SpawnNearest extends BaseStrategy {
     @Inject private SpawnDAO spawnDAO;
 
 	@Override
@@ -75,7 +71,7 @@ public class SpawnNearestSpawn extends BaseStrategy {
 			
 			// skip newPlayerSpawn if so directed
 			if( excludeNewPlayerSpawn && theSpawn.isNewPlayerSpawn() ) {
-				log.debug("Skipped spawn choice ",theSpawn," because mode ",StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN," is enabled");
+				log.debug("Skipped spawn choice {} because mode {} is enabled", theSpawn, StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
 				continue;
 			}
 			
@@ -91,10 +87,4 @@ public class SpawnNearestSpawn extends BaseStrategy {
 		
 		return new StrategyResultImpl(closestSpawn);
 	}
-
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnNearest";
-	}
-
 }

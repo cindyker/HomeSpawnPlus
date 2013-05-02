@@ -35,7 +35,7 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
-import com.andune.minecraft.hsp.strategies.spawn.SpawnNearestSpawn;
+import com.andune.minecraft.hsp.strategies.spawn.SpawnNearest;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
@@ -49,7 +49,7 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
 @NoArgStrategy
 public class NearestHomeOrSpawn extends BaseStrategy {
 	@Inject private HomeNearestHome nearestHome;
-	@Inject private SpawnNearestSpawn nearestSpawn;
+	@Inject private SpawnNearest nearestSpawn;
 	
 	@Override
 	public StrategyResult evaluate(StrategyContext context) {

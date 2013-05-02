@@ -71,7 +71,7 @@ public class HomeSpawnPlus {
         initializer.initAll();
         eventDispatcher.registerEvents();
         
-        log.info("{} version {}, build {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
+        log.info("{} version {}, build {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());
         initialized = true;
     }
     
@@ -87,7 +87,7 @@ public class HomeSpawnPlus {
         }
 
         if( plugin != null )
-            log.info("{} version {}, build {} is disabled", plugin.getName(), plugin.getVersion(), plugin.getBuildNumber());
+            log.info("{} version {}, build {} is disabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());
         
         initialized = false;
     }

@@ -55,20 +55,24 @@ public class StrategyResultImpl implements StrategyResult {
 	private boolean isSuccess = false;
 	
 	public StrategyResultImpl(Home home) {
-		this.home = home;
-		if( home != null )
+        if( home != null ) {
+            this.home = home;
 			this.location = home.getLocation();
-		setSuccess();
+			setSuccess();
+        }
 	}
 	public StrategyResultImpl(Spawn spawn) {
-		this.spawn = spawn;
-		if( spawn != null )
+	    if( spawn != null ) {
+	        this.spawn = spawn;
 			this.location = spawn.getLocation();
-		setSuccess();
+			setSuccess();
+	    }
 	}
 	public StrategyResultImpl(Location location) {
-		this.location = location;
-		setSuccess();
+	    if( location != null ) {
+    		this.location = location;
+    		setSuccess();
+	    }
 	}
 	public StrategyResultImpl(boolean isSuccess, boolean explicitDefault) {
 		this.isSuccess = isSuccess;

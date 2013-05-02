@@ -67,4 +67,9 @@ public class BukkitWorld implements World {
     public org.bukkit.World getBukkitWorld() {
         return bukkitWorld;
     }
+
+    @Override
+    public int getMaxHeight() {
+        return bukkitWorld.getMaxHeight();
+    }
 }

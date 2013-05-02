@@ -58,4 +58,13 @@ public interface World {
      * @return The spawn location of this world
      */
     public Location getSpawnLocation();
+    
+    /**
+     * Gets the maximum height of this world.
+     * <p />
+     * If the max height is 100, there are only blocks from y=0 to y=99.
+     *
+     * @return Maximum height of the world
+     */
+    public int getMaxHeight();
 }

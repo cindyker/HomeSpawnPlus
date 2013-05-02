@@ -32,9 +32,9 @@ package com.andune.minecraft.hsp.commands;
 
 import javax.inject.Inject;
 
-
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.util.HomeUtil;
@@ -95,7 +95,7 @@ public class SetHome extends BaseCommand
 
 		final Location newLocation = p.getLocation();
 		if( newLocation.getY() < 1 || newLocation.getY() > newLocation.getWorld().getMaxHeight()-1 ) {
-            util.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
+		    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
             return true;
 		}
 		

@@ -27,7 +27,7 @@ You can find it in [BukkitEventDispatcher](https://github.com/andune/HomeSpawnPl
 
 Inversion of Control
 ====================
-I won't attempt to describe all of the core concepts of (IoC)[http://en.wikipedia.org/wiki/Inversion_of_control] and (Dependency Injection)[http://en.wikipedia.org/wiki/Dependency_injection] here, you can check out those links and any other excellent documentation available on the web for these topics.
+I won't attempt to describe all of the core concepts of [IoC](http://en.wikipedia.org/wiki/Inversion_of_control) and [Dependency Injection](http://en.wikipedia.org/wiki/Dependency_injection) here, you can check out those links and any other excellent documentation available on the web for these topics.
 
 However, I will describe briefly the primary benefits of these concepts as implemented by HSP as well as the specifics of the Guice IoC container that HSP uses.
 

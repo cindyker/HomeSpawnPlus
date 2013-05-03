@@ -47,9 +47,6 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.andune.minecraft.hsp.config.ConfigHomeLimits;
-import com.andune.minecraft.hsp.config.ConfigLoader;
-import com.andune.minecraft.hsp.config.ConfigOptions;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 

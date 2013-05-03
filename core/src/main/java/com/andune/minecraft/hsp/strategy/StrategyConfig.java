@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.strategy.Strategy;
 
@@ -41,7 +42,7 @@ import com.andune.minecraft.hsp.strategy.Strategy;
  * @author andune
  *
  */
-public interface StrategyConfig {
+public interface StrategyConfig extends Initializable {
 
     /** Given a specific event type, return the default strategy chain associated with
      * that event.

@@ -38,6 +38,8 @@ import org.reflections.util.FilterBuilder;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
 import com.andune.minecraft.commonlib.reflections.YamlSerializer;
+import com.andune.minecraft.hsp.config.ConfigLoader;
+import com.andune.minecraft.hsp.config.ConfigLoaderImpl;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.server.api.event.EventListener;
@@ -89,6 +91,9 @@ public class HSPModule extends AbstractModule {
             .in(Scopes.SINGLETON);
         bind(TeleportOptions.class)
             .to(TeleportOptionsImpl.class);
+        bind(ConfigLoader.class)
+            .to(ConfigLoaderImpl.class)
+            .in(Scopes.SINGLETON);
         
         bind(StrategyResultFactory.class)
             .to(StrategyResultFactoryImpl.class);

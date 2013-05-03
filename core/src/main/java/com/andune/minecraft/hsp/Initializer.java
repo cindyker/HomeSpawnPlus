@@ -46,6 +46,8 @@ import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 
 import com.andune.minecraft.hsp.config.ConfigBase;
+import com.andune.minecraft.hsp.config.ConfigLoader;
+import com.andune.minecraft.hsp.strategy.StrategyConfig;
 import com.google.inject.Injector;
 
 /** This class is used to initialize all classes within HSP that
@@ -60,11 +62,16 @@ public class Initializer {
 
     private final Reflections reflections;
     private final Injector injector;
+    private final ConfigLoader configLoader;
+    private final StrategyConfig strategyConfig;
     
     @Inject
-    public Initializer(Reflections reflections, Injector injector) {
+    public Initializer(Reflections reflections, Injector injector,
+            ConfigLoader configLoader, StrategyConfig strategyConfig) {
         this.reflections = reflections;
         this.injector = injector;
+        this.configLoader = configLoader;
+        this.strategyConfig = strategyConfig;
     }
 
     /**
@@ -93,10 +100,15 @@ public class Initializer {
      * @throws Exception
      */
     public void initConfigs() throws Exception {
+        configLoader.flush();
+
         for(Initializable init : getSortedInitObjects()) {
             if( init instanceof ConfigBase )
                 init.init();
         }
+        
+        // re-initialize strategyConfig since it preprocesses and caches event config data
+        strategyConfig.init();
     }
 
     public void shutdownAll()  {

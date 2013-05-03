@@ -44,8 +44,6 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
 import com.andune.minecraft.hsp.config.ConfigEvents;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
@@ -60,7 +58,7 @@ import com.andune.minecraft.hsp.server.api.World;
  *
  */
 @Singleton
-public class StrategyConfigImpl implements Initializable, StrategyConfig {
+public class StrategyConfigImpl implements StrategyConfig {
     private static final Logger log = LoggerFactory.getLogger(StrategyConfigImpl.class);
 
 	private final Map<String, Set<Strategy>> defaultStrategies;

@@ -25,47 +25,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-/**
- * 
- */
 package com.andune.minecraft.hsp.config;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import com.andune.minecraft.commonlib.Logger;
-import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Plugin;
-import com.andune.minecraft.hsp.server.api.YamlFile;
 
 /**
+ * ConfigLoader is responsible for loading config data from storage.
+ * 
  * @author andune
  *
  */
-@Singleton
-public class ConfigLoader  {
-    private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
-    
-    private final Plugin plugin;
-    private final Factory factory;
-    private final JarUtils jarUtil;
-    
-    private YamlFile singleConfigFile;
-
-    @Inject
-    public ConfigLoader(Plugin plugin, Factory factory, JarUtils jarUtil) {
-        this.plugin = plugin;
-        this.factory = factory;
-        this.jarUtil = jarUtil;
-    }
+public interface ConfigLoader {
 
     /**
      * Load the given configFile and return the configurationSection
@@ -78,61 +51,14 @@ public class ConfigLoader  {
      * @throws IOException 
      * @throws FileNotFoundException 
      */
-    public ConfigurationSection load(String fileName, String basePath) throws IOException, ConfigException {
-        YamlFile yaml = getSingleConfigFile();
-
-        // load individual config file if single "config.yml" is not in use
-        if( yaml == null ) {
-            log.debug("No single config.yml found, using multiple config files");
-            File configFileName = new File(plugin.getDataFolder(), "config/"+fileName);
-            if( !configFileName.exists() )
-                installDefaultFile(fileName);
-            yaml = factory.newYamlFile();
-            yaml.load(configFileName);
-        }
-
-        return yaml.getConfigurationSection(basePath);
-    }
+    public ConfigurationSection load(String fileName, String basePath)
+            throws IOException, ConfigException;
 
     /**
-     * If a single config file exists, this method will load it and
-     * return it, caching it for future calls. If it doesn't exist,
-     * this method returns null.
-     * 
-     * @return
-     * @throws ConfigException 
-     * @throws IOException 
-     * @throws FileNotFoundException 
+     * ConfigLoader implementation may maintain a cache, especially in the case
+     * of a single config.yml file, so when configs are being reloaded, the
+     * cache should be flushed by calling this method first.
      */
-    private YamlFile getSingleConfigFile() throws FileNotFoundException, IOException, ConfigException {
-        if( singleConfigFile == null ) {
-            File configYml = new File(plugin.getDataFolder(), "config.yml");
-            if( configYml.exists() ) {
-                log.debug("Single config.yml file exists, loading file");
-                singleConfigFile = factory.newYamlFile();
-                singleConfigFile.load(configYml);
-            }
-        }
-        
-        return singleConfigFile;
-    }
-
-    /**
-     * Install the configuration default file if it doesn't exist.
-     * 
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    private void installDefaultFile(String fileName) throws FileNotFoundException, IOException {
-        File pluginDir = plugin.getDataFolder();
-        // create the config directory if it doesn't exist
-        File configDir = new File(pluginDir, "config");
-        if( !configDir.exists() )
-            configDir.mkdirs();
-
-        File configFile = new File(configDir, fileName);
-        if( !configFile.exists() )
-            jarUtil.copyConfigFromJar("config/"+fileName, configFile);
-    }
+    public void flush();
 
 }

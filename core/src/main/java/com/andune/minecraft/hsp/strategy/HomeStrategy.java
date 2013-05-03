@@ -95,7 +95,7 @@ public abstract class HomeStrategy extends BaseStrategy {
 				home = null;
 			}
 			
-			if( context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
+			if( home != null && context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
 				logVerbose("Home ",home," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
 				home = null;
 			}

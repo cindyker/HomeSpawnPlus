@@ -37,9 +37,9 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
+import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.Player;
@@ -48,10 +48,7 @@ import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
-import com.andune.minecraft.hsp.strategy.Strategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /** Class responsible for processing strategies at run-time.
  * 
@@ -66,10 +63,12 @@ public class StrategyEngineImpl implements StrategyEngine {
 	private final Teleport teleport;
 	private final Factory factory;
 	private final StrategyResultFactory resultFactory;
+	private final SpawnUtil spawnUtil;
 	
 	@Inject
 	public StrategyEngineImpl(ConfigCore config, StrategyConfig strategyConfig, Storage storage,
-	        Teleport teleport, Factory factory, StrategyResultFactory resultFactory)
+	        Teleport teleport, Factory factory, StrategyResultFactory resultFactory,
+	        SpawnUtil spawnUtil)
 	{
 	    this.config = config;
 		this.strategyConfig = strategyConfig;
@@ -77,6 +76,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		this.teleport = teleport;
 		this.factory = factory;
 		this.resultFactory = resultFactory;
+		this.spawnUtil = spawnUtil;
 	}
 	
 	public StrategyConfig getStrategyConfig() {
@@ -160,6 +160,8 @@ public class StrategyEngineImpl implements StrategyEngine {
 		
 		logVerbose("Strategy evaluation started, type=",context.getEventType()," player=",context.getPlayer());
 		
+		correctEventLocation(context);    // modify event location if required
+		
 		log.debug("evaluateStrategies: evaluating permission-based strategies");
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
 		if( permStrategies != null && permStrategies.size() > 0 ) {
@@ -218,8 +220,8 @@ public class StrategyEngineImpl implements StrategyEngine {
 
 		// if we have a result, make sure it's a safe location
 		if( result != null && result.getLocation() != null && config.isSafeTeleport() ) {
-			Location oldLocation = result.getLocation();
-			TeleportOptions options = context.getTeleportOptions();
+			final Location oldLocation = result.getLocation();
+			final TeleportOptions options = context.getTeleportOptions();
 
 			log.debug("evaluateStrategies(): Invoking safeLocation() for event={}, current startegy result={}",context.getEventType(), result);
 			log.debug("evaluateStrategies(): options={}",options);
@@ -227,8 +229,10 @@ public class StrategyEngineImpl implements StrategyEngine {
 			if( safeLocation != null )
 				result.setLocation(safeLocation);
 			
-			if( !oldLocation.equals(result.getLocation()) )
+			if( !oldLocation.equals(result.getLocation()) ) {
+                logVerbose("result changed to safeLocation, new result = ", result);
 				log.debug("evaluateStrategies: safeLocation changed to {} from {}",result.getLocation(), oldLocation);
+			}
 		}
 
 		// are we supposed to remember a spawn?
@@ -313,6 +317,48 @@ public class StrategyEngineImpl implements StrategyEngine {
 		return result;
 	}
 	
+	/**
+	 * For worlds ending with "_nether" or "_the_end", we treat them as if
+	 * they were running on their base world. The only exception is if the
+	 * admin has defined a specific per-world event chain for those worlds,
+	 * then we will use the per-world events instead.
+	 * 
+	 * @param context
+	 */
+    private void correctEventLocation(final StrategyContext context) {
+        final Location eventLocation = context.getEventLocation();
+        if( eventLocation != null ) {
+            final String worldName = eventLocation.getWorld().getName();
+            
+            // determine if this is a special world we should look at further
+            int endLength = -1;
+            if( worldName.endsWith("_nether") ) { endLength = 7; }
+            if( worldName.endsWith("_the_end") ) { endLength = 8; }
+            
+            if( endLength > -1 ) {
+                // this is a special world, check for world-specific strategies 
+                Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), worldName);
+                if( worldStrategies == null || worldStrategies.size() == 0 ) {
+                    // if we get here, no world-specific strategies exist, so we
+                    // change to the base world name instead and modify the
+                    // context location.
+                    final String baseWorld = worldName.substring(0,  worldName.length()-endLength);
+                    log.debug("No per-world strategies found for world {}, using base world {} as context location", worldName, baseWorld);
+                    
+                    // use the spawn as the location if there is one
+                    Spawn spawn = spawnUtil.getDefaultWorldSpawn(baseWorld);
+                    if( spawn != null && spawn.getLocation() != null ) {
+                        context.setLocation(spawn.getLocation());
+                    }
+                    else {  // otherwise just use x=0,z=0
+                        Location l = factory.newLocation(baseWorld, 0, 70, 0, 0, 0);
+                        context.setLocation(l);
+                    }
+                }
+            }
+        }
+    }
+    
 	protected boolean isVerbose() {
 		return config.isVerboseStrategyLogging();
 	}

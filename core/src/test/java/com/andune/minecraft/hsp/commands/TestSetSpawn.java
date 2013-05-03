@@ -110,7 +110,7 @@ public class TestSetSpawn extends BaseCommandTest {
         // When
         objectUnderTest.execute(player, null, new String[] {});
         // Then
-        verify(util).setDefaultWorldSpawn(any(Location.class), any(String.class));
+        verify(util).setDefaultWorldSpawn(eq(l), any(String.class));
         verify(w).setSpawnLocation(anyInt(), anyInt(), anyInt());
     }
 }

@@ -36,10 +36,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableHome;

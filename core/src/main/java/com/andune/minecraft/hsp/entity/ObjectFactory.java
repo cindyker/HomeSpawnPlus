@@ -32,10 +32,9 @@ package com.andune.minecraft.hsp.entity;
 
 import javax.inject.Inject;
 
-
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Location;
 
 /** While IoC injection should be preferred over static Factory
  * methods (better decoupled code), I'm not using a heavy IoC tool

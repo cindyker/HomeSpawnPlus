@@ -30,7 +30,8 @@ package com.andune.minecraft.hsp.config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.config.ConfigException;
 
 /**
  * ConfigLoader is responsible for loading config data from storage.

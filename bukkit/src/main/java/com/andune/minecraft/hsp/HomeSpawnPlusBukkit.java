@@ -28,7 +28,7 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.server.bukkit;
+package com.andune.minecraft.hsp;
 
 import java.io.File;
 import java.util.List;
@@ -44,14 +44,16 @@ import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigStorage;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.andune.minecraft.hsp.util.LogUtil;
 
-/** This class is the interface to Bukkit's Plugin interface. This is abstracted from
- * the rest of the plugin so as to minimize impact to the code when Bukkit makes
- * API changes and to simplify supporting MC-API, Spout or other frameworks.
+/**
+ * This class is the implementation of Bukkit's Plugin interface. This is
+ * abstracted from the rest of the plugin so as to minimize impact to the code
+ * when Bukkit makes API changes and to simplify supporting MC-API, Spout or
+ * other frameworks.
  * 
  * @author andune
- *
+ * 
  */
-public class HSPBukkit extends JavaPlugin {
+public class HomeSpawnPlusBukkit extends JavaPlugin {
     private HomeSpawnPlus mainClass;
 
     @Override
@@ -100,9 +102,5 @@ public class HSPBukkit extends JavaPlugin {
     
     public File _getJarFile() {
         return super.getFile();
-    }
-
-    public ClassLoader _getClassLoader() {
-        return super.getClassLoader();
     }
 }

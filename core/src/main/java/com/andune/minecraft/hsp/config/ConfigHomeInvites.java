@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.config;
 
 import javax.inject.Singleton;
 
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.Initializable;
 
 /**
  * @author andune

@@ -43,9 +43,9 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /**

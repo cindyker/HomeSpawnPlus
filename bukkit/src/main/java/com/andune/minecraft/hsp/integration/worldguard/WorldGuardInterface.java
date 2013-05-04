@@ -35,12 +35,12 @@ import java.util.Iterator;
 import org.bukkit.Bukkit;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitLocation;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitWorld;
 
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.World;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
-import com.andune.minecraft.hsp.server.bukkit.BukkitWorld;
 import com.sk89q.worldedit.BlockVector;
 
 /** This class exists to wrap WorldGuard functionality so that our plugin can

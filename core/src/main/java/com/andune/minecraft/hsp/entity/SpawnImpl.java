@@ -43,9 +43,9 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.EntityWithLocation;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.avaje.ebean.annotation.CreatedTimestamp;

@@ -32,13 +32,12 @@ package com.andune.minecraft.hsp.storage;
 
 import javax.inject.Inject;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.config.ConfigStorage.Type;
-import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.google.inject.Injector;
 

@@ -25,7 +25,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-package com.andune.minecraft.hsp.server.bukkit;
+package com.andune.minecraft.hsp;
 
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
@@ -84,9 +84,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.i18n.Locale;
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.server.api.PermissionSystem;
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**

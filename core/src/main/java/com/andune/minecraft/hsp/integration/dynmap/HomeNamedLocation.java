@@ -30,9 +30,9 @@
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.api.Location;
 
 /**
  * @author andune

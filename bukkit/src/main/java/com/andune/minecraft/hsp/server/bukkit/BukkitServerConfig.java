@@ -33,7 +33,6 @@ package com.andune.minecraft.hsp.server.bukkit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.ServerConfig;

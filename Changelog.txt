@@ -23,6 +23,11 @@ v2.0 -
   - No more explicit PEX or Perm2 support. Use Vault, WEPIF or Superperms.
   - core.defaultPermissions is now valid for all permission modes. So any permissions listed here will be applied to everyone for
     HSP permission checks.
+  - worlds ending in "_nether" or "_the_end" automatically use their parent world strategies, unless a specific world override
+    exists for them. An example is that this means now by default the strategy "spawnLocalWorld" will send the player to the
+    spawn for the base world in the case of nether and the_end. Also note the reference location used in these situations is
+    the default spawn in the base world, so a strategy like "homeNearest" if a player died in world_nether would result in the
+    player being sent to their home nearest the default spawn on world "world".
 
 v1.7.6 - 
 * support for Multiverse integration with Multiverse 2.5

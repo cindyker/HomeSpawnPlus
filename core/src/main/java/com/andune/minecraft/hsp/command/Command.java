@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp.command;
 
 import java.util.Map;
 
-import com.andune.minecraft.hsp.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.CommandSender;
 
 
 /**

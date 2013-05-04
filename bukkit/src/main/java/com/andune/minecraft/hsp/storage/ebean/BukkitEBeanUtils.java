@@ -41,7 +41,7 @@ import javax.inject.Singleton;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.andune.minecraft.hsp.server.api.Plugin;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 
 /** Class which acts as an interface to load the "bukkit.yml" EBean settings
  * for the purpose of allowing SQLite schema upgrades, which are impossible otherwise

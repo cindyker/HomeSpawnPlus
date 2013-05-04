@@ -37,12 +37,12 @@ import javax.inject.Inject;
 
 
 import com.andune.minecraft.commonlib.General;
+import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.manager.HomeInviteManager;
-import com.andune.minecraft.hsp.server.api.OfflinePlayer;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 import com.andune.minecraft.hsp.util.HomeUtil;

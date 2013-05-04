@@ -31,8 +31,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;

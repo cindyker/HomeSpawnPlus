@@ -40,11 +40,11 @@ import javax.inject.Inject;
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCooldown;
 import com.andune.minecraft.hsp.config.ConfigCooldown.CooldownsPerWorld;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Server;
 
 /** Class which manages player cooldowns.

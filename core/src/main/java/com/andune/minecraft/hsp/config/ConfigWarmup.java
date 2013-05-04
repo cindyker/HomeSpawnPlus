@@ -36,7 +36,7 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerWorld;
 

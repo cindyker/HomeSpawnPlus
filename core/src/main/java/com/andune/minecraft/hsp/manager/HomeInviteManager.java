@@ -37,11 +37,10 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 

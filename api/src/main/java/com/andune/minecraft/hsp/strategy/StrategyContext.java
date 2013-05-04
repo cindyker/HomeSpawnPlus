@@ -29,9 +29,9 @@ package com.andune.minecraft.hsp.strategy;
 
 import java.util.List;
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.TeleportOptions;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 
 public interface StrategyContext {
 

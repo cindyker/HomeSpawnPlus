@@ -34,10 +34,10 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Plugin;
+import com.andune.minecraft.commonlib.server.api.event.EventDispatcher;
 
 import com.andune.minecraft.hsp.guice.InjectorFactory;
-import com.andune.minecraft.hsp.server.api.Plugin;
-import com.andune.minecraft.hsp.server.api.event.EventDispatcher;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 import com.google.inject.Injector;
 

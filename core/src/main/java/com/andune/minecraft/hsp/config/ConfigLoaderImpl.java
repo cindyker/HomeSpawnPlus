@@ -37,14 +37,14 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.commonlib.JarUtils;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Plugin;
-import com.andune.minecraft.hsp.server.api.YamlFile;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Plugin;
+import com.andune.minecraft.commonlib.server.api.YamlFile;
+import com.andune.minecraft.commonlib.server.api.config.ConfigException;
 
 /**
  * ConfigLoader separated into interface and implementation to avoid

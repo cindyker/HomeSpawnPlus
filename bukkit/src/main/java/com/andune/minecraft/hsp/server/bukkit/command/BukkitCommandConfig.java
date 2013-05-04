@@ -37,10 +37,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
+
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
 
-import com.andune.minecraft.hsp.server.api.command.CommandConfig;
 
 /** This class is used to store state of commands configuration. This amounts to three
  * key pieces of data: any disabled commands, all custom defined commands and all

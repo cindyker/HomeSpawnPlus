@@ -35,23 +35,22 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.events.PlayerBedEnterEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerJoinEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerKickEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerMoveEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerQuitEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerRespawnEvent;
+import com.andune.minecraft.commonlib.server.api.events.PlayerTeleportEvent;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.events.PlayerBedEnterEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerDamageEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerJoinEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerKickEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerMoveEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerQuitEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerRespawnEvent;
-import com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
@@ -67,7 +66,7 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
  *
  */
 @Singleton
-public class EventListener implements com.andune.minecraft.hsp.server.api.event.EventListener {
+public class EventListener implements com.andune.minecraft.commonlib.server.api.event.EventListener {
     private final Logger log = LoggerFactory.getLogger(EventListener.class);
     private Storage storage;
     private StrategyEngine engine;
@@ -292,7 +291,7 @@ public class EventListener implements com.andune.minecraft.hsp.server.api.event.
     }
     
     @Override
-    public void bedRightClick(com.andune.minecraft.hsp.server.api.events.PlayerBedRightClickEvent event) {
+    public void bedRightClick(com.andune.minecraft.commonlib.server.api.events.PlayerBedRightClickEvent event) {
         if( !config.isBedSetHome() )
             return;
 

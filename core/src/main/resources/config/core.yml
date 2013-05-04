@@ -149,3 +149,17 @@ core:
   # when a player types /home or /spawn. See web docs for how
   # to customize these messages: http://goo.gl/qhYmZ
   teleportMessages: false
+
+  # Whether or not HSP should record the last location of a player
+  # on teleport, which can later be used by the spawnLastLocation
+  # strategy. WARNING: If you are using storage YAML and have
+  # a decent-sized server (few hundred players), THIS CAN CREATE
+  # TELEPORT LAG. Ebeans does not have this issue.
+  recordLastLocation: true
+
+  # Determine whether associated worlds ending in "_nether" and
+  # "_the_end" use their base world strategies. This providdes an
+  # easy way of having worlds and their associated worlds grouped
+  # together without any effort on your part and is a closer match
+  # to the default Minecraft experience for nether and the_end.
+  associatedWorldsUseBaseStrategies: true

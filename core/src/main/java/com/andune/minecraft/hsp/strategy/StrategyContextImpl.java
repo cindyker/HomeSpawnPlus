@@ -37,13 +37,13 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.strategies.mode.ModeDefault;
 import com.andune.minecraft.hsp.strategies.mode.ModeDistanceLimits;
 import com.andune.minecraft.hsp.strategies.mode.ModeInRegion;

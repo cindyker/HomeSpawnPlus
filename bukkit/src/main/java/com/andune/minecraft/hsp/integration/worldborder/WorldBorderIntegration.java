@@ -34,9 +34,9 @@ import javax.inject.Singleton;
 
 import org.bukkit.plugin.Plugin;
 
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitLocation;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder.BorderData;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 
 /**
  * @author andune

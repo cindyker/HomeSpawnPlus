@@ -40,8 +40,8 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.HomeUtil;

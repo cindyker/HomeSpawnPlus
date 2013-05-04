@@ -30,7 +30,7 @@
  */
 package com.andune.minecraft.hsp.convert;
 
-import com.andune.minecraft.hsp.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.CommandSender;
 
 /** Interface Converters are required to implement.
  * @author andune

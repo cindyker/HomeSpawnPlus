@@ -34,13 +34,13 @@ import static org.mockito.Mockito.when;
 
 import org.mockito.Mock;
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 

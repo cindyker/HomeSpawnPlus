@@ -33,7 +33,7 @@ package com.andune.minecraft.hsp.strategies;
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.strategies.home.HomeNearestHome;
 import com.andune.minecraft.hsp.strategies.spawn.SpawnNearest;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;

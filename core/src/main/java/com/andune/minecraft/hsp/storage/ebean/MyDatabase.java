@@ -45,7 +45,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 
-import com.andune.minecraft.hsp.server.api.Plugin;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.config.DataSourceConfig;

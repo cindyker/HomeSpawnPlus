@@ -41,15 +41,14 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
+import com.andune.minecraft.commonlib.server.api.Block;
+import com.andune.minecraft.commonlib.server.api.BlockFace;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.Block;
-import com.andune.minecraft.hsp.server.api.BlockFace;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Server;
 
 /** Utility methods related to manipulating beds in the environment or

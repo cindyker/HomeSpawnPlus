@@ -39,8 +39,8 @@ import java.sql.SQLException;
 import javax.inject.Inject;
 
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.World;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
 

@@ -33,11 +33,11 @@ package com.andune.minecraft.hsp.command;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.Teleport;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 

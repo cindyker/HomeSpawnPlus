@@ -30,78 +30,85 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
-import net.milkbowl.vault.economy.EconomyResponse;
+import java.util.List;
+import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import com.andune.minecraft.commonlib.Logger;
-import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
+import com.andune.minecraft.hsp.config.ConfigEconomy.PerPermissionEconomyEntry;
 import com.andune.minecraft.hsp.manager.HomeLimitsManager;
-import com.andune.minecraft.hsp.server.api.impl.EconomyAbstractImpl;
 
 /**
  * @author andune
  *
  */
-public class BukkitEconomy extends EconomyAbstractImpl implements Initializable {
-    private static final Logger log = LoggerFactory.getLogger(BukkitEconomy.class);
+public class BukkitEconomy extends com.andune.minecraft.commonlib.server.bukkit.BukkitEconomy {
+    protected final ConfigEconomy config;
+    protected final HomeLimitsManager homeLimitsManager;
 
-    private net.milkbowl.vault.economy.Economy vaultEconomy;
-    
     public BukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm) {
-        super(config, hlm);
+        this.config = config;
+        this.homeLimitsManager = hlm;
     }
-    
-    @Override
-    public void init() throws Exception {
-        if( vaultEconomy == null ) {
-            Plugin vault = Bukkit.getServer().getPluginManager().getPlugin("Vault");
-            if( vault != null ) {
-                RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-                if (economyProvider != null) {
-                    vaultEconomy = economyProvider.getProvider();
-                    log.info("Vault interface found and will be used for economy-related functions");
+
+    public int getCommandCost(Player player, String command) {
+        Integer cost = null;
+        
+        Map<String, PerPermissionEconomyEntry> map = config.getPerPermissionEntries();
+
+        PER_PERMISSION:
+        for(Map.Entry<String, PerPermissionEconomyEntry> e : map.entrySet()) {
+            PerPermissionEconomyEntry entry = e.getValue();
+            
+            Map<String, Integer> costs = entry.getCosts();
+            Integer entryCost = costs.get(command);
+            // if this command is not listed in this entry, skip it
+            if( entryCost == null )
+                continue;
+            
+            // command is listed, see if player has a matching permission
+            List<String> permissions = entry.getPermissions();
+            for(String perm : permissions) {
+                if( player.hasPermission(perm) ) {
+                    cost = entryCost;
+                    break PER_PERMISSION;
                 }
             }
-            else
-                log.info("Vault not found, HSP economy features are disabled");
         }
-    }
+        
+        // if we get here, there was no permission-specific cost, so look for
+        // a world-specific cost instead
+        cost = config.getWorldSpecificCost(player.getWorld().getName(), command);
+        if( cost != null )
+            return cost;
+        
+        // if we get here and no cost yet, then get the global cost (possibly 0)
+        if( cost == null )
+            cost = config.getGlobalCost(command);
 
-    @Override
-    public int getInitPriority() {
-        return 6;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return vaultEconomy != null;
-    }
-
-    @Override
-    public String format(double amount) {
-        return vaultEconomy.format(amount);
-    }
-
-    @Override
-    public double getBalance(String playerName) {
-        return vaultEconomy.getBalance(playerName);
-    }
-
-    @Override
-    public String withdrawPlayer(String playerName, double amount) {
-        EconomyResponse response = vaultEconomy.withdrawPlayer(playerName, amount);
-        if( !response.transactionSuccess() )
-            return response.errorMessage;
-        else
-            return null;
-    }
-
-    @Override
-    public void shutdown() throws Exception {
+        // apply sethome-multiplier, if any
+        if( cost > 0 && command.equalsIgnoreCase("sethome") ) {
+            double multiplier = config.getSethomeMultiplier();
+            if( multiplier > 0 )
+            {
+                // by the time this method is called, the new home has already been created,
+                // so it is already part of our globalHomeCount
+                int globalHomeCount = homeLimitsManager.getHomeCount(player.getName(), null);
+                if( globalHomeCount > 1 ) {
+                    double totalCost = cost;
+                    for(int i=1; i < globalHomeCount; i++)
+                        totalCost *= multiplier; 
+                    double additionalCost = totalCost - cost;
+                    log.debug("applying sethome-multplier {} for player {}"
+                            + ", total global home count={}, original cost={}, additionalCost={}",
+                            multiplier, player, globalHomeCount, cost, additionalCost);
+                    // should always be true, but check just in case
+                    if( additionalCost > 0 )
+                        cost += (int) additionalCost;
+                }
+            }
+        }
+        
+        return cost;
     }
 }

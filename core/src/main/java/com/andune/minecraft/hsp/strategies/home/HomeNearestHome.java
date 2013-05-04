@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.strategies.home;
 import java.util.Set;
 
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.strategy.HomeStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;

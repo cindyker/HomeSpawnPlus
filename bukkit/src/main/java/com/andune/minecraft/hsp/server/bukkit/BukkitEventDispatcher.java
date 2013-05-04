@@ -49,9 +49,10 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
+import com.andune.minecraft.commonlib.server.api.event.EventListener;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigWarmup;
-import com.andune.minecraft.hsp.server.api.event.EventListener;
 
 /** Bridge class between Bukkit event system and HSP API event interface.
  * 
@@ -59,7 +60,7 @@ import com.andune.minecraft.hsp.server.api.event.EventListener;
  *
  */
 @Singleton
-public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.api.event.EventDispatcher, org.bukkit.event.Listener {
+public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.server.api.event.EventDispatcher, org.bukkit.event.Listener {
     private final EventListener eventListener;
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
@@ -91,8 +92,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
                 new EventExecutor() {
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
-                            com.andune.minecraft.hsp.server.api.events.PlayerJoinEvent apiEvent =
-                                    new com.andune.minecraft.hsp.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory);
+                            com.andune.minecraft.commonlib.server.api.events.PlayerJoinEvent apiEvent =
+                                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory);
                             eventListener.playerJoin(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);
@@ -107,8 +108,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
                 new EventExecutor() {
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
-                            com.andune.minecraft.hsp.server.api.events.PlayerRespawnEvent apiEvent =
-                                    new com.andune.minecraft.hsp.server.bukkit.events.PlayerRespawnEvent((PlayerRespawnEvent) event, bukkitFactory);
+                            com.andune.minecraft.commonlib.server.api.events.PlayerRespawnEvent apiEvent =
+                                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerRespawnEvent((PlayerRespawnEvent) event, bukkitFactory);
                             eventListener.playerRespawn(apiEvent);
                         } catch (Throwable t) {
                             throw new EventException(t);
@@ -167,15 +168,15 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
     
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
     public void playerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
-        com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerTeleportEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
 
     // this event is dynamically hooked only if needed
     public void playerTeleportObserver(org.bukkit.event.player.PlayerTeleportEvent event) {
-        com.andune.minecraft.hsp.server.api.events.PlayerTeleportEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerTeleportEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
         eventListener.observePlayerTeleport(apiEvent);
     }
     
@@ -190,31 +191,31 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
             return;
 
         // if we get here, it was a bed right-click event, so fire one
-        com.andune.minecraft.hsp.server.api.events.PlayerBedRightClickEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerBedRightClickEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerBedRightClickEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerBedRightClickEvent(event, bukkitFactory);
         eventListener.bedRightClick(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
     public void onBedEvent(PlayerBedEnterEvent event) {
-        com.andune.minecraft.hsp.server.api.events.PlayerBedEnterEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerBedEnterEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerBedEnterEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerBedEnterEvent(event, bukkitFactory);
         eventListener.bedEvent(apiEvent);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
     {
-        com.andune.minecraft.hsp.server.api.events.PlayerQuitEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerQuitEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
         eventListener.playerQuit(apiEvent);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent event)
     {
-        com.andune.minecraft.hsp.server.api.events.PlayerKickEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerKickEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
         eventListener.playerKick(apiEvent);
     }
 
@@ -226,8 +227,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.hsp.server.ap
         if( !(event.getEntity() instanceof org.bukkit.entity.Player) )
             return;
 
-        com.andune.minecraft.hsp.server.api.events.PlayerDamageEvent apiEvent =
-                new com.andune.minecraft.hsp.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
+        com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent apiEvent =
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
         eventListener.playerDamage(apiEvent);
     }
 

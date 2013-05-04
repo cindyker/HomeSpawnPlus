@@ -47,8 +47,8 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
 
 /**
  * @author andune

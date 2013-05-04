@@ -35,11 +35,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.config.ConfigException;
 
 /** Abstract base class that implements some common functionality
  * for config classes.

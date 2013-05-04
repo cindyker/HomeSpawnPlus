@@ -34,7 +34,7 @@ import javax.inject.Inject;
 
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.Initializable;
 
 /**
  * @author andune

@@ -33,13 +33,13 @@ package com.andune.minecraft.hsp.commands;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.convert.CommandBook;
 import com.andune.minecraft.hsp.convert.Converter;
 import com.andune.minecraft.hsp.convert.Essentials29;
 import com.andune.minecraft.hsp.convert.SpawnControl;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.Scheduler;
 import com.google.inject.Injector;
 
 /**

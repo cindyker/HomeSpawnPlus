@@ -27,10 +27,10 @@
  */
 package com.andune.minecraft.hsp.util;
 
+import com.andune.minecraft.commonlib.server.api.Block;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.Block;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
 
 /**
  * Utility methods related to manipulating beds in the environment or

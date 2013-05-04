@@ -42,13 +42,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.World;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitLocation;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
-import com.andune.minecraft.hsp.server.bukkit.BukkitLocation;
 import com.andune.minecraft.hsp.strategy.EventType;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;

@@ -41,12 +41,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.reflections.Reflections;
+
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.strategy.Strategy;
-import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.google.inject.Injector;
 
 /**

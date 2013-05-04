@@ -44,12 +44,12 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.config.ConfigEvents;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.World;
 
 /** Class which processes the config file and loads strategy info into memory
  * for use when evaluating strategies at runtime.

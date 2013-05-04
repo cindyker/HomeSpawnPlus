@@ -30,21 +30,12 @@
  */
 package com.andune.minecraft.hsp;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.reflections.Reflections;
-import com.andune.minecraft.commonlib.Logger;
-import com.andune.minecraft.commonlib.LoggerFactory;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigBase;
 import com.andune.minecraft.hsp.config.ConfigLoader;
 import com.andune.minecraft.hsp.strategy.StrategyConfig;
@@ -57,42 +48,18 @@ import com.google.inject.Injector;
  *
  */
 @Singleton
-public class Initializer {
-    private static final Logger log = LoggerFactory.getLogger(Initializer.class);
-
-    private final Reflections reflections;
-    private final Injector injector;
+public class Initializer extends com.andune.minecraft.commonlib.Initializer {
     private final ConfigLoader configLoader;
     private final StrategyConfig strategyConfig;
     
     @Inject
     public Initializer(Reflections reflections, Injector injector,
             ConfigLoader configLoader, StrategyConfig strategyConfig) {
-        this.reflections = reflections;
-        this.injector = injector;
+        super(reflections, injector);
         this.configLoader = configLoader;
         this.strategyConfig = strategyConfig;
     }
 
-    /**
-     * Initialize all objects in the HSP classpath that implement the
-     * Initializable interface.
-     * 
-     * @throws Exception
-     */
-    public void initAll() throws Exception {
-        long startupBegin = System.currentTimeMillis();
-        
-        for(Initializable init : getSortedInitObjects()) {
-            log.debug("[Startup Timer] starting {} (t+{})", init, System.currentTimeMillis()-startupBegin);
-            long startupTimer = System.currentTimeMillis();
-            
-            init.init();
-            
-            log.debug("[Startup Timer] {} finished in {}ms", init, System.currentTimeMillis()-startupTimer);
-        }
-    }
-    
     /**
      * Called to initialize Config objects only, useful for reloading
      * configuration files.
@@ -109,70 +76,5 @@ public class Initializer {
         
         // re-initialize strategyConfig since it preprocesses and caches event config data
         strategyConfig.init();
-    }
-
-    public void shutdownAll()  {
-        Collection<Initializable> collection = getSortedInitObjects();
-        Initializable[] objects = collection.toArray(new Initializable[] {});
-
-        // shut them down in reverse order of startup
-        for(int i = objects.length-1; i >= 0 ; i--) {
-            try {
-                objects[i].shutdown();
-            }
-            catch(Exception e) {
-                log.error("Caught exception in shutdownAll()", e);
-            }
-        }
-    }
-
-    /**
-     * Return all Initializable objects in their proper loading order.
-     * @return
-     */
-    private Collection<Initializable> getSortedInitObjects() {
-        TreeMap<Integer, List<Initializable>> sortedMap = new TreeMap<Integer, List<Initializable>>();
-        
-        // sort into a TreeMap which will maintain order. Items of same priority
-        // are added to a List keyed by that priority
-        for(Class<? extends Initializable> initClass : getInitClasses()) {
-            log.debug("Initializer: getting class intance for {}", initClass);
-            Initializable init = injector.getInstance(initClass);
-            int priority = init.getInitPriority();
-            if( priority < 0 )
-                priority = 0;
-            List<Initializable> list = sortedMap.get(priority);
-            if( list == null ) {
-                list = new ArrayList<Initializable>();
-                sortedMap.put(priority, list);
-            }
-            list.add(init);
-        }
-        
-        // Now iterate through the map in order of priority and add them
-        // all to a single flat result array that will be all Initializable
-        // objects sorted in order of priority
-        List<Initializable> result = new ArrayList<Initializable>(10);
-        for(List<Initializable> list : sortedMap.values()) {
-            result.addAll(list);
-        }
-
-        return result;
-    }
-    
-    /**
-     * Return all Initializable classes, minus any abstract classes.
-     * 
-     * @return
-     */
-    private Set<Class<? extends Initializable>> getInitClasses() {
-        Set<Class<? extends Initializable>> initClasses = reflections.getSubTypesOf(Initializable.class);
-        for(Iterator<Class<? extends Initializable>> i = initClasses.iterator(); i.hasNext();) {
-            Class<? extends Initializable> initClass = i.next();
-            // skip any abstract classes
-            if( Modifier.isAbstract(initClass.getModifiers()) )
-                i.remove();
-        }
-        return initClasses;
     }
 }

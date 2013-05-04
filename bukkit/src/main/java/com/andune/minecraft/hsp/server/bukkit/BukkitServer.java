@@ -44,18 +44,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
+
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
 import com.andune.minecraft.commonlib.i18n.Locale;
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Teleport;
+import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitOfflinePlayer;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitWorld;
 import com.andune.minecraft.hsp.HSPMessages;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.OfflinePlayer;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.Teleport;
-import com.andune.minecraft.hsp.server.api.World;
 
 /**
  * @author andune
@@ -115,13 +118,23 @@ public class BukkitServer implements Server {
     }
 
     @Override
+    public String getLocalizedMessage(String key, Object... args) {
+        return locale.getMessage(key, args);
+    }
+
+    @Override
     public String getLocalizedMessage(HSPMessages key, Object... args) {
-        return locale.getMessage(key.toString(), args);
+        return getLocalizedMessage(key.toString(), args);
+    }
+
+    @Override
+    public void sendLocalizedMessage(CommandSender sender, String key, Object... args) {
+        sender.sendMessage(locale.getMessage(key, args));
     }
 
     @Override
     public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
-        sender.sendMessage(locale.getMessage(key.toString(), args));
+        sendLocalizedMessage(sender, locale.getMessage(key.toString(), args));
     }
     
     @Override

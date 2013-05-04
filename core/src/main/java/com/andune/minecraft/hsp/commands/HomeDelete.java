@@ -35,9 +35,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.HomeUtil;
 

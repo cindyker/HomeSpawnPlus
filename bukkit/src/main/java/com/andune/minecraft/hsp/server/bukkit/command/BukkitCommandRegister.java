@@ -48,14 +48,14 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.command.CustomEventCommand;
-import com.andune.minecraft.hsp.server.api.command.CommandConfig;
-import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServer;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServerFactory;
 import com.google.inject.Injector;
@@ -132,7 +132,7 @@ public class BukkitCommandRegister implements Initializable {
 			pc.setExecutor(new CommandExecutor() {
                 public boolean onCommand(CommandSender sender,
                         org.bukkit.command.Command bukkitCommand, String label, String[] args) {
-                    com.andune.minecraft.hsp.server.api.CommandSender apiSender = factory.getCommandSender(sender);
+                    com.andune.minecraft.commonlib.server.api.CommandSender apiSender = factory.getCommandSender(sender);
                     return command.execute(apiSender, label, args);
                 }
             });

@@ -30,7 +30,7 @@
  */
 package com.andune.minecraft.hsp.integration.worldguard;
 
-import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Location;
 
 /**
  * @author andune

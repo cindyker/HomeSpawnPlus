@@ -29,7 +29,7 @@ package com.andune.minecraft.hsp.entity;
 
 import java.sql.Timestamp;
 
-import com.andune.minecraft.hsp.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Location;
 
 public interface Home extends EntityWithLocation {
 

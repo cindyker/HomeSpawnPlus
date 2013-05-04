@@ -38,11 +38,11 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.PermissionSystem;
-import com.andune.minecraft.hsp.server.api.Player;
 
 
 /** All HSP Permissions are defined here.

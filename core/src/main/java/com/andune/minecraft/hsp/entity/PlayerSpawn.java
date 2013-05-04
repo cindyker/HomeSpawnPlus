@@ -44,9 +44,9 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.EntityWithLocation;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;

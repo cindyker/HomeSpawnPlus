@@ -33,14 +33,14 @@ package com.andune.minecraft.hsp.commands;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.manager.HomeInviteManager;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.Teleport;
 
 /**
  * @author andune

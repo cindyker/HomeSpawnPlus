@@ -32,10 +32,24 @@ package com.andune.minecraft.hsp.guice;
 
 import javax.inject.Singleton;
 
+import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.commonlib.JarUtils;
+import com.andune.minecraft.commonlib.server.api.Economy;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
+import com.andune.minecraft.commonlib.server.api.Scheduler;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.Teleport;
+import com.andune.minecraft.commonlib.server.api.YamlFile;
+import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
+import com.andune.minecraft.commonlib.server.api.event.EventDispatcher;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitPermissionSystem;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitPlugin;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitScheduler;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitTeleport;
+import com.andune.minecraft.commonlib.server.bukkit.BukkitYamlConfigFile;
+import com.andune.minecraft.hsp.HomeSpawnPlusBukkit;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
@@ -50,27 +64,12 @@ import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
 import com.andune.minecraft.hsp.manager.HomeLimitsManager;
-import com.andune.minecraft.hsp.server.api.Economy;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.PermissionSystem;
-import com.andune.minecraft.hsp.server.api.Scheduler;
-import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.api.ServerConfig;
-import com.andune.minecraft.hsp.server.api.Teleport;
-import com.andune.minecraft.hsp.server.api.YamlFile;
-import com.andune.minecraft.hsp.server.api.command.CommandConfig;
-import com.andune.minecraft.hsp.server.api.event.EventDispatcher;
 import com.andune.minecraft.hsp.server.bukkit.BukkitEconomy;
 import com.andune.minecraft.hsp.server.bukkit.BukkitEventDispatcher;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
-import com.andune.minecraft.hsp.server.bukkit.BukkitPermissionSystem;
-import com.andune.minecraft.hsp.server.bukkit.BukkitPlugin;
-import com.andune.minecraft.hsp.server.bukkit.BukkitScheduler;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServer;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServerConfig;
-import com.andune.minecraft.hsp.server.bukkit.BukkitTeleport;
-import com.andune.minecraft.hsp.server.bukkit.BukkitYamlConfigFile;
-import com.andune.minecraft.hsp.server.bukkit.HSPBukkit;
 import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandConfig;
 import com.andune.minecraft.hsp.storage.BukkitStorageFactory;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -93,10 +92,10 @@ public class BukkitModule extends AbstractModule {
     @SuppressWarnings("unused")
     private final Logger log = LoggerFactory.getLogger(BukkitModule.class);
     
-    private final HSPBukkit plugin;
+    private final HomeSpawnPlusBukkit plugin;
 
     public BukkitModule(Object originalPluginObject) {
-        this.plugin = (HSPBukkit) originalPluginObject;
+        this.plugin = (HomeSpawnPlusBukkit) originalPluginObject;
     }
     
     /* (non-Javadoc)
@@ -106,10 +105,14 @@ public class BukkitModule extends AbstractModule {
     protected void configure() {
         bind(Server.class)
             .to(BukkitServer.class);
+        bind(com.andune.minecraft.hsp.server.api.Server.class)
+            .to(BukkitServer.class);
         bind(EventDispatcher.class)
             .to(BukkitEventDispatcher.class);
         
         bind(Factory.class)
+            .to(BukkitFactory.class);
+        bind(com.andune.minecraft.hsp.server.api.Factory.class)
             .to(BukkitFactory.class);
         bind(org.bukkit.Server.class)
             .toInstance(plugin.getServer());
@@ -119,7 +122,7 @@ public class BukkitModule extends AbstractModule {
             .to(BukkitServerConfig.class);
         bind(Teleport.class)
             .to(BukkitTeleport.class);
-        bind(com.andune.minecraft.hsp.server.api.Plugin.class)
+        bind(com.andune.minecraft.commonlib.server.api.Plugin.class)
             .to(BukkitPlugin.class);
         bind(PermissionSystem.class)
             .to(BukkitPermissionSystem.class);
@@ -148,7 +151,7 @@ public class BukkitModule extends AbstractModule {
     
     @Provides
     @Singleton
-    protected HSPBukkit getHSPBukkit() {
+    protected HomeSpawnPlusBukkit getHSPBukkit() {
         return plugin;
     }
     

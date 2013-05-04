@@ -37,12 +37,12 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.i18n.ChatColor;
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.server.api.ServerConfig;
-import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**

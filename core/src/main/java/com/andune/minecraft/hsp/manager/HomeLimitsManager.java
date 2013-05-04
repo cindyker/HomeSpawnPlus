@@ -37,12 +37,12 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Player;
 
 import com.andune.minecraft.hsp.config.ConfigHomeLimits;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerWorld;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 

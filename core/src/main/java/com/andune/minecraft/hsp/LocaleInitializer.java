@@ -33,11 +33,12 @@ package com.andune.minecraft.hsp;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleConfig;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.server.api.Plugin;
 
 /** Class responsible for initializing our Locale object. Priority
  * guarantees it runs after the config files have been loaded, which

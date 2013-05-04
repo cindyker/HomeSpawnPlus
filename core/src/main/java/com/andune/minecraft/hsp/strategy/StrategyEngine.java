@@ -27,8 +27,8 @@
  */
 package com.andune.minecraft.hsp.strategy;
 
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 

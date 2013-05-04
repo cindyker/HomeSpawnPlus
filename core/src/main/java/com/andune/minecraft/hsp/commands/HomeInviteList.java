@@ -36,10 +36,10 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.General;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.entity.HomeInvite;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 

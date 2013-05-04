@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.strategies.spawn;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
-import com.andune.minecraft.hsp.server.api.Player;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;

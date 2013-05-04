@@ -40,16 +40,15 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Scheduler;
+import com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigWarmup;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerPermission;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.server.api.Scheduler;
 import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.events.PlayerDamageEvent;
 
 /**
  * @author andune

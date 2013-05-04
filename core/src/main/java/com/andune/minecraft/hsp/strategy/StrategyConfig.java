@@ -31,9 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.server.api.Player;
-import com.andune.minecraft.hsp.strategy.Strategy;
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.server.api.Player;
 
 /**
  * Interface class that exists so Guice can create a temporary proxy to avoid

@@ -33,8 +33,8 @@ package com.andune.minecraft.hsp.strategies.spawn;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;

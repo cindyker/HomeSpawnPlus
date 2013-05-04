@@ -42,6 +42,7 @@ import javax.persistence.PersistenceException;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.entity.HomeInvite;
@@ -49,7 +50,6 @@ import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.entity.SpawnImpl;
 import com.andune.minecraft.hsp.entity.Version;
-import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.avaje.ebean.EbeanServer;

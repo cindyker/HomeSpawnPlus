@@ -38,13 +38,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.MarkerAPI;
+
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
+import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
-import com.andune.minecraft.hsp.server.api.ConfigurationSection;
-import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /** Dynmap module for HSP, code heavily borrowed from Mike Primm's

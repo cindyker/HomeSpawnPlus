@@ -33,10 +33,10 @@ package com.andune.minecraft.hsp.commands;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
-import com.andune.minecraft.hsp.server.api.CommandSender;
-import com.andune.minecraft.hsp.server.api.OfflinePlayer;
 
 /**
  * @author andune

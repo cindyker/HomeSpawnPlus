@@ -30,8 +30,8 @@
  */
 package com.andune.minecraft.hsp.integration.worldborder;
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.integration.PluginIntegration;
-import com.andune.minecraft.hsp.server.api.Location;
 
 /**
  * @author andune

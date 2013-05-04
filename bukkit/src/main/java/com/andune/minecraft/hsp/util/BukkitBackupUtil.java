@@ -37,9 +37,8 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.HSPMessages;
-import com.andune.minecraft.hsp.server.api.Plugin;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;

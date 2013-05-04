@@ -34,7 +34,7 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import com.andune.minecraft.hsp.Initializable;
+import com.andune.minecraft.commonlib.Initializable;
 
 
 /**

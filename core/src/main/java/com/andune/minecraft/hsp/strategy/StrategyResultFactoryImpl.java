@@ -32,9 +32,9 @@ package com.andune.minecraft.hsp.strategy;
 
 import javax.inject.Singleton;
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.server.api.Location;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /**

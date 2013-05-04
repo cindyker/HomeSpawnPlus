@@ -32,14 +32,14 @@ package com.andune.minecraft.hsp.strategies.spawn;
 
 import javax.inject.Inject;
 
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.Teleport;
+import com.andune.minecraft.commonlib.server.api.TeleportOptions;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder.BorderData;
-import com.andune.minecraft.hsp.server.api.Factory;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.Teleport;
-import com.andune.minecraft.hsp.server.api.TeleportOptions;
-import com.andune.minecraft.hsp.server.api.World;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;

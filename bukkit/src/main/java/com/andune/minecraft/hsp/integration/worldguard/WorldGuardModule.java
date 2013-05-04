@@ -35,10 +35,10 @@ import javax.inject.Singleton;
 
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.hsp.Initializable;
-import com.andune.minecraft.hsp.server.api.Location;
-import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.api.World;
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
 

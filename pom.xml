@@ -5,7 +5,7 @@
   <groupId>com.andune.minecraft.hsp</groupId>
   <artifactId>HomeSpawnPlus</artifactId>
   <packaging>jar</packaging>
-  <version>1.7.6-SNAPSHOT</version>
+  <version>1.7.6</version>
   <name>HomeSpawnPlus</name>
   <description>HomeSpawnPlus for all your Bukkit home/spawn needs</description>
   <url>https://dev.bukkit.org/server-mods/HomeSpawnPlus/</url>
@@ -107,12 +107,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.5.2-R0.1-SNAPSHOT</version>
+      <version>1.5.2-R0.1</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.5.2-R0.1-SNAPSHOT</version>
+      <version>1.5.2-R0.1</version>
     </dependency>
 
     <!-- WorldBorder -->

@@ -1,10 +1,10 @@
 name: HomeSpawnPlus
-main: com.andune.minecraft.hsp.server.bukkit.HSPBukkit
+main: com.andune.minecraft.hsp.HomeSpawnPlusBukkit
 url: ${project.url}
 version: ${project.version}
 author: andune
 database: true
-softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
+softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals, Essentials]
 permissions:
     hsp.*:
         description: Gives access to all HomeSpawnPlus permissions

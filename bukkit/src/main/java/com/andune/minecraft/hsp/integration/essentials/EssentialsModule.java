@@ -74,25 +74,29 @@ public class EssentialsModule implements Initializable {
     private void mapHSPCommands() {
         Map<String, PluginCommand> hspCommands = bukkitCommandRegister.getLoadedCommands();
         Collection<PluginCommand> commands = hspCommands.values();
-        final String pluginName = plugin.getDescription().getName().toLowerCase();
+//        final String pluginName = plugin.getDescription().getName().toLowerCase();
 
+        log.debug("commands.size() = {}", commands == null ? null : commands.size());
         for (Command command : commands)
         {
             final PluginCommand pc = (PluginCommand)command;
             final List<String> labels = new ArrayList<String>(pc.getAliases());
             labels.add(pc.getName());
 
-            PluginCommand reg = plugin.getServer().getPluginCommand(pluginName + ":" + pc.getName().toLowerCase());
-            if (reg == null)
-            {
-                reg = plugin.getServer().getPluginCommand(pc.getName().toLowerCase());
-            }
-            if (reg == null || !reg.getPlugin().equals(plugin))
-            {
-                continue;
-            }
+            log.debug("registering command {}", pc.getName());
+//            PluginCommand reg = plugin.getServer().getPluginCommand(pluginName + ":" + pc.getName().toLowerCase());
+//            if (reg == null)
+//            {
+//                reg = plugin.getServer().getPluginCommand(pc.getName().toLowerCase());
+//            }
+//            if (reg == null || !reg.getPlugin().equals(plugin))
+//            {
+//                continue;
+//            }
+//            log.debug("reg = {}", reg);
             for (String label : labels)
             {
+                log.debug("registering label {}", label);
                 List<PluginCommand> plugincommands = altcommands.get(label.toLowerCase());
                 if (plugincommands == null)
                 {
@@ -109,7 +113,7 @@ public class EssentialsModule implements Initializable {
                 }
                 if (!found)
                 {
-                    plugincommands.add(reg);
+                    plugincommands.add(pc);
                 }
             }
         }
@@ -133,6 +137,8 @@ public class EssentialsModule implements Initializable {
         Field altCommandsField = ach.getClass().getDeclaredField("altcommands");
         altCommandsField.setAccessible(true);
         altcommands = (HashMap<String, List<PluginCommand>>) altCommandsField.get(ach);
+        
+        log.debug("altcommands = {}", altcommands);
     }
 
     @Override

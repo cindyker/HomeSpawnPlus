@@ -35,6 +35,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.andune.minecraft.commonlib.LoggerFactory;
+
 /** Specific to JUL at the moment even though HSP leverages SLF4J and
  * can therefore use other loggers. At some point this could be modified
  * to detect the logging platform and do whatever is appropriate for that
@@ -44,6 +46,7 @@ import java.util.logging.Logger;
  *
  */
 public class LogUtil {
+    private static final com.andune.minecraft.commonlib.Logger log = LoggerFactory.getLogger(LogUtil.class);
     private static boolean debugEnabled = false;
     private static Level previousLevel = null;
     private static Level previousRootLevel = null;
@@ -56,22 +59,25 @@ public class LogUtil {
         if( !debugEnabled ) {
             debugEnabled = true;
             
-            previousLevel = Logger.getLogger("com.andune.minecraft.hsp").getLevel();
-            Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
-            Logger.getLogger("com.andune.minecraft.commonlib").setLevel(Level.ALL);
+            previousLevel = Logger.getLogger("com.andune.minecraft").getLevel();
+//            Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
+            Logger.getLogger("com.andune.minecraft").setLevel(Level.ALL);
             
             Handler handler = getRootFileHandler(Logger.getLogger("Minecraft"));
             previousRootLevel = handler.getLevel();
             handler.setLevel(Level.ALL);
+            
+            log.debug("DEBUG ENABLED");
         }
     }
     
     public static void disableDebug() {
         if( debugEnabled ) {
             debugEnabled = false;
+            log.debug("DEBUG DISABLED");
             
-            Logger.getLogger("com.andune.minecraft.hsp").setLevel(previousLevel);
-            Logger.getLogger("com.andune.minecraft.commonlib").setLevel(previousLevel);
+//            Logger.getLogger("com.andune.minecraft.hsp").setLevel(previousLevel);
+            Logger.getLogger("com.andune.minecraft").setLevel(previousLevel);
             previousLevel = null;
             
             Handler handler = getRootFileHandler(Logger.getLogger("Minecraft"));

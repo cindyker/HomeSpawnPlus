@@ -58,6 +58,7 @@ public class LogUtil {
             
             previousLevel = Logger.getLogger("com.andune.minecraft.hsp").getLevel();
             Logger.getLogger("com.andune.minecraft.hsp").setLevel(Level.ALL);
+            Logger.getLogger("com.andune.minecraft.commonlib").setLevel(Level.ALL);
             
             Handler handler = getRootFileHandler(Logger.getLogger("Minecraft"));
             previousRootLevel = handler.getLevel();
@@ -70,6 +71,7 @@ public class LogUtil {
             debugEnabled = false;
             
             Logger.getLogger("com.andune.minecraft.hsp").setLevel(previousLevel);
+            Logger.getLogger("com.andune.minecraft.commonlib").setLevel(previousLevel);
             previousLevel = null;
             
             Handler handler = getRootFileHandler(Logger.getLogger("Minecraft"));

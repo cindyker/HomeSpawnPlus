@@ -1,3 +1,8 @@
+# This is stored as its own separate config file because it is
+# loaded before the main config subsystem is started, so smaller
+# is better to prevent YAML parsing twice. Also, this config
+# option is not live-reloadable, being separate is a reminder of
+# that fact.
 storage:
   # EBEANS - Ebeans storage (will go to SqlLite or MySQL, as defined
   #     by bukkit.yml)

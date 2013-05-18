@@ -140,7 +140,7 @@ public class StorageEBeans implements Storage {
 	private void persistanceReimplementedInitialize() {
 		persistanceReimplementedDatabase = new MyDatabase(plugin) {
         	protected java.util.List<Class<?>> getDatabaseClasses() {
-        		return getDatabaseClasses();
+        		return StorageEBeans.getDatabaseClasses();
             };        	
         };
 

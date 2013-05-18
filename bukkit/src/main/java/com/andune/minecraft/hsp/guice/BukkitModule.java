@@ -213,11 +213,15 @@ public class BukkitModule extends AbstractModule {
     }
     
     @Provides
-    protected MultiverseCore getMultiverseCore(ConfigCore configCore) {
+    protected MultiverseCoreModule getMultiverseCoreModule(ConfigCore configCore) {
         if( multiverseCore == null ) {
             multiverseCore = new MultiverseCoreModule(configCore, plugin);
         }
         return multiverseCore;
+    }
+    @Provides
+    protected MultiverseCore getMultiverseCore(ConfigCore configCore) {
+        return getMultiverseCoreModule(configCore);
     }
     
     @Provides

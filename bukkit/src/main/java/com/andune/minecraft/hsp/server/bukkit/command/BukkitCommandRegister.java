@@ -33,14 +33,15 @@ package com.andune.minecraft.hsp.server.bukkit.command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -68,13 +69,14 @@ import com.google.inject.Injector;
  * @author andune
  *
  */
+@Singleton
 public class BukkitCommandRegister implements Initializable {
     private final Logger log = LoggerFactory.getLogger(BukkitCommandRegister.class);
 
 	private final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
 	
 	private final Plugin plugin;
-	private final Set<String> loadedCommands = new HashSet<String>(25);
+	private final Map<String, PluginCommand> loadedCommands = new HashMap<String, PluginCommand>(25);
 	private final Reflections reflections;
 	private final CommandConfig commandConfig;
 	private final BukkitFactory factory;
@@ -119,7 +121,7 @@ public class BukkitCommandRegister implements Initializable {
 			cmdName = (String) cmdParams.get("name");
 		
 		// we never load the same command twice
-		if( loadedCommands.contains(cmdName) )
+		if( loadedCommands.containsKey(cmdName) )
 			return;
 
 		CraftServer craftServer = craftServerFactory.getCraftServer();
@@ -179,7 +181,7 @@ public class BukkitCommandRegister implements Initializable {
 			
 			// register it
 			craftServer.registerCommand(pc);
-			loadedCommands.add(cmdName);
+			loadedCommands.put(cmdName, pc);
 			
 			log.debug("register() command {} registered", command);
 		}
@@ -190,6 +192,10 @@ public class BukkitCommandRegister implements Initializable {
 	private void register(Command command) {
 		Map<String, Object> cmdParams = commandConfig.getCommandParameters(command.getCommandName());
 		register(command, cmdParams);
+	}
+	
+	public Map<String, PluginCommand> getLoadedCommands() {
+	    return Collections.unmodifiableMap(loadedCommands);
 	}
 	
 	/** Given an unqualified name, find a matching command class. This ignores case,

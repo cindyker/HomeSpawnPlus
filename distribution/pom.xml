@@ -40,7 +40,6 @@
               <descriptors>
                 <descriptor>assembly.xml</descriptor>
               </descriptors>
-              <finalName>HomeSpawnPlus</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>

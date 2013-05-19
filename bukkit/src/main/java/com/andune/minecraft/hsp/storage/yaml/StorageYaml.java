@@ -100,6 +100,8 @@ public class StorageYaml implements Storage {
 			this.singleFile = file;
 		else
 			this.dataDirectory = file;
+		
+		setupDAOs();
 	}
 	
 	public static StorageYaml getCurrentlyInitializingInstance() {
@@ -114,6 +116,40 @@ public class StorageYaml implements Storage {
 			return "YAML";
 	}
 
+	/**
+	 * Called to setup DAO objects. Nothing is actually loaded at this time,
+	 * the DAO objects are simply instantiated so they are ready to be
+	 * injected into the object graph.
+	 */
+	private void setupDAOs() {
+	    if( singleFile != null ) {
+	        YamlConfiguration yaml = new YamlConfiguration();
+	        homeDAO = new HomeDAOYaml(singleFile, yaml);
+	        homeInviteDAO = new HomeInviteDAOYaml(singleFile, yaml);
+	        spawnDAO = new SpawnDAOYaml(singleFile, yaml);
+	        playerDAO = new PlayerDAOYaml(singleFile, yaml);
+	        versionDAO = new VersionDAOYaml(singleFile, yaml);
+	        playerSpawnDAO = new PlayerSpawnDAOYaml(singleFile, yaml);
+	        playerLastLocationDAO = new PlayerLastLocationDAOYaml(singleFile, yaml);
+	    }
+	    else {
+	        File file = new File(dataDirectory, "homes.yml");
+	        homeDAO = new HomeDAOYaml(file);
+	        file = new File(dataDirectory, "homeInvites.yml");
+	        homeInviteDAO = new HomeInviteDAOYaml(file);
+	        file = new File(dataDirectory, "spawns.yml");
+	        spawnDAO = new SpawnDAOYaml(file);
+	        file = new File(dataDirectory, "players.yml");
+	        playerDAO = new PlayerDAOYaml(file);
+	        file = new File(dataDirectory, "version.yml");
+	        versionDAO = new VersionDAOYaml(file);
+	        file = new File(dataDirectory, "playerSpawns.yml");
+	        playerSpawnDAO = new PlayerSpawnDAOYaml(file);
+	        file = new File(dataDirectory, "playerLastLocations.yml");
+	        playerLastLocationDAO = new PlayerLastLocationDAOYaml(file);
+	    }
+	}
+	
 	@Override
 	public void initializeStorage() throws StorageException {
 		// only allow this to run once per JVM and we keep track of which
@@ -126,34 +162,10 @@ public class StorageYaml implements Storage {
 			YamlDAOInterface[] yamlLoadQueue;
 
 			if( singleFile != null ) {
-				YamlConfiguration yaml = new YamlConfiguration();
-				homeDAO = new HomeDAOYaml(singleFile, yaml);
-				homeInviteDAO = new HomeInviteDAOYaml(singleFile, yaml);
-				spawnDAO = new SpawnDAOYaml(singleFile, yaml);
-				playerDAO = new PlayerDAOYaml(singleFile, yaml);
-				versionDAO = new VersionDAOYaml(singleFile, yaml);
-				playerSpawnDAO = new PlayerSpawnDAOYaml(singleFile, yaml);
-				playerLastLocationDAO = new PlayerLastLocationDAOYaml(singleFile, yaml);
-
 				// only need one load because all DAOs are using the same YamlConfiguration object
 				yamlLoadQueue = new YamlDAOInterface[] { homeDAO };
 			}
 			else {
-				File file = new File(dataDirectory, "homes.yml");
-				homeDAO = new HomeDAOYaml(file);
-				file = new File(dataDirectory, "homeInvites.yml");
-				homeInviteDAO = new HomeInviteDAOYaml(file);
-				file = new File(dataDirectory, "spawns.yml");
-				spawnDAO = new SpawnDAOYaml(file);
-				file = new File(dataDirectory, "players.yml");
-				playerDAO = new PlayerDAOYaml(file);
-				file = new File(dataDirectory, "version.yml");
-				versionDAO = new VersionDAOYaml(file);
-				file = new File(dataDirectory, "playerSpawns.yml");
-				playerSpawnDAO = new PlayerSpawnDAOYaml(file);
-				file = new File(dataDirectory, "playerLastLocations.yml");
-				playerLastLocationDAO = new PlayerLastLocationDAOYaml(file);
-
 				yamlLoadQueue = new YamlDAOInterface[] { homeDAO, homeInviteDAO, spawnDAO,
 						playerDAO, versionDAO, playerSpawnDAO, playerLastLocationDAO };
 			}

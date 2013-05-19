@@ -76,6 +76,8 @@ public class BukkitStorageFactory extends BaseStorageFactory implements Initiali
             // do nothing, super call below will do any additional storage resolution
         }
         
-        return super.getInstance();
+        final Storage storage = super.getInstance();
+        log.debug("BukkitStorageFactory.getInstance() returning {}", storage);
+        return storage;
     }
 }

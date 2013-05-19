@@ -15,13 +15,15 @@ core:
   # you must restart Bukkit if you change this option.
   storage: EBEANS
 
+  # localization. "en" for english, "fr" for french, etc. Will
+  # use given localization if it exists, otherwise will fall
+  # back to English as the default.
+  # locales available: en, de, fr, nl, ru, pt, pt-br, es
+  locale: en
+
   # Warn on any known plugin conflicts that might prevent HSP from
   # working the way the admin expects.
   warnConflicts: true
-
-  # Warn if a strategy chain returns no location. While this might
-  # be intended behavior, it can also hint at a configuration mistake.
-  warnNullStrategy: true
 
   # Warn if the player ended up somewhere other than where HSP
   # expected. This often indicates another plugin doing something
@@ -33,13 +35,16 @@ core:
   # Set to 0 to disable.
   warnPerformanceMillis: 250
 
-  # this is ONLY used when "ops" is used in the "permissions" section
-  # above.
-  # In that case, any permissions listed here are given to everyone by
-  # default (ops always have full permissions)
-#  defaultPermissions:
-#    - hsp.command.home.use 
-#    - hsp.command.sethome.use 
+  # The default/main world. Strategies reference this as the default
+  # world, you can change that here if you like.
+  defaultWorld: world
+
+  # any HSP permissions listed here are granted to every user on
+  # the server (for HSP only, this DOES NOT affect other plugins).
+  # This is convenient if you don't have a permission system.
+  defaultPermissions:
+    - hsp.command.home.use 
+    - hsp.command.sethome.use 
 
   # set to true to enable players setting their homes by clicking beds.
   # they must also have the 'hsp.home.bedsethome' permission.
@@ -47,7 +52,7 @@ core:
 
   # If true, HSP will require 2 clicks on the bed to set the home. This
   # avoids accidentally setting your bedhome when you don't mean to.
-  bedhome2clicks: true
+  bedhome2clicks: false
 
   # If true, HSP will require it be night time in order for a bed home
   # to be saved by clicking on it. (ie. single player mechanics)
@@ -55,7 +60,8 @@ core:
 
   # If set to true, the player will never see the "You can only
   # sleep at night" message. Be warned this has the unfortunate side
-  # effect that they can never actually sleep in their bed, either.
+  # effect that they can't sleep in the bed either, although they
+  # can get around this by shift-clicking (sneak) the bed instead.
   bedHomeNeverDisplayNightMessage: false
 
   # This restores the "original" behavior where all bed clicks go
@@ -64,12 +70,12 @@ core:
   # 2 clicks. Note this is also possible without this option by
   # the player using sneak to sleep vs. set home.
   bedHomeOriginalBehavior: false
- 
-  # The default/main world. Strategies reference this as the default
-  # world, you can change that here if you like.
-  defaultWorld: world
 
-  # set to true if you want plugin to change the spawn of the actual map
+  # If true, sleeping in a bed will overwrite the default home,
+  # usually the one set by "/sethome" with no args.
+  bedHomeOverwritesDefault: true
+
+  # set to true if you want HSP to change the spawn of the actual map
   # (ie. even if you turn this plugin off later, whatever default spawn
   # you set in various worlds will stay)
   override_world: true
@@ -84,6 +90,7 @@ core:
   # set to true to have a bit more verbose logging in your server.log
   # about what HomeSpawnPlus is doing
   verboseLogging: false
+
   # set to true to have verbose logging in your server.log as
   # strategies are being evaluated - great for debugging and testing
   # your strategies when you first set them up.
@@ -104,20 +111,8 @@ core:
   # the default.
   lastHomeIsDefault: true
 
-  # localization. "en" for english, "fr" for french, etc. Will
-  # use given localization if it exists, otherwise will fall
-  # back to English as the default.
-  # locales available: en, de, fr, nl, ru, pt
-  locale: en
-
   # default color of messages. ie. %yellow%, %red%, ..
   defaultMessageColor: "%yellow%"
-
-  # set to true if Bukkit should be forced to reload the target
-  # chunk when a player teleports. This fixes "world hole" problems
-  # on teleport (exactly the same as BananaChunk plugin does).
-  # This option does nothing if BananaChunk is already installed.
-  reloadChunkOnTeleport: false
 
   # Define the strategy HSP uses to determine if a player is new.
   #   BUKKIT: use Bukkit Player.hasPlayedBefore() method
@@ -133,16 +128,12 @@ core:
   # If enabled, "safe teleport" will be used for any teleport
   # HSP does. This means if the players location is not "safe"
   # (it has solid blocks that might suffocate them, is over lava,
-  # etc), they will be teleported to the nearest "safe" location
+  # etc), they will be teleported to the nearest safe location
   # instead.
   safeTeleport: true
 
-  # If true, sleeping in a bed will overwrite the default home,
-  # usually the one set by "/sethome" with no args.
-  bedHomeOverwritesDefault: true
-
   # Set to true if you use Multiverse and want to take advantage
-  # of HSP's event integration with it
+  # of HSP's event integration with it. http://goo.gl/XnGbc
   multiverseEnabled: false
 
   # set to true if you want to display teleporting messages
@@ -162,4 +153,10 @@ core:
   # easy way of having worlds and their associated worlds grouped
   # together without any effort on your part and is a closer match
   # to the default Minecraft experience for nether and the_end.
+  #
+  # For example, if your "world" strategy is homeLocalWorld, then
+  # dying in world_nether will spawn you at your home in "world".
+  # Defining a per-world strategy (such as for world_nether) will
+  # work as expected and override this behavior, so you can leave
+  # this on as the default case and override it where you like.
   associatedWorldsUseBaseStrategies: true

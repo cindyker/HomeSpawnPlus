@@ -49,6 +49,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.manager.EffectsManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -68,15 +69,16 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
 @Singleton
 public class EventListener implements com.andune.minecraft.commonlib.server.api.event.EventListener {
     private final Logger log = LoggerFactory.getLogger(EventListener.class);
-    private Storage storage;
-    private StrategyEngine engine;
-    private ConfigCore config;
-    private Factory factory;
-    private MultiverseCore multiverseCore;
-    private MultiversePortals multiversePortals;
-    private SpawnUtil spawnUtil;
-    private BedUtils bedUtil;
-    private WarmupManager warmupManager;
+    private final Storage storage;
+    private final StrategyEngine engine;
+    private final ConfigCore config;
+    private final Factory factory;
+    private final MultiverseCore multiverseCore;
+    private final MultiversePortals multiversePortals;
+    private final SpawnUtil spawnUtil;
+    private final BedUtils bedUtil;
+    private final WarmupManager warmupManager;
+    private final EffectsManager effectsManager;
     
     /** We record the last known player/location for common events so that we can
      * later check at a MONITOR priority to see if it changed.
@@ -94,7 +96,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
             MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
-            BedUtils bedUtil, WarmupManager warmupManager) {
+            BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -104,6 +106,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         this.spawnUtil = spawnUtil;
         this.bedUtil = bedUtil;
         this.warmupManager = warmupManager;
+        this.effectsManager = effectsManager;
     }
     
     @Override
@@ -234,12 +237,8 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
      */
     @Override
     public void observePlayerTeleport(PlayerTeleportEvent event) {
-        // don't do anything if recordLastLocation is disabled
-        if( config.isRecordLastLocation() )
-            return;
-
         // cross-world teleport event?
-        if( !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
+        if( config.isRecordLastLocation() && !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
              PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
              PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
              if( playerLastLocation == null ) {
@@ -256,6 +255,11 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
              }
              log.debug("Saved player {} location as {}", event.getPlayer(), playerLastLocation);
         }
+        
+        // fire any teleport effects. Since this is a MONITOR priority, we
+        // count on the fact that we know the event won't be canceled and so
+        // we can properly do any effects at this point.
+        effectsManager.doTeleportEffects(event.getPlayer());
     }
 
     @Override

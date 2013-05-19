@@ -4,7 +4,7 @@ url: ${project.url}
 version: ${project.version}
 author: andune
 database: true
-softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals, Essentials]
+softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
 permissions:
     hsp.*:
         description: Gives access to all HomeSpawnPlus permissions

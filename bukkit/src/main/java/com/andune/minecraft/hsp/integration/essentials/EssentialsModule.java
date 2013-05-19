@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandRegister;
 import com.earth2me.essentials.AlternativeCommandsHandler;
 import com.earth2me.essentials.Essentials;
@@ -36,11 +37,14 @@ public class EssentialsModule implements Initializable {
     private Map<String, List<PluginCommand>> altcommands;
     private final Plugin plugin;
     private final BukkitCommandRegister bukkitCommandRegister;
+    private final Scheduler scheduler;
     
     @Inject
-    public EssentialsModule(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister) {
+    public EssentialsModule(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister,
+            Scheduler scheduler) {
         this.plugin = bukkitPlugin;
         this.bukkitCommandRegister = bukkitCommandRegister;
+        this.scheduler = scheduler;
     }
     
     /**
@@ -49,6 +53,8 @@ public class EssentialsModule implements Initializable {
      * commands like "/home" and "/spawn".
      */
     private void registerCommands() {
+        log.debug("entering registerCommands()");
+        
         essentialsPlugin = plugin.getServer().getPluginManager().getPlugin("Essentials");
         
         if( essentialsPlugin == null ) {
@@ -63,6 +69,8 @@ public class EssentialsModule implements Initializable {
         catch(Exception e) {
             log.error("Caught exception when trying to register commands with Essentials", e);
         }
+        
+        log.debug("exiting registerCommands()");
     }
     
     /**
@@ -143,7 +151,13 @@ public class EssentialsModule implements Initializable {
 
     @Override
     public void init() throws Exception {
-        registerCommands();
+        // we register commands a few ticks after the server has started
+        // up. This gives Essentials time to load (if present).
+        scheduler.scheduleSyncDelayedTask(new Runnable() {
+            public void run() {
+                registerCommands();
+            }
+        }, 3);
     }
 
     @Override

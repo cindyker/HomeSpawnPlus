@@ -266,6 +266,32 @@ public class StrategyContextImpl implements StrategyContext {
 		return ret;
 	}
 	
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.strategy.StrategyContext#getModeList(com.andune.minecraft.hsp.strategy.StrategyMode)
+     */
+    @Override
+    public List<ModeStrategy> getModeList(final StrategyMode mode) {
+        List<ModeStrategy> retList = new ArrayList<ModeStrategy>();
+        log.debug("getMode() check for mode {}",mode);
+        
+        if( currentModes == null || currentModes.size() == 0 ) {
+            if( isDefaultMode(mode) )
+                retList.add(defaultMode);
+            
+            log.debug("getMode() No modes defined, returning {}", retList);
+            return retList;
+        }
+        
+        for(ModeStrategy currentMode : currentModes) {
+            StrategyMode modeType = currentMode.getMode();
+            if( modeType == mode )
+                retList.add(currentMode);
+        }
+        
+        log.debug("getMode() returning {}", retList);
+        return retList;
+    }
+
 	/* (non-Javadoc)
 	 * @see com.andune.minecraft.hsp.strategy.StrategyContext#isStrategyProcessingAllowed()
 	 */

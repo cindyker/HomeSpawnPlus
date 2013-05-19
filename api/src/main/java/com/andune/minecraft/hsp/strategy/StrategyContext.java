@@ -93,6 +93,15 @@ public interface StrategyContext {
 	 */
 	public abstract ModeStrategy getMode(StrategyMode mode);
 
+    /**
+     * If a mode is enabled, return all instances of that mode. This is useful
+     * for modes that can possibly be set multiple times, such as ModeEffect.
+     * 
+     * @param mode
+     * @return
+     */
+    public abstract List<ModeStrategy> getModeList(StrategyMode mode);
+
 	/** Method for checking boolean states of any active modes to see if those
 	 * modes allow strategy processing given the current context.
 	 * 

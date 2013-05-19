@@ -3,7 +3,10 @@
  */
 package com.andune.minecraft.hsp.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -38,7 +41,7 @@ public class EffectsManager {
     }
     
     // map to keep track of players who should have effects on next teleport
-    private final Map<String, PlayerEffect> playerEffects = new HashMap<String, PlayerEffect>();
+    private final Map<String, List<PlayerEffect>> playerEffects = new HashMap<String, List<PlayerEffect>>();
     
     /**
      * Add a pending playerEffect, which will fire when the player is
@@ -51,7 +54,12 @@ public class EffectsManager {
      */
     public void addPlayerEffect(Player player, Effect type, boolean to, boolean from) {
         log.debug("addPlayerEffect() player = {}, type = {}", player, type);
-        playerEffects.put(player.getName(), new PlayerEffect(type, to, from));
+        List<PlayerEffect> effects = playerEffects.get(player.getName());
+        if( effects == null ) {
+            effects = new ArrayList<PlayerEffect>();
+            playerEffects.put(player.getName(), effects);
+        }
+        effects.add(new PlayerEffect(type, to, from));
     }
     /**
      * Add a pending playerEffect, which will fire when the player is
@@ -75,31 +83,37 @@ public class EffectsManager {
      */
     public void doTeleportEffects(final Player player) {
         log.debug("doTeleportEffects(), player = {}", player);
-        final PlayerEffect effect = playerEffects.get(player.getName());
-        
-        if( effect == null )
+        final List<PlayerEffect> effects = playerEffects.get(player.getName());
+
+        if( effects == null || effects.size() == 0 )
             return;
-        
-        // basic sanity check; if it's been more than 1 full second since
-        // the effect was requested, then we don't fire. While this might
-        // mean we miss the occasional effect because of lag, it does prevent
-        // effects from get "primed" and then firing a long time later from
-        // a teleport they weren't supposed to be fired for.
-        if( (System.currentTimeMillis() - effect.timestamp) > 1000 )
-            return;
-        
-        if( effect.from )
-            doEffect(player, effect.effect);
-        
-        // for effects at the other end, we set them up to fire a tick later,
-        // which allows the teleport to happen and then shows the effect at
-        // the other end
-        if( effect.to ) {
-            scheduler.scheduleSyncDelayedTask(new Runnable() {
-                public void run() {
-                    doEffect(player, effect.effect);
-                }
-            }, 1);
+
+        for(Iterator<PlayerEffect> i=effects.iterator(); i.hasNext();) {
+            final PlayerEffect effect = i.next();
+            
+            // basic sanity check; if it's been more than 1 full second since
+            // the effect was requested, then we don't fire. While this might
+            // mean we miss the occasional effect because of lag, it does prevent
+            // effects from get "primed" and then firing a long time later from
+            // a teleport they weren't supposed to be fired for.
+            if( (System.currentTimeMillis() - effect.timestamp) > 1000 ) {
+                i.remove();
+                continue;
+            }
+
+            if( effect.from )
+                doEffect(player, effect.effect);
+
+            // for effects at the other end, we set them up to fire a tick later,
+            // which allows the teleport to happen and then shows the effect at
+            // the other end
+            if( effect.to ) {
+                scheduler.scheduleSyncDelayedTask(new Runnable() {
+                    public void run() {
+                        doEffect(player, effect.effect);
+                    }
+                }, 1);
+            }
         }
     }
     

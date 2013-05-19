@@ -284,10 +284,12 @@ public class StrategyEngineImpl implements StrategyEngine {
     	    result = resultFactory.create(false, false);
     	}
     	
-    	ModeStrategy mode = context.getMode(StrategyMode.MODE_EFFECT);
-    	if( mode != null ) {
-    	    ModeEffect modeEffect = (ModeEffect) mode;
-    	    effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
+    	List<ModeStrategy> modes = context.getModeList(StrategyMode.MODE_EFFECT);
+    	if( modes != null && modes.size() > 0 ) {
+    	    for(ModeStrategy mode : modes) {
+        	    ModeEffect modeEffect = (ModeEffect) mode;
+        	    effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
+    	    }
     	}
 
 		log.debug("evaluateStrategies: exit result = {}",result);

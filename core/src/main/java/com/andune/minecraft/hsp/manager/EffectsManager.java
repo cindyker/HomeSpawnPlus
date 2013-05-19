@@ -50,6 +50,7 @@ public class EffectsManager {
      * @param from true if the effect is played at the source teleport location
      */
     public void addPlayerEffect(Player player, Effect type, boolean to, boolean from) {
+        log.debug("addPlayerEffect() player = {}, type = {}", player, type);
         playerEffects.put(player.getName(), new PlayerEffect(type, to, from));
     }
     /**

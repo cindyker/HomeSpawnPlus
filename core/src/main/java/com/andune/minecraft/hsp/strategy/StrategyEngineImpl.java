@@ -44,10 +44,12 @@ import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.entity.Spawn;
+import com.andune.minecraft.hsp.manager.EffectsManager;
 import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
+import com.andune.minecraft.hsp.strategies.mode.ModeEffect;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /** Class responsible for processing strategies at run-time.
@@ -64,11 +66,12 @@ public class StrategyEngineImpl implements StrategyEngine {
 	private final Factory factory;
 	private final StrategyResultFactory resultFactory;
 	private final SpawnUtil spawnUtil;
+	private final EffectsManager effectsManager;
 	
 	@Inject
 	public StrategyEngineImpl(ConfigCore config, StrategyConfig strategyConfig, Storage storage,
 	        Teleport teleport, Factory factory, StrategyResultFactory resultFactory,
-	        SpawnUtil spawnUtil)
+	        SpawnUtil spawnUtil, EffectsManager effectsManager)
 	{
 	    this.config = config;
 		this.strategyConfig = strategyConfig;
@@ -77,6 +80,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		this.factory = factory;
 		this.resultFactory = resultFactory;
 		this.spawnUtil = spawnUtil;
+		this.effectsManager = effectsManager;
 	}
 	
 	public StrategyConfig getStrategyConfig() {
@@ -278,6 +282,12 @@ public class StrategyEngineImpl implements StrategyEngine {
     	if( result == null ) {
             log.debug("evaluateStrategies: no StrategyResult found, creating empty result");
     	    result = resultFactory.create(false, false);
+    	}
+    	
+    	ModeStrategy mode = context.getMode(StrategyMode.MODE_EFFECT);
+    	if( mode != null ) {
+    	    ModeEffect modeEffect = (ModeEffect) mode;
+    	    effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
     	}
 
 		log.debug("evaluateStrategies: exit result = {}",result);

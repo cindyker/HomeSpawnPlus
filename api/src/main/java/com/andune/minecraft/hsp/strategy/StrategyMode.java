@@ -57,7 +57,8 @@ public enum StrategyMode {
 	MODE_IN_REGION,
 	MODE_SOURCE_WORLD,
 	MODE_EXCLUDE_NEW_PLAYER_SPAWN,
-	MODE_DISTANCE_LIMITS;
+	MODE_DISTANCE_LIMITS,
+	MODE_EFFECT;
 	
 	/*
 	// associated Teleport safeMode flag, if any

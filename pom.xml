@@ -1,150 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.andune.minecraft.hsp</groupId>
-    <artifactId>HomeSpawnPlus-parent</artifactId>
-    <name>HomeSpawnPlus</name>
-    <packaging>pom</packaging>
-    <version>2.0-SNAPSHOT</version>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.andune.minecraft.hsp</groupId>
+  <artifactId>HomeSpawnPlus-parent</artifactId>
+  <name>HomeSpawnPlus</name>
+  <packaging>pom</packaging>
+  <version>2.0-SNAPSHOT</version>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
-        <build.number>${maven.build.timestamp}</build.number>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+    <build.number>${maven.build.timestamp}</build.number>
+  </properties>
 
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://andune.com/jenkins/</url>
-    </ciManagement>
+  <ciManagement>
+    <system>jenkins</system>
+    <url>http://andune.com/jenkins/</url>
+  </ciManagement>
 
-    <scm>
-        <developerConnection>scm:git:git@github.com:andune/HomeSpawnPlus.git</developerConnection>
-        <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
-        <url>https://github.com/andune/HomeSpawnPlus</url>
-    </scm>
+  <scm>
+    <developerConnection>scm:git:git@github.com:andune/HomeSpawnPlus.git</developerConnection>
+    <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
+    <url>https://github.com/andune/HomeSpawnPlus</url>
+  </scm>
 
-    <modules>
-        <module>api</module>
-        <module>bukkit</module>
-        <module>core</module>
-        <module>craftbukkit.api</module>
-        <module>craftbukkit.pre1_4_5</module>
-        <module>craftbukkit.v1_4_5</module>
-        <module>craftbukkit.v1_4_6</module>
-        <module>craftbukkit.v1_4_R1</module>
-        <module>craftbukkit.v1_5_R2</module>
-        <module>craftbukkit.v1_5_R3</module>
-    </modules>
+  <modules>
+    <module>api</module>
+    <module>bukkit</module>
+    <module>core</module>
+    <module>craftbukkit.api</module>
+    <module>craftbukkit.pre1_4_5</module>
+    <module>craftbukkit.v1_4_5</module>
+    <module>craftbukkit.v1_4_6</module>
+    <module>craftbukkit.v1_4_R1</module>
+    <module>craftbukkit.v1_5_R2</module>
+    <module>craftbukkit.v1_5_R3</module>
+    <module>distribution</module>
+  </modules>
 
-    <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>com.google.inject</groupId>
-          <artifactId>guice</artifactId>
-          <version>3.0</version>
-        </dependency>
-        <dependency>
-          <groupId>com.google.inject.extensions</groupId>
-          <artifactId>guice-assistedinject</artifactId>
-          <version>3.0</version>
-        </dependency>
-        <dependency>
-          <groupId>com.andune.minecraft.commonlib</groupId>
-          <artifactId>commonlib</artifactId>
-          <version>0.5-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Reflections library -->
-        <dependency>
-          <groupId>org.reflections</groupId>
-          <artifactId>reflections</artifactId>
-          <version>0.9.8</version>
-        </dependency>
-
-        <!-- Start of Test Dependencies -->
-        <dependency>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-          <version>6.3.1</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-testng</artifactId>
-          <version>1.5</version>
-          <type>jar</type>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito</artifactId>
-          <version>1.5</version>
-          <type>jar</type>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-          <version>1.9.5</version>
-          <scope>test</scope>
-        </dependency>
-        <!-- End of Test Dependencies -->
-      </dependencies>
-    </dependencyManagement>
-
-    <build>
-        <defaultGoal>clean package</defaultGoal>
-
-        <plugins>
-            <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
-            <plugin>
-              <groupId>com.mycila.maven-license-plugin</groupId>
-              <artifactId>maven-license-plugin</artifactId>
-              <configuration>
-                <header>license/header.txt</header>
-                <strictCheck>true</strictCheck>
-                <excludes>
-                  <exclude>**/src/main/resources/**</exclude>
-                  <exclude>**/src/main/assembly/**</exclude>
-                  <exclude>**/src/main/license/**</exclude>
-                  <exclude>**/build.number</exclude>
-                  <exclude>**/*.md</exclude>
-                  <exclude>*.txt</exclude>
-                </excludes>
-              </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-          <!-- Assembly -->
 <!--
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.4</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-bukkit</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+-->
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-assistedinject</artifactId>
+        <version>3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.andune.minecraft.commonlib</groupId>
+        <artifactId>commonlib</artifactId>
+        <version>0.5-SNAPSHOT</version>
+      </dependency>
+
+      <!-- Reflections library -->
+      <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.8</version>
+      </dependency>
+
+      <!-- Start of Test Dependencies -->
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>6.3.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-testng</artifactId>
+        <version>1.5</version>
+        <type>jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito</artifactId>
+        <version>1.5</version>
+        <type>jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.9.5</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- End of Test Dependencies -->
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+
+    <plugins>
+      <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>license/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <excludes>
+            <exclude>**/src/main/resources/**</exclude>
+            <exclude>**/src/main/assembly/**</exclude>
+            <exclude>**/src/main/license/**</exclude>
+            <exclude>**/build.number</exclude>
+            <exclude>**/*.md</exclude>
+            <exclude>*.txt</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- Assembly -->
+<!--
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>release</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <inherited>false</inherited>
             <configuration>
-              <finalName>${project.artifactId}-bukkit.jar</finalName>
-              <descriptor>${basedir}/assembly.xml</descriptor>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+              <finalName>${project.name}-${project.version}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
-            <executions>
-              <execution>
-                <id>release</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          </execution>
+        </executions>
+      </plugin>
 -->
-        </plugins>
-    </build>
+
+    </plugins>
+  </build>
 </project>

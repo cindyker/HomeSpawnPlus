@@ -6,7 +6,7 @@ v2.0 -
   - HSP Bukkit implementation; this is a thin API implementation layer that allows HSP to run on Bukkit
   - Implement Dependency Injection (IoC pattern) - easier to manage code and write test cases. This make supporting different server
     environments much easier to do.
-  - Maven modules for different CraftBukkit versions, a single Bukkit JAR supports all CraftBukkit versions
+  - Maven modules for different CraftBukkit versions, a single HSP JAR supports all CraftBukkit versions
   - Capability to use separate config files rather than one massive config.yml; easier to focus on one thing at a time
   - Annotations for strategies, it's now very clean and self-contained for someone to contribute new strategies
   - The previously monolithic "HomeSpawnUtils" class has been eradicated in favor of OOP principles where it makes sense, or smaller
@@ -28,8 +28,12 @@ v2.0 -
     spawn for the base world in the case of nether and the_end. Also note the reference location used in these situations is
     the default spawn in the base world, so a strategy like "homeNearest" if a player died in world_nether would result in the
     player being sent to their home nearest the default spawn on world "world".
+  - direct Essentials command integration, meaning HSP and essentials work fine together out of the box. No more need to remap
+    Bukkit aliases to get around Essentials bully command system.
+  - new strategies: spawnNearestWithPrefix, modeEffect
 
-v1.7.6 - 
+v1.7.6 - May 5, 2013
+* built for CraftBukkit v1.5.2 ONLY
 * support for Multiverse integration with Multiverse 2.5
 
 v1.7.5 - Apr 4, 2013

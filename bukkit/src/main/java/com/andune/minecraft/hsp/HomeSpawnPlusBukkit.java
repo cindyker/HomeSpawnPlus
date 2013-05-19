@@ -69,13 +69,20 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
             YamlConfiguration storageConfig = new YamlConfiguration();
             
             // use file if it exists
-            File storageConfigFile = new File(getDataFolder(), "config/storage.yml");
+            File storageConfigFile = new File(getDataFolder(), "config/core.yml");
             if( storageConfigFile.exists() ) {
-            	storageConfig.load(new File(getDataFolder(), "config/storage.yml"));
+            	storageConfig.load(new File(getDataFolder(), "config/core.yml"));
             }
-            // otherwise use the default file in the JAR
             else {
-	            storageConfig.load(super.getResource("config/storage.yml"));
+                // otherwise try the old-style single config file
+                storageConfigFile = new File(getDataFolder(), "config.yml");
+                if( storageConfigFile.exists() ) {
+                    storageConfig.load(new File(getDataFolder(), "config.yml"));
+                }
+                // otherwise use the default file in the JAR
+                else {
+                    storageConfig.load(super.getResource("config/core.yml"));
+                }
             }
             
             BukkitInjectorFactory factory = new BukkitInjectorFactory(this,

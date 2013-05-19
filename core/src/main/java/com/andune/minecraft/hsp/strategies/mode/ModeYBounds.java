@@ -30,9 +30,6 @@
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
 import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyException;
@@ -48,7 +45,6 @@ public class ModeYBounds extends ModeStrategyImpl {
 	private int minY = 1;
 	private int maxY = 255;
 
-	@Inject
 	public ModeYBounds(String arg) {
 		this.arg = arg;
 	}

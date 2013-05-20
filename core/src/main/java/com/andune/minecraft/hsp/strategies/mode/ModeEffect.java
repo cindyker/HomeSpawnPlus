@@ -44,20 +44,43 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 public class ModeEffect extends ModeStrategyImpl {
     private String arg;
     private Effect effect;
+    private boolean toEffect=true;
+    private boolean fromEffect=true;
 
     public ModeEffect(String arg) {
         this.arg = arg;
     }
 
     public Effect getEffect() { return effect; }
+    public boolean isToEffect() { return toEffect; }
+    public boolean isFromEffect() { return fromEffect; }
     
     @Override
     public void validate() throws StrategyException {
         if( arg == null )
             throw new StrategyException("required argument is null for strategy "+getStrategyConfigName());
         
+        String effect = null;
+        String[] args = arg.split(";");
+        effect = args[0];
+        
+        // look for and process secondary arg, if any
+        if( args.length > 1 ) {
+            if( args[1].equalsIgnoreCase("both") ) {
+                ; // default, do nothing
+            }
+            else if( args[1].equalsIgnoreCase("to") ) {
+                fromEffect = false;
+            }
+            else if( args[1].equalsIgnoreCase("from") ) {
+                toEffect = false;
+            }
+            else
+                throw new StrategyException("invalid second argument to "+getStrategyConfigName()+": \""+args[1]+"]\". Valid values are: both,to,from");
+        }
+
         for(Effect e : Effect.values()) {
-            if( e.getName().equalsIgnoreCase(arg) ) {
+            if( e.getName().equalsIgnoreCase(effect) ) {
                 this.effect = e;
                 break;
             }

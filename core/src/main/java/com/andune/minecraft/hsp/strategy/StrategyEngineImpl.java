@@ -309,7 +309,8 @@ public class StrategyEngineImpl implements StrategyEngine {
             for(ModeStrategy mode : modes) {
                 ModeEffect modeEffect = (ModeEffect) mode;
                 log.debug("applying mode effect {}", modeEffect.getEffect());
-                effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
+                effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect(),
+                        modeEffect.isToEffect(), modeEffect.isFromEffect());
             }
         }
         

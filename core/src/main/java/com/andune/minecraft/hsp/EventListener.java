@@ -237,6 +237,9 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
      */
     @Override
     public void observePlayerTeleport(PlayerTeleportEvent event) {
+        log.debug("ENTER observePlayerTeleport(): player={}, to={}, from={}",
+                event.getPlayer(), event.getTo(), event.getFrom());
+
         // cross-world teleport event?
         if( config.isRecordLastLocation() && !event.getTo().getWorld().equals(event.getFrom().getWorld()) ) {
              PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
@@ -255,6 +258,15 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
              }
              log.debug("Saved player {} location as {}", event.getPlayer(), playerLastLocation);
         }
+
+        // we fire an "onTeleportObserve" event but we ignore the result,
+        // because this event is not to change locations. However, this event
+        // could be used with modeEffect to create teleport effects.
+        final StrategyContext context = factory.newStrategyContext();
+        context.setEventType("onTeleportObserve");
+        context.setPlayer(event.getPlayer());
+        context.setLocation(event.getTo()); // location involved is the target location
+        engine.getStrategyResult(context);
         
         // fire any teleport effects. Since this is a MONITOR priority, we
         // count on the fact that we know the event won't be canceled and so

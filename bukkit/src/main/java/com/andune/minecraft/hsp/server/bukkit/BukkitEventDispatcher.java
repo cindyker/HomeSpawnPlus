@@ -51,7 +51,6 @@ import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
-import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigWarmup;
 
 /** Bridge class between Bukkit event system and HSP API event interface.
@@ -65,16 +64,14 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
     private final ConfigWarmup configWarmup;
-    private final ConfigCore configCore;
     
     @Inject
     public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory,
-            ConfigWarmup configWarmup, ConfigCore configCore) {
+            ConfigWarmup configWarmup) {
         this.eventListener = listener;
         this.plugin = plugin;
         this.bukkitFactory = bukkitFactory;
         this.configWarmup = configWarmup;
-        this.configCore = configCore;
     }
 
     /**
@@ -149,7 +146,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
     public void playerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
         com.andune.minecraft.commonlib.server.api.events.PlayerTeleportEvent apiEvent =
                 new com.andune.minecraft.commonlib.server.bukkit.events.PlayerTeleportEvent(event, bukkitFactory);
-        eventListener.observePlayerTeleport(apiEvent);
+        eventListener.playerTeleport(apiEvent);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

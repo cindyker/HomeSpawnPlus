@@ -293,9 +293,14 @@ public class StrategyConfigImpl implements StrategyConfig {
 		for(String entry : permEntries) {
 			List<String> perms = section.getStringList(entry+".permissions");
 
-			// if no permissions are defined, we're done with this entry
-			if( perms == null || perms.size() == 0 )
-				continue;
+            // if no explicit permissions were defined, then setup the default ones
+            if( perms == null || perms.size() == 0 ) {
+                perms = new ArrayList<String>(3);
+                
+                perms.add("hsp.events."+entry);               // add basePath permission
+                perms.add("hsp.entry."+entry);                // add default entry permission
+                perms.add("group."+entry);                    // add convenience group entry
+            }
 
 			PermissionStrategies permStrat = permissionStrategies.get(entry);
 			if( permStrat == null ) {
@@ -366,6 +371,7 @@ public class StrategyConfigImpl implements StrategyConfig {
 					Set<Strategy> set = strat.eventStrategies.get(event);
 					if( set != null )
 						strategies.add(set);
+					break;
 				}
 			}
 		}

@@ -117,16 +117,15 @@ public class EffectsManager {
 
         for(Iterator<PlayerEffect> i=effects.iterator(); i.hasNext();) {
             final PlayerEffect effect = i.next();
+            i.remove();
             
             // basic sanity check; if it's been more than 1 full second since
             // the effect was requested, then we don't fire. While this might
             // mean we miss the occasional effect because of lag, it does prevent
             // effects from get "primed" and then firing a long time later from
             // a teleport they weren't supposed to be fired for.
-            if( (System.currentTimeMillis() - effect.timestamp) > 1000 ) {
-                i.remove();
+            if( (System.currentTimeMillis() - effect.timestamp) > 1000 )
                 continue;
-            }
 
             if( effect.from )
                 doEffect(player, effect.effect);

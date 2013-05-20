@@ -323,4 +323,16 @@ public class ConfigCore extends ConfigBase implements Initializable {
     public boolean isRecordLastLocation() {
         return super.getBoolean("recordLastLocation");
     }
+    
+    /**
+     * Boolean value to control whether or not HSP uses the database lower()
+     * method when searching for player's names. Some installations don't
+     * support or have access to this method, so it can be globally disabled
+     * with this config options.
+     * 
+     * @return
+     */
+    public boolean useEbeanSearchLower() {
+        return super.getBoolean("useEbeanSearchLower");
+    }
 }

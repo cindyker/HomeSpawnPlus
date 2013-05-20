@@ -160,3 +160,11 @@ core:
   # work as expected and override this behavior, so you can leave
   # this on as the default case and override it where you like.
   associatedWorldsUseBaseStrategies: true
+
+  # If using EBEANS, directs HSP to do case-insensitive database
+  # searches using the lower() method. Ordinarily this is a good
+  # thing as it makes it easier to find players with funky case
+  # names, but some older/restricted installations don't have
+  # access to execute lower(). If you're getting errors in your
+  # log about lower(), turn this option off.
+  useEbeanSearchLower: true

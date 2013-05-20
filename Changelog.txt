@@ -31,6 +31,7 @@ v2.0 -
   - direct Essentials command integration, meaning HSP and essentials work fine together out of the box. No more need to remap
     Bukkit aliases to get around Essentials bully command system.
   - new strategies: spawnNearestWithPrefix, modeEffect
+  - Ticket #190: addition of config option to disable DB lower() calls
 
 v1.7.6 - May 5, 2013
 * built for CraftBukkit v1.5.2 ONLY

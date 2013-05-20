@@ -44,6 +44,7 @@ import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 
+import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
@@ -83,14 +84,15 @@ public class StorageEBeans implements Storage {
 	private PlayerLastLocationDAOEBean playerLastLocationDAO;
 
 	@Inject
-	public StorageEBeans(EbeanServer ebeanServer, EBeanUtils ebeanUtils, Plugin plugin) {
+	public StorageEBeans(EbeanServer ebeanServer, EBeanUtils ebeanUtils, Plugin plugin,
+	        ConfigCore configCore) {
 	    this.ebeanServer = ebeanServer;
 	    this.ebeanUtils = ebeanUtils;
 	    this.plugin = plugin;
 		this.usePersistanceReimplemented = false;
 
-        homeDAO = new HomeDAOEBean(getDatabase());
-        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this);
+        homeDAO = new HomeDAOEBean(getDatabase(), configCore);
+        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this, configCore);
         spawnDAO = new SpawnDAOEBean(getDatabase());
         playerDAO = new PlayerDAOEBean(getDatabase());
         versionDAO = new VersionDAOEBean(getDatabase());

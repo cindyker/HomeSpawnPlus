@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.storage.ebean;
 import java.util.Set;
 
 
+import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
@@ -46,10 +47,12 @@ import com.avaje.ebean.Transaction;
  *
  */
 public class HomeDAOEBean implements HomeDAO {
+    private final ConfigCore configCore;
 	private EbeanServer ebean;
 	
-	public HomeDAOEBean(final EbeanServer ebean) {
+	public HomeDAOEBean(final EbeanServer ebean, final ConfigCore configCore) {
 		setEbeanServer(ebean);
+		this.configCore = configCore;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -71,7 +74,11 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public Home findDefaultHome(String world, String playerName) {
-		String q = "find home where lower(playerName) = lower(:playerName) and world = :world and defaultHome = 1";
+	    String q;
+	    if( configCore.useEbeanSearchLower() )
+	        q = "find home where lower(playerName) = lower(:playerName) and world = :world and defaultHome = 1";
+	    else
+            q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
 		
 		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
@@ -85,7 +92,11 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public Home findBedHome(String world, String playerName) {
-		String q = "find home where lower(playerName) = lower(:playerName) and world = :world and bedHome = 1";
+        String q;
+        if( configCore.useEbeanSearchLower() )
+            q = "find home where lower(playerName) = lower(:playerName) and world = :world and bedHome = 1";
+        else
+            q = "find home where playerName = :playerName and world = :world and bedHome = 1";
 		
 		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
@@ -99,7 +110,11 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
-		String q = "find home where lower(playerName) = lower(:playerName) and name = :name";
+        String q;
+        if( configCore.useEbeanSearchLower() )
+            q = "find home where lower(playerName) = lower(:playerName) and name = :name";
+        else
+            q = "find home where playerName = :playerName and name = :name";
 		
 		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
 		query.setParameter("playerName", playerName);
@@ -113,7 +128,11 @@ public class HomeDAOEBean implements HomeDAO {
 	 */
 	@Override
 	public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName) {
-		String q = "find home where lower(playerName) = lower(:playerName) and world like :world order by world";
+        String q;
+        if( configCore.useEbeanSearchLower() )
+            q = "find home where lower(playerName) = lower(:playerName) and world like :world order by world";
+        else
+            q = "find home where playerName = :playerName and world like :world order by world";
 		
 		if( world == null || "all".equals(world) || "*".equals(world) )
 			world = "%";

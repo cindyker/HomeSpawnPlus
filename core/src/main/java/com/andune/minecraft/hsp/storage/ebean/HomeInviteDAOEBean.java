@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -49,11 +50,14 @@ import com.avaje.ebean.Transaction;
  */
 public class HomeInviteDAOEBean implements HomeInviteDAO {
 	private EbeanServer ebean;
-	private Storage storage;
+	private final Storage storage;
+	private final ConfigCore configCore;
 	
-	public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage) {
+	public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage,
+	        ConfigCore configCore) {
+        setEbeanServer(ebean);
 	    this.storage = storage;
-		setEbeanServer(ebean);
+        this.configCore = configCore;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -72,7 +76,11 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 	
 	@Override
 	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
-		String q = "find homeInvite where home = :home and lower(invitedPlayer) = lower(:invitee)";
+        String q;
+        if( configCore.useEbeanSearchLower() )
+            q = "find homeInvite where home = :home and lower(invitedPlayer) = lower(:invitee)";
+        else
+            q = "find homeInvite where home = :home and invitedPlayer = :invitee";
 		
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("home", home.getId());
@@ -92,7 +100,12 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 
 	@Override
 	public Set<HomeInvite> findAllAvailableInvites(String invitee) {
-		String q = "find homeInvite where lower(invitedPlayer) = lower(:invitee)";
+        String q;
+        if( configCore.useEbeanSearchLower() )
+            q = "find homeInvite where lower(invitedPlayer) = lower(:invitee)";
+        else
+            q = "find homeInvite where invitedPlayer = :invitee";
+
 		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
 		query.setParameter("invitee", invitee);
 		

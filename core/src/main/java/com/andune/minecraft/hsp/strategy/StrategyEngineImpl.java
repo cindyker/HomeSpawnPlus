@@ -166,7 +166,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		
 		correctEventLocation(context);    // modify event location if required
 		
-		log.debug("evaluateStrategies: evaluating permission-based strategies");
+		log.debug("evaluateStrategies: checking for permission-based strategies");
 		List<Set<Strategy>> permStrategies = strategyConfig.getPermissionStrategies(context.getEventType(), context.getPlayer());
 		if( permStrategies != null && permStrategies.size() > 0 ) {
 			log.debug("evaluateStrategies: evaluating {} permission strategies", permStrategies.size());
@@ -177,9 +177,11 @@ public class StrategyEngineImpl implements StrategyEngine {
 				if( result != null && result.isSuccess() )
 					break;
 			}
+	        applyModeEffects(context);
+	        log.debug("evaluateStrategies: permission-based strategies result = {}",result);
 		}
-		log.debug("evaluateStrategies: permission-based strategies result = {}",result);
 
+        log.debug("evaluateStrategies: checking for world-based strategies");
 		// need to check world strategies if we don't yet have a successful result
 		if( result == null || (result != null && !result.isSuccess()) ) {
 			// is it possible for player to have a null world when they first login? not sure
@@ -195,6 +197,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 				}
 				log.debug("evaluateStrategies: world-based strategies result = {}",result);
 			}
+            applyModeEffects(context);
 		}
 		
 		// need to check default strategies if we don't yet have a successful result
@@ -207,6 +210,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 				result = evaluateStrategies(context, defaultStrategies);
 			}
 			log.debug("evaluateStrategies: default strategies result = {}",result);
+            applyModeEffects(context);
 		}
 		
 		if( result == null ) {
@@ -284,16 +288,32 @@ public class StrategyEngineImpl implements StrategyEngine {
     	    result = resultFactory.create(false, false);
     	}
     	
-    	List<ModeStrategy> modes = context.getModeList(StrategyMode.MODE_EFFECT);
-    	if( modes != null && modes.size() > 0 ) {
-    	    for(ModeStrategy mode : modes) {
-        	    ModeEffect modeEffect = (ModeEffect) mode;
-        	    effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
-    	    }
-    	}
-
+    	applyModeEffects(context);
+    	
 		log.debug("evaluateStrategies: exit result = {}",result);
 		return result;
+	}
+	
+	/**
+	 * Effect modes are unique in that they can be applied per-world or
+	 * per-permission and even if no location is found for that chain, the
+	 * mode can still apply. This allows an admin to easily create teleport
+	 * effects for all moderators, or everyone on world B, for example, without
+	 * having to duplicate entire event chains for each of them.
+	 * 
+	 * @param context
+	 */
+	private void applyModeEffects(final StrategyContext context) {
+        List<ModeStrategy> modes = context.getModeList(StrategyMode.MODE_EFFECT);
+        if( modes != null && modes.size() > 0 ) {
+            for(ModeStrategy mode : modes) {
+                ModeEffect modeEffect = (ModeEffect) mode;
+                log.debug("applying mode effect {}", modeEffect.getEffect());
+                effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect());
+            }
+        }
+        
+        context.clearEffectModes();
 	}
 	
 	/** Private method that takes an input Set of strategies and iterates through the set

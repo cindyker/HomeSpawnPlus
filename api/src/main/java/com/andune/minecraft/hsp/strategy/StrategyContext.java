@@ -101,6 +101,12 @@ public interface StrategyContext {
      * @return
      */
     public abstract List<ModeStrategy> getModeList(StrategyMode mode);
+    
+    /**
+     * This call clears any ModeEffect modes out of the mode list, typically
+     * used after those modes have just been applied.
+     */
+    public abstract void clearEffectModes();
 
 	/** Method for checking boolean states of any active modes to see if those
 	 * modes allow strategy processing given the current context.

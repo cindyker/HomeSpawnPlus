@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.strategy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -272,13 +273,13 @@ public class StrategyContextImpl implements StrategyContext {
     @Override
     public List<ModeStrategy> getModeList(final StrategyMode mode) {
         List<ModeStrategy> retList = new ArrayList<ModeStrategy>();
-        log.debug("getMode() check for mode {}",mode);
+        log.debug("getModeList() check for mode {}",mode);
         
         if( currentModes == null || currentModes.size() == 0 ) {
             if( isDefaultMode(mode) )
                 retList.add(defaultMode);
             
-            log.debug("getMode() No modes defined, returning {}", retList);
+            log.debug("getModeList() No modes defined, returning {}", retList);
             return retList;
         }
         
@@ -288,8 +289,21 @@ public class StrategyContextImpl implements StrategyContext {
                 retList.add(currentMode);
         }
         
-        log.debug("getMode() returning {}", retList);
+        log.debug("getModeList() returning {}", retList);
         return retList;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.strategy.StrategyContext#clearEffectModes()
+     */
+    public void clearEffectModes() {
+        if( currentModes == null || currentModes.size() == 0 )
+            return;
+        
+        for(Iterator<ModeStrategy> i = currentModes.iterator(); i.hasNext();) {
+            if( i.next().getMode() == StrategyMode.MODE_EFFECT )
+                i.remove();
+        }
     }
 
 	/* (non-Javadoc)

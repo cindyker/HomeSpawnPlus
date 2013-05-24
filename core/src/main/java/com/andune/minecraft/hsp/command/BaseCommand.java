@@ -30,6 +30,8 @@
  */
 package com.andune.minecraft.hsp.command;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
+import com.andune.minecraft.hsp.PermissionsImpl;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
@@ -59,13 +62,15 @@ import com.google.common.base.Joiner;
  *
  */
 public abstract class BaseCommand implements Command {
-    protected final Logger log = LoggerFactory.getLogger(BaseCommand.class);
+    protected static final Logger log = LoggerFactory.getLogger(BaseCommand.class);
     
     protected Server server;
 	protected Plugin plugin;
 	protected CooldownManager cooldownManager;
 	protected WarmupManager warmupManager;
     protected Permissions permissions;
+    // private real object, this gets injected for us by IoC container
+    private PermissionsImpl permissionsRealObject;
     protected Storage storage;
     
 	private String permissionNode;
@@ -73,6 +78,7 @@ public abstract class BaseCommand implements Command {
 	private Map<String, Object> commandParams;
 	private Economy economy;
 	private ConfigEconomy configEconomy;
+	private transient boolean isConsoleCommand = false;
 	
 	public String getDescription() { return null; }
 	public String getUsage() {
@@ -104,6 +110,8 @@ public abstract class BaseCommand implements Command {
 	 * false status will result in usage info being displayed back to the sender.
 	 */
 	public boolean execute(CommandSender sender, String cmd, String[] args) {
+	    isConsoleCommand = false;
+	    
 	    if( sender instanceof Player ) {
 	        Player p = (Player) sender;
 	        
@@ -135,6 +143,12 @@ public abstract class BaseCommand implements Command {
 	                sender.sendMessage("Player "+playerName+" not found online.");
 	                return true;
 	            }
+
+                // flag this as a console command, this allows permissions
+                // checks to pass even though we're going to simulate the
+                // command running as the given player
+                isConsoleCommand = true;
+                
 	            String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
 	            Joiner joiner = Joiner.on(" ").skipNulls();
 	            String joinedArgs = joiner.join(newArgs);
@@ -148,6 +162,8 @@ public abstract class BaseCommand implements Command {
                 catch(Exception e) {
                     log.warn("Caught exception in command /"+getCommandName(), e);
                     server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+                } finally {
+                    isConsoleCommand = false;
                 }
 	        }
 	    }
@@ -209,11 +225,6 @@ public abstract class BaseCommand implements Command {
     private void setConfigEconomy(ConfigEconomy configEconomy) {
         this.configEconomy = configEconomy;
     }
-
-	@Inject
-	private void setPermissions(Permissions permissions) {
-	    this.permissions = permissions;
-	}
 
     @Inject
     private void setStorage(Storage storage) {
@@ -482,5 +493,52 @@ public abstract class BaseCommand implements Command {
 		}
 		else
 			return true;
+	}
+	
+    @Inject
+    private void setPermissions(PermissionsImpl permissionsRealObject) {
+        this.permissionsRealObject = permissionsRealObject;
+        
+        // create our proxy permission object
+        this.permissions = (Permissions) java.lang.reflect.Proxy.newProxyInstance(
+                this.permissionsRealObject.getClass().getClassLoader(),
+                this.permissionsRealObject.getClass().getInterfaces(),
+                new PermissionsProxy(this.permissionsRealObject));
+    }
+
+	private class PermissionsProxy implements java.lang.reflect.InvocationHandler {
+	    private final Object obj;
+	    
+	    public PermissionsProxy(Object obj) {
+	        this.obj = obj;
+	    }
+
+	    public Object invoke(Object proxy, Method m, Object[] args) throws Throwable
+	    {
+	        Object result = null;
+	        try {
+	            log.debug("proxy method invoke {}, isConsoleCommand={}", m.getName(), isConsoleCommand);
+	            
+	            // if this command was executed on the console (which includes
+	            // running in a command block), then permissions checks are
+	            // always true
+	            if( isConsoleCommand &&
+	                    (m.getName().startsWith("has") || m.getName().startsWith("is"))
+	                    && m.getReturnType().equals(boolean.class) ) {
+	                result = true;
+	            }
+	            // otherwise just pass through to the real object
+	            else
+	                result = m.invoke(obj, args);
+	        } catch (InvocationTargetException e) {
+	            throw e.getTargetException();
+	        } catch (Exception e) {
+	            throw new RuntimeException("unexpected invocation exception: " +
+	                    e.getMessage());
+	        } finally {
+	            log.debug("method result = {}", result);
+	        }
+	        return result;
+	    }
 	}
 }

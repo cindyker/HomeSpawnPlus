@@ -32,6 +32,9 @@ v2.0 -
     Bukkit aliases to get around Essentials bully command system.
   - new strategies: spawnNearestWithPrefix, modeEffect
   - Ticket #190: addition of config option to disable DB lower() calls
+  - Player-only commands from console (such as /home, /spawn, etc) will automatically assume the first argument is the player
+    name. This makes it possible to use command blocks to run HSP commands, like: "/spawn @p TheSpawn" would have HSP run the
+    command "/spawn TheSpawn" as if the player that triggered the command block ran it.
 
 v1.7.6 - May 5, 2013
 * built for CraftBukkit v1.5.2 ONLY

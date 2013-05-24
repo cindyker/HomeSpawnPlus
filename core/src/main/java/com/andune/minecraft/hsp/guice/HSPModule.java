@@ -41,6 +41,8 @@ import com.andune.minecraft.commonlib.reflections.YamlSerializer;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.api.impl.TeleportOptionsImpl;
+import com.andune.minecraft.hsp.Permissions;
+import com.andune.minecraft.hsp.PermissionsImpl;
 import com.andune.minecraft.hsp.config.ConfigLoader;
 import com.andune.minecraft.hsp.config.ConfigLoaderImpl;
 import com.andune.minecraft.hsp.config.ConfigStorage;
@@ -93,6 +95,9 @@ public class HSPModule extends AbstractModule {
             .to(TeleportOptionsImpl.class);
         bind(ConfigLoader.class)
             .to(ConfigLoaderImpl.class)
+            .in(Scopes.SINGLETON);
+        bind(Permissions.class)
+            .to(PermissionsImpl.class)
             .in(Scopes.SINGLETON);
         
         bind(StrategyResultFactory.class)

@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.command;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -48,6 +49,7 @@ import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
+import com.google.common.base.Joiner;
 
 
 /** Abstract class that takes care of some routine tasks for commands, to keep those
@@ -117,12 +119,37 @@ public abstract class BaseCommand implements Command {
 	            server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
 	        }
 	    }
-	    // In order to respond to console events, a subclass must override this
-	    // method. So if we get here, we know this command does not respond to
-	    // console events and we print a message saying such.
+	    // From the console, if the command doesn't directly support console
+	    // input, we apply an assumption that the first arg is the player to
+	    // operate the command on. This is useful for admins that want to
+	    // setup command blocks or want to run command from the console.
 	    else {
-	        sender.sendMessage("Command /"+cmd+" is not available from the console.");
-	        return true;
+	        if( args.length < 1 ) {
+    	        sender.sendMessage("From the console, command /"+cmd+" requires the first argument to be the player to run as");
+    	        return true;
+	        }
+	        else {
+	            String playerName = args[0];
+	            Player p = server.getPlayer(playerName);
+	            if( p == null ) {
+	                sender.sendMessage("Player "+playerName+" not found online.");
+	                return true;
+	            }
+	            String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
+	            Joiner joiner = Joiner.on(" ").skipNulls();
+	            String joinedArgs = joiner.join(newArgs);
+	            String newCmd = cmd + " " + joinedArgs; 
+                sender.sendMessage("Running command as player \""+playerName+"\": "+newCmd);
+                
+                // do generic error logging for convenience
+                try {
+                    return this.execute(p, newArgs);
+                }
+                catch(Exception e) {
+                    log.warn("Caught exception in command /"+getCommandName(), e);
+                    server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+                }
+	        }
 	    }
 
         return false;

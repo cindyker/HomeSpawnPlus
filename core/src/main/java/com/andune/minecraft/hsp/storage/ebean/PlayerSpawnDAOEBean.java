@@ -30,8 +30,8 @@
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
+import java.util.HashSet;
 import java.util.Set;
-
 
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -44,10 +44,14 @@ import com.avaje.ebean.Query;
  *
  */
 public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
+    protected static final String TABLE = "hsp_playerspawn";
+    
 	private EbeanServer ebean;
+    private final EbeanStorageUtil util;
 	
-	public PlayerSpawnDAOEBean(final EbeanServer ebean) {
+	public PlayerSpawnDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
 		setEbeanServer(ebean);
+        this.util = util;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -112,4 +116,28 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
         ebean.delete(playerSpawn);
 	}
 
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        return util.purgePlayers(this, purgeTime);
+    }
+
+    @Override
+    public int purgeWorldData(final String world) {
+        return util.deleteRows(TABLE, "world", world);
+    }
+
+    @Override
+    public int purgePlayer(String playerName) {
+        return util.deleteRows(TABLE, "player_name", playerName);
+    }
+
+    @Override
+    public Set<String> getAllPlayerNames() {
+        Set<PlayerSpawn> set = ebean.find(PlayerSpawn.class).select("player_name").findSet();
+        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
+        for(PlayerSpawn ps : set) {
+            playerNames.add(ps.getPlayerName());
+        }
+        return playerNames;
+    }
 }

@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -63,6 +64,7 @@ public class HSP extends BaseCommand {
     @Inject WorldGuard worldGuard;
     @Inject BackupUtil backupUtil;
     @Inject Scheduler scheduler;
+    @Inject General generalUtil;
     
 	@Override
 	public String getUsage() {
@@ -151,6 +153,48 @@ public class HSP extends BaseCommand {
 	            }
 			}
 		}
+        else if( args[0].startsWith("purge") ) {
+            if( args.length < 3 ) {
+                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_WRONG_ARGUMENTS);
+            }
+            else if( args.length < 2 || (!args[1].equalsIgnoreCase("player") && !args[1].equalsIgnoreCase("world")) ) {
+                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_WRONG_ARGUMENTS);
+            }
+            else {
+                if( args[1].equalsIgnoreCase("player") ) {
+                    long millis = generalUtil.parseTimeInput(args[2]);
+                    server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_PLAYER_TIME,
+                            "time", generalUtil.displayTimeString(millis, true, "d"));
+                    
+                    if( args.length < 4 || !args[3].equals("CONFIRM") ) {
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_REQUIRES_CONFIRM);
+                    }
+                    // DO IT
+                    else {
+                        int purged = storage.purgePlayerData(System.currentTimeMillis()-millis);
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_RESULTS,
+                                "count", purged);
+                    }
+                }
+                else if( args[1].equalsIgnoreCase("world") ) {
+                    final String worldName = args[2];
+                    server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_PLAYER_WORLD,
+                            "world", worldName);
+                    
+                    if( args.length < 4 || !args[3].equals("CONFIRM") ) {
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_REQUIRES_CONFIRM);
+                    }
+                    // DO IT
+                    else {
+                        int purged = storage.purgeWorldData(worldName);
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_RESULTS,
+                                "count", purged);
+                    }
+                }
+            }
+            sender.sendMessage("Starting async HSP database playerName-to-lowercase conversion");
+            scheduler.scheduleAsyncDelayedTask(new LowerCaseDatabaseRunner(sender), 0);
+        }
 		else {
 			return false;
 		}

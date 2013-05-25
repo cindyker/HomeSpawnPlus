@@ -33,7 +33,6 @@ package com.andune.minecraft.hsp.storage.ebean;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.entity.SpawnImpl;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -46,11 +45,15 @@ import com.avaje.ebean.Query;
  *
  */
 public class SpawnDAOEBean implements SpawnDAO {
-	private EbeanServer ebean;
-	
-	public SpawnDAOEBean(final EbeanServer ebean) {
-		setEbeanServer(ebean);
-	}
+    protected static final String TABLE = "hsp_spawn";
+    
+    private EbeanServer ebean;
+    private final EbeanStorageUtil util;
+    
+    public SpawnDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
+        setEbeanServer(ebean);
+        this.util = util;
+    }
 	
 	public void setEbeanServer(final EbeanServer ebean) {
 		this.ebean = ebean;
@@ -152,4 +155,8 @@ public class SpawnDAOEBean implements SpawnDAO {
 		ebean.delete((SpawnImpl) spawn);
 	}
 
+    @Override
+    public int purgeWorldData(String world) {
+        return util.deleteRows(TABLE, "world", world);
+    }
 }

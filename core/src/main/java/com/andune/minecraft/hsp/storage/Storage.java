@@ -69,6 +69,30 @@ public interface Storage {
 	 */
 	public void purgeCache();
 	
+    /**
+     * Loop through all HSP data that is associated to players (homes, player
+     * records, home invites, etc) and purge any records belonging to players
+     * that haven't logged in since the given purgeTime.
+     * 
+     * @param purgeTime
+     *            the time, in epoch milliseconds, that is the oldest player
+     *            data record that will be in existence after the purge
+     *            completes; anything older will have been deleted.
+     *            
+     * @return the number of database rows purged
+     */
+	public int purgePlayerData(long purgeTime);
+	
+	/**
+	 * Purge any data related to the given world. Can be used to cleanup
+	 * data from deleted worlds.
+	 *  
+	 * @param world
+	 * 
+     * @return the number of database rows purged
+	 */
+	public int purgeWorldData(String world);
+	
 	public void deleteAllData() throws StorageException;
 	
 	/** Optional implementation: the backing store can use this to respond to applications

@@ -30,12 +30,14 @@
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
+import java.util.HashSet;
 import java.util.Set;
-
 
 import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.SqlUpdate;
+import com.avaje.ebean.Transaction;
 
 /**
  * @author andune
@@ -43,9 +45,11 @@ import com.avaje.ebean.EbeanServer;
  */
 public class PlayerDAOEBean implements PlayerDAO {
 	private EbeanServer ebean;
+    private final EbeanStorageUtil util;
 	
-	public PlayerDAOEBean(final EbeanServer ebean) {
+	public PlayerDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
 		setEbeanServer(ebean);
+		this.util = util;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -76,4 +80,29 @@ public class PlayerDAOEBean implements PlayerDAO {
         ebean.save(player);
 	}
 
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        return util.purgePlayers(this, purgeTime);
+    }
+
+    @Override
+    public int purgePlayer(String playerName) {
+        int rowsPurged = 0;
+        Transaction tx = ebean.beginTransaction();
+        SqlUpdate update = ebean.createSqlUpdate("delete from hsp_player where name = :playerName");
+        update.setParameter("playerName", playerName);
+        rowsPurged += update.execute();
+        tx.commit();
+        return rowsPurged;
+    }
+
+    @Override
+    public Set<String> getAllPlayerNames() {
+        Set<Player> set = ebean.find(Player.class).select("name").findSet();
+        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
+        for(Player player : set) {
+            playerNames.add(player.getName());
+        }
+        return playerNames;
+    }
 }

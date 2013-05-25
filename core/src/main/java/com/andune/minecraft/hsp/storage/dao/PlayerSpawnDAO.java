@@ -39,11 +39,16 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface PlayerSpawnDAO {
+public interface PlayerSpawnDAO extends PurgePlayer {
 	public PlayerSpawn findById(int id);
 	public PlayerSpawn findByWorldAndPlayerName(String world, String playerName);
 	public Set<PlayerSpawn> findByPlayerName(String playerName);
 	public Set<PlayerSpawn> findAll();
 	public void save(PlayerSpawn playerSpawn) throws StorageException;
 	public void delete(PlayerSpawn playerSpawn) throws StorageException;
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
+     */
+    public int purgeWorldData(String world);
 }

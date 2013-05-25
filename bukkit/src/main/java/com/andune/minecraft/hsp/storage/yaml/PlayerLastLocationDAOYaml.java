@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
@@ -123,4 +124,21 @@ implements PlayerLastLocationDAO
 	protected SerializablePlayerLastLocation newSerializable(PlayerLastLocation object) {
 		return new SerializablePlayerLastLocation(object);
 	}
+
+	@Override
+    public int purgePlayer(String playerName) {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public Set<String> getAllPlayerNames() {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public int purgeWorldData(String world) {
+        throw new FeatureNotImplemented();
+    }
 }

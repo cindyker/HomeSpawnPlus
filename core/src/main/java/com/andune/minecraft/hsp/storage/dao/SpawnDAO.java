@@ -64,4 +64,9 @@ public interface SpawnDAO {
 
 	public void saveSpawn(Spawn spawn) throws StorageException;
 	public void deleteSpawn(Spawn spawn) throws StorageException;
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
+     */
+    public int purgeWorldData(String world);
 }

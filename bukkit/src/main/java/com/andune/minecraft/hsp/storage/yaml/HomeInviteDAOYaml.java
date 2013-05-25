@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -155,4 +156,20 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
 	protected SerializableHomeInvite newSerializable(HomeInvite object) {
 		return new SerializableHomeInvite(object);
 	}
+    @Override
+    public int purgePlayer(String playerName) {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public Set<String> getAllPlayerNames() {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public int purgeWorldData(String world) {
+        throw new FeatureNotImplemented();
+    }
 }

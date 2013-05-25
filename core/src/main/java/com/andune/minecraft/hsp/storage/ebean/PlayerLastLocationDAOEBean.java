@@ -30,8 +30,8 @@
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
+import java.util.HashSet;
 import java.util.Set;
-
 
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -44,11 +44,15 @@ import com.avaje.ebean.Query;
  *
  */
 public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
-	private EbeanServer ebean;
-	
-	public PlayerLastLocationDAOEBean(final EbeanServer ebean) {
-		setEbeanServer(ebean);
-	}
+    protected static final String TABLE = "hsp_playerlastloc";
+    
+    private EbeanServer ebean;
+    private final EbeanStorageUtil util;
+    
+    public PlayerLastLocationDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
+        setEbeanServer(ebean);
+        this.util = util;
+    }
 	
 	public void setEbeanServer(final EbeanServer ebean) {
 		this.ebean = ebean;
@@ -108,4 +112,28 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
         ebean.save(playerLastLocation);
 	}
 
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        return util.purgePlayers(this, purgeTime);
+    }
+
+    @Override
+    public int purgeWorldData(final String world) {
+        return util.deleteRows(TABLE, "world", world);
+    }
+
+    @Override
+    public int purgePlayer(String playerName) {
+        return util.deleteRows(TABLE, "player_name", playerName);
+    }
+
+    @Override
+    public Set<String> getAllPlayerNames() {
+        Set<PlayerLastLocation> set = ebean.find(PlayerLastLocation.class).select("player_name").findSet();
+        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
+        for(PlayerLastLocation pll : set) {
+            playerNames.add(pll.getPlayerName());
+        }
+        return playerNames;
+    }
 }

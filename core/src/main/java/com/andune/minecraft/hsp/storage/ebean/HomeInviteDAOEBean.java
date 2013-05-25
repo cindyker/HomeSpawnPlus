@@ -33,7 +33,8 @@ package com.andune.minecraft.hsp.storage.ebean;
 import java.util.HashSet;
 import java.util.Set;
 
-
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeInvite;
@@ -49,15 +50,20 @@ import com.avaje.ebean.Transaction;
  *
  */
 public class HomeInviteDAOEBean implements HomeInviteDAO {
+    private static final Logger log = LoggerFactory.getLogger(HomeInviteDAOEBean.class);
+    protected static final String TABLE = "hsp_homeinvite";
+
 	private EbeanServer ebean;
 	private final Storage storage;
 	private final ConfigCore configCore;
-	
+    private final EbeanStorageUtil util;
+
 	public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage,
-	        ConfigCore configCore) {
+	        ConfigCore configCore, final EbeanStorageUtil util) {
         setEbeanServer(ebean);
 	    this.storage = storage;
         this.configCore = configCore;
+        this.util = util;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -151,4 +157,58 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
 		return ebean.find(HomeInvite.class).findSet();
 	}
 
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        return util.purgePlayers(this, purgeTime);
+    }
+
+    @Override
+    public int purgeWorldData(final String world) {
+        int rowsPurged = 0;
+        
+        // delete any invites whose home is on the purged world
+        Set<HomeInvite> set = findAllHomeInvites();
+        for(HomeInvite hi : set) {
+            if( world.equals(hi.getHome().getWorld()) ) {
+                try {
+                    deleteHomeInvite(hi);
+                    rowsPurged++;
+                }
+                catch(Exception e) {
+                    log.error("Caught exception while purging homeInvite", e);
+                }
+            }
+        }
+        return rowsPurged;
+    }
+
+    @Override
+    public int purgePlayer(String playerName) {
+        // first delete any homeInvites the player was invited too
+        int rowsPurged = util.deleteRows(TABLE, "invited_player", playerName);
+        
+        // then delete any HomeInvites the player sent out to others
+        Set<HomeInvite> set = findAllOpenInvites(playerName);
+        for(HomeInvite hi : set) {
+            try {
+                deleteHomeInvite(hi);
+                rowsPurged++;
+            }
+            catch(Exception e) {
+                log.error("Caught exception while purging homeInvite", e);
+            }
+        }
+        return rowsPurged;
+    }
+
+    @Override
+    public Set<String> getAllPlayerNames() {
+        Set<HomeInvite> set = findAllHomeInvites();
+        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
+        for(HomeInvite hi : set) {
+            playerNames.add(hi.getInvitedPlayer());
+            playerNames.add(hi.getHome().getPlayerName());
+        }
+        return playerNames;
+    }
 }

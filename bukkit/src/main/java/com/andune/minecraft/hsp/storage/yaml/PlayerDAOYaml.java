@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
@@ -87,4 +88,16 @@ public class PlayerDAOYaml extends AbstractDAOYaml<Player, SerializablePlayer> i
 	protected SerializablePlayer newSerializable(Player object) {
 		return new SerializablePlayer(object);
 	}
+    @Override
+    public int purgePlayer(String playerName) {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public Set<String> getAllPlayerNames() {
+        throw new FeatureNotImplemented();
+    }
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        throw new FeatureNotImplemented();
+    }
 }

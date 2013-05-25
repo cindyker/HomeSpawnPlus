@@ -30,8 +30,8 @@
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
+import java.util.HashSet;
 import java.util.Set;
-
 
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
@@ -47,12 +47,16 @@ import com.avaje.ebean.Transaction;
  *
  */
 public class HomeDAOEBean implements HomeDAO {
+    protected static final String TABLE = "hsp_home";
+    
     private final ConfigCore configCore;
+    private final EbeanStorageUtil util;
 	private EbeanServer ebean;
 	
-	public HomeDAOEBean(final EbeanServer ebean, final ConfigCore configCore) {
+	public HomeDAOEBean(final EbeanServer ebean, final ConfigCore configCore, final EbeanStorageUtil util) {
 		setEbeanServer(ebean);
 		this.configCore = configCore;
+		this.util = util;
 	}
 	
 	public void setEbeanServer(final EbeanServer ebean) {
@@ -169,7 +173,7 @@ public class HomeDAOEBean implements HomeDAO {
 		// We should only have one "BedHome" per player per world. So if this update is setting
 		// BedHome to true, then we make sure to clear out all others for this player/world combo
 		if( home.isBedHome() ) {
-			SqlUpdate update = ebean.createSqlUpdate("update hsp_home set bed_home=0"
+			SqlUpdate update = ebean.createSqlUpdate("update "+TABLE+" set bed_home=0"
 					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
@@ -180,7 +184,7 @@ public class HomeDAOEBean implements HomeDAO {
 		// We should only have one defaultHome per player per world. So if this update is setting
 		// defaultHome to true, then we make sure to clear out all others for this player/world combo
 		if( home.isDefaultHome() ) {
-			SqlUpdate update = ebean.createSqlUpdate("update hsp_home set default_home=0"
+			SqlUpdate update = ebean.createSqlUpdate("update "+TABLE+" set default_home=0"
 					+" where player_name = :playerName and world = :world and id != :id");
 			update.setParameter("playerName", home.getPlayerName());
 			update.setParameter("world", home.getWorld());
@@ -204,4 +208,29 @@ public class HomeDAOEBean implements HomeDAO {
 	public void deleteHome(Home home) {
 		ebean.delete((HomeImpl) home);
 	}
+
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        return util.purgePlayers(this, purgeTime);
+    }
+
+    @Override
+    public int purgeWorldData(final String world) {
+        return util.deleteRows(TABLE, "world", world);
+    }
+
+    @Override
+    public int purgePlayer(String playerName) {
+        return util.deleteRows(TABLE, "player_name", playerName);
+    }
+
+    @Override
+    public Set<String> getAllPlayerNames() {
+        Set<HomeImpl> set = ebean.find(HomeImpl.class).select("player_name").findSet();
+        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
+        for(HomeImpl home : set) {
+            playerNames.add(home.getPlayerName());
+        }
+        return playerNames;
+    }
 }

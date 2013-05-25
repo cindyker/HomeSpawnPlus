@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
@@ -226,5 +227,9 @@ public class SpawnDAOYaml extends AbstractDAOYaml<Spawn, SerializableSpawn> impl
 	protected SerializableSpawn newSerializable(Spawn object) {
 		return new SerializableSpawn(object);
 	}
-
+	
+    @Override
+    public int purgeWorldData(String world) {
+        throw new FeatureNotImplemented();
+    }
 }

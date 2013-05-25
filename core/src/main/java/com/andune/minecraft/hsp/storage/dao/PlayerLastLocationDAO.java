@@ -39,10 +39,20 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface PlayerLastLocationDAO {
+public interface PlayerLastLocationDAO extends PurgePlayer {
 	public PlayerLastLocation findById(int id);
 	public PlayerLastLocation findByWorldAndPlayerName(String world, String playerName);
 	public Set<PlayerLastLocation> findByPlayerName(String playerName);
 	public Set<PlayerLastLocation> findAll();
 	public void save(PlayerLastLocation playerLastLocation) throws StorageException;
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgePlayerData(java.lang.Long)
+     */
+    public int purgePlayerData(long purgeTime);
+    
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
+     */
+    public int purgeWorldData(String world);
 }

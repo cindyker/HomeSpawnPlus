@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface HomeInviteDAO {
+public interface HomeInviteDAO extends PurgePlayer {
 	/** Given the primary id, find the HomeInvite object.
 	 * 
 	 * @param id
@@ -84,4 +84,14 @@ public interface HomeInviteDAO {
 	
 	public void saveHomeInvite(HomeInvite homeInvite) throws StorageException;
 	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException;
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgePlayerData(java.lang.Long)
+     */
+    public int purgePlayerData(long purgeTime);
+    
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
+     */
+    public int purgeWorldData(String world);
 }

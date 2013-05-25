@@ -43,7 +43,6 @@ import javax.persistence.PersistenceException;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
-
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.entity.HomeInvite;
@@ -51,6 +50,7 @@ import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.entity.SpawnImpl;
 import com.andune.minecraft.hsp.entity.Version;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.avaje.ebean.EbeanServer;
@@ -85,19 +85,21 @@ public class StorageEBeans implements Storage {
 
 	@Inject
 	public StorageEBeans(EbeanServer ebeanServer, EBeanUtils ebeanUtils, Plugin plugin,
-	        ConfigCore configCore) {
+	        ConfigCore configCore, Server server) {
 	    this.ebeanServer = ebeanServer;
 	    this.ebeanUtils = ebeanUtils;
 	    this.plugin = plugin;
 		this.usePersistanceReimplemented = false;
+		
+		final EbeanStorageUtil ebeanStorageUtil = new EbeanStorageUtil(server, ebeanServer);
 
-        homeDAO = new HomeDAOEBean(getDatabase(), configCore);
-        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this, configCore);
-        spawnDAO = new SpawnDAOEBean(getDatabase());
-        playerDAO = new PlayerDAOEBean(getDatabase());
+        homeDAO = new HomeDAOEBean(getDatabase(), configCore, ebeanStorageUtil);
+        homeInviteDAO = new HomeInviteDAOEBean(getDatabase(), this, configCore, ebeanStorageUtil);
+        spawnDAO = new SpawnDAOEBean(getDatabase(), ebeanStorageUtil);
+        playerDAO = new PlayerDAOEBean(getDatabase(), ebeanStorageUtil);
         versionDAO = new VersionDAOEBean(getDatabase());
-        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
-        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
+        playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase(), ebeanStorageUtil);
+        playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase(), ebeanStorageUtil);
 	}
 	
 	public void setUsePersistanceReimplemented(boolean usePersistanceReimplemented) {
@@ -206,6 +208,30 @@ public class StorageEBeans implements Storage {
 		// offer any support for this functionality.  So we do nothing.
 	}
 
+    // TODO: not done, finish later
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        int purgedRows = getHomeInviteDAO().purgePlayerData(purgeTime);
+        purgedRows += getHomeDAO().purgePlayerData(purgeTime);
+        purgedRows += getHomeInviteDAO().purgePlayerData(purgeTime);
+        purgedRows += getPlayerLastLocationDAO().purgePlayerData(purgeTime);
+        purgedRows += getPlayerSpawnDAO().purgePlayerData(purgeTime);
+        purgedRows += getPlayerDAO().purgePlayerData(purgeTime);
+        return purgedRows;
+    }
+    
+    // TODO: not done, finish later
+    @Override
+    public int purgeWorldData(String world) {
+        int purgedRows = getHomeInviteDAO().purgeWorldData(world);
+        purgedRows += getHomeDAO().purgeWorldData(world);
+        purgedRows += getHomeInviteDAO().purgeWorldData(world);
+        purgedRows += getPlayerLastLocationDAO().purgeWorldData(world);
+        purgedRows += getPlayerSpawnDAO().purgeWorldData(world);
+        purgedRows += getSpawnDAO().purgeWorldData(world);
+        return purgedRows;
+    }
+    
 	@Override
 	public void deleteAllData() {
 		EbeanServer db = getDatabase();

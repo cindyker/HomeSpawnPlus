@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.command.BaseCommand;
@@ -22,6 +24,7 @@ import com.andune.minecraft.hsp.server.api.Factory;
  *
  */
 public abstract class BaseUberCommand extends BaseCommand {
+    private static final Logger log = LoggerFactory.getLogger(BaseUberCommand.class);
     private Reflections reflections;
     private Factory factory;
     protected String baseName;
@@ -35,13 +38,15 @@ public abstract class BaseUberCommand extends BaseCommand {
     }
     public BaseUberCommand(Factory factory, Reflections reflections, String baseName) {
         setDependencies(factory, reflections, baseName);
-        loadSubCommands(baseName);
     }
     
     private void setDependencies(Factory factory, Reflections reflections, String baseName) {
         this.factory = factory;
         this.reflections = reflections;
         this.baseName = baseName;
+
+        loadSubCommands(baseName);
+        log.debug("setDependencies() baseName={}", baseName);
     }
 
     /**

@@ -28,7 +28,7 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.server.bukkit.command;
+package com.andune.minecraft.hsp.config;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.configuration.ConfigurationSection;
+import javax.inject.Singleton;
 
+import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
+import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
 
 
 /** This class is used to store state of commands configuration. This amounts to three
@@ -50,32 +51,28 @@ import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
  * @author andune
  *
  */
-public class BukkitCommandConfig implements CommandConfig {
-	private final Logger log = LoggerFactory.getLogger(BukkitCommandConfig.class);
+@Singleton
+@ConfigOptions(fileName="commands.yml", basePath="commands")
+public class ConfigCommand extends ConfigBase implements Initializable {
+	private final Logger log = LoggerFactory.getLogger(ConfigCommand.class);
 
 	private Set<String> disabledCommands;
 	private Map<String, Map<String, Object>> commandParams;
-	private ConfigurationSection configSection;
 	
-	public BukkitCommandConfig() {
-		emptyDefaults();
-	}
-	
-	public void setConfigSection(ConfigurationSection configSection) {
-	    this.configSection = configSection;
-	}
-	
-	/** Setup empty default variables that do nothing (but avoid NPEs).
-	 */
-	private void emptyDefaults() {
-		disabledCommands = new HashSet<String>();
-		commandParams = new HashMap<String, Map<String, Object>>();
-	}
-	
-	/* (non-Javadoc)
-     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#isDisabledCommand(java.lang.String)
+    @Override
+    public void init() throws Exception {
+        super.init();
+        disabledCommands = new HashSet<String>();
+        commandParams = new HashMap<String, Map<String, Object>>();
+        loadConfig();
+    }
+
+    /**
+     *  Check if a command is disabled.
+     * 
+     * @param command the command name to check
+     * @return true if the command is disabled
      */
-	@Override
     public boolean isDisabledCommand(String command) {
 		if( disabledCommands.contains("*") )
 			return true;
@@ -83,18 +80,21 @@ public class BukkitCommandConfig implements CommandConfig {
 			return disabledCommands.contains(command.toLowerCase());
 	}
 	
-	/* (non-Javadoc)
-     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#getDefinedCommands()
+    /**
+     * Return a list of all commands that have been defined and have command
+     * parameters.
+     * 
+     * @return
      */
-	@Override
     public Set<String> getDefinedCommands() {
 		return commandParams.keySet();
 	}
 	
-	/* (non-Javadoc)
-     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#getCommandParameters(java.lang.String)
+    /**
+     * Return command parameters for a specific command.
+     * 
+     * @return guaranteed to not return null
      */
-	@Override
     public Map<String, Object> getCommandParameters(String command) {
 		Map<String, Object> ret = commandParams.get(command);
 		
@@ -107,18 +107,18 @@ public class BukkitCommandConfig implements CommandConfig {
 		return ret;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.andune.minecraft.hsp.command.CommandConfigInterface#loadConfig(org.bukkit.configuration.ConfigurationSection)
+    /**
+     * Determine if uber commands are enabled.
+     * 
+     * @return
      */
-	@Override
-    public void loadConfig() {
-		if( configSection == null ) {
-			emptyDefaults();
-			return;
-		}
-		
+    public boolean isUberCommandsEnabled() {
+        return super.getBoolean("useUberCommands");
+    }
+
+    private void loadConfig() {
 		disabledCommands = new HashSet<String>();
-		List<String> theList = configSection.getStringList("disabledCommands");
+		List<String> theList = super.getStringList("disabledCommands"); 
 		if( theList != null ) {
 			for(String s : theList) {
 				disabledCommands.add(s.toLowerCase());
@@ -127,20 +127,20 @@ public class BukkitCommandConfig implements CommandConfig {
 		else
 		
 		commandParams = new HashMap<String, Map<String, Object>>();
-		Set<String> keys = configSection.getKeys(false);
+		Set<String> keys = super.getKeys();
 		if( keys != null ) {
 			for(String key : keys) {
-				if( key.equals("disabledCommands") )
+				if( key.equals("disabledCommands") || key.equals("useUberCommands") )
 					continue;
-				
+
 				log.debug("loading config params for command {}",key);
-				ConfigurationSection cmdSection = configSection.getConfigurationSection(key);
+				ConfigurationSection cmdSection = super.getConfigurationSection(key);
 				if( cmdSection == null ) {
 					log.warn("no parameters defined for command {}, skipping", key);
 					continue;
 				}
 				
-				Set<String> parameters = cmdSection.getKeys(false);
+				Set<String> parameters = cmdSection.getKeys();
 				if( parameters == null || parameters.size() == 0 ) {
 					log.warn("no parameters defined for command {}, skipping", key);
 					continue;
@@ -156,10 +156,4 @@ public class BukkitCommandConfig implements CommandConfig {
 			}
 		}
 	}
-
-    /*
-    public Set<String> getDisabledCommands() {
-        return disabledCommands;
-    }
-    */
 }

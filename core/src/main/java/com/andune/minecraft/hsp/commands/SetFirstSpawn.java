@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
@@ -44,6 +45,8 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="spawn", subCommand="setFirst",
+    aliases={"sf"}, help="Set first login spawn")
 public class SetFirstSpawn extends BaseCommand
 {
     @Inject private SpawnUtil util;

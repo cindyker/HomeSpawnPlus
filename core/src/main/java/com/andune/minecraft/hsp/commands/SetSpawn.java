@@ -37,6 +37,7 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
@@ -45,6 +46,7 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="spawn", subCommand="set", help="Set the spawn for a world")
 public class SetSpawn extends BaseCommand
 {
     @Inject private ConfigCore config;

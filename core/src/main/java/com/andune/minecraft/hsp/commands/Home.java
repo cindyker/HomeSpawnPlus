@@ -51,7 +51,8 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="", help="Go to your home")
+@UberCommand(uberCommand="home", subCommand="",
+    aliases={"h"}, help="Go to your home")
 public class Home extends BaseCommand
 {
 	@Inject private StrategyEngine engine;

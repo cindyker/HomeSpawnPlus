@@ -83,14 +83,37 @@ public class ConfigLoaderImpl implements ConfigLoader  {
         // load individual config file if single "config.yml" is not in use
         if( yaml == null ) {
             log.debug("No single config.yml found, using multiple config files");
-            File configFileName = new File(plugin.getDataFolder(), "config/"+fileName);
-            if( !configFileName.exists() )
-                installDefaultFile(fileName);
-            yaml = factory.newYamlFile();
-            yaml.load(configFileName);
+            yaml = loadSingleConfig(fileName, basePath);
         }
 
-        return yaml.getConfigurationSection(basePath);
+        ConfigurationSection cs = yaml.getConfigurationSection(basePath);
+
+        // returning null config is bad, we need to do something about it
+        if( cs == null ) {
+            // if we're using single config file (probably old config), then
+            // try to load the defaults out of new-style config
+            if( yaml != null ) {
+                log.debug("Defaults for \"{}\" missing, trying to load from single config defaults", basePath);
+                yaml = loadSingleConfig(fileName, basePath);
+                cs = yaml.getConfigurationSection(basePath);
+            }
+            
+            // if it's still null, create an empty section and print a warning
+            if( cs == null ) {
+                cs = yaml.createConfigurationSection(basePath);
+                log.warn("ConfigurationSection \""+basePath+"\" not found, bad things might happen!");
+            }
+        }
+        return cs;
+    }
+    
+    private YamlFile loadSingleConfig(String fileName, String basePath)  throws IOException, ConfigException {
+        File configFileName = new File(plugin.getDataFolder(), "config/"+fileName);
+        if( !configFileName.exists() )
+            installDefaultFile(fileName);
+        YamlFile yaml = factory.newYamlFile();
+        yaml.load(configFileName);
+        return yaml;
     }
 
     /**

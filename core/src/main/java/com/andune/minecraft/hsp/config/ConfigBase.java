@@ -96,10 +96,16 @@ public abstract class ConfigBase implements Initializable {
     protected String getString(String path) {
         return configSection.getString(path);
     }
+    protected Set<String> getKeys() {
+        return configSection.getKeys();
+    }
     protected Set<String> getKeys(String path) {
         return configSection.getKeys(path);
     }
     protected List<String> getStringList(String path) {
         return configSection.getStringList(path);
+    }
+    protected ConfigurationSection getConfigurationSection(String key) {
+        return configSection.getConfigurationSection(key);
     }
 }

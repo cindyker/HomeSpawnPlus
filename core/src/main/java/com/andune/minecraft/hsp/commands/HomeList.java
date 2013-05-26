@@ -34,17 +34,18 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.Storage;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="list", aliases={"l"})
 public class HomeList extends BaseCommand {
     @Inject private Storage storage;
 

@@ -28,7 +28,7 @@
 /**
  * 
  */
-package com.andune.minecraft.hsp.command;
+package com.andune.minecraft.hsp.server.api;
 
 import java.util.Map;
 

@@ -46,4 +46,12 @@ public interface Factory extends com.andune.minecraft.commonlib.server.api.Facto
      * @return the new StrategyContext object
      */
     public StrategyContext newStrategyContext();
+    
+    /**
+     * Factory method for creating a new command object.
+     * 
+     * @param commandClass
+     * @return
+     */
+    public Command newCommand(Class<? extends Command> commandClass);
 }

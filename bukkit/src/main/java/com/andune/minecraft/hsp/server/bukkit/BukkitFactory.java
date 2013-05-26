@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
+import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.google.inject.Injector;
 
@@ -52,5 +53,10 @@ implements com.andune.minecraft.hsp.server.api.Factory {
     @Override
     public StrategyContext newStrategyContext() {
         return injector.getInstance(StrategyContext.class);
+    }
+
+    @Override
+    public Command newCommand(Class<? extends Command> commandClass) {
+        return injector.getInstance(commandClass);
     }
 }

@@ -50,6 +50,7 @@ import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
+import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.google.common.base.Joiner;

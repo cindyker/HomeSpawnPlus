@@ -37,11 +37,13 @@ import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="listOther", aliases={"lo", "listother"})
 public class HomeListOther extends BaseCommand {
 	@Inject private HomeList homeListCommand;
 

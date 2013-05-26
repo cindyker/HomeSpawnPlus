@@ -2,7 +2,7 @@ package com.andune.minecraft.hsp;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
-import com.andune.minecraft.hsp.command.Command;
+import com.andune.minecraft.hsp.server.api.Command;
 
 /**
  * This interface exists so that a proxy object can easily be created for

@@ -128,12 +128,12 @@ public class PlayerSpawnDAOEBean implements PlayerSpawnDAO {
 
     @Override
     public int purgePlayer(String playerName) {
-        return util.deleteRows(TABLE, "player_name", playerName);
+        return util.deleteRows(TABLE, "playerName", playerName);
     }
 
     @Override
     public Set<String> getAllPlayerNames() {
-        Set<PlayerSpawn> set = ebean.find(PlayerSpawn.class).select("player_name").findSet();
+        Set<PlayerSpawn> set = ebean.find(PlayerSpawn.class).select("playerName").findSet();
         Set<String> playerNames = new HashSet<String>(set.size()*3/2);
         for(PlayerSpawn ps : set) {
             playerNames.add(ps.getPlayerName());

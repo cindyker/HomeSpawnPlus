@@ -124,12 +124,12 @@ public class PlayerLastLocationDAOEBean implements PlayerLastLocationDAO {
 
     @Override
     public int purgePlayer(String playerName) {
-        return util.deleteRows(TABLE, "player_name", playerName);
+        return util.deleteRows(TABLE, "playerName", playerName);
     }
 
     @Override
     public Set<String> getAllPlayerNames() {
-        Set<PlayerLastLocation> set = ebean.find(PlayerLastLocation.class).select("player_name").findSet();
+        Set<PlayerLastLocation> set = ebean.find(PlayerLastLocation.class).select("playerName").findSet();
         Set<String> playerNames = new HashSet<String>(set.size()*3/2);
         for(PlayerLastLocation pll : set) {
             playerNames.add(pll.getPlayerName());

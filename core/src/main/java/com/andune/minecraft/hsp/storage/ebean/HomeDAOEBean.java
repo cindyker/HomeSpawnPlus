@@ -221,12 +221,12 @@ public class HomeDAOEBean implements HomeDAO {
 
     @Override
     public int purgePlayer(String playerName) {
-        return util.deleteRows(TABLE, "player_name", playerName);
+        return util.deleteRows(TABLE, "playerName", playerName);
     }
 
     @Override
     public Set<String> getAllPlayerNames() {
-        Set<HomeImpl> set = ebean.find(HomeImpl.class).select("player_name").findSet();
+        Set<HomeImpl> set = ebean.find(HomeImpl.class).select("playerName").findSet();
         Set<String> playerNames = new HashSet<String>(set.size()*3/2);
         for(HomeImpl home : set) {
             playerNames.add(home.getPlayerName());

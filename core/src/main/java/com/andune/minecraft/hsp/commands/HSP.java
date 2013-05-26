@@ -42,6 +42,7 @@ import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Initializer;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.integration.Essentials;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
@@ -62,6 +63,7 @@ public class HSP extends BaseCommand {
     @Inject DynmapModule dynmap;
     @Inject WorldBorder worldBorder;
     @Inject WorldGuard worldGuard;
+    @Inject Essentials essentials;
     @Inject BackupUtil backupUtil;
     @Inject Scheduler scheduler;
     @Inject General generalUtil;
@@ -72,7 +74,7 @@ public class HSP extends BaseCommand {
 	}
 	
     @Override
-    public boolean execute(CommandSender sender, String cmd, String[] args) {
+    public boolean execute(final CommandSender sender, String cmd, String[] args) {
         if( !permissions.isAdmin(sender) )
 			return false;
 		
@@ -116,6 +118,10 @@ public class HSP extends BaseCommand {
             sender.sendMessage("WorldGuard module "
                     + (worldGuard.isEnabled() ? "enabled" : "disabled")
                     + ", detected version " + worldGuard.getVersion());
+            
+            sender.sendMessage("Essentials module "
+                    + (essentials.isEnabled() ? "enabled" : "disabled")
+                    + ", detected version " + essentials.getVersion());
         }
         // admin command to clean up any playerName-case-caused dups
         else if( args[0].startsWith("dedup") || args[0].equals("dd") ) {
@@ -162,18 +168,26 @@ public class HSP extends BaseCommand {
             }
             else {
                 if( args[1].equalsIgnoreCase("player") ) {
-                    long millis = generalUtil.parseTimeInput(args[2]);
+                    final long millis = generalUtil.parseTimeInput(args[2]);
                     server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_PLAYER_TIME,
-                            "time", generalUtil.displayTimeString(millis, true, "d"));
+                            "time", generalUtil.displayTimeString(millis, false, "d"));
                     
                     if( args.length < 4 || !args[3].equals("CONFIRM") ) {
                         server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_REQUIRES_CONFIRM);
                     }
                     // DO IT
                     else {
-                        int purged = storage.purgePlayerData(System.currentTimeMillis()-millis);
-                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_RESULTS,
-                                "count", purged);
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_STARTING_ASYNC);
+                        final long purgeTime = System.currentTimeMillis()-millis;
+                        scheduler.scheduleAsyncDelayedTask(new Runnable() {
+                            public void run() {
+                                int purged = storage.purgePlayerData(purgeTime);
+                                String msg = server.getLocalizedMessage(HSPMessages.CMD_HSP_PURGE_RESULTS,
+                                        "count", purged);
+                                sender.sendMessage(msg);
+                                log.info(msg);
+                            }
+                        }, 1);
                     }
                 }
                 else if( args[1].equalsIgnoreCase("world") ) {
@@ -186,14 +200,19 @@ public class HSP extends BaseCommand {
                     }
                     // DO IT
                     else {
-                        int purged = storage.purgeWorldData(worldName);
-                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_RESULTS,
-                                "count", purged);
+                        server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_PURGE_STARTING_ASYNC);
+                        scheduler.scheduleAsyncDelayedTask(new Runnable() {
+                            public void run() {
+                                int purged = storage.purgeWorldData(worldName);
+                                String msg = server.getLocalizedMessage(HSPMessages.CMD_HSP_PURGE_RESULTS,
+                                        "count", purged);
+                                sender.sendMessage(msg);
+                                log.info(msg);
+                            }
+                        }, 1);
                     }
                 }
             }
-            sender.sendMessage("Starting async HSP database playerName-to-lowercase conversion");
-            scheduler.scheduleAsyncDelayedTask(new LowerCaseDatabaseRunner(sender), 0);
         }
 		else {
 			return false;

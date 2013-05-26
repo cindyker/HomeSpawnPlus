@@ -38,12 +38,15 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="other",
+    aliases={"o"}, help="Go to another player's home")
 public class HomeOther extends BaseCommand {
     @Inject private Teleport teleport;
     @Inject private HomeUtil homeUtil;

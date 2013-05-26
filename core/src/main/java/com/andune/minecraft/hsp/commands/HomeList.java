@@ -45,7 +45,7 @@ import com.andune.minecraft.hsp.storage.Storage;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="list", aliases={"l"})
+@UberCommand(uberCommand="home", subCommand="list", aliases={"l"}, help="List your homes")
 public class HomeList extends BaseCommand {
     @Inject private Storage storage;
 

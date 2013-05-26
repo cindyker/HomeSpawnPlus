@@ -41,6 +41,7 @@ import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.manager.HomeInviteManager;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -51,6 +52,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="invite", help="Send home invite to another player")
 public class HomeInvite extends BaseCommand {
     @Inject private HomeUtil homeUtil;
     @Inject private HomeInviteManager homeInviteManager;

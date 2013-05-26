@@ -38,6 +38,7 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.manager.HomeInviteManager;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
@@ -46,6 +47,8 @@ import com.andune.minecraft.hsp.manager.WarmupRunner;
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="inviteAccept",
+    aliases={"ia"}, help="Accept a home invite")
 public class HomeInviteAccept extends BaseCommand {
     @Inject private ConfigHomeInvites config;
     @Inject private HomeInviteManager homeInviteManager;

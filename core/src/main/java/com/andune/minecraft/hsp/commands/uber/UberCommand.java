@@ -18,4 +18,5 @@ public @interface UberCommand {
     String subCommand();
     String[] aliases() default {};
     String uberCommand();
+    String help() default "";
 }

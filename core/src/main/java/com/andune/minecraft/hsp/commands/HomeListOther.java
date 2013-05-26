@@ -43,7 +43,8 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="listOther", aliases={"lo", "listother"})
+@UberCommand(uberCommand="home", subCommand="listOther",
+    aliases={"lo"}, help="List another player's homes")
 public class HomeListOther extends BaseCommand {
 	@Inject private HomeList homeListCommand;
 

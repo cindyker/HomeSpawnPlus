@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.server.api;
 import java.util.Map;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
 
 
 /**
@@ -103,4 +104,13 @@ public interface Command {
 	 * @return
 	 */
 	public String getUsage();
+	
+    /**
+     * Check if the given player has permission to run this command. This
+     * should also take into account custom command permissions that might have
+     * been defined by the admin.
+     * 
+     * @return
+     */
+    public boolean hasPermission(Player p);
 }

@@ -35,12 +35,14 @@ import java.util.Set;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="rename", help="Rename a home")
 public class HomeRename extends BaseCommand {
     @Override
     public String[] getCommandAliases() { return new String[] {"homer", "renamehome"}; }

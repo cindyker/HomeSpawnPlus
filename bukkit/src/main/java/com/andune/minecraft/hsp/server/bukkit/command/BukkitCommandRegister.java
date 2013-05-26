@@ -49,14 +49,17 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
+import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.command.CustomEventCommand;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServer;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServerFactory;
 import com.google.inject.Injector;
@@ -82,15 +85,18 @@ public class BukkitCommandRegister implements Initializable {
 	private final BukkitFactory factory;
 	private final Injector injector;
 	private final CraftServerFactory craftServerFactory;
+	private final Server server;
 	
 	@Inject
 	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig,
-	        BukkitFactory factory, Injector injector, Reflections reflections) {
+	        BukkitFactory factory, Injector injector, Reflections reflections,
+	        Server server) {
 		this.plugin = plugin;
 		this.commandConfig = commandConfig;
 		this.factory = factory;
 		this.injector = injector;
 		this.reflections = reflections;
+		this.server = server;
 		
 		this.craftServerFactory = new CraftServerFactory(plugin);
         customClassMap.put("customeventcommand", CustomEventCommand.class);
@@ -134,8 +140,16 @@ public class BukkitCommandRegister implements Initializable {
 			pc.setExecutor(new CommandExecutor() {
                 public boolean onCommand(CommandSender sender,
                         org.bukkit.command.Command bukkitCommand, String label, String[] args) {
-                    com.andune.minecraft.commonlib.server.api.CommandSender apiSender = factory.getCommandSender(sender);
-                    return command.execute(apiSender, label, args);
+                    try {
+                        com.andune.minecraft.commonlib.server.api.CommandSender apiSender = factory.getCommandSender(sender);
+                        return command.execute(apiSender, label, args);
+                    }
+                    catch(FeatureNotImplemented fne) {
+                        String msg = server.getLocalizedMessage(HSPMessages.FEATURE_NOT_IMPLEMENTED);
+                        sender.sendMessage(msg);
+                        log.info("Caught feature not implemented exception for command "+label+": "+fne.getMessage(), fne);
+                        return true;
+                    }
                 }
             });
 			pc.setLabel(cmdName);

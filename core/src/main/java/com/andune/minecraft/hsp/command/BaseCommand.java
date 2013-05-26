@@ -50,6 +50,7 @@ import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
+import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.google.common.base.Joiner;
@@ -486,7 +487,7 @@ public abstract class BaseCommand implements Command {
 	 * @param p
 	 * @return
 	 */
-	protected boolean hasPermission(Player p) {
+	public boolean hasPermission(Player p) {
 	    if( !permissions.hasCommandPermission(p, this) ) {
 		    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 			return false;

@@ -37,6 +37,7 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
 import com.andune.minecraft.hsp.strategy.EventType;
@@ -50,6 +51,8 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="",
+    aliases={"h"}, help="Go to your home")
 public class Home extends BaseCommand
 {
 	@Inject private StrategyEngine engine;

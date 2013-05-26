@@ -34,6 +34,7 @@ package com.andune.minecraft.hsp.commands;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
@@ -42,6 +43,7 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
  * @author andune
  *
  */
+@UberCommand(uberCommand="spawn", subCommand="delete", help="Delete a spawn")
 public class SpawnDelete extends BaseCommand {
 
 	@Override

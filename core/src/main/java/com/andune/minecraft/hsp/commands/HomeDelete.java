@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
@@ -45,6 +46,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="delete", help="Delete a home")
 public class HomeDelete extends BaseCommand {
     private HomeUtil homeUtil;
     

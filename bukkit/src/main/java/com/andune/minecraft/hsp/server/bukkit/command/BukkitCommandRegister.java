@@ -35,6 +35,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +54,12 @@ import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
-import com.andune.minecraft.hsp.command.Command;
 import com.andune.minecraft.hsp.command.CustomEventCommand;
+import com.andune.minecraft.hsp.config.ConfigCommand;
+import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServer;
 import com.andune.minecraft.hsp.server.craftbukkit.CraftServerFactory;
@@ -81,14 +82,14 @@ public class BukkitCommandRegister implements Initializable {
 	private final Plugin plugin;
 	private final Map<String, PluginCommand> loadedCommands = new HashMap<String, PluginCommand>(25);
 	private final Reflections reflections;
-	private final CommandConfig commandConfig;
+	private final ConfigCommand commandConfig;
 	private final BukkitFactory factory;
 	private final Injector injector;
 	private final CraftServerFactory craftServerFactory;
 	private final Server server;
 	
 	@Inject
-	public BukkitCommandRegister(Plugin plugin, CommandConfig commandConfig,
+	public BukkitCommandRegister(Plugin plugin, ConfigCommand commandConfig,
 	        BukkitFactory factory, Injector injector, Reflections reflections,
 	        Server server) {
 		this.plugin = plugin;
@@ -280,7 +281,7 @@ public class BukkitCommandRegister implements Initializable {
 		}
 		
 		try {
-			Command command = (Command) cmdClass.newInstance();
+            Command command = injector.getInstance(cmdClass);
 			command.setCommandName(cmd.toLowerCase());	// default to name of instance key
 			register(command, cmdParams);
 		}
@@ -323,6 +324,16 @@ public class BukkitCommandRegister implements Initializable {
 		for(String cmd : commands) {
 			registerConfigCommand(cmd);
 		}
+
+		// if uber commands are enabled, then we enable them first so they
+		// get first shot at commands like /home and /spawn
+		if( commandConfig.isUberCommandsEnabled() ) {
+            Set<Class<? extends Command>> uberClasses = getUberCommandClasses();
+            for(Class<? extends Command> clazz : uberClasses) {
+                log.debug("registering uber class {}",clazz);
+                registerDefaultCommand(clazz);
+            }
+		}
 		
 		Set<Class<? extends Command>> commandClasses = getCommandClasses();
 		// now loop through all normal commands in the class path
@@ -362,4 +373,29 @@ public class BukkitCommandRegister implements Initializable {
 
     	return commandClasses;
 	}
+
+    /* cache object only, always use getUberCommandClasses() 
+     */
+    private Set<Class<? extends Command>> uberCommandClasses = null;
+    /**
+     * Return all Uber Command classes.
+     * 
+     * @return
+     */
+    private Set<Class<? extends Command>> getUberCommandClasses() {
+        if( uberCommandClasses != null )
+            return uberCommandClasses;
+        
+        uberCommandClasses = new HashSet<Class<? extends Command>>();
+        Set<Class<? extends Command>> commands = getCommandClasses();
+        for(Class<? extends Command> command : commands) {
+            // we cheat and use the package name because I don't feel like
+            // setting up an annotation just for these
+            if( command.getPackage().getName().contains("uber") ) {
+                uberCommandClasses.add(command);
+            }
+        }
+        
+        return uberCommandClasses;
+    }
 }

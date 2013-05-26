@@ -44,7 +44,6 @@ import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.commonlib.server.api.YamlFile;
-import com.andune.minecraft.commonlib.server.api.command.CommandConfig;
 import com.andune.minecraft.commonlib.server.api.event.EventDispatcher;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitPermissionSystem;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitPlugin;
@@ -74,7 +73,6 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitEventDispatcher;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServer;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServerConfig;
-import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandConfig;
 import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandRegister;
 import com.andune.minecraft.hsp.storage.BukkitStorageFactory;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -147,13 +145,6 @@ public class BukkitModule extends AbstractModule {
             .to(com.andune.minecraft.commonlib.BukkitLoggerImpl.class);
     }
 
-    @Provides
-    protected CommandConfig getCommandConfig() {
-        BukkitCommandConfig config = new BukkitCommandConfig();
-        config.setConfigSection(plugin.getConfig().getConfigurationSection("commands"));
-        return config;
-    }
-    
     @Provides
     @Singleton
     protected HomeSpawnPlusBukkit getHSPBukkit() {

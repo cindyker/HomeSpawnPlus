@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.commands;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
@@ -40,6 +41,7 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
  * @author andune
  *
  */
+@UberCommand(uberCommand="spawn", subCommand="rename", help="Rename a spawn")
 public class SpawnRename extends BaseCommand {
     @Override
     public String[] getCommandAliases() { return new String[] {"spawnr", "renamespawn"}; }

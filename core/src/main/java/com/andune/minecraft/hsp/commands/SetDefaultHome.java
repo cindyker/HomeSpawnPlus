@@ -34,12 +34,15 @@ package com.andune.minecraft.hsp.commands;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="setDefault",
+    aliases={"sd"}, help="Set your default home")
 public class SetDefaultHome extends BaseCommand {
 
 	@Override

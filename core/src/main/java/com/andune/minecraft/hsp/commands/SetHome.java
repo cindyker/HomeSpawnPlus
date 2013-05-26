@@ -36,6 +36,7 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
@@ -44,6 +45,8 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="home", subCommand="set",
+    aliases={"s"}, help="Set your home")
 public class SetHome extends BaseCommand
 {
     private HomeUtil util;

@@ -57,7 +57,7 @@ import com.earth2me.essentials.Essentials;
  *
  */
 @Singleton
-public class EssentialsModule implements Initializable {
+public class EssentialsModule implements com.andune.minecraft.hsp.integration.Essentials, Initializable {
     private static final Logger log = LoggerFactory.getLogger(EssentialsModule.class);
     
     private Plugin essentialsPlugin;
@@ -194,5 +194,18 @@ public class EssentialsModule implements Initializable {
     @Override
     public int getInitPriority() {
         return 9;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return essentialsPlugin != null;
+    }
+
+    @Override
+    public String getVersion() {
+        if( essentialsPlugin != null )
+            return essentialsPlugin.getDescription().getVersion();
+        else
+            return null;
     }
 }

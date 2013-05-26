@@ -32,6 +32,8 @@ package com.andune.minecraft.hsp.guice;
 
 import javax.inject.Singleton;
 
+import org.bukkit.plugin.Plugin;
+
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -53,8 +55,10 @@ import com.andune.minecraft.hsp.HomeSpawnPlusBukkit;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
+import com.andune.minecraft.hsp.integration.Essentials;
 import com.andune.minecraft.hsp.integration.dynmap.BukkitDynmapModule;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
+import com.andune.minecraft.hsp.integration.essentials.EssentialsModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCoreModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
@@ -71,6 +75,7 @@ import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServer;
 import com.andune.minecraft.hsp.server.bukkit.BukkitServerConfig;
 import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandConfig;
+import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandRegister;
 import com.andune.minecraft.hsp.storage.BukkitStorageFactory;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageFactory;
@@ -179,6 +184,7 @@ public class BukkitModule extends AbstractModule {
     private MultiverseCoreModule multiverseCore;
     private MultiversePortalsModule multiversePortals;
     private WorldGuardModule worldGuard;
+    private EssentialsModule essentials;
     
     @Provides
     @Singleton
@@ -237,5 +243,12 @@ public class BukkitModule extends AbstractModule {
         if( worldGuard == null )
             worldGuard = new WorldGuardModule(plugin, factory, strategyEngine, server);
         return worldGuard;
+    }
+    
+    @Provides
+    protected Essentials getEssentials(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister, Scheduler scheduler) {
+        if( essentials == null )
+            essentials = new EssentialsModule(plugin, bukkitCommandRegister, scheduler);
+        return essentials;
     }
 }

@@ -82,7 +82,7 @@ public abstract class BaseUberCommand extends BaseCommand {
             else {
                 Command cmd = subCommands.get(key);
                 // don't show help for commands we don't have permission for
-                if( p != null && !cmd.hasPermission(p) )
+                if( p != null && !cmd.hasPermission(p, false) )
                     continue;
                 
                 UberCommand annotation = cmd.getClass().getAnnotation(UberCommand.class);
@@ -137,7 +137,7 @@ public abstract class BaseUberCommand extends BaseCommand {
                 usage = usage.replaceAll("/<command>", "/"+baseName+" "+args[1]);
             }
             else
-                usage = getUsage();
+                usage = getUsage(sender);
             
             sender.sendMessage(usage);
             return true;

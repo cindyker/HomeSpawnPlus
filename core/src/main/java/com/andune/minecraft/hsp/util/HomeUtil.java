@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -159,19 +160,43 @@ public class HomeUtil {
     public String setHome(String playerName, Location l, String updatedBy, boolean defaultHome, boolean bedHome)
     {
         final HomeDAO homeDAO = storage.getHomeDAO();
-        Home home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
+        final String locWorld = l.getWorld().getName();
+        final String inherited = limits.getInheritedWorld(locWorld);
+        Collection<String> childWorlds = limits.getChildWorlds(locWorld);
+        if( childWorlds.size() == 0 )
+            childWorlds = null;
+        Home home = homeDAO.findDefaultHome(locWorld, playerName);
+        if( home == null )
+            home = homeDAO.findDefaultHome(inherited, playerName);
+        if( home == null && childWorlds != null ) {
+            for(String child : childWorlds) {
+                home = homeDAO.findDefaultHome(child, playerName);
+                if( home != null )
+                    break;
+            }
+        }
         
-        log.debug("setHome: (defaultHome) home={}",home);
+        log.debug("setHome(): home={}, inherited={}",home,inherited);
         
         // if bedHome arg is set and the defaultHome is NOT the bedHome, then try to find an
         // existing bedHome that we can overwrite (should only be one bedHome per world)
         if( bedHome && (home == null || !home.isBedHome()) ) {
-            home = homeDAO.findBedHome(l.getWorld().getName(), playerName);
+            home = homeDAO.findBedHome(locWorld, playerName);
+            if( home == null && inherited != null )
+                home = homeDAO.findBedHome(inherited, playerName);
+            if( home == null && childWorlds != null ) {
+                for(String child : childWorlds) {
+                    home = homeDAO.findBedHome(child, playerName);
+                    if( home != null )
+                        break;
+                }
+            }
             
+            log.debug("setHome: bedHome pre-check, home={}", home);
             // if no bed home was found using existing bed name, check all other bed homes
             // for the bed flag
             if( home != null && !home.isBedHome() ) {
-                Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(l.getWorld().getName(), playerName);
+                Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(locWorld, playerName);
                 if( homes != null ) {
                     for(Home h : homes) {
                         if( h.isBedHome() ) {
@@ -181,11 +206,41 @@ public class HomeUtil {
                     }
                 }
             }
+            // also check inherited parent world
+            if( home == null && inherited != null ) { 
+                Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(inherited, playerName);
+                if( homes != null ) {
+                    for(Home h : homes) {
+                        if( h.isBedHome() ) {
+                            home = h;
+                            break;
+                        }
+                    }
+                }
+            }
+            // also check child worlds
+            if( home == null && childWorlds != null ) {
+                for(String child : childWorlds) {
+                    Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(child, playerName);
+                    if( homes != null ) {
+                        for(Home h : homes) {
+                            if( h.isBedHome() ) {
+                                home = h;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            log.debug("setHome: bedHome post-check, home={}", home);
             
             if( home == null && configCore.isBedHomeOverwriteDefault() ) {
                 log.debug("setHome: bedHome flag enabled, but no bedHome found. Using default home");
-                home = homeDAO.findDefaultHome(l.getWorld().getName(), playerName);
+                home = homeDAO.findDefaultHome(locWorld, playerName);
+                if( home == null && inherited != null )
+                    home = homeDAO.findDefaultHome(inherited, playerName);
             }
+            log.debug("setHome: bedHome post-isBedHomeOverwriteDefault, home={}", home);
         }
         
         // could be null if we are working with an offline player
@@ -194,7 +249,8 @@ public class HomeUtil {
         // if we get an object back, we already have a Home set for this player/world combo, so we
         // just update the x/y/z location of it.
         if( home != null ) {
-            if( limits.isSingleGlobalHomeEnabled(l.getWorld().getName(), playerName) ) {
+            log.debug("setHome: home != null, existing home checks");
+            if( limits.isSingleGlobalHomeEnabled(locWorld, playerName) ) {
                 home = limits.enforceSingleGlobalHome(playerName);
                 
                 // it's possible enforceSingleGlobalHome() just wiped all of our homes
@@ -203,9 +259,31 @@ public class HomeUtil {
                 }
             }
             // if the world changed, then we need to check world limits on the new world
-            else if( p != null && !l.getWorld().getName().equals(home.getWorld()) ) {
-                if( !limits.canPlayerAddHome(p, l.getWorld().getName()) )
-                    return limits.getLimitMessage(p, l.getWorld().getName());
+            else if( p != null && !locWorld.equals(home.getWorld()) ) {
+                boolean doCheck = true;
+                
+                log.debug("setHome: location world {} and home world {} don't match", locWorld, home.getWorld());
+                // we only check limits if there is no inherited world or if
+                // the inherited world isn't the world the home is on.
+                if( inherited != null && inherited.equals(home.getWorld()) ) {
+                    doCheck = false;
+                }
+                // if it's a home on a child world, we're allowed to update it,
+                // no limit check required
+                else if( childWorlds != null ) {
+                    for(String child : childWorlds) {
+                        if( child.equals(home.getWorld()) ) {
+                            doCheck = false;
+                            break;
+                        }
+                    }
+                }
+                log.debug("setHome: doCheck={}", doCheck);
+                
+                if( doCheck ) {
+                    if( !limits.canPlayerAddHome(p, locWorld) )
+                        return limits.getLimitMessage(p, locWorld);
+                }
             }
             
             home.setLocation(l);
@@ -213,7 +291,8 @@ public class HomeUtil {
         }
         // this is a new home for this player/world combo, create a new object
         else {
-            if( limits.isSingleGlobalHomeEnabled(l.getWorld().getName(), playerName) ) {
+            log.debug("setHome: home == null, new home checks");
+            if( limits.isSingleGlobalHomeEnabled(locWorld, playerName) ) {
                 home = limits.enforceSingleGlobalHome(playerName);
                 if( home != null ) {
                     home.setLocation(l);
@@ -221,8 +300,8 @@ public class HomeUtil {
                 }
             }
             // check if they are allowed to add another home
-            else if( p != null && !limits.canPlayerAddHome(p, l.getWorld().getName()) ) {
-                return limits.getLimitMessage(p, l.getWorld().getName());
+            else if( p != null && !limits.canPlayerAddHome(p, locWorld) ) {
+                return limits.getLimitMessage(p, locWorld);
             }
             
             // it's possible singleGlobalHome code has found/created a home object for us now
@@ -236,7 +315,7 @@ public class HomeUtil {
             home.setDefaultHome(true);
         
         if( bedHome ) {
-            home.setName(l.getWorld().getName() + "_" + Storage.HSP_BED_RESERVED_NAME);
+            home.setName(locWorld + "_" + Storage.HSP_BED_RESERVED_NAME);
             bedUtil.setBukkitBedHome(p, l);
         }
         // we don't allow use of the reserved suffix "_bed" name unless the bed flag is true

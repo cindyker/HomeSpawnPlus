@@ -481,13 +481,20 @@ public abstract class BaseCommand implements Command {
 		return permissionNode;
 	}
 	
-	/** Return true if the player has permission to run this command.  If they
-	 * don't have permission, print them a message saying so and return false.
-	 * 
-	 * @param p
-	 * @return
-	 */
-	public boolean hasPermission(Player p) {
+    /**
+     * Check if the player has permission to run this command. If they don't
+     * have permission, optionally print them a message saying so and return
+     * false. This should also take into account custom command permissions
+     * that might have been defined by the admin.
+     * 
+     * @param p
+     *            the player to check
+     * @param displayMessage
+     *            true if a message should be displayed to the player if they
+     *            don't have permission
+     * @return true if the player has permission, false if not
+     */
+	public boolean hasPermission(Player p, boolean displayMessage) {
 	    if( !permissions.hasCommandPermission(p, this) ) {
 		    p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
 			return false;
@@ -495,6 +502,9 @@ public abstract class BaseCommand implements Command {
 		else
 			return true;
 	}
+    protected boolean hasPermission(Player p) {
+        return hasPermission(p, true);
+    }
 	
     @Inject
     private void setPermissions(PermissionsImpl permissionsRealObject) {

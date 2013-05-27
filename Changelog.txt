@@ -35,6 +35,8 @@ v2.0 -
   - Player-only commands from console (such as /home, /spawn, etc) will automatically assume the first argument is the player
     name. This makes it possible to use command blocks to run HSP commands, like: "/spawn @p TheSpawn" would have HSP run the
     command "/spawn TheSpawn" as if the player that triggered the command block ran it.
+  - addition of "uber" commands, enabled by default. Rather than many different commands for players to remember, uber commands
+    consolidates them all under just two commands: /home and /spawn. Type "/home help" for help.
 
 v1.7.6 - May 5, 2013
 * built for CraftBukkit v1.5.2 ONLY

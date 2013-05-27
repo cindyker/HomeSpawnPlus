@@ -106,10 +106,10 @@ public class TestConfigHomeLimits {
     @Test
     public void testPerWorldLimits() throws Exception {
         // given
-        HashSet<String> worldKeys = new HashSet<String>(1);
+        HashSet<String> worldKeys = new HashSet<String>(5);
         worldKeys.add("myworld");
         when(section.getKeys("world")).thenReturn(worldKeys);
-        HashSet<String> myworldKeys = new HashSet<String>(1);
+        HashSet<String> myworldKeys = new HashSet<String>(5);
         myworldKeys.add("global");
         myworldKeys.add("perWorld");
         when(section.getKeys("world.myworld")).thenReturn(myworldKeys);
@@ -129,17 +129,17 @@ public class TestConfigHomeLimits {
     @Test
     public void testPerPermissionLimitsWithPermissions() throws Exception {
         // given
-        HashSet<String> entryKeys = new HashSet<String>(1);
+        HashSet<String> entryKeys = new HashSet<String>(5);
         entryKeys.add("entry1");
         when(section.getKeys("permission")).thenReturn(entryKeys);
         
-        HashSet<String> entry1Keys = new HashSet<String>(3);
+        HashSet<String> entry1Keys = new HashSet<String>(7);
         entry1Keys.add("permissions");
         entry1Keys.add("perWorld");
         entry1Keys.add("global");
         when(section.getKeys("permission.entry1")).thenReturn(entry1Keys);
         
-        ArrayList<String> perms = new ArrayList<String>(1);
+        ArrayList<String> perms = new ArrayList<String>(5);
         perms.add("dummyperm");
         when(section.getStringList("permission.entry1.permissions")).thenReturn(perms);
         
@@ -160,11 +160,11 @@ public class TestConfigHomeLimits {
     @Test
     public void testPerPermissionLimitsDefaultPermissions() throws Exception {
         // given
-        HashSet<String> entryKeys = new HashSet<String>(1);
+        HashSet<String> entryKeys = new HashSet<String>(5);
         entryKeys.add("entry1");
         when(section.getKeys("permission")).thenReturn(entryKeys);
         
-        HashSet<String> entry1Keys = new HashSet<String>(3);
+        HashSet<String> entry1Keys = new HashSet<String>(7);
         entry1Keys.add("perWorld");
         entry1Keys.add("global");
         when(section.getKeys("permission.entry1")).thenReturn(entry1Keys);
@@ -185,5 +185,25 @@ public class TestConfigHomeLimits {
         
         ConfigOptions configOptions = ConfigHomeLimits.class.getAnnotation(ConfigOptions.class);
         assertTrue(lpp.getPermissions().contains("hsp."+configOptions.basePath()+".entry1"));
+    }
+
+    @Test
+    public void testPerWorldInheritedLimits() throws Exception {
+        // given
+        HashSet<String> worldKeys = new HashSet<String>(5);
+        worldKeys.add("myworld");
+        when(section.getKeys("world")).thenReturn(worldKeys);
+        
+        HashSet<String> myworldKeys = new HashSet<String>(5);
+        myworldKeys.add("inherit");
+        when(section.getKeys("world.myworld")).thenReturn(myworldKeys);
+        when(section.get("world.myworld.inherit")).thenReturn("world");
+        
+        // when
+        objectUnderTest.init();
+        String inherit = objectUnderTest.getPerWorldEntry("myworld").getInherit();
+
+        // then
+        assertEquals("world", inherit);
     }
 }

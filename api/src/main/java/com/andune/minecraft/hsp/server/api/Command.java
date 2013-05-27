@@ -106,11 +106,17 @@ public interface Command {
 	public String getUsage();
 	
     /**
-     * Check if the given player has permission to run this command. This
-     * should also take into account custom command permissions that might have
-     * been defined by the admin.
+     * Check if the player has permission to run this command. If they don't
+     * have permission, optionally print them a message saying so and return
+     * false. This should also take into account custom command permissions
+     * that might have been defined by the admin.
      * 
-     * @return
+     * @param p
+     *            the player to check
+     * @param displayMessage
+     *            true if a message should be displayed to the player if they
+     *            don't have permission
+     * @return true if the player has permission, false if not
      */
-    public boolean hasPermission(Player p);
+    public boolean hasPermission(Player p, boolean displayMessage);
 }

@@ -59,6 +59,19 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
     public Integer getDefaultPerWorldLimit() {
         return super.getInteger("default.perWorld");
     }
+    
+    /**
+     * If true, child worlds such as "world_nether" and "world_the_end"
+     * automatically are associated with their base world "world", such that
+     * the perWorld limit for world applies for all 3 worlds. If the perWorld
+     * limit for "world" were 1, then a player could have only 1 home among all
+     * 3 of the associated worlds.
+     * 
+     * @return
+     */
+    public boolean getInheritAssociatedWorlds() {
+        return super.getBoolean("inheritAssociatedWorlds");
+    }
 
     @Override
     protected LimitsPerPermission newPermissionEntry() {
@@ -72,6 +85,7 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
     private class Entry {
         Integer perWorld = null;
         Integer global = null;
+        String inherit = null;
         
         public void setValue(String key, Object o) {
             if( key.equals("perWorld") ) {
@@ -79,6 +93,9 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
             }
             else if( key.equals("global") ) {
                 global = (Integer) o;
+            }
+            else if( key.equals("inherit") ) {
+                inherit = (String) o;
             }
         }
     }
@@ -100,6 +117,7 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
         
         public Integer getPerWorld() { return entry.perWorld; }
         public Integer getGlobal() { return entry.global; }
+        public String getInherit() { return entry.inherit; }
         
         @Override
         public void setValue(String key, Object o) {

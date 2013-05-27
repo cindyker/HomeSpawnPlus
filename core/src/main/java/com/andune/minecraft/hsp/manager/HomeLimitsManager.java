@@ -30,6 +30,9 @@
  */
 package com.andune.minecraft.hsp.manager;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,11 +41,12 @@ import javax.inject.Inject;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Player;
-
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerWorld;
 import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 
@@ -56,6 +60,7 @@ public class HomeLimitsManager {
     
     @Inject private Storage storage;
     @Inject private ConfigHomeLimits config;
+    @Inject private Server server;
     
     private LimitReason limitCheck(Player p, String worldName) {
         int limit = getHomeLimit(p, worldName, true);
@@ -72,6 +77,64 @@ public class HomeLimitsManager {
         }
         
         return LimitReason.NOT_AT_LIMIT;
+    }
+    
+    /**
+     * If a world inherits limits from another world, this method will return
+     * the world it is inherited from.
+     * 
+     * @param worldName
+     *            the world being checked
+     * @return the world the argument inherits from, if any. Will be null if
+     *         there is no inheritance.
+     */
+    public String getInheritedWorld(String worldName) {
+        String inherit = null;
+        LimitsPerWorld entry = config.getPerWorldEntry(worldName);
+        if( entry != null )
+            inherit = entry.getInherit();
+        
+        // if inheritAssociatedWorlds is enabled, then we return the base
+        // world name if it is a child world
+        if( inherit == null && config.getInheritAssociatedWorlds() ) {
+            World baseWorld = server.getWorld(worldName);
+            World parent = baseWorld.getParentWorld();
+            if( parent != null )
+                inherit = parent.getName();
+        }
+        
+        return inherit;
+    }
+    
+    /**
+     * For a given world, return any children worlds as relates to home limits.
+     * For example, if an admin has defined that "world_nether" and
+     * "world_the_end" inherit limits from "world", then this method would
+     * return those worlds when queried about children of "world".
+     * 
+     * @param worldName
+     * @return
+     */
+    public Set<String> getChildWorlds(String worldName) {
+        assert(worldName != null);
+        Set<String> ret = new HashSet<String>();
+        List<World> worlds = server.getWorlds();
+        for(World w : worlds) {
+            LimitsPerWorld lpw = config.getPerWorldEntry(w.getName());
+            if( lpw != null && worldName.equals(lpw.getInherit()) )
+                ret.add(w.getName());
+        }
+
+        // if inheritAssociatedWorlds is enabled, also add in any associated
+        // child worlds of this one
+        if( config.getInheritAssociatedWorlds() ) {
+            World baseWorld = server.getWorld(worldName);
+            for(World child : baseWorld.getChildWorlds()) {
+                ret.add(child.getName());
+            }
+        }
+
+        return ret;
     }
     
     /** Return true if the player has at least one free home slot (perWorld and global).
@@ -117,12 +180,30 @@ public class HomeLimitsManager {
      */
     public int getHomeCount(String playerName, String worldName)
     {
+        int count = 0;
         Set<? extends Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(worldName, playerName);
-        
+
         if( homes != null )
-            return homes.size();
-        else
-            return 0;
+            count = homes.size();
+
+        final String inherit = getInheritedWorld(worldName);
+        if( inherit != null ) {
+            log.debug("getHomeCount() adding inherited world {} to home count", inherit);
+            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(inherit, playerName);
+            if( homes != null )
+                count += homes.size();
+        }
+        
+        final Collection<String> children = getChildWorlds(worldName);
+        for(String child : children) {
+            log.debug("getHomeCount() adding child world {} to home count", child);
+            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(child, playerName);
+            if( homes != null )
+                count += homes.size();
+        }
+
+        log.debug("getHomeCount() returning count={}", count);
+        return count;
     }
     
     /**
@@ -165,8 +246,19 @@ public class HomeLimitsManager {
         if( limit == null && worldName != null ) {
             LimitsPerWorld entry = config.getPerWorldEntry(worldName);
             if( entry != null ) {
-                if( perWorldLimit )
-                    limit = entry.getPerWorld();
+                if( perWorldLimit ) {
+                    String inherit = entry.getInherit();
+                    if( inherit != null ) {
+                        // get per-world entry for inherited world; if nothing
+                        // is defined then we'll just pick up the default
+                        // limit later
+                        entry = config.getPerWorldEntry(inherit);
+                        if( entry != null )
+                            limit = entry.getPerWorld();
+                    }
+                    else
+                        limit = entry.getPerWorld();
+                }
                 else
                     limit = entry.getGlobal();
             }

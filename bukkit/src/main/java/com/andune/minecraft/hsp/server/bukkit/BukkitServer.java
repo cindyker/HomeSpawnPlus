@@ -34,10 +34,11 @@ import javax.inject.Inject;
 
 import org.bukkit.plugin.Plugin;
 
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
+import com.andune.minecraft.commonlib.server.api.BukkitFactoryInterface;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Teleport;
-import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.server.api.Server;
 
@@ -47,10 +48,14 @@ import com.andune.minecraft.hsp.server.api.Server;
  */
 public class BukkitServer extends com.andune.minecraft.commonlib.server.bukkit.BukkitServer
 implements Server {
+    private final Colors colors;
+    
     @Inject
-    public BukkitServer(Plugin plugin, Teleport teleport, Locale locale, BukkitFactory bukkitFactory)
+    public BukkitServer(Plugin plugin, Teleport teleport, Locale locale,
+            BukkitFactoryInterface bukkitFactory, Colors colors)
     {
         super(plugin, teleport, locale, bukkitFactory);
+        this.colors = colors;
     }
 
     @Override
@@ -61,5 +66,10 @@ implements Server {
     @Override
     public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
         sendLocalizedMessage(sender, getLocalizedMessage(key.toString(), args));
+    }
+    
+    @Override
+    public String getDefaultColor() {
+        return colors.getDefaultColorString();
     }
 }

@@ -39,6 +39,7 @@ import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 
 /**
@@ -52,6 +53,7 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
     
     private ConfigCore configCore;
     private PlayerDAO playerDAO;
+    private Server server;
     
     /** Protected constructor, should only be invoked from BukkitFactory.
      * 
@@ -59,10 +61,22 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
      * @param playerDAO
      * @param bukkitPlayer
      */
-    protected BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO, PermissionSystem perm, org.bukkit.entity.Player bukkitPlayer) {
+    protected BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO,
+            PermissionSystem perm, org.bukkit.entity.Player bukkitPlayer,
+            Server server) {
         super(perm, bukkitPlayer);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
+        this.server = server;
+    }
+    
+    @Override
+    public void sendMessage(String message) {
+        super.sendMessage(server.getDefaultColor() + message);
+    }
+    @Override
+    public void sendMessage(String[] messages) {
+        super.sendMessage(server.getDefaultColor() + messages);
     }
 
     @Override

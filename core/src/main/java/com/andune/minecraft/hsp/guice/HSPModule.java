@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 import org.reflections.Reflections;
 import org.reflections.util.FilterBuilder;
 
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
 import com.andune.minecraft.commonlib.reflections.YamlSerializer;
@@ -90,6 +91,8 @@ public class HSPModule extends AbstractModule {
             .to(BedUtilsImpl.class);
         bind(Locale.class)
             .to(LocaleStringReplacerImpl.class)
+            .in(Scopes.SINGLETON);
+        bind(Colors.class)
             .in(Scopes.SINGLETON);
         bind(TeleportOptions.class)
             .to(TeleportOptionsImpl.class);

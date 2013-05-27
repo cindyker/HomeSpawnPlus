@@ -32,9 +32,11 @@ package com.andune.minecraft.hsp.config;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.i18n.Colors;
 
 
 /**
@@ -44,9 +46,19 @@ import com.andune.minecraft.commonlib.Initializable;
 @Singleton
 @ConfigOptions(fileName="core.yml", basePath="core")
 public class ConfigCore extends ConfigBase implements Initializable {
+    @Inject private Colors colors;
+    
     @Override
     public int getInitPriority() { return 2; }  // core config has lower priority than default
 
+    @Override
+    public void init() throws Exception {
+        super.init();
+        
+        log.debug("ConfigCore init: defaultColor={}", getDefaultColor());
+        colors.setDefaultColor(getDefaultColor());
+    }
+    
     /**
      * Return the configured locale, such as "en", "de", "fr", etc.
      * 

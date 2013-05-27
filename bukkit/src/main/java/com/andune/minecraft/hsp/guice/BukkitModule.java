@@ -115,8 +115,13 @@ public class BukkitModule extends AbstractModule {
         
         bind(Factory.class)
             .to(BukkitFactory.class);
+        bind(com.andune.minecraft.commonlib.server.api.BukkitFactoryInterface.class)
+            .to(BukkitFactory.class);
+        bind(com.andune.minecraft.commonlib.server.bukkit.BukkitFactory.class)
+            .to(BukkitFactory.class);
         bind(com.andune.minecraft.hsp.server.api.Factory.class)
             .to(BukkitFactory.class);
+
         bind(org.bukkit.Server.class)
             .toInstance(plugin.getServer());
         bind(Scheduler.class)

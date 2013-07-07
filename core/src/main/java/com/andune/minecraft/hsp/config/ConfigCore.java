@@ -37,6 +37,7 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.i18n.Colors;
+import com.andune.minecraft.hsp.util.LogUtil;
 
 
 /**
@@ -47,6 +48,12 @@ import com.andune.minecraft.commonlib.i18n.Colors;
 @ConfigOptions(fileName="core.yml", basePath="core")
 public class ConfigCore extends ConfigBase implements Initializable {
     @Inject private Colors colors;
+    /**
+     * If true, it means the admin has overridden the config debug value,
+     * so all future debug checks will use the admin-specified debug level.
+     */
+    private boolean debugOverride = false;
+    private boolean debug = false;
     
     @Override
     public int getInitPriority() { return 2; }  // core config has lower priority than default
@@ -69,7 +76,26 @@ public class ConfigCore extends ConfigBase implements Initializable {
     }
     
     public boolean isDebug() {
-        return super.getBoolean("debug");
+    	// if admin has overridden config debug level, use that instead
+    	if( debugOverride )
+    		return debug;
+    	else
+    		return super.getBoolean("debug");
+    }
+    
+    /**
+     * Debug is unique in that it can be enabled/disabled at runtime and
+     * that will override the config value.
+     * 
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+    	this.debugOverride = true;
+    	this.debug = debug;
+    	if( this.debug )
+    		LogUtil.enableDebug();
+    	else
+    		LogUtil.disableDebug();
     }
     
     /**

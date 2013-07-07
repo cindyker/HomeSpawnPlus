@@ -295,6 +295,7 @@ public class StorageEBeans implements Storage {
 		// determine if we are at version 62 of the database schema
 		try {
 			SqlQuery query = db.createSqlQuery("select world from hsp_player");
+			query.setMaxRows(1);
 			query.findList();
 		}
 		catch(PersistenceException e) {

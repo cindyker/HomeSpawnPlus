@@ -102,6 +102,11 @@
       <artifactId>HomeSpawnPlus-craftbukkit-1.5_R3</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-craftbukkit-1.6_R1</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
 
     <!-- Dependency Injection (guice) -->
     <dependency>

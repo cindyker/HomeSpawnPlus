@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.HomeSpawnPlus;
 import com.andune.minecraft.hsp.guice.BukkitInjectorFactory;
 import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigStorage;
@@ -58,6 +59,8 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+    	LoggerFactory.setLoggerPrefix("[HomeSpawnPlus] ");
+
         // disable reflections spam; it's a bug that prints warnings that look alarming
         Logger.getLogger("org.reflections").setLevel(Level.OFF);
         

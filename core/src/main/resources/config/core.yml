@@ -15,6 +15,14 @@ core:
   # you must restart Bukkit if you change this option.
   storage: EBEANS
 
+  # If set to true, uses an in-memory cache on top of whatever
+  # storage system you choose. This also moves writes to the
+  # backing store off of the main server thread. This can
+  # significantly speed up both reads and writes at a very small
+  # cost of memory. Disabled by default for now while it is being
+  # coded and tested.
+  inMemoryCache: false
+
   # localization. "en" for english, "fr" for french, etc. Will
   # use given localization if it exists, otherwise will fall
   # back to English as the default.

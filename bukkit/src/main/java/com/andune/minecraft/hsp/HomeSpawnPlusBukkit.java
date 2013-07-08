@@ -69,27 +69,8 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
             LogUtil.enableDebug();
 
         try {
-            YamlConfiguration storageConfig = new YamlConfiguration();
-            
-            // use file if it exists
-            File storageConfigFile = new File(getDataFolder(), "config/core.yml");
-            if( storageConfigFile.exists() ) {
-            	storageConfig.load(new File(getDataFolder(), "config/core.yml"));
-            }
-            else {
-                // otherwise try the old-style single config file
-                storageConfigFile = new File(getDataFolder(), "config.yml");
-                if( storageConfigFile.exists() ) {
-                    storageConfig.load(new File(getDataFolder(), "config.yml"));
-                }
-                // otherwise use the default file in the JAR
-                else {
-                    storageConfig.load(super.getResource("config/core.yml"));
-                }
-            }
-            
             BukkitInjectorFactory factory = new BukkitInjectorFactory(this,
-                    new BukkitConfigStorage(storageConfig));
+                    new BukkitConfigStorage(getStorageConfig()));
             mainClass = new HomeSpawnPlus(factory);
             mainClass.onEnable();
         }
@@ -97,6 +78,41 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Caught exception loading plugin, shutting down", e);
             getServer().getPluginManager().disablePlugin(this);
         }
+    }
+    
+    /**
+	 * Find and load the storage configuration, this is required prior to
+	 * handing off control to the core injection routines.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+    private YamlConfiguration getStorageConfig() throws Exception {
+        YamlConfiguration storageConfig = new YamlConfiguration();
+        YamlConfiguration defaultStorageConfig = new YamlConfiguration();
+        
+        // use file if it exists
+        File storageConfigFile = new File(getDataFolder(), "config/core.yml");
+        if( storageConfigFile.exists() ) {
+        	storageConfig.load(new File(getDataFolder(), "config/core.yml"));
+        }
+        else {
+            // otherwise try the old-style single config file
+            storageConfigFile = new File(getDataFolder(), "config.yml");
+            if( storageConfigFile.exists() ) {
+                storageConfig.load(new File(getDataFolder(), "config.yml"));
+            }
+            // otherwise use the default file in the JAR
+            else {
+                storageConfig.load(super.getResource("config/core.yml"));
+            }
+        }
+
+        // set defaults to in-JAR config to cover any missing values
+        defaultStorageConfig.load(super.getResource("config/core.yml"));
+        storageConfig.setDefaults(defaultStorageConfig);
+
+        return storageConfig;
     }
     
     @Override

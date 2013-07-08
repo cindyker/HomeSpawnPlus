@@ -3,6 +3,7 @@
  */
 package com.andune.minecraft.hsp.commands;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -13,6 +14,11 @@ import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.storage.Storage;
+import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.cache.ServerCacheManager;
+import com.avaje.ebean.cache.ServerCacheStatistics;
 
 /**
  * @author andune
@@ -21,6 +27,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 @UberCommand(uberCommand="hsp", subCommand="debug", help="HSP debug commands")
 public class HSPDebug extends BaseCommand {
 	@Inject ConfigCore configCore;
+	@Inject Storage storage;
 	
     private boolean rootHandlerInstalled = false;
 
@@ -117,6 +124,30 @@ public class HSPDebug extends BaseCommand {
 			return true;
 		}
 		else if( args[0].startsWith("eb") ) {	// ebeans cache stats
+			if( storage instanceof StorageEBeans ) {
+				StorageEBeans ebeansStorage = (StorageEBeans) storage;
+				EbeanServer ebeans = ebeansStorage.getDatabase();
+				ServerCacheManager scm = ebeans.getServerCacheManager();
+				StringBuffer sb = new StringBuffer();
+				List<Class<?>> classes = StorageEBeans.getDatabaseClasses();
+				for(Class<?> clazz : classes) {
+					if( scm.isBeanCaching(clazz) ) {
+						sb.append("Cache stats for class "+clazz.getName()+"\n");
+						ServerCacheStatistics scs = scm.getBeanCache(clazz).getStatistics(false);
+						sb.append("  Bean Cache size = "+scs.getSize()+"\n");
+						sb.append("  Bean Cache Hit ratio = "+scs.getHitRatio()+"\n");
+						scs = scm.getQueryCache(clazz).getStatistics(false);
+						sb.append("  Query Cache size = "+scs.getSize()+"\n");
+						sb.append("  Query Cache Hit ratio = "+scs.getHitRatio()+"\n");
+					}
+					else
+						sb.append("Cache disabled for "+clazz.getName()+"\n");
+				}
+				sender.sendMessage(sb.toString());
+			}
+			else {
+				sender.sendMessage("Ebeans storage not in use");
+			}
 		}
 		else {
 			return false;

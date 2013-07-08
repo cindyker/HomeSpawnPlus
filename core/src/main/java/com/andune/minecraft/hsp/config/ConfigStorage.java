@@ -46,4 +46,5 @@ public interface ConfigStorage {
     };
     
     public Type getStorageType();
+    public boolean useInMemoryCache();
 }

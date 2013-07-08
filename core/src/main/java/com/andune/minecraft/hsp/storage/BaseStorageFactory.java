@@ -38,6 +38,7 @@ import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.config.ConfigStorage.Type;
+import com.andune.minecraft.hsp.storage.cache.StorageCache;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.google.inject.Injector;
 
@@ -133,6 +134,15 @@ public abstract class BaseStorageFactory implements Initializable, StorageFactor
 		if( storageInstance == null )
             storageInstance = injector.getInstance(StorageEBeans.class);
 		
+		// if using in-memory cache, the cache will just wrap the
+		// backing store already chosen.
+		if( configStorage.useInMemoryCache() ) {
+			Storage backingStore = storageInstance;
+			storageInstance = new StorageCache(backingStore);
+			injector.injectMembers(storageInstance);
+		}
+		
+		log.debug("BaseStorageFactory:getInstance() selected {} as storage", storageInstance.getImplName());
 		return storageInstance;
 	}
 

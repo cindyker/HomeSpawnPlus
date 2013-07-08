@@ -62,4 +62,8 @@ public class BukkitConfigStorage implements ConfigStorage {
         return BaseStorageFactory.getType(yaml.getString("core.storage"));
     }
 
+    @Override
+    public boolean useInMemoryCache() {
+        return yaml.getBoolean("core.inMemoryCache");
+    }
 }

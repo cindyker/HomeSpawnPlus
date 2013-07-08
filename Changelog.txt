@@ -36,7 +36,8 @@ v2.0 -
     name. This makes it possible to use command blocks to run HSP commands, like: "/spawn @p TheSpawn" would have HSP run the
     command "/spawn TheSpawn" as if the player that triggered the command block ran it.
   - addition of "uber" commands, enabled by default. Rather than many different commands for players to remember, uber commands
-    consolidates them all under just two commands: /home and /spawn. Type "/home help" for help.
+    consolidates them all under just two commands: /home and /spawn. Type "/home help" for help. Admins also have "/hsp" for
+    admin-related functions.
 
 v1.7.6 - May 5, 2013
 * built for CraftBukkit v1.5.2 ONLY

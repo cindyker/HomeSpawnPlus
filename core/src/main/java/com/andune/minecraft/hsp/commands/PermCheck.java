@@ -38,11 +38,14 @@ import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 
 /**
  * @author andune
  *
  */
+@UberCommand(uberCommand="hsp", subCommand="permCheck",
+	aliases={"pc"}, help="Check player permissions")
 public class PermCheck extends BaseCommand {
     @Inject private PermissionSystem permSystem;
 

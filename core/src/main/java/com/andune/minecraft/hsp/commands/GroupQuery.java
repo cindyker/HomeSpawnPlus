@@ -38,6 +38,7 @@ import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
 /** Command to return the group HSP thinks a player is in, based on the underlying
@@ -46,6 +47,8 @@ import com.andune.minecraft.hsp.util.SpawnUtil;
  * @author andune
  *
  */
+@UberCommand(uberCommand="hsp", subCommand="groupQuery",
+	aliases={"gq"}, help="Query player primary group name")
 public class GroupQuery extends BaseCommand {
     @Inject private PermissionSystem permSystem;
     @Inject private SpawnUtil util;

@@ -65,7 +65,7 @@ implements Server {
 
     @Override
     public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
-        sendLocalizedMessage(sender, getLocalizedMessage(key.toString(), args));
+        sendLocalizedMessage(sender, key.toString(), args);
     }
     
     @Override

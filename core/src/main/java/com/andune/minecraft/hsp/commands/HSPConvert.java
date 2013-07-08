@@ -35,7 +35,9 @@ import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
+import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.convert.CommandBook;
 import com.andune.minecraft.hsp.convert.Converter;
 import com.andune.minecraft.hsp.convert.Essentials29;
@@ -46,18 +48,24 @@ import com.google.inject.Injector;
  * @author andune
  *
  */
+@UberCommand(uberCommand="hsp", subCommand="convert", help="HSP conversion commands")
 public class HSPConvert extends BaseCommand {
     @Inject private Injector injector;
     @Inject private Scheduler scheduler;
+    
+    @Override
+    public String getUsage() {
+		return server.getLocalizedMessage(HSPMessages.CMD_HSPCONVERT_USAGE);
+    }
 
-    public boolean execute(CommandSender sender, String[] args) {
-        if( permissions.isAdmin(sender) )
+	public boolean execute(CommandSender sender, String cmd, String[] args) {
+        if( !permissions.isAdmin(sender) )
             return false;
 		
 		Converter converter = null;
 		
 		if( args.length < 1 ) {
-			sender.sendMessage("Usage: /"+getCommandName()+" [essentials|spawncontrol|commandbook]");
+			return false;
 		}
 		else if( args[0].equalsIgnoreCase("commandbook") ) {
 			converter = injector.getInstance(CommandBook.class);
@@ -76,9 +84,10 @@ public class HSPConvert extends BaseCommand {
 		    converter.setInitiatingSender(sender);
             sender.sendMessage("Starting "+converter.getConverterName()+" conversion");
 			scheduler.scheduleAsyncDelayedTask(converter, 0L);
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 
 }

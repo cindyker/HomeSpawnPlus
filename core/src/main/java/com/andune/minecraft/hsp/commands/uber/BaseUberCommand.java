@@ -56,6 +56,23 @@ public abstract class BaseUberCommand extends BaseCommand {
     public String getUsage() {
         return getUsage(null);
     }
+    
+    /**
+     * Can be overidden by a subclass in order to provide additional help items.
+     * 
+     * @return
+     */
+    protected Map<String, String> getAdditionalHelp() {
+    	return null;
+    }
+    /**
+     * Can be overidden by a subclass in order to provide additional help aliases.
+     * 
+     * @return
+     */
+    protected Map<String, String> getAdditionalHelpAliases() {
+    	return null;
+    }
 
     /**
      * Return a simplified help that only shows commands that we have
@@ -67,9 +84,14 @@ public abstract class BaseUberCommand extends BaseCommand {
         if( sender instanceof Player )
             p = (Player) sender;
 
+        final Map<String, String> additionalHelp = getAdditionalHelp();
+        final Map<String, String> additionalHelpAliases = getAdditionalHelpAliases();
         if( sortedKeys == null ) {
             sortedKeys = new ArrayList<String>(subCommands.keySet());
             sortedKeys.add("help");
+            
+            if( additionalHelp != null )
+            	sortedKeys.addAll(additionalHelp.keySet());
             Collections.sort(sortedKeys);
         }
         
@@ -81,35 +103,50 @@ public abstract class BaseUberCommand extends BaseCommand {
             }
             else {
                 Command cmd = subCommands.get(key);
-                // don't show help for commands we don't have permission for
-                if( p != null && !cmd.hasPermission(p, false) )
-                    continue;
-                
-                UberCommand annotation = cmd.getClass().getAnnotation(UberCommand.class);
-                String help = annotation.help();
-
-                if( key.equals("")  ) {
-                    if( help.length() > 0 )
-                        sb.append("  (no arg)");
-                    else
-                        continue;   // don't show a line if there's no help
+                if( cmd != null ) {
+	                // don't show help for commands we don't have permission for
+	                if( p != null && !cmd.hasPermission(p, false) )
+	                    continue;
+	                
+	                UberCommand annotation = cmd.getClass().getAnnotation(UberCommand.class);
+	                String help = annotation.help();
+	
+	                if( key.equals("")  ) {
+	                    if( help.length() > 0 )
+	                        sb.append("  (no arg)");
+	                    else
+	                        continue;   // don't show a line if there's no help
+	                }
+	                else {
+	                    sb.append("  ");
+	                    sb.append(key);
+	                }
+	            
+	                if( help.length() > 0 ) {
+	                    String shortAlias = shortestAlias.get(key);
+	                    if( shortAlias != null ) {
+	                        sb.append(" [");
+	                        sb.append(shortAlias);
+	                        sb.append("]");
+	                    }
+	                    sb.append(": ");
+	                    sb.append(help);
+	                }
+	                sb.append("\n");
                 }
-                else {
-                    sb.append("  ");
-                    sb.append(key);
-                }
-            
-                if( help.length() > 0 ) {
-                    String shortAlias = shortestAlias.get(key);
-                    if( shortAlias != null ) {
+                // must be an additional command item
+                else if( additionalHelp != null && additionalHelp.get(key) != null ){
+                	sb.append("  ");
+                	sb.append(key);
+                	if( additionalHelpAliases != null && additionalHelpAliases.get(key) != null ) {
                         sb.append(" [");
-                        sb.append(shortAlias);
+                		sb.append(additionalHelpAliases.get(key));
                         sb.append("]");
-                    }
+                	}
                     sb.append(": ");
-                    sb.append(help);
+                	sb.append(additionalHelp.get(key));
+                	sb.append("\n");
                 }
-                sb.append("\n");
             }
         }
 
@@ -155,7 +192,19 @@ public abstract class BaseUberCommand extends BaseCommand {
             else
                 newArgs = args;
 
-            return command.execute(sender, label, newArgs);
+            if( command.execute(sender, label, newArgs) ) {
+            	return true;
+            }
+            // print out the sub-command usage if there was an argument given
+            else if( args.length > 0 ) {
+            	String usage = command.getUsage();
+            	usage = usage.replaceAll("/<command>", "/"+label+" "+args[0]);
+            	sender.sendMessage(usage);
+            	return true;
+            }
+            // otherwise print out uber-command help syntax
+            else
+            	return false;
         }
         else {
             sender.sendMessage(getUsage());

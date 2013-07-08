@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.commands;
 import javax.inject.Inject;
 
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
@@ -60,7 +61,7 @@ public class HomeDeleteOther extends BaseCommand {
 	}
 
 	@Override
-	public boolean execute(Player p, String[] args) {
+	public boolean execute(CommandSender p, String cmd, String[] args) {
 		if( !defaultCommandChecks(p) )
 			return false;
 
@@ -85,15 +86,24 @@ public class HomeDeleteOther extends BaseCommand {
 			}
 		}
 		
-		if( worldName == null )
-			worldName = p.getWorld().getName();
+		if( worldName == null ) {
+			if( p instanceof Player ) {
+				worldName = ((Player) p).getWorld().getName();
+			}
+		}
 		
 		com.andune.minecraft.hsp.entity.Home home;
 		if( homeName != null ) {
 			home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
 		}
 		else {
-			home = util.getDefaultHome(playerName, worldName);
+			if( worldName != null )
+				home = util.getDefaultHome(playerName, worldName);
+			else {
+				// we weren't given enough arguments to do anything useful,
+				// print command usage syntax
+				return false;
+			}
 		}
 		
 		if( home != null ) {

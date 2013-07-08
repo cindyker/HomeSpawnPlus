@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
@@ -103,43 +104,14 @@ public class PlayerLastLocationDAOCache implements PlayerLastLocationDAO {
 		backingDAO.save(playerLastLocation);
 	}
 
-	/**
-	 * A purge will invalidate the entire cache. We just invalidate the cache
-	 * and then pass the purge through to the backing store.
+	/*
+	 * We don't do anything with purges. They are entirely handled by the
+	 * StorageCache implementation for us, so these methods are never called. To
+	 * be sure, we throw an exception that should result in a bug report if they
+	 * are ever mistakenly called somehow.
 	 */
-	@Override
-	public int purgePlayerData(long purgeTime) {
-		// TODO: invalidate cache
-		return backingDAO.purgePlayerData(purgeTime);
-	}
-
-	/**
-	 * A purge will invalidate the entire cache. We just invalidate the cache
-	 * and then pass the purge through to the backing store.
-	 */
-	@Override
-	public int purgeWorldData(String world) {
-		// TODO: invalidate cache
-		return backingDAO.purgeWorldData(world);
-	}
-
-	/**
-	 * A purge will invalidate the entire cache. We just invalidate the cache
-	 * and then pass the purge through to the backing store.
-	 */
-	@Override
-	public int purgePlayer(String playerName) {
-		// TODO: invalidate cache
-		return backingDAO.purgePlayer(playerName);
-	}
-
-	/**
-	 * This method is only used when purging, so it's use is rare (if ever on
-	 * most servers). Therefore no work is done to make this efficient, we just
-	 * pass through to the backing store.
-	 */
-	@Override
-	public Set<String> getAllPlayerNames() {
-		return backingDAO.getAllPlayerNames();
-	}
+	public int purgePlayerData(long purgeTime) { throw new FeatureNotImplemented();	}
+	public int purgeWorldData(String world) { throw new FeatureNotImplemented(); }
+	public int purgePlayer(String playerName) { throw new FeatureNotImplemented(); }
+	public Set<String> getAllPlayerNames() { throw new FeatureNotImplemented(); }
 }

@@ -77,6 +77,10 @@
       <artifactId>HomeSpawnPlus-craftbukkit-pre1.4.5</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
+
+<!-- Code exists, but these are no longer included in order
+     to increase the build speed. Can easily be added back to
+     the build if users still need them.
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
       <artifactId>HomeSpawnPlus-craftbukkit-1.4.5</artifactId>
@@ -99,12 +103,19 @@
     </dependency>
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
+      <artifactId>HomeSpawnPlus-craftbukkit-1.6_R1</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+-->
+
+    <dependency>
+      <groupId>com.andune.minecraft.hsp</groupId>
       <artifactId>HomeSpawnPlus-craftbukkit-1.5_R3</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>com.andune.minecraft.hsp</groupId>
-      <artifactId>HomeSpawnPlus-craftbukkit-1.6_R1</artifactId>
+      <artifactId>HomeSpawnPlus-craftbukkit-1.6_R2</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
 

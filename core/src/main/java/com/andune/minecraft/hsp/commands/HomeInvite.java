@@ -52,7 +52,8 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="invite", help="Send home invite to another player")
+@UberCommand(uberCommand="home", subCommand="invite",
+    aliases={"i"}, help="Send home invite to another player")
 public class HomeInvite extends BaseCommand {
     @Inject private HomeUtil homeUtil;
     @Inject private HomeInviteManager homeInviteManager;

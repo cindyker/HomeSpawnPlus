@@ -46,7 +46,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="delete", help="Delete a home")
+@UberCommand(uberCommand="home", subCommand="delete", aliases={"d"}, help="Delete a home")
 public class HomeDelete extends BaseCommand {
     private HomeUtil homeUtil;
     

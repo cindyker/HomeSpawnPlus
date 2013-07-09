@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="rename", help="Rename a home")
+@UberCommand(uberCommand="home", subCommand="rename", aliases={"r"}, help="Rename a home")
 public class HomeRename extends BaseCommand {
     @Override
     public String[] getCommandAliases() { return new String[] {"homer", "renamehome"}; }

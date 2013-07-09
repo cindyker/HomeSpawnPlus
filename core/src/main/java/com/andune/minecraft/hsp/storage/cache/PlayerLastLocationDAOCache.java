@@ -33,8 +33,11 @@ package com.andune.minecraft.hsp.storage.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.andune.minecraft.commonlib.FeatureNotImplemented;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
@@ -44,14 +47,17 @@ import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
  *
  */
 public class PlayerLastLocationDAOCache implements PlayerLastLocationDAO {
+    private final Logger log = LoggerFactory.getLogger(PlayerLastLocationDAOCache.class);
 	private final PlayerLastLocationDAO backingDAO;
-	private final Map<Integer, PlayerLastLocation> cacheById;
+    private final AsyncWriter asyncWriter;
+	private final ConcurrentHashMap<Integer, PlayerLastLocation> cacheById;
 	private final Map<String, Set<PlayerLastLocation>> cacheByPlayerName;
 	private Set<PlayerLastLocation> allObjects;
 	
-	public PlayerLastLocationDAOCache(final PlayerLastLocationDAO backingStore) {
+	public PlayerLastLocationDAOCache(final PlayerLastLocationDAO backingStore, final AsyncWriter asyncWriter) {
 		this.backingDAO = backingStore;
-		cacheById = new HashMap<Integer, PlayerLastLocation>();
+		this.asyncWriter = asyncWriter;
+		cacheById = new ConcurrentHashMap<Integer, PlayerLastLocation>();
 		cacheByPlayerName = new HashMap<String, Set<PlayerLastLocation>>();
 	}
 	
@@ -126,13 +132,24 @@ public class PlayerLastLocationDAOCache implements PlayerLastLocationDAO {
 		if( set != null )
 			set.add(playerLastLocation);
 		
-		// TODO this needs to use general-purpose async save.
-		// For now, for testing, we just pass save through directly
-		backingDAO.save(playerLastLocation);
+		asyncWriter.push(new AsyncCommitter(playerLastLocation));
+	}
+	
+	private class AsyncCommitter implements EntityCommitter {
+	    private final PlayerLastLocation pll;
+	    public AsyncCommitter(PlayerLastLocation pll) {
+	        this.pll = pll;
+	    }
+
+	    public void commit() throws Exception {
+	        backingDAO.save(pll);
+            cacheById.put(pll.getId(), pll);
+            log.debug("Saved pll with id {}", pll.getId());
+	    }
 	}
 
 	/*
-	 * We don't do anything with purges. They are entirely handled by the
+	 * We don't do anything with data purges. They are entirely handled by the
 	 * StorageCache implementation for us, so these methods are never called. To
 	 * be sure, we throw an exception that should result in a bug report if they
 	 * are ever mistakenly called somehow.

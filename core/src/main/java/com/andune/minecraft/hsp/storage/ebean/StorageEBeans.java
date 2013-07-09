@@ -186,6 +186,11 @@ public class StorageEBeans implements Storage {
         	upgradeDatabase();
         } catch(Exception e) { e.printStackTrace(); }
 	}
+
+    @Override
+    public void shutdownStorage() {
+        // do nothing
+    }
 	
 	@Override
 	public com.andune.minecraft.hsp.storage.dao.HomeDAO getHomeDAO() { return homeDAO; }

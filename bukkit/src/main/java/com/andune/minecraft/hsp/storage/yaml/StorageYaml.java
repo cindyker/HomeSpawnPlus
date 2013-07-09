@@ -198,6 +198,11 @@ public class StorageYaml implements Storage {
 		}
 	}
 	
+    @Override
+    public void shutdownStorage() {
+        // do nothing
+    }
+    
 	/** As homes are loaded, we need to keep track of them because HomeInvite objects
 	 * can reference them and the YAML file isn't fully loaded so homeDAO.getAllObjects()
 	 * won't work yet.

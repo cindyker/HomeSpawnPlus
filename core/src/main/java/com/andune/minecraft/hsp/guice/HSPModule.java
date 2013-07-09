@@ -51,6 +51,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageFactory;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
+import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.andune.minecraft.hsp.strategy.StrategyConfig;
@@ -158,5 +159,11 @@ public class HSPModule extends AbstractModule {
     @Singleton
     protected HomeDAO provideHomeDAO(Storage storage) {
         return storage.getHomeDAO();
+    }
+    
+    @Provides
+    @Singleton
+    protected PlayerLastLocationDAO providePlayerLastLocationDAO(Storage storage) {
+        return storage.getPlayerLastLocationDAO();
     }
 }

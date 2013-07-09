@@ -51,7 +51,8 @@ import com.avaje.ebean.cache.ServerCacheStatistics;
  * @author andune
  *
  */
-@UberCommand(uberCommand="hsp", subCommand="debug", help="HSP debug commands")
+@UberCommand(uberCommand="hsp", subCommand="debug",
+    aliases={"d"}, help="HSP debug commands")
 public class HSPDebug extends BaseCommand {
 	@Inject ConfigCore configCore;
 	@Inject Storage storage;

@@ -52,15 +52,30 @@ import com.andune.minecraft.hsp.storage.dao.VersionDAO;
 public class StorageCache implements Storage {
 	private final Storage backingStore;
 	private final PlayerLastLocationDAOCache playerLastLocationDAO;
+	private final SpawnDAOCache spawnDAO;
+    private final WatchDog watchDog;
+    private final AsyncWriter writer;
 	
-	public StorageCache(Storage backingStore) {
+	public StorageCache(final Storage backingStore) {
 		this.backingStore = backingStore;
-		playerLastLocationDAO = new PlayerLastLocationDAOCache(backingStore.getPlayerLastLocationDAO());
+		
+        watchDog = new WatchDog();
+        writer = new AsyncWriter(watchDog);
+		playerLastLocationDAO = new PlayerLastLocationDAOCache(backingStore.getPlayerLastLocationDAO(), writer);
+		spawnDAO = new SpawnDAOCache(backingStore.getSpawnDAO(), writer);
 	}
 
 	@Override
 	public void initializeStorage() throws StorageException {
 		backingStore.initializeStorage();
+		watchDog.start(writer);
+	}
+	
+    @Override
+	public void shutdownStorage() {
+	    watchDog.shutdown();
+	    writer.stop();
+	    writer.flush();
 	}
 
 	@Override
@@ -80,7 +95,7 @@ public class StorageCache implements Storage {
 
 	@Override
 	public SpawnDAO getSpawnDAO() {
-		return backingStore.getSpawnDAO();
+		return spawnDAO;
 	}
 
 	@Override
@@ -101,6 +116,7 @@ public class StorageCache implements Storage {
 	@Override
 	public void purgeCache() {
 		playerLastLocationDAO.purgeCache();
+		spawnDAO.purgeCache();
 		backingStore.purgeCache();
 	}
 
@@ -145,6 +161,7 @@ public class StorageCache implements Storage {
 	@Override
 	public void flushAll() throws StorageException {
 		backingStore.flushAll();
+		writer.flush();
 	}
 
 	@Override

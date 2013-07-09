@@ -159,5 +159,6 @@ public abstract class BaseStorageFactory implements Initializable, StorageFactor
     @Override
     public void shutdown() throws Exception {
         getInstance().flushAll();
+        getInstance().shutdownStorage();
     }
 }

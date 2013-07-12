@@ -31,12 +31,19 @@
     <module>core</module>
     <module>craftbukkit.api</module>
     <module>craftbukkit.pre1_4_5</module>
+    <module>craftbukkit.v1_5_R3</module>
+    <module>craftbukkit.v1_6_R2</module>
+
+<!-- Versions that code exists for, but dropped from the build to
+     maintain faster build speed. If users complain and are still
+     using these versions, easy enough to uncomment and add back
+     to the build.
     <module>craftbukkit.v1_4_5</module>
     <module>craftbukkit.v1_4_6</module>
     <module>craftbukkit.v1_4_R1</module>
     <module>craftbukkit.v1_5_R2</module>
-    <module>craftbukkit.v1_5_R3</module>
     <module>craftbukkit.v1_6_R1</module>
+-->
   </modules>
 
   <dependencyManagement>

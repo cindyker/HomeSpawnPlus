@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.integration.worldborder;
 
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.server.api.Location;
@@ -68,41 +69,24 @@ public class WorldBorderIntegration {
 	        return null;
 	}
 
-	// TODO: finish me
 	public BorderData getBorderData(String worldName) {
 		if( worldBorder != null ) {
             com.wimbli.WorldBorder.BorderData border = worldBorder.GetWorldBorder(worldName);
             return new BorderDataImpl(border);
-//			com.wimbli.WorldBorder.BorderData border = worldBorder.GetWorldBorder(worldName);
-//			double x = border.getX();
-//			double z = border.getZ();
-//			int radius = border.getRadius();
-			
-//			Location min = new Location(w,x-radius, yBounds.minY, z-radius);
-//			Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
 		}
 		else
-			return null;
+			throw new NotImplementedException("attempt to use WorldBorderIntegration with no WorldBorder installed");
 	}
 	
-//	private BorderData defaultBorderData(String worldName) {
-//		World world = Bukkit.getWorld(worldName);
-//		return new BorderDataImpl(new Location(world,1000,0,1000), new Location(world,-1000,0,-1000));
-//	}
-
 	public static class BorderDataImpl implements BorderData
 	{
-		private com.wimbli.WorldBorder.BorderData worldBorderData;
-//		private Location corner1;
-//		private Location corner2;
+	    // If the admin has not defined a border for a given world, it's
+	    // possible for this to be null.
+	    private com.wimbli.WorldBorder.BorderData worldBorderData;
 		
 		public BorderDataImpl(com.wimbli.WorldBorder.BorderData worldBorderData) {
 			this.worldBorderData = worldBorderData;
 		}
-//		public BorderDataImpl(Location corner1, Location corner2) {
-//			this.corner1 = corner1;
-//			this.corner2 = corner2;
-//		}
 		
 		public boolean insideBorder(Location l) {
 			if( worldBorderData != null )
@@ -112,16 +96,23 @@ public class WorldBorderIntegration {
 		}
 		
 		public double getX() {
-		    return worldBorderData.getX();
+            if( worldBorderData != null )
+                return worldBorderData.getX();
+            else
+                return 0;
 		}
         public double getZ() {
-            return worldBorderData.getZ();
+            if( worldBorderData != null )
+                return worldBorderData.getZ();
+            else
+                return 0;
         }
         public int getRadius() {
-            return worldBorderData.getRadius();
+            if( worldBorderData != null )
+                return worldBorderData.getRadius();
+            // no border defined? just use a really large number that won't break MineCraft
+            else
+                return 2^30;
         }
-		
-//		public Location getCorner1() { return corner1; }
-//		public Location getCorner2() { return corner2; }
 	}
 }

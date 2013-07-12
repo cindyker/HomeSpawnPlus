@@ -47,7 +47,6 @@ public class StorageException extends Exception {
 	 * 
 	 */
 	public StorageException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -55,7 +54,6 @@ public class StorageException extends Exception {
 	 */
 	public StorageException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -63,7 +61,6 @@ public class StorageException extends Exception {
 	 */
 	public StorageException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -72,7 +69,6 @@ public class StorageException extends Exception {
 	 */
 	public StorageException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

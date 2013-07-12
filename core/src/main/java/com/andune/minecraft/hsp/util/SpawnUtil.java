@@ -112,7 +112,10 @@ public class SpawnUtil {
      */
     public void setDefaultWorldSpawn(Location l, String updatedBy) throws StorageException
     {
-        // TODO: this external static reference is ugly and needs to be refactored
+        // not happy with external static reference, but it's a holdover of
+        // a legacy design that has key names rather than flag attributes.
+        // Refactoring would require a data change which would affect all
+        // installed clients. Just leaving it alone for now.
         setGroupSpawn(Storage.HSP_WORLD_SPAWN_GROUP, l, updatedBy);
     }
     

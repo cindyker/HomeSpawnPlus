@@ -22,18 +22,20 @@ permissions:
             hsp.command.setdefaultspawn: true
             hsp.command.setgroupspawn: true
             hsp.command.groupspawn: true
-            hsp.command.CooldownExempt.home: true
-            hsp.command.CooldownExempt.spawn: true
-            hsp.command.CooldownExempt.groupspawn: true
-            hsp.command.WarmupExempt.home: true
-            hsp.command.WarmupExempt.spawn: true
-            hsp.command.WarmupExempt.groupspawn: true
-            hsp.command.CostExempt.groupspawn: true
-            hsp.command.CostExempt.spawn: true
-            hsp.command.CostExempt.home: true
-            hsp.command.CostExempt.sethome: true
+            hsp.CooldownExempt.home: true
+            hsp.CooldownExempt.spawn: true
+            hsp.CooldownExempt.groupspawn: true
+            hsp.WarmupExempt.home: true
+            hsp.WarmupExempt.spawn: true
+            hsp.WarmupExempt.groupspawn: true
+            hsp.CostExempt.groupspawn: true
+            hsp.CostExempt.spawn: true
+            hsp.CostExempt.home: true
+            hsp.CostExempt.sethome: true
             hsp.command.setfirstspawn: true
             hsp.singleGlobalHomeExempt: true
+            hsp.command.permcheck: true
+            hsp.command.groupquery: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -185,52 +187,52 @@ permissions:
     hsp.command.spawnlist:
         description: Allows use of the /spawnlist command
         default: op
-    hsp.command.CooldownExempt.*:
+    hsp.CooldownExempt.*:
         description: Exempt from all cooldowns
         children:
-          hsp.command.CooldownExempt.home: true
-          hsp.command.CooldownExempt.spawn: true
-          hsp.command.CooldownExempt.groupspawn: true
-    hsp.command.CooldownExempt.home:
+          hsp.CooldownExempt.home: true
+          hsp.CooldownExempt.spawn: true
+          hsp.CooldownExempt.groupspawn: true
+    hsp.CooldownExempt.home:
         description: Exempt from /home cooldown
         default: op
-    hsp.command.CooldownExempt.spawn:
+    hsp.CooldownExempt.spawn:
         description: Exempt from /spawn cooldown
         default: op
-    hsp.command.CooldownExempt.groupspawn:
+    hsp.CooldownExempt.groupspawn:
         description: Exempt from /groupspawn cooldown
         default: op
-    hsp.command.WarmupExempt.*:
+    hsp.WarmupExempt.*:
         description: Exempt from all warmups
         children:
-          hsp.command.WarmupExempt.home: true
-          hsp.command.WarmupExempt.spawn: true
-          hsp.command.WarmupExempt.groupspawn: true
-    hsp.command.WarmupExempt.home:
+          hsp.WarmupExempt.home: true
+          hsp.WarmupExempt.spawn: true
+          hsp.WarmupExempt.groupspawn: true
+    hsp.WarmupExempt.home:
         description: Exempt from /home warmup
         default: op
-    hsp.command.WarmupExempt.spawn:
+    hsp.WarmupExempt.spawn:
         description: Exempt from /spawn warmup
         default: op
-    hsp.command.WarmupExempt.groupspawn:
+    hsp.WarmupExempt.groupspawn:
         description: Exempt from /groupspawn warmup
         default: op
-    hsp.command.CostExempt.*:
+    hsp.CostExempt.*:
         description: Exempt from all costs
         children:
-          hsp.command.CostExempt.home: true
-          hsp.command.CostExempt.sethome: true
-          hsp.command.CostExempt.spawn: true
-          hsp.command.CostExempt.groupspawn: true
-    hsp.command.CostExempt.home:
+          hsp.CostExempt.home: true
+          hsp.CostExempt.sethome: true
+          hsp.CostExempt.spawn: true
+          hsp.CostExempt.groupspawn: true
+    hsp.CostExempt.home:
         description: Exempt from /home costs
         default: op
-    hsp.command.CostExempt.sethome:
+    hsp.CostExempt.sethome:
         description: Exempt from /sethome costs
         default: op
-    hsp.command.CostExempt.spawn:
+    hsp.CostExempt.spawn:
         description: Exempt from /spawn costs
         default: op
-    hsp.command.CostExempt.groupspawn:
+    hsp.CostExempt.groupspawn:
         description: Exempt from /groupspawn costs
         default: op

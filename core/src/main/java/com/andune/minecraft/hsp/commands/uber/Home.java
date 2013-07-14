@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Factory;
  */
 public class Home extends BaseUberCommand {
     @Inject
-    public Home(Factory factory, Reflections reflections) {
-        super(factory, reflections);
+    public Home(Factory factory, Reflections reflections, com.andune.minecraft.hsp.commands.Home baseHomeCommand) {
+        super(factory, reflections, baseHomeCommand);
     }
 }

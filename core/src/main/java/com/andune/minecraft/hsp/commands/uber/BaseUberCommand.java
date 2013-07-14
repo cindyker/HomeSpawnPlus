@@ -58,12 +58,19 @@ public abstract class BaseUberCommand extends BaseCommand {
     private final Map<String, Command> subCommands = new HashMap<String, Command>(10);
     private final Map<String, Command> subCommandAliases = new HashMap<String, Command>(10);
     private final Map<String, String> shortestAlias = new HashMap<String, String>(10);
+    private final UberCommandFallThrough baseFallThroughCommand;
     private ArrayList<String> sortedKeys;
 
+    public BaseUberCommand(Factory factory, Reflections reflections, UberCommandFallThrough baseFallThroughCommand) {
+    	this.baseFallThroughCommand = baseFallThroughCommand;
+    	setDependencies(factory, reflections, getClass().getSimpleName().toLowerCase());
+    }
     public BaseUberCommand(Factory factory, Reflections reflections) {
-        setDependencies(factory, reflections, getClass().getSimpleName().toLowerCase());
+    	this.baseFallThroughCommand = null;
+    	setDependencies(factory, reflections, getClass().getSimpleName().toLowerCase());
     }
     public BaseUberCommand(Factory factory, Reflections reflections, String baseName) {
+    	this.baseFallThroughCommand = null;
         setDependencies(factory, reflections, baseName);
     }
     
@@ -180,7 +187,34 @@ public abstract class BaseUberCommand extends BaseCommand {
         // drop last \n, server adds it's own
         return sb.substring(0, sb.length()-1);
     }
-
+    
+    /**
+	 * Run a given uber command, possibly in dryRun mode.
+	 * 
+	 * @param sender
+	 *            the object (person/console) sending the command
+	 * @param label
+	 *            the actual command being run (sometimes this is an alias name)
+	 * @param args
+	 *            any arguments to the command
+	 * @param dryRun
+	 *            For uber commands, it can be useful to know whether or not a
+	 *            given command context (player, label, args) would do anything,
+	 *            without it actually doing anything. This can then be used to
+	 *            determine whether to actually call the uber command with the
+	 *            given context, or perhaps pass on the context to another
+	 *            command.
+	 * @return In normal mode, returns true if the execution was successful,
+	 *         false if the command system should keep looking and pass this
+	 *         command on to the next plugin.<br>
+	 *         <br>
+	 *         In dryRun mode, returns true if the command would have resulted
+	 *         in a command execution (actual status unknown), false if the
+	 *         command would have resulted in a usage being displayed or a
+	 *         normal mode false value.
+	 */
+//    private boolean privateExecute(CommandSender sender, String label, String[] args, boolean dryRun) {
+    
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         Command command = null;
@@ -202,9 +236,16 @@ public abstract class BaseUberCommand extends BaseCommand {
             }
             else
                 usage = getUsage(sender);
+
+            // if there is a baseFallThroughCommand, check if we should run that
+            if( baseFallThroughCommand != null ) {
+            	if( baseFallThroughCommand.processUberCommandDryRun(sender, label, args) ) {
+            		return baseFallThroughCommand.execute(sender, label, args);
+            	}
+            }
             
-            sender.sendMessage(usage);
-            return true;
+        	sender.sendMessage(usage);
+        	return true;
         }
         else {
             command = subCommands.get(args[0]);
@@ -233,11 +274,29 @@ public abstract class BaseUberCommand extends BaseCommand {
             else
             	return false;
         }
-        else {
-            sender.sendMessage(getUsage());
-            return true; 
+        // if there is a baseFallThroughCommand, check if we should run that
+        else if( baseFallThroughCommand != null ) {
+        	if( baseFallThroughCommand.processUberCommandDryRun(sender, label, args) ) {
+        		return baseFallThroughCommand.execute(sender, label, args);
+        	}
         }
+        
+        sender.sendMessage(getUsage());
+        return true; 
     }
+
+    /*
+    @Override
+    public boolean execute(CommandSender sender, String label, String[] args) {
+    	if( privateExecute(sender, label, args, true) ) {
+    		return privateExecute(sender, label, args, false);
+    	}
+    	else {
+    		sender.sendMessage("Do something with base command");
+    		return true;
+    	}
+    }
+    */
     
     protected void loadSubCommands(final String uberCommand) {
         log.debug("loadSubCommands uberCommand={}", uberCommand);
@@ -268,12 +327,9 @@ public abstract class BaseUberCommand extends BaseCommand {
                     String shortAlias = null;
                     String[] aliases = annotation.aliases();
                     if( aliases != null ) {
+                        shortAlias = getShortestAlias(aliases);
                         for(String alias : aliases) {
                             subCommandAliases.put(alias, command);
-                            if( shortAlias == null )
-                                shortAlias = alias;
-                            else if( alias.length() < shortAlias.length() )
-                                shortAlias = alias;
                         }
                     }
                     
@@ -286,5 +342,38 @@ public abstract class BaseUberCommand extends BaseCommand {
                     log.error("Class {} has UberCommand annotation but is not subClass of Command", sub);
             }
         }
+        
+        if( baseFallThroughCommand != null ) {
+        	String[] names = baseFallThroughCommand.getExplicitSubCommandName();
+        	if( names != null && names.length > 0 ) {
+        		final String cmdName = names[0];
+                subCommands.put(cmdName, baseFallThroughCommand);
+                
+        		String shortAlias = getShortestAlias(names);
+        		if( cmdName.equals(shortAlias) )
+        			shortAlias = null;
+        		if( shortAlias != null )
+                    this.shortestAlias.put(cmdName, shortAlias);
+        	}
+        }
+    }
+    
+    /**
+     * Given a list of aliases, return the shortest one.
+     * 
+     * @param aliases
+     * @return
+     */
+    private String getShortestAlias(final String[] aliases) {
+        String shortAlias = null;
+        if( aliases != null ) {
+            for(String alias : aliases) {
+                if( shortAlias == null )
+                    shortAlias = alias;
+                else if( alias.length() < shortAlias.length() )
+                    shortAlias = alias;
+            }
+        }
+    	return shortAlias;
     }
 }

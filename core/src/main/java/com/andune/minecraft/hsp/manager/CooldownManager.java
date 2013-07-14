@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.Logger;
@@ -52,6 +53,7 @@ import com.andune.minecraft.hsp.server.api.Server;
  * @author andune
  *
  */
+@Singleton
 public class CooldownManager {
 	private final Logger log = LoggerFactory.getLogger(CooldownManager.class);
 	
@@ -78,26 +80,36 @@ public class CooldownManager {
     		return false;
     }
     
-	/** Utility method for making sure a cooldown is available before we execute a
-	 * command.  
+	/**
+	 * Utility method for making sure a cooldown is available before we execute
+	 * a command.
 	 * 
-	 * It also writes a message to the player letting them know they are still in cooldown.
+	 * It also writes a message to the player letting them know they are still
+	 * in cooldown.
 	 * 
 	 * @param p
 	 * @param cooldownName
-	 * @return true if cooldown is available, false if currently in cooldown period
+	 * @param sendMessage
+	 *            if true, a message will be sent to the player explaining the
+	 *            cooldown and time left.
+	 * @return true if cooldown is available, false if currently in cooldown
+	 *         period
 	 */
-	public boolean cooldownCheck(Player p, String cooldownName) {
+	public boolean cooldownCheck(Player p, String cooldownName, boolean sendMessage) {
 		if( isExemptFromCooldown(p, cooldownName) )
 			return true;
 		
 		long cooldownTimeLeft = getCooldownRemaining(p, cooldownName);
+		log.debug("cooldownCheck() p={}, cooldownName={}, cooldownTimeLeft={}", p, cooldownName, cooldownTimeLeft);
 		if(cooldownTimeLeft > 0)
 		{
-		    p.sendMessage( server.getLocalizedMessage(HSPMessages.COOLDOWN_IN_EFFECT,
-					"name", cooldownName,
-					"time", generalUtil.displayTimeString(cooldownTimeLeft*1000,
-							false, null)) );
+			if( sendMessage ) {
+			    p.sendMessage( server.getLocalizedMessage(HSPMessages.COOLDOWN_IN_EFFECT,
+						"name", cooldownName,
+						"time", generalUtil.displayTimeString(cooldownTimeLeft*1000,
+								false, null)) );
+			}
+			log.debug("cooldownCheck() return false");
 			return false;
 		}
 		
@@ -106,6 +118,7 @@ public class CooldownManager {
 		// at the start of a command even though the command aborts due to an error condition
 		// (such as player arguments being wrong, etc).
 //		setCooldown(p, cooldownName);
+		log.debug("cooldownCheck() return true");
 		return true;
 	}
 	
@@ -128,7 +141,7 @@ public class CooldownManager {
     public long getCooldownRemaining(final Player p, final String cooldown)
     {
     	long cooldownRemaining = 0;
-    	log.debug("getCooldownRemaining: p={} cooldown={}", p, cooldown);
+    	log.debug("getCooldownRemaining(): p={} cooldown={}", p, cooldown);
 
     	CooldownTime cdt = getCooldownTime(p, cooldown);
     	int cooldownAmount = cdt.cooldownTime;
@@ -137,20 +150,21 @@ public class CooldownManager {
     	
     	String key = p.getName()+"."+cdt.cooldownName;
     	Long cooldownStartTime = cooldowns.get(key);
+    	log.debug("getCooldownRemaining(): key={}, cooldownStartTime={}", key, cooldownStartTime);
     	if( cooldownStartTime != null )
     	{
-//        	log.debug(logPrefix + " cooldown start Time for key "+key+" = "+cooldownStartTime/1000);
-        	
-    		// Compare time
     		long timeElapsed = (System.currentTimeMillis() - cooldownStartTime)/1000;
+	    	log.debug("getCooldownRemaining(): key={}, timeElapsed={}", key, timeElapsed);
     		
-    		if(timeElapsed > cooldownAmount)
-    			cooldowns.remove(key);    					// cooldown expired, remote it
+    		if(timeElapsed > cooldownAmount) {
+    	    	log.debug("getCooldownRemaining(): expired cooldown removed, key={}", key);
+    			cooldowns.remove(key);    					// cooldown expired, remove it
+    		}
     		else
     			cooldownRemaining = cooldownAmount-timeElapsed;
     	}
 
-    	log.debug("getCooldownRemaining: cooldown remaining for key {} is {}", key, cooldownRemaining);
+    	log.debug("getCooldownRemaining(): cooldown remaining for key {} is {}", key, cooldownRemaining);
     	return cooldownRemaining;
     }
     
@@ -295,6 +309,8 @@ public class CooldownManager {
     
     /** Should be called when a player dies. Will determine if the player's
      * cooldowns should be reset based on config options and location.
+     * 
+     * TODO: 2.0 bug, onDeath() doesn't look to ever be called.
      * 
      * @param player
      * @param location

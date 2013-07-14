@@ -67,14 +67,18 @@ public class Initializer extends com.andune.minecraft.commonlib.Initializer {
      * @throws Exception
      */
     public void initConfigs() throws Exception {
+    	log.debug("ENTER: initConfigs()");
         configLoader.flush();
 
         for(Initializable init : getSortedInitObjects()) {
-            if( init instanceof ConfigBase )
+            if( init instanceof ConfigBase ) {
+            	log.debug("initializing {}", init);
                 init.init();
+            }
         }
         
         // re-initialize strategyConfig since it preprocesses and caches event config data
         strategyConfig.init();
+    	log.debug("EXIT: initConfigs()");
     }
 }

@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -55,6 +56,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
+@Singleton
 public class HomeLimitsManager {
     private final Logger log = LoggerFactory.getLogger(HomeLimitsManager.class);
     
@@ -89,6 +91,7 @@ public class HomeLimitsManager {
      *         there is no inheritance.
      */
     public String getInheritedWorld(String worldName) {
+        log.debug("getInheritedWorld: worldName={}", worldName);
         String inherit = null;
         LimitsPerWorld entry = config.getPerWorldEntry(worldName);
         if( entry != null )
@@ -186,20 +189,22 @@ public class HomeLimitsManager {
         if( homes != null )
             count = homes.size();
 
-        final String inherit = getInheritedWorld(worldName);
-        if( inherit != null ) {
-            log.debug("getHomeCount() adding inherited world {} to home count", inherit);
-            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(inherit, playerName);
-            if( homes != null )
-                count += homes.size();
-        }
-        
-        final Collection<String> children = getChildWorlds(worldName);
-        for(String child : children) {
-            log.debug("getHomeCount() adding child world {} to home count", child);
-            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(child, playerName);
-            if( homes != null )
-                count += homes.size();
+        if( worldName != null ) {
+	        final String inherit = getInheritedWorld(worldName);
+	        if( inherit != null ) {
+	            log.debug("getHomeCount() adding inherited world {} to home count", inherit);
+	            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(inherit, playerName);
+	            if( homes != null )
+	                count += homes.size();
+	        }
+	        
+	        final Collection<String> children = getChildWorlds(worldName);
+	        for(String child : children) {
+	            log.debug("getHomeCount() adding child world {} to home count", child);
+	            homes = storage.getHomeDAO().findHomesByWorldAndPlayer(child, playerName);
+	            if( homes != null )
+	                count += homes.size();
+	        }
         }
 
         log.debug("getHomeCount() returning count={}", count);
@@ -277,8 +282,12 @@ public class HomeLimitsManager {
         }
         
         // if we get to here and still haven't found a value, we assume a sane default of 1
-        if( limit == null || limit < 0 )
+        if( limit == null )
             limit = 1;
+        
+        // Any value < -1 is normalized to -1, meaning infinite homes
+        if( limit < -1 )
+        	limit = -1;
         
         log.debug("getHomeLimit() returning limit {} for player {}", limit, player);
         return limit;

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -54,6 +55,7 @@ import com.andune.minecraft.hsp.server.api.Server;
  * @author andune
  *
  */
+@Singleton
 public class WarmupManager {
 	private static final Logger log = LoggerFactory.getLogger(WarmupManager.class);
 	

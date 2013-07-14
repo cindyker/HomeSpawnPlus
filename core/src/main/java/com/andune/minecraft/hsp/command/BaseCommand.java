@@ -419,12 +419,17 @@ public abstract class BaseCommand implements Command {
 	/** check the default command cooldown for the player
 	 * 
 	 * @param p
+	 * @param cooldownName
+	 * @param sendMessage if true, a cooldown message will be sent to the player
 	 * @return true if cooldown is available, false if currently in cooldown period
 	 */
-	protected boolean cooldownCheck(Player p, String cooldownName) {
+	protected boolean cooldownCheck(Player p, String cooldownName, boolean sendMessage) {
 		if( cooldownName == null )
 			cooldownName = getCommandName();
-		return cooldownManager.cooldownCheck(p, cooldownName);
+		return cooldownManager.cooldownCheck(p, cooldownName, sendMessage);
+	}
+	protected boolean cooldownCheck(Player p, String cooldownName) {
+		return cooldownCheck(p, cooldownName, true);
 	}
 	protected boolean cooldownCheck(Player p) {
 		return cooldownCheck(p, getCommandName());

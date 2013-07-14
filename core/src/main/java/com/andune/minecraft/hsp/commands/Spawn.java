@@ -30,15 +30,18 @@
  */
 package com.andune.minecraft.hsp.commands;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
-
+import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommandFallThrough;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.manager.WarmupRunner;
 import com.andune.minecraft.hsp.strategy.EventType;
@@ -50,9 +53,8 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
  * @author andune
  *
  */
-@UberCommand(uberCommand="spawn", subCommand="",
-    aliases={"s"}, help="Go to spawn")
-public class Spawn extends BaseCommand
+@UberCommand(uberCommand="spawn", subCommand="", help="Teleport to spawn")
+public class Spawn extends BaseCommand implements UberCommandFallThrough
 {
     @Inject private StrategyEngine engine;
     @Inject private ConfigCore configCore;
@@ -60,8 +62,12 @@ public class Spawn extends BaseCommand
 	
 	@Override
 	public boolean execute(final Player p, String[] args) {
+		return privateExecute(p, args, false);
+	}
+
+	public boolean privateExecute(final Player p, String[] args, boolean dryRun) {
+		log.debug("/spawn command called player={}, args={}, dryRun={}", p, args, dryRun);
 		String cooldownName = "spawn";
-		log.debug("/spawn command run by player {}", p);
 		
 		boolean isNamedSpawn=false;
 		Location l = null;
@@ -78,8 +84,8 @@ public class Spawn extends BaseCommand
 				}
 				
 				if( l == null ) {
-					p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]) );
-					return true;
+			    	sendLocalizedMessage(p, dryRun, HSPMessages.CMD_SPAWN_NO_SPAWN_FOUND, "name", args[0]);
+					return !dryRun;
 				}
 				
 				// if we check named permissions individually, then check now
@@ -93,8 +99,8 @@ public class Spawn extends BaseCommand
 			}
 			
 			if( !hasPermission ) {
-				p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
-				return true;
+				sendLocalizedMessage(p, dryRun, HSPMessages.NO_PERMISSION);
+				return !dryRun;
 			}
 		}
 		else {
@@ -110,10 +116,21 @@ public class Spawn extends BaseCommand
 		else
 			context = null;
     	
-		if( !cooldownCheck(p, cooldownName) )
+		/*
+		 * The return value here is explicitly not affected by dryRun, meaning
+		 * if an uberCommand succeeds except for cooldown, then we will display
+		 * the cooldown.
+		 */
+		log.debug("spawn command running cooldown check, cooldownName={}",cooldownName);
+		if( !cooldownCheck(p, cooldownName, !dryRun) )
 			return true;
     	
     	if( l != null ) {
+    		// if we get to here, the dryRun has succeeded.
+    		if( dryRun ) {
+    			return true;
+    		}
+
     		String spawnName = null;
     		if( result != null && result.getSpawn() != null )
     			spawnName = result.getSpawn().getName();
@@ -174,5 +191,41 @@ public class Spawn extends BaseCommand
     		
 		    teleport.teleport(p, l, context.getTeleportOptions());
 		}
+	}
+
+	private void sendLocalizedMessage(Player p, boolean dryRun, HSPMessages key, Object... args) {
+		if( !dryRun ) {
+			server.sendLocalizedMessage(p, key, args);
+		}
+	}
+	
+	@Override
+	public boolean processUberCommandDryRun(CommandSender sender, String label, String[] args) {
+		if( sender instanceof Player ) {
+			return privateExecute(((Player) sender), args, true);
+		}
+		else
+			return false;
+	}
+
+	@Override
+	public String[] getExplicitSubCommandName() {
+		return new String[] { "teleport", "tp", "go" };
+	}
+
+	@Override
+	public String getExplicitSubCommandHelp() {
+		return "Teleport to spawn or named spawn";
+	}
+
+	// not needed for /spawn command
+	@Override
+	public Map<String, String> getAdditionalHelp() {
+		return null;
+	}
+
+	@Override
+	public Map<String, String> getAdditionalHelpAliases() {
+		return null;
 	}
 }

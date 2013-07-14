@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.commands.uber;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -117,11 +118,13 @@ public abstract class BaseUberCommand extends BaseCommand {
         final Map<String, String> additionalHelp = getAdditionalHelp();
         final Map<String, String> additionalHelpAliases = getAdditionalHelpAliases();
         if( sortedKeys == null ) {
-            sortedKeys = new ArrayList<String>(subCommands.keySet());
-            sortedKeys.add("help");
+            HashSet<String> keySet = new HashSet<String>(subCommands.keySet());
+            keySet.add("help");
             
             if( additionalHelp != null )
-            	sortedKeys.addAll(additionalHelp.keySet());
+            	keySet.addAll(additionalHelp.keySet());
+
+            sortedKeys = new ArrayList<String>(keySet);
             Collections.sort(sortedKeys);
         }
         
@@ -133,6 +136,7 @@ public abstract class BaseUberCommand extends BaseCommand {
             }
             else {
                 Command cmd = subCommands.get(key);
+
                 if( cmd != null ) {
 	                // don't show help for commands we don't have permission for
 	                if( p != null && !cmd.hasPermission(p, false) )
@@ -141,6 +145,13 @@ public abstract class BaseUberCommand extends BaseCommand {
 	                UberCommand annotation = cmd.getClass().getAnnotation(UberCommand.class);
 	                String help = annotation.help();
 	
+	                // Allow a FallThrough command to define it's own help text if it chooses
+	                if( cmd instanceof UberCommandFallThrough && !key.equals("") ) {
+	                	UberCommandFallThrough ucft = (UberCommandFallThrough) cmd;
+	                	if( ucft.getExplicitSubCommandHelp() != null )
+	                		help = ucft.getExplicitSubCommandHelp();
+	                }
+	                	
 	                if( key.equals("")  ) {
 	                    if( help.length() > 0 )
 	                        sb.append("  (no arg)");
@@ -165,23 +176,35 @@ public abstract class BaseUberCommand extends BaseCommand {
 	                sb.append("\n");
                 }
                 // must be an additional command item
-                else if( additionalHelp != null && additionalHelp.get(key) != null ){
-                	sb.append("  ");
-                	sb.append(key);
-                	if( additionalHelpAliases != null && additionalHelpAliases.get(key) != null ) {
-                        sb.append(" [");
-                		sb.append(additionalHelpAliases.get(key));
-                        sb.append("]");
-                	}
-                    sb.append(": ");
-                	sb.append(additionalHelp.get(key));
-                	sb.append("\n");
+                else {
+                	appendAdditionalHelp(sb, additionalHelp, additionalHelpAliases, key);
                 }
             }
         }
 
         // drop last \n, server adds it's own
         return sb.substring(0, sb.length()-1);
+    }
+    
+    private boolean appendAdditionalHelp(StringBuffer sb, Map<String, String> additionalHelp,
+    		Map<String, String> additionalHelpAliases, String key)
+    {
+        if( additionalHelp != null && additionalHelp.get(key) != null ){
+        	sb.append("  ");
+        	sb.append(key);
+        	if( additionalHelpAliases != null && additionalHelpAliases.get(key) != null ) {
+                sb.append(" [");
+        		sb.append(additionalHelpAliases.get(key));
+                sb.append("]");
+        	}
+            sb.append(": ");
+        	sb.append(additionalHelp.get(key));
+        	sb.append("\n");
+        	
+        	return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -350,6 +373,11 @@ public abstract class BaseUberCommand extends BaseCommand {
         			shortAlias = null;
         		if( shortAlias != null )
                     this.shortestAlias.put(cmdName, shortAlias);
+        		
+        		// add aliases to alias map
+                for(int i=1; i < names.length; i++) {
+                    subCommandAliases.put(names[i], baseFallThroughCommand);
+                }
         	}
         }
     }

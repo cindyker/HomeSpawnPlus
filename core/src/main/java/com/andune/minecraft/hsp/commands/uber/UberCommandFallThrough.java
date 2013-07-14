@@ -50,6 +50,15 @@ public interface UberCommandFallThrough extends Command {
 	 *         aliases.
 	 */
 	public String[] getExplicitSubCommandName();
+
+	/**
+	 * Help string for the Explicit SubCommand to be displayed in uber command
+	 * help. If null, the default uber help text for the command will be
+	 * displayed.
+	 * 
+	 * @return
+	 */
+	public String getExplicitSubCommandHelp();
 	
 	/**
 	 * Any additional help items to be shown by this command as a map, whose

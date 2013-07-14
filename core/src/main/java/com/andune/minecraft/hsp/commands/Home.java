@@ -55,8 +55,7 @@ import com.andune.minecraft.hsp.util.HomeUtil;
  * @author andune
  *
  */
-@UberCommand(uberCommand="home", subCommand="",
-    aliases={"h"}, help="Go to your home")
+@UberCommand(uberCommand="home", subCommand="", help="Teleport to your home")
 public class Home extends BaseCommand implements UberCommandFallThrough
 {
 	@Inject private StrategyEngine engine;
@@ -76,7 +75,7 @@ public class Home extends BaseCommand implements UberCommandFallThrough
 	
 	private boolean privateExecute(final Player p, String[] args, boolean dryRun)
 	{
-		log.debug("home command called player={}, args={}, dryRun={}", p, args, dryRun);
+		log.debug("/home command called player={}, args={}, dryRun={}", p, args, dryRun);
 
 		// this flag is used to determine whether the player influenced the outcome of /home
 		// with an arg or whether it was purely determined by the default home strategy, so
@@ -272,8 +271,10 @@ public class Home extends BaseCommand implements UberCommandFallThrough
 
 	@Override
 	public String[] getExplicitSubCommandName() {
-		return new String[] {"named", "n"};
+		return new String[] {"teleport", "tp", "go"};
 	}
+	@Override
+	public String getExplicitSubCommandHelp() { return "Teleport to your home or named home"; }
 	
 	// These are not needed for the /home command
 	public Map<String, String> getAdditionalHelp() { return null; }

@@ -169,6 +169,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
 	public String[] getExplicitSubCommandName() {
 		return new String[] {"admin", "a"};
 	}
+	@Override
+	public String getExplicitSubCommandHelp() { return null; }
 
 	private Map<String, String> hspCommandHelp = null;
     @Override

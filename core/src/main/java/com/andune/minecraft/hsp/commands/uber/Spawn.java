@@ -42,7 +42,7 @@ import com.andune.minecraft.hsp.server.api.Factory;
  */
 public class Spawn extends BaseUberCommand {
     @Inject
-    public Spawn(Factory factory, Reflections reflections) {
-        super(factory, reflections);
+    public Spawn(Factory factory, Reflections reflections,  com.andune.minecraft.hsp.commands.Spawn baseCommand) {
+        super(factory, reflections, baseCommand);
     }
 }

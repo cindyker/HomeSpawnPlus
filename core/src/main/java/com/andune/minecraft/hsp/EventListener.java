@@ -41,7 +41,6 @@ import com.andune.minecraft.commonlib.server.api.events.PlayerBedEnterEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerJoinEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerKickEvent;
-import com.andune.minecraft.commonlib.server.api.events.PlayerMoveEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerQuitEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerRespawnEvent;
 import com.andune.minecraft.commonlib.server.api.events.PlayerTeleportEvent;
@@ -373,11 +372,5 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     @Override
     public void playerDamage(PlayerDamageEvent event) {
         warmupManager.processEntityDamage(event);
-    }
-
-    @Override
-    public void playerMove(PlayerMoveEvent event) {
-        // TODO Auto-generated method stub
-        
     }
 }

@@ -51,6 +51,8 @@ import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
+import com.andune.minecraft.commonlib.server.bukkit.event.BukkitEventPriority;
+import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigWarmup;
 
 /** Bridge class between Bukkit event system and HSP API event interface.
@@ -64,14 +66,16 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
     private final ConfigWarmup configWarmup;
+    private final ConfigCore configCore;
     
     @Inject
     public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory,
-            ConfigWarmup configWarmup) {
+            ConfigWarmup configWarmup, ConfigCore configCore) {
         this.eventListener = listener;
         this.plugin = plugin;
         this.bukkitFactory = bukkitFactory;
         this.configWarmup = configWarmup;
+        this.configCore = configCore;
     }
 
     /**
@@ -139,7 +143,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
      * @return
      */
     private EventPriority getEventPriority() {
-        return EventPriority.HIGHEST;   // TODO: drive from config
+        return BukkitEventPriority.convertApiToBukkit(configCore.getEventPriority());
     }
     
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)

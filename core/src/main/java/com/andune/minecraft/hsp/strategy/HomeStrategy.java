@@ -127,10 +127,8 @@ public abstract class HomeStrategy extends BaseStrategy {
 		
 		// If we haven't found a home by this point and we are in MODE_ANY, then just
 		// try to grab any home we can find.
-		// TODO: 4/17/12: review of code appears that MODE_HOME_ANY implementation is not
-		// functioning here as intended. Should be fixed and validated to be working.
 		if( home == null && context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
-			Set<? extends Home> homes = homeDAO.findHomesByWorldAndPlayer(worldName, playerName);
+			Set<? extends Home> homes = homeDAO.findHomesByPlayer(playerName);
 			// just grab the first one we find
 			if( homes != null && homes.size() != 0 ) {
 				home = homes.iterator().next();

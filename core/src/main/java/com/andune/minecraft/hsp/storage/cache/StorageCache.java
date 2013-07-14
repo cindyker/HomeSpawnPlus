@@ -153,8 +153,6 @@ public class StorageCache implements Storage {
 	}
 
 	/**
-	 * TODO: at some point, this should force the async writer to flush
-	 * synchronously in this calling thread.
 	 * 
 	 * @throws StorageException
 	 */

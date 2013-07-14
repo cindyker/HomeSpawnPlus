@@ -37,6 +37,7 @@ import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.i18n.Colors;
+import com.andune.minecraft.commonlib.server.api.event.EventPriority;
 import com.andune.minecraft.hsp.util.LogUtil;
 
 
@@ -189,7 +190,7 @@ public class ConfigCore extends ConfigBase implements Initializable {
     
     /**
      * Return a string representing the default color, of the form
-     * "%yellow", "%red%", etc.  TODO: link to documentation on colors
+     * "%yellow", "%red%", etc.
      * 
      * @return
      */
@@ -372,5 +373,24 @@ public class ConfigCore extends ConfigBase implements Initializable {
      */
     public boolean useEbeanSearchLower() {
         return super.getBoolean("useEbeanSearchLower");
+    }
+    
+    /**
+     * Return the admin-defined event priority.
+     * 
+     * @return
+     */
+    public EventPriority getEventPriority() {
+        EventPriority priority = EventPriority.HIGHEST; // default if nothing else is defined
+        
+        String arg = super.getString("eventPriority");
+        try {
+            priority = EventPriority.valueOf(arg.toUpperCase());
+        }
+        catch(IllegalArgumentException e) {
+            log.warn("Invalid eventPriority: \"{}\", defaulting to {}", arg, priority);
+        }
+        
+        return priority;
     }
 }

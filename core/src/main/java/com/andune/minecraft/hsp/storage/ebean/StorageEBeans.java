@@ -213,7 +213,6 @@ public class StorageEBeans implements Storage {
 		// offer any support for this functionality.  So we do nothing.
 	}
 
-    // TODO: not done, finish later
     @Override
     public int purgePlayerData(long purgeTime) {
         int purgedRows = getHomeInviteDAO().purgePlayerData(purgeTime);
@@ -225,7 +224,6 @@ public class StorageEBeans implements Storage {
         return purgedRows;
     }
     
-    // TODO: not done, finish later
     @Override
     public int purgeWorldData(String world) {
         int purgedRows = getHomeInviteDAO().purgeWorldData(world);

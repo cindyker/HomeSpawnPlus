@@ -138,9 +138,6 @@ public class StrategyConfigImpl implements StrategyConfig {
 				log.warn("eventType ",eventType," depends on WorldGuard which is not present or enabled. Skipping.");
 			}
 		}
-		else {
-			// TODO: some sort of warning
-		}
 	}
 	
 	/** Called to load strategies out of the config and into run-time variables.

@@ -127,6 +127,9 @@ public class Teleport {
 	public String getCurrentTeleporter() { return currentTeleporter; }
 	
 	private boolean isSafeBlock(Block b, int flags) {
+		if( !b.getChunk().isLoaded() )
+			b.getChunk().load();
+
 		final Block up = b.getRelative(BlockFace.UP);
 		final Block down = b.getRelative(BlockFace.DOWN);
 		final int bTypeId = b.getTypeId();
@@ -232,6 +235,9 @@ public class Teleport {
 		// itself and one above. This has the effect of making spawns appear
 		// correct when they are set on half-slabs.
 		if( level == 0 ) {
+			if( !baseLocation.getChunk().isLoaded() )
+				baseLocation.getChunk().load();
+
     		Block baseBlock = w.getBlockAt(baseLocation);
             if( isSafeBlock(baseBlock, flags) ) {
                 debug.devDebug("findSafeLocation2(): found safe block (original location) ", baseBlock);

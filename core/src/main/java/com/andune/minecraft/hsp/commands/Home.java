@@ -30,6 +30,8 @@
  */
 package com.andune.minecraft.hsp.commands;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
@@ -272,4 +274,8 @@ public class Home extends BaseCommand implements UberCommandFallThrough
 	public String[] getExplicitSubCommandName() {
 		return new String[] {"named", "n"};
 	}
+	
+	// These are not needed for the /home command
+	public Map<String, String> getAdditionalHelp() { return null; }
+	public Map<String, String> getAdditionalHelpAliases() { return null; }
 }

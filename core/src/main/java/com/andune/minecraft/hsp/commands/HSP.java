@@ -47,6 +47,7 @@ import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Initializer;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
+import com.andune.minecraft.hsp.commands.uber.UberCommandFallThrough;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.integration.Essentials;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
@@ -64,7 +65,7 @@ import com.andune.minecraft.hsp.util.BackupUtil;
  */
 @UberCommand(uberCommand="hsp", subCommand="",
 	help="HSP Admin Commands")
-public class HSP extends BaseCommand {
+public class HSP extends BaseCommand implements UberCommandFallThrough {
     @Inject Initializer initializer;
     @Inject MultiverseCore multiverseCore;
     @Inject MultiversePortals multiversePortals;
@@ -103,10 +104,10 @@ public class HSP extends BaseCommand {
     	this.subCommandAliases = Collections.unmodifiableMap(aliases);
     }
     
-    public List<String> getSubCommandNames() {
+    private List<String> getSubCommandNames() {
     	return subCommandNames;
     }
-    public Map<String, String> getSubCommandAliases() {
+    private Map<String, String> getSubCommandAliases() {
     	return subCommandAliases;
     }
 
@@ -155,7 +156,43 @@ public class HSP extends BaseCommand {
 
 		return false;
 	}
-    
+
+	@Override
+	public boolean processUberCommandDryRun(CommandSender sender, String label, String[] args) {
+		if( args != null && args.length > 0 && findMatchingCommand(args[0]) != null )
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public String[] getExplicitSubCommandName() {
+		return new String[] {"admin", "a"};
+	}
+
+	private Map<String, String> hspCommandHelp = null;
+    @Override
+    public Map<String, String> getAdditionalHelp() {
+    	if( hspCommandHelp != null )
+    		return hspCommandHelp;
+    	
+    	hspCommandHelp = new HashMap<String, String>();
+    	List<String> subCommands = getSubCommandNames();
+    	for(String cmdName : subCommands) {
+    		String help = server.getLocalizedMessage(HSPMessages.CMD_HSP_UBER_USAGE + "_" + cmdName.toUpperCase());
+    		if( help != null )
+    			hspCommandHelp.put(cmdName, help);
+    		else
+    			hspCommandHelp.put(cmdName, "(no additional help available)");
+    	}
+    	
+    	return hspCommandHelp;
+    }
+
+    public Map<String, String> getAdditionalHelpAliases() {
+    	return getSubCommandAliases();
+    }
+	
     private abstract class SubCommand implements Runnable {
     	protected CommandSender sender = null;
     	protected String[] args;
@@ -465,5 +502,4 @@ public class HSP extends BaseCommand {
             sender.sendMessage("Database playerNames converted to lowerCase complete. Processed "+conversions+" conversions");
         }
     }
-    
 }

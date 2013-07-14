@@ -3,6 +3,8 @@
  */
 package com.andune.minecraft.hsp.commands.uber;
 
+import java.util.Map;
+
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.hsp.server.api.Command;
 
@@ -48,4 +50,24 @@ public interface UberCommandFallThrough extends Command {
 	 *         aliases.
 	 */
 	public String[] getExplicitSubCommandName();
+	
+	/**
+	 * Any additional help items to be shown by this command as a map, whose
+	 * keys are the sub arguments and values is the help text. Null is a valid
+	 * value.<br>
+	 * <br>
+	 * For example, for command /hsp, this should return a mapping with values
+	 * such as: "backup" => "backup database to a file".
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getAdditionalHelp();
+	
+	/**
+	 * For the purposes of displaying an uber command help menu, this can
+	 * optionally can define aliases for sub commands. Can be null.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getAdditionalHelpAliases();
 }

@@ -91,21 +91,17 @@ public abstract class BaseUberCommand extends BaseCommand {
         return getUsage(null);
     }
     
-    /**
-     * Can be overidden by a subclass in order to provide additional help items.
-     * 
-     * @return
-     */
-    protected Map<String, String> getAdditionalHelp() {
-    	return null;
+    private Map<String, String> getAdditionalHelp() {
+    	if( baseFallThroughCommand != null )
+    		return baseFallThroughCommand.getAdditionalHelp();
+    	else
+    		return null;
     }
-    /**
-     * Can be overidden by a subclass in order to provide additional help aliases.
-     * 
-     * @return
-     */
-    protected Map<String, String> getAdditionalHelpAliases() {
-    	return null;
+    private Map<String, String> getAdditionalHelpAliases() {
+    	if( baseFallThroughCommand != null )
+    		return baseFallThroughCommand.getAdditionalHelpAliases();
+    	else
+    		return null;
     }
 
     /**

@@ -134,7 +134,7 @@ public class WorldGuardInterface {
 		        }
 			}
 		}
-		catch(Throwable e) {
+		catch(Exception e) {
 			// we only print once to avoid spamming the log with errors, since this is possibly
 			// a permanent condition (ie. admin chooses to run older version of WorldGuard that
 			// this plugin is not compatible with)
@@ -158,7 +158,7 @@ public class WorldGuardInterface {
                 return mgr.getRegion(regionName);
             }
         }
-        catch(Throwable e) {
+        catch(Exception e) {
             log.warn("Error trying find WorldGuard region \""+regionName+"\": "+e.getMessage(), e);
         }
         

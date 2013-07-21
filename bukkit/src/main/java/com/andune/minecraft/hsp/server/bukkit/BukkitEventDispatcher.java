@@ -96,8 +96,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                             com.andune.minecraft.commonlib.server.api.events.PlayerJoinEvent apiEvent =
                                     new com.andune.minecraft.commonlib.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory);
                             eventListener.playerJoin(apiEvent);
-                        } catch (Throwable t) {
-                            throw new EventException(t);
+                        } catch (Exception e) {
+                            throw new EventException(e);
                         }
                     }
                 },
@@ -112,8 +112,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                             com.andune.minecraft.commonlib.server.api.events.PlayerRespawnEvent apiEvent =
                                     new com.andune.minecraft.commonlib.server.bukkit.events.PlayerRespawnEvent((PlayerRespawnEvent) event, bukkitFactory);
                             eventListener.playerRespawn(apiEvent);
-                        } catch (Throwable t) {
-                            throw new EventException(t);
+                        } catch (Exception e) {
+                            throw new EventException(e);
                         }
                     }
                 },
@@ -128,8 +128,8 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                         public void execute(Listener listener, Event event) throws EventException {
                             try {
                                 onEntityDamage((EntityDamageEvent) event);
-                            } catch (Throwable t) {
-                                throw new EventException(t);
+                            } catch (Exception e) {
+                                throw new EventException(e);
                             }
                         }
                     },

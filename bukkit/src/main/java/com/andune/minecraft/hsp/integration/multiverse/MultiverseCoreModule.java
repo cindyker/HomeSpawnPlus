@@ -155,8 +155,8 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
                         public void execute(Listener listener, Event event) throws EventException {
                             try {
                                 multiverseListener.onMultiverseTeleport((com.onarandombox.MultiverseCore.event.MVTeleportEvent) event);
-                            } catch (Throwable t) {
-                                throw new EventException(t);
+                            } catch (Exception e) {
+                                throw new EventException(e);
                             }
                         }
                     },

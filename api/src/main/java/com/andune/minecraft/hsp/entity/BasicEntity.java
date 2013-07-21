@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.entity;
 
@@ -36,11 +36,11 @@ import java.sql.Timestamp;
  * @author andune
  *
  */
-public interface BasicEntity {
-	public int getId();
-	public void setId(int id);
-	public Timestamp getLastModified();
-	public void setLastModified(Timestamp lastModified);
-	public Timestamp getDateCreated();
-	public void setDateCreated(Timestamp dateCreated);
+interface BasicEntity {
+    int getId();
+    void setId(int id);
+    Timestamp getLastModified();
+    void setLastModified(Timestamp lastModified);
+    Timestamp getDateCreated();
+    void setDateCreated(Timestamp dateCreated);
 }

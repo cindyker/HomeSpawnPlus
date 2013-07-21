@@ -33,20 +33,20 @@ import com.andune.minecraft.hsp.entity.Spawn;
 
 public interface StrategyResult {
 
-	public abstract void setLocation(Location l);
+    void setLocation(Location l);
 
-	public abstract boolean isSuccess();
+    boolean isSuccess();
 
-	public abstract Location getLocation();
+    Location getLocation();
 
-	public abstract Home getHome();
+    Home getHome();
 
-	public abstract Spawn getSpawn();
+    Spawn getSpawn();
 
-	public abstract boolean isExplicitDefault();
+    boolean isExplicitDefault();
 
-	public abstract void setContext(StrategyContext context);
+    void setContext(StrategyContext context);
 
-	public abstract StrategyContext getContext();
+    StrategyContext getContext();
 
 }

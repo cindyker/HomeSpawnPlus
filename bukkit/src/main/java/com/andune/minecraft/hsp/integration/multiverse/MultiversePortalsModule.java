@@ -140,8 +140,8 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
                         public void execute(Listener listener, Event event) throws EventException {
                             try {
                                 multiverseListener.onMultiversePortalEvent((com.onarandombox.MultiversePortals.event.MVPortalEvent) event);
-                            } catch (Throwable t) {
-                                throw new EventException(t);
+                            } catch (Exception e) {
+                                throw new EventException(e);
                             }
                         }
                     },

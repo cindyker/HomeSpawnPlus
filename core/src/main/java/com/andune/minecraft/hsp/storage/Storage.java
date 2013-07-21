@@ -44,9 +44,9 @@ import com.andune.minecraft.hsp.storage.dao.VersionDAO;
  * @author andune
  *
  */
-public interface Storage {
-	public static final String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
-	public static final String HSP_BED_RESERVED_NAME = "bed";
+interface Storage {
+	String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
+	String HSP_BED_RESERVED_NAME = "bed";
 	
     /**
      * This method is called to initialize the storage system. If using a DB
@@ -57,7 +57,7 @@ public interface Storage {
      * this methods responsibility to keep track of whether it has already
      * initialized and deal with that situation appropriately.
      */
-	public void initializeStorage() throws StorageException;
+	void initializeStorage() throws StorageException;
 	
 	/**
 	 * Method to call when the storage system is to be shutdown, most commonly
@@ -67,19 +67,19 @@ public interface Storage {
 	 * No further read/writes should be made to the storage system once this
 	 * method has been called.
 	 */
-    public void shutdownStorage();
+    void shutdownStorage();
     
-	public HomeDAO getHomeDAO();
-	public HomeInviteDAO getHomeInviteDAO();
-	public SpawnDAO getSpawnDAO();
-	public PlayerDAO getPlayerDAO();
-	public VersionDAO getVersionDAO();
-	public PlayerSpawnDAO getPlayerSpawnDAO();
-	public PlayerLastLocationDAO getPlayerLastLocationDAO();
+	HomeDAO getHomeDAO();
+	HomeInviteDAO getHomeInviteDAO();
+	SpawnDAO getSpawnDAO();
+	PlayerDAO getPlayerDAO();
+	VersionDAO getVersionDAO();
+	PlayerSpawnDAO getPlayerSpawnDAO();
+	PlayerLastLocationDAO getPlayerLastLocationDAO();
 	
 	/** Notify the backing store that it should purge any in-memory cache it has.
 	 */
-	public void purgeCache();
+	void purgeCache();
 	
     /**
      * Loop through all HSP data that is associated to players (homes, player
@@ -93,7 +93,7 @@ public interface Storage {
      *            
      * @return the number of database rows purged
      */
-	public int purgePlayerData(long purgeTime);
+	int purgePlayerData(long purgeTime);
 	
 	/**
 	 * Purge any data related to the given world. Can be used to cleanup
@@ -103,9 +103,9 @@ public interface Storage {
 	 * 
      * @return the number of database rows purged
 	 */
-	public int purgeWorldData(String world);
+	int purgeWorldData(String world);
 	
-	public void deleteAllData() throws StorageException;
+	void deleteAllData() throws StorageException;
 	
 	/** Optional implementation: the backing store can use this to respond to applications
 	 * wish to defer writes, as often happens with bulk loading or perhaps if the application
@@ -114,19 +114,19 @@ public interface Storage {
 	 * 
 	 * @param deferred
 	 */
-	public void setDeferredWrites(boolean deferred);
+	void setDeferredWrites(boolean deferred);
 	/** For use with setDeferredWrites() above, this method instructs the backend that now
 	 * is a good time to flush any pending writes to storage. Again, a completely optional
 	 * implementation for the storage system, so there is no guarantee calling this does
 	 * anything. This is just a hint to the back-end storage that now is a good time to
 	 * flush pending writes.
 	 */
-	public void flushAll() throws StorageException;
+	void flushAll() throws StorageException;
 	
 	/** Return a String name for this storage implementation, which can be used for
 	 * metrics purposes.
 	 * 
 	 * @return
 	 */
-	public String getImplName();
+	String getImplName();
 }

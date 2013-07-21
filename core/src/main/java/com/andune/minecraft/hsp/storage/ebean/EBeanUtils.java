@@ -30,22 +30,22 @@ package com.andune.minecraft.hsp.storage.ebean;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public interface EBeanUtils {
-    public String getDriver();
+interface EBeanUtils {
+    String getDriver();
 
-    public String getUrl();
+    String getUrl();
 
-    public String getUsername();
+    String getUsername();
 
-    public String getPassword();
+    String getPassword();
 
-    public String getIsolation();
+    String getIsolation();
 
-    public Boolean getLogging();
+    Boolean getLogging();
 
-    public Boolean getRebuild();
+    Boolean getRebuild();
 
-    public boolean isSqlLite();
+    boolean isSqlLite();
 
-    public Connection getConnection() throws SQLException;
+    Connection getConnection() throws SQLException;
 }

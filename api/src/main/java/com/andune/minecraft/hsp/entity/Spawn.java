@@ -31,72 +31,72 @@ import java.sql.Timestamp;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 
-public interface Spawn extends EntityWithLocation {
+interface Spawn extends EntityWithLocation {
 
-	public abstract void setLocation(Location l);
+    void setLocation(Location l);
 
-	public abstract Location getLocation();
+    Location getLocation();
 
-	/**
-	 * Return true if this spawn is the new player spawn.
-	 * 
-	 * @return
-	 */
-	public abstract boolean isNewPlayerSpawn();
+    /**
+     * Return true if this spawn is the new player spawn.
+     *
+     * @return
+     */
+    boolean isNewPlayerSpawn();
 
-	/**
-	 * Return true if this is the default spawn for the world it is in.
-	 * 
-	 * @return
-	 */
-	public abstract boolean isDefaultSpawn();
+    /**
+     * Return true if this is the default spawn for the world it is in.
+     *
+     * @return
+     */
+    boolean isDefaultSpawn();
 
-	public abstract int getId();
+    int getId();
 
-	public abstract void setId(int id);
+    void setId(int id);
 
-	public abstract String getWorld();
+    String getWorld();
 
-	public abstract void setWorld(String world);
+    void setWorld(String world);
 
-	public abstract Double getX();
+    Double getX();
 
-	public abstract void setX(Double x);
+    void setX(Double x);
 
-	public abstract Double getY();
+    Double getY();
 
-	public abstract void setY(Double y);
+    void setY(Double y);
 
-	public abstract Double getZ();
+    Double getZ();
 
-	public abstract void setZ(Double z);
+    void setZ(Double z);
 
-	public abstract String getName();
+    String getName();
 
-	public abstract void setName(String name);
+    void setName(String name);
 
-	public abstract String getGroup();
+    String getGroup();
 
-	public abstract void setGroup(String group);
+    void setGroup(String group);
 
-	public abstract String getUpdatedBy();
+    String getUpdatedBy();
 
-	public abstract void setUpdatedBy(String updatedBy);
+    void setUpdatedBy(String updatedBy);
 
-	public abstract Float getPitch();
+    Float getPitch();
 
-	public abstract void setPitch(Float pitch);
+    void setPitch(Float pitch);
 
-	public abstract Float getYaw();
+    Float getYaw();
 
-	public abstract void setYaw(Float yaw);
+    void setYaw(Float yaw);
 
-	public abstract Timestamp getLastModified();
+    Timestamp getLastModified();
 
-	public abstract void setLastModified(Timestamp lastModified);
+    void setLastModified(Timestamp lastModified);
 
-	public abstract Timestamp getDateCreated();
+    Timestamp getDateCreated();
 
-	public abstract void setDateCreated(Timestamp dateCreated);
+    void setDateCreated(Timestamp dateCreated);
 
 }

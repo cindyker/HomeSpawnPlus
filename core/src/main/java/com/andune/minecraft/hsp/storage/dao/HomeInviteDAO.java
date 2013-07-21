@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
 
@@ -41,57 +41,57 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface HomeInviteDAO extends PurgePlayer {
-	/** Given the primary id, find the HomeInvite object.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public HomeInvite findHomeInviteById(int id);
-	
-	/** Given a specific home and a specific invitee, find the HomeInvite
-	 * object. This will return null if no such relationship exists.
-	 * 
-	 * @param home
-	 * @param invitee
-	 * @return
-	 */
-	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee);
-	
-	/** Given a home, return all HomeInvite objects that might be attached to it.
-	 * 
-	 * @param home
-	 * @return
-	 */
-	public Set<HomeInvite> findInvitesByHome(Home home);
-	
-	/** Given an invitee, return all available invites open to them.
-	 * 
-	 * @param invitee
-	 * @return
-	 */
-	public Set<HomeInvite> findAllAvailableInvites(String invitee);
-	
-	/** Given a player, return all open invites that we have
-	 * outstanding.
-	 * 
-	 * @param invitee
-	 * @return
-	 */
-	public Set<HomeInvite> findAllOpenInvites(String player);
-	
-	public Set<HomeInvite> findAllHomeInvites();
-	
-	public void saveHomeInvite(HomeInvite homeInvite) throws StorageException;
-	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException;
+interface HomeInviteDAO extends PurgePlayer {
+    /** Given the primary id, find the HomeInvite object.
+     *
+     * @param id
+     * @return
+     */
+    HomeInvite findHomeInviteById(int id);
+
+    /** Given a specific home and a specific invitee, find the HomeInvite
+     * object. This will return null if no such relationship exists.
+     *
+     * @param home
+     * @param invitee
+     * @return
+     */
+    HomeInvite findInviteByHomeAndInvitee(Home home, String invitee);
+
+    /** Given a home, return all HomeInvite objects that might be attached to it.
+     *
+     * @param home
+     * @return
+     */
+    Set<HomeInvite> findInvitesByHome(Home home);
+
+    /** Given an invitee, return all available invites open to them.
+     *
+     * @param invitee
+     * @return
+     */
+    Set<HomeInvite> findAllAvailableInvites(String invitee);
+
+    /** Given a player, return all open invites that we have
+     * outstanding.
+     *
+     * @param invitee
+     * @return
+     */
+    Set<HomeInvite> findAllOpenInvites(String player);
+
+    Set<HomeInvite> findAllHomeInvites();
+
+    void saveHomeInvite(HomeInvite homeInvite) throws StorageException;
+    void deleteHomeInvite(HomeInvite homeInvite) throws StorageException;
 
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgePlayerData(java.lang.Long)
      */
-    public int purgePlayerData(long purgeTime);
-    
+    int purgePlayerData(long purgeTime);
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
      */
-    public int purgeWorldData(String world);
+    int purgeWorldData(String world);
 }

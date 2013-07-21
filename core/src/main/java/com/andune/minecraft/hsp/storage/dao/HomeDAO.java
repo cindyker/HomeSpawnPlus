@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
 
@@ -40,27 +40,27 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface HomeDAO extends PurgePlayer {
-	public Home findHomeById(int id);
-	public Home findDefaultHome(String world, String playerName);
-	public Home findBedHome(String world, String playerName);
-	public Home findHomeByNameAndPlayer(String homeName, String playerName);
-	/** Given a world and player, find all homes on that world for that player.
-	 * 
-	 * @param world the world. A value of 'null', 'all' or '*' should be treated
-	 * as a search for all worlds.
-	 * @param playerName
-	 * @return
-	 */
-	public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName);
-	public Set<? extends Home> findHomesByPlayer(String playerName);
-	public Set<? extends Home> findAllHomes();
+interface HomeDAO extends PurgePlayer {
+    Home findHomeById(int id);
+    Home findDefaultHome(String world, String playerName);
+    Home findBedHome(String world, String playerName);
+    Home findHomeByNameAndPlayer(String homeName, String playerName);
+    /** Given a world and player, find all homes on that world for that player.
+     *
+     * @param world the world. A value of 'null', 'all' or '*' should be treated
+     * as a search for all worlds.
+     * @param playerName
+     * @return
+     */
+    Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName);
+    Set<? extends Home> findHomesByPlayer(String playerName);
+    Set<? extends Home> findAllHomes();
 
-	public void saveHome(Home home) throws StorageException;
-	public void deleteHome(Home home) throws StorageException;
+    void saveHome(Home home) throws StorageException;
+    void deleteHome(Home home) throws StorageException;
 
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
      */
-    public int purgeWorldData(String world);
+    int purgeWorldData(String world);
 }

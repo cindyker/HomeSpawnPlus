@@ -41,5 +41,5 @@ public interface VersionDAO {
 	 * 
 	 * @return
 	 */
-	public Version getVersionObject();
+	Version getVersionObject();
 }

@@ -33,50 +33,50 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 
-public interface StrategyContext {
+interface StrategyContext {
 
-	public abstract String getEventType();
+	String getEventType();
 
-	public abstract void setEventType(String eventType);
+	void setEventType(String eventType);
 
-	public abstract Player getPlayer();
+	Player getPlayer();
 
 	/** Return the "location" of the event, which might be a manually passed in location
 	 * or the player location, depending on which data we have.
 	 * 
 	 * @return
 	 */
-	public abstract Location getEventLocation();
+	Location getEventLocation();
 
 	/** The location the event is happening, which may be different than
 	 * the player location.
 	 * 
 	 * @return
 	 */
-	public abstract Location getLocation();
+	Location getLocation();
 
-	public abstract void setLocation(Location location);
+	void setLocation(Location location);
 
-	public abstract Location getFromLocation();
+	Location getFromLocation();
 
-	public abstract void setFromLocation(Location fromLocation);
+	void setFromLocation(Location fromLocation);
 
-	public abstract void setPlayer(Player player);
+	void setPlayer(Player player);
 
-	public abstract List<ModeStrategy> getCurrentModes();
+	List<ModeStrategy> getCurrentModes();
 
-	public abstract void addMode(ModeStrategy mode);
+	void addMode(ModeStrategy mode);
 
-	public abstract void resetCurrentModes();
+	void resetCurrentModes();
 
 	/** Home default mode is true as long as no home exclusive modes are set
 	 * that would cancel it out.
 	 * 
 	 * @return
 	 */
-	public abstract boolean isInHomeDefaultMode();
+	boolean isInHomeDefaultMode();
 
-	public abstract boolean isDefaultModeEnabled();
+	boolean isDefaultModeEnabled();
 
 	/** Loop through all existing modes that have been set to see if a given mode
 	 * has been enabled.
@@ -84,14 +84,14 @@ public interface StrategyContext {
 	 * @param mode
 	 * @return
 	 */
-	public abstract boolean isModeEnabled(StrategyMode mode);
+	boolean isModeEnabled(StrategyMode mode);
 
 	/** If a mode is enabled, return the mode object.
 	 * 
 	 * @param mode
 	 * @return
 	 */
-	public abstract ModeStrategy getMode(StrategyMode mode);
+	ModeStrategy getMode(StrategyMode mode);
 
     /**
      * If a mode is enabled, return all instances of that mode. This is useful
@@ -100,26 +100,26 @@ public interface StrategyContext {
      * @param mode
      * @return
      */
-    public abstract List<ModeStrategy> getModeList(StrategyMode mode);
+    List<ModeStrategy> getModeList(StrategyMode mode);
     
     /**
      * This call clears any ModeEffect modes out of the mode list, typically
      * used after those modes have just been applied.
      */
-    public abstract void clearEffectModes();
+    void clearEffectModes();
 
 	/** Method for checking boolean states of any active modes to see if those
 	 * modes allow strategy processing given the current context.
 	 * 
 	 * @return
 	 */
-	public abstract boolean isStrategyProcessingAllowed();
+	boolean isStrategyProcessingAllowed();
 
 	/** Using currently set modes, return the current bounds
 	 * 
 	 * @return current bounds, guaranteed not to be null
 	 */
-	public abstract TeleportOptions getTeleportOptions();
+	TeleportOptions getTeleportOptions();
 
 	/** Validate the locations meet any distance limit criteria specified in the current
 	 * context. The context "getEventLocation()" is the anchor location (usually the
@@ -128,15 +128,15 @@ public interface StrategyContext {
 	 * @param newLoation the location being compared
 	 * @return true if the location is within the distance bounds, false if not
 	 */
-	public abstract boolean checkDistance(Location newLocation);
+	boolean checkDistance(Location newLocation);
 
-	public abstract String getArg();
+	String getArg();
 
 	/** Optional argument that might be used by strategies to take input
 	 * from user commands, for example. 
 	 * 
 	 * @param arg
 	 */
-	public abstract void setArg(String arg);
+	void setArg(String arg);
 
 }

@@ -40,14 +40,14 @@ import com.andune.minecraft.hsp.server.api.Command;
  * @author andune
  *
  */
-public interface Permissions {
+interface Permissions {
 
     /**
      * Determine if a sender has a given permission.
      * 
      * @deprecated you should use one of the specific permission methods
      * or add one if possible, to minimize the spread of permission concerns
-     * throughout the plugin code. This method is only set public still
+     * throughout the plugin code. This method is only set still
      * to serve the need of config-exposed permissions, where admins can
      * directly choose the permissions and therefore the plugin must test
      * those permissions as-is.
@@ -56,9 +56,9 @@ public interface Permissions {
      * @param perm
      * @return
      */
-    public boolean hasPermission(CommandSender sender, String perm);
+    boolean hasPermission(CommandSender sender, String perm);
 
-    public boolean hasCommandPermission(CommandSender sender, String command);
+    boolean hasCommandPermission(CommandSender sender, String command);
 
     /**
      * Check for custom command permission first, if there is none, check the
@@ -68,9 +68,9 @@ public interface Permissions {
      * @param command
      * @return true if the sender has permission, false if not
      */
-    public boolean hasCommandPermission(CommandSender sender, Command command);
+    boolean hasCommandPermission(CommandSender sender, Command command);
 
-    public boolean hasSetHomeNamed(Player player);
+    boolean hasSetHomeNamed(Player player);
 
     /**
      * Determine if the player should have HSP admin privileges.
@@ -78,7 +78,7 @@ public interface Permissions {
      * @param player
      * @return
      */
-    public boolean isAdmin(CommandSender sender);
+    boolean isAdmin(CommandSender sender);
 
     /**
      * Determine if the player should be exempt from a given warmup.
@@ -87,7 +87,7 @@ public interface Permissions {
      * @param warmup
      * @return
      */
-    public boolean isWarmupExempt(Player player, String warmup);
+    boolean isWarmupExempt(Player player, String warmup);
 
     /**
      * Determine if the player should be exempt from a given cooldown.
@@ -96,7 +96,7 @@ public interface Permissions {
      * @param cooldown
      * @return
      */
-    public boolean isCooldownExempt(Player player, String cooldown);
+    boolean isCooldownExempt(Player player, String cooldown);
 
     /**
      * Determine if the player should be exempt from a given cost.
@@ -105,7 +105,7 @@ public interface Permissions {
      * @param cooldown
      * @return
      */
-    public boolean isCostExempt(Player player, String cost);
+    boolean isCostExempt(Player player, String cost);
 
     /**
      * Determine if a player has permission to specify an argument to 
@@ -114,7 +114,7 @@ public interface Permissions {
      * @param player
      * @return
      */
-    public boolean hasOtherGroupSpawnPermission(Player player);
+    boolean hasOtherGroupSpawnPermission(Player player);
 
     /**
      * Determine if the player has permission to go to named spawns, such
@@ -124,7 +124,7 @@ public interface Permissions {
      * @param name optional arg, if set, is appended to the permission check
      * @return
      */
-    public boolean hasSpawnNamed(Player player, String name);
+    boolean hasSpawnNamed(Player player, String name);
 
     /**
      * Determine if the player has permission to send out permament
@@ -133,13 +133,13 @@ public interface Permissions {
      * @param player
      * @return
      */
-    public boolean hasPermanentHomeInvite(Player player);
+    boolean hasPermanentHomeInvite(Player player);
 
-    public boolean hasHomeInviteOtherWorld(Player player);
+    boolean hasHomeInviteOtherWorld(Player player);
 
-    public boolean hasHomeOtherWorld(Player player);
+    boolean hasHomeOtherWorld(Player player);
 
-    public boolean hasHomeNamed(Player player);
+    boolean hasHomeNamed(Player player);
 
     /**
      * Determine if player has permission to set bed homes.
@@ -147,5 +147,5 @@ public interface Permissions {
      * @param player
      * @return
      */
-    public boolean hasBedSetHome(Player player);
+    boolean hasBedSetHome(Player player);
 }

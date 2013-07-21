@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
 
@@ -39,8 +39,8 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface PlayerDAO extends PurgePlayer {
-	public Player findPlayerByName(String name);
-	public Set<Player> findAllPlayers();
-	public void savePlayer(Player player) throws StorageException;
+interface PlayerDAO extends PurgePlayer {
+    Player findPlayerByName(String name);
+    Set<Player> findAllPlayers();
+    void savePlayer(Player player) throws StorageException;
 }

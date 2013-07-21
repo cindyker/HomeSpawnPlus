@@ -40,33 +40,33 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-public interface SpawnDAO {
-    public static final String NEW_PLAYER_SPAWN = "newPlayerSpawn";
+interface SpawnDAO {
+    static final String NEW_PLAYER_SPAWN = "newPlayerSpawn";
 
-	public Spawn findSpawnByWorld(String world);
-	public Spawn findSpawnByWorldAndGroup(String world, String group);
-	public Spawn findSpawnByName(String name);
-	public Spawn findSpawnById(int id);
+	Spawn findSpawnByWorld(String world);
+	Spawn findSpawnByWorldAndGroup(String world, String group);
+	Spawn findSpawnByName(String name);
+	Spawn findSpawnById(int id);
 	
 	/** Return the single spawn defined as new player spawn; if any.
 	 * 
 	 * @return new player spawn or null
 	 */
-	public Spawn getNewPlayerSpawn();
+	Spawn getNewPlayerSpawn();
 	
 	/** Return full set of defined spawn groups.
 	 * 
 	 * @return
 	 */
-	public Set<String> getSpawnDefinedGroups();
+	Set<String> getSpawnDefinedGroups();
 
-	public Set<? extends Spawn> findAllSpawns();
+	Set<? extends Spawn> findAllSpawns();
 
-	public void saveSpawn(Spawn spawn) throws StorageException;
-	public void deleteSpawn(Spawn spawn) throws StorageException;
+	void saveSpawn(Spawn spawn) throws StorageException;
+	void deleteSpawn(Spawn spawn) throws StorageException;
 
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)
      */
-    public int purgeWorldData(String world);
+    int purgeWorldData(String world);
 }

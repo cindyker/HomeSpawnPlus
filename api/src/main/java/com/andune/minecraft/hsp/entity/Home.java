@@ -31,66 +31,66 @@ import java.sql.Timestamp;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 
-public interface Home extends EntityWithLocation {
+interface Home extends EntityWithLocation {
 
-	public abstract void setLocation(Location l);
+    void setLocation(Location l);
 
-	public abstract Location getLocation();
+    Location getLocation();
 
-	public abstract int getId();
+    int getId();
 
-	public abstract void setId(int id);
+    void setId(int id);
 
-	public abstract String getPlayerName();
+    String getPlayerName();
 
-	public abstract void setPlayerName(String playerName);
+    void setPlayerName(String playerName);
 
-	public abstract String getWorld();
+    String getWorld();
 
-	public abstract void setWorld(String world);
+    void setWorld(String world);
 
-	public abstract Double getX();
+    Double getX();
 
-	public abstract void setX(Double x);
+    void setX(Double x);
 
-	public abstract Double getY();
+    Double getY();
 
-	public abstract void setY(Double y);
+    void setY(Double y);
 
-	public abstract Double getZ();
+    Double getZ();
 
-	public abstract void setZ(Double z);
+    void setZ(Double z);
 
-	public abstract String getUpdatedBy();
+    String getUpdatedBy();
 
-	public abstract void setUpdatedBy(String updatedBy);
+    void setUpdatedBy(String updatedBy);
 
-	public abstract Timestamp getLastModified();
+    Timestamp getLastModified();
 
-	public abstract void setLastModified(Timestamp lastModified);
+    void setLastModified(Timestamp lastModified);
 
-	public abstract Timestamp getDateCreated();
+    Timestamp getDateCreated();
 
-	public abstract void setDateCreated(Timestamp dateCreated);
+    void setDateCreated(Timestamp dateCreated);
 
-	public abstract Float getPitch();
+    Float getPitch();
 
-	public abstract void setPitch(Float pitch);
+    void setPitch(Float pitch);
 
-	public abstract Float getYaw();
+    Float getYaw();
 
-	public abstract void setYaw(Float yaw);
+    void setYaw(Float yaw);
 
-	public abstract boolean isBedHome();
+    boolean isBedHome();
 
-	public abstract void setBedHome(boolean bedHome);
+    void setBedHome(boolean bedHome);
 
-	public abstract boolean isDefaultHome();
+    boolean isDefaultHome();
 
-	public abstract void setDefaultHome(boolean defaultHome);
+    void setDefaultHome(boolean defaultHome);
 
-	public abstract String getName();
+    String getName();
 
-	public abstract void setName(String name);
+    void setName(String name);
 
 }

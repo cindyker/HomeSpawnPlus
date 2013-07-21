@@ -40,7 +40,7 @@ import com.andune.minecraft.commonlib.server.api.Player;
  * @author andune
  *
  */
-public interface Command {
+interface Command {
 
     /**
      * Execute this command.
@@ -53,36 +53,36 @@ public interface Command {
      * @return true if the command executed successfully, false if command execution should
      * continue looking for another command.
      */
-	public boolean execute(CommandSender sender, String cmd, String[] args);
+	boolean execute(CommandSender sender, String cmd, String[] args);
 
 	/** If the command allows it's name to be set by external configuration, it
 	 * should implement this call to allow it's name to be changed.
 	 * 
 	 * @param name
 	 */
-	public void setCommandName(String name);
+	void setCommandName(String name);
 	
 	/** Return the name of the command.  Used in cooldown and permission checks as well as
 	 * for matching the command the player types in.
 	 * 
 	 * @return
 	 */
-	public String getCommandName();
+	String getCommandName();
 	
 	/** Return any aliases for this command.  Can be null.
 	 * 
 	 * @return
 	 */
-	public String[] getCommandAliases();
+	String[] getCommandAliases();
 
 	/** Commands can be disabled by configuration, this method allows them to declare
 	 * themselves enabled or disabled.
 	 * 
 	 * @return
 	 */
-//	public boolean isEnabled();
+//	boolean isEnabled();
 	
-//	public void setPlugin(Plugin plugin);
+//	void setPlugin(Plugin plugin);
 	
 	/** If there is a custom permission node for this command, it should be
 	 * returned here. If this returns null, the default command permission
@@ -90,20 +90,20 @@ public interface Command {
 	 * 
 	 * @return
 	 */
-	public String getCommandPermissionNode();
+	String getCommandPermissionNode();
 	
 	/** If this command takes any parameters, it can use this method to receive them.
 	 * 
 	 * @param params
 	 */
-	public void setCommandParameters(Map<String, Object> params);
+	void setCommandParameters(Map<String, Object> params);
 	
 	/** The usage string, which will be passed through to Bukkit PluginCommand so
 	 * can use the Bukkit convention of <command> and newlines.
 	 * 
 	 * @return
 	 */
-	public String getUsage();
+	String getUsage();
 	
     /**
      * Check if the player has permission to run this command. If they don't
@@ -118,5 +118,5 @@ public interface Command {
      *            don't have permission
      * @return true if the player has permission, false if not
      */
-    public boolean hasPermission(Player p, boolean displayMessage);
+    boolean hasPermission(Player p, boolean displayMessage);
 }

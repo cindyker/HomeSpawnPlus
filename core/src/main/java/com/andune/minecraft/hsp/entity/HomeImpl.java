@@ -141,7 +141,8 @@ public class HomeImpl implements EntityWithLocation, Home {
     	
     	return location;
     }
-    
+
+    @Override
     public boolean equals(Object o) {
     	if( o == null )
     		return false;
@@ -155,7 +156,17 @@ public class HomeImpl implements EntityWithLocation, Home {
     	else
     		return false;
     }
-    
+
+    /**
+     * We simple return the parent hashCode, since our .equals() check is simply checking ids.
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public String toString() {
     	return "{id="+getId()
     			+",name="+getName()

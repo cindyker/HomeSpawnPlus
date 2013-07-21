@@ -211,6 +211,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
             context.setEventType(type.toString());
             context.setPlayer(event.getPlayer());
             context.setLocation(event.getTo()); // location involved is the target location
+            context.setFromLocation(event.getFrom());
 
             StrategyResult result = engine.getStrategyResult(context);
             if( result != null && result.getLocation() != null )

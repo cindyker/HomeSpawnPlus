@@ -56,8 +56,8 @@ public class Teleport {
 	public static final int FLAG_NO_LEAVES = 0x04; 
 	public static final int FLAG_NO_ICE = 0x08; 
 	
-	private static final int[] safeIds = new int[256];
-	
+	private static final int[] safeIds = new int[4096];
+
 	/*
 	private final static BlockFace[] directions = new BlockFace[] {
 		BlockFace.UP,
@@ -77,7 +77,7 @@ public class Teleport {
 	
 	static {
 		// initialize all to 0
-		for(int i=0; i < 256; i++)
+		for(int i=0; i < safeIds.length; i++)
 			safeIds[i] = 0;
 		
 		// now set to 1 those ids we consider safe

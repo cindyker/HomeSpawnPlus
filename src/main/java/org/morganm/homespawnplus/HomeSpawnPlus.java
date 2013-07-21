@@ -137,7 +137,7 @@ public class HomeSpawnPlus extends JavaPlugin {
     private HSPPlayerListener playerListener;
     private HSPEntityListener entityListener;
     private JarUtils jarUtils;
-	private int buildNumber = -1;
+	private String buildNumber = "unknown";
     private PluginDescriptionFile pluginDescription;
     private String pluginName;
     private Storage storage;
@@ -225,7 +225,11 @@ public class HomeSpawnPlus extends JavaPlugin {
     	Debug.getInstance().init(log, logPrefix, "plugins/HomeSpawnPlus/debug.log", false);
 		debug = Debug.getInstance();
     	jarUtils = new JarUtils(this, getFile(), log, logPrefix);
-		buildNumber = jarUtils.getBuildNumber();
+		buildNumber = jarUtils.getBuild();
+
+		if( pluginDescription.getVersion().contains("SNAPSHOT") ) {
+	      log.info(logPrefix + "Snapshot version detected, build number "+buildNumber+" is starting up");
+		}
 
     	// load our configuration and database
     	try {
@@ -320,7 +324,7 @@ public class HomeSpawnPlus extends JavaPlugin {
         	debugEndTimer("dynmap");
     	}
     	
-		log.info(logPrefix + " version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
+		log.info(logPrefix + "version "+pluginDescription.getVersion()+", build "+buildNumber+" is enabled");
     	debug.debug("[Startup Timer] HSP total initialization time: ", System.currentTimeMillis()-startupBegin, "ms");
     }
     

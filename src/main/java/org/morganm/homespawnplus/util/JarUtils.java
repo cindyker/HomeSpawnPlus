@@ -38,9 +38,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -99,27 +100,24 @@ public class JarUtils {
         }
     }
     
-    public int getBuildNumber() {
-    	int buildNum = -1;
-    	
+    /**
+     * Return the build string from the jar manifest.
+     * 
+     * @return
+     */
+    public String getBuild() {
+        String build = "unknown";
+        
         try {
-        	JarFile jar = new JarFile(jarFile);
-        	
-            JarEntry entry = jar.getJarEntry("build.number");
-            InputStream is = jar.getInputStream(entry);
-        	Properties props = new Properties();
-        	props.load(is);
-        	is.close();
-        	Object o = props.get("build.number");
-        	if( o instanceof Integer )
-        		buildNum = ((Integer) o).intValue();
-        	else if( o instanceof String )
-        		buildNum = Integer.parseInt((String) o);
+            JarFile jar = new JarFile(jarFile);
+            Manifest manifest = jar.getManifest();
+            Attributes attributes = manifest.getMainAttributes();
+            build = attributes.getValue("Implementation-Build");
         } catch (Exception e) {
-            log.warning(logPrefix + " Could not load build number from JAR");
+            plugin.getLogger().warning("Could not load build string from JAR");
         }
         
-        return buildNum;
+        return build;
     }
     
     /** Given a packageName, return all classes that are in this jar file that are part

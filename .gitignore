@@ -8,3 +8,5 @@ old
 .project
 .settings
 dependency-reduced-pom.xml
+*.iml
+.idea

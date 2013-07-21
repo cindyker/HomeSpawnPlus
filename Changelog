@@ -1,6 +1,7 @@
 v1.7.7 -
 * built for CraftBukkit v1.6.2 ONLY
 * fix bug with modeSourceWorld not working properly (re-open of ticket #188)
+* ticket #208: print nice message (instead of NPE) if admin forgets to set WorldBorder when using spawnWorldRandom
 
 v1.7.6 - May 5, 2013
 * built for CraftBukkit v1.5.2 ONLY

@@ -428,6 +428,7 @@ public class HSPPlayerListener implements Listener {
         	context.setEventType(type.toString());
         	context.setPlayer(event.getPlayer());
         	context.setLocation(event.getTo());	// location involved is the target location
+        	context.setFromLocation(event.getFrom());
         	
     		// protect against a double-event for multiverse teleports
 //    		if( plugin.getMultiverseIntegration().getCurrentTeleporter() != null ||

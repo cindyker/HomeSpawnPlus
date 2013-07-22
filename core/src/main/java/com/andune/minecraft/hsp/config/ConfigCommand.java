@@ -26,39 +26,34 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
 
+import javax.inject.Singleton;
+import java.util.*;
 
-/** This class is used to store state of commands configuration. This amounts to three
+
+/**
+ * This class is used to store state of commands configuration. This amounts to three
  * key pieces of data: any disabled commands, all custom defined commands and all
  * properties related to any custom defined commands.
- * 
- * @author andune
  *
+ * @author andune
  */
 @Singleton
-@ConfigOptions(fileName="commands.yml", basePath="commands")
+@ConfigOptions(fileName = "commands.yml", basePath = "commands")
 public class ConfigCommand extends ConfigBase implements Initializable {
-	private final Logger log = LoggerFactory.getLogger(ConfigCommand.class);
+    private final Logger log = LoggerFactory.getLogger(ConfigCommand.class);
 
-	private Set<String> disabledCommands;
-	private Map<String, Map<String, Object>> commandParams;
-	
+    private Set<String> disabledCommands;
+    private Map<String, Map<String, Object>> commandParams;
+
     @Override
     public void init() throws Exception {
         super.init();
@@ -68,48 +63,48 @@ public class ConfigCommand extends ConfigBase implements Initializable {
     }
 
     /**
-     *  Check if a command is disabled.
-     * 
+     * Check if a command is disabled.
+     *
      * @param command the command name to check
      * @return true if the command is disabled
      */
     public boolean isDisabledCommand(String command) {
-		if( disabledCommands.contains("*") )
-			return true;
-		else
-			return disabledCommands.contains(command.toLowerCase());
-	}
-	
+        if (disabledCommands.contains("*"))
+            return true;
+        else
+            return disabledCommands.contains(command.toLowerCase());
+    }
+
     /**
      * Return a list of all commands that have been defined and have command
      * parameters.
-     * 
+     *
      * @return
      */
     public Set<String> getDefinedCommands() {
-		return commandParams.keySet();
-	}
-	
+        return commandParams.keySet();
+    }
+
     /**
      * Return command parameters for a specific command.
-     * 
+     *
      * @return guaranteed to not return null
      */
     public Map<String, Object> getCommandParameters(String command) {
-		Map<String, Object> ret = commandParams.get(command);
-		
-		// If null, create empty map and save it for future use 
-		if( ret == null ) {
-			ret = new HashMap<String, Object>();
-			commandParams.put(command, ret);
-		}
-		
-		return ret;
-	}
-	
+        Map<String, Object> ret = commandParams.get(command);
+
+        // If null, create empty map and save it for future use
+        if (ret == null) {
+            ret = new HashMap<String, Object>();
+            commandParams.put(command, ret);
+        }
+
+        return ret;
+    }
+
     /**
      * Determine if uber commands are enabled.
-     * 
+     *
      * @return
      */
     public boolean isUberCommandsEnabled() {
@@ -117,43 +112,42 @@ public class ConfigCommand extends ConfigBase implements Initializable {
     }
 
     private void loadConfig() {
-		disabledCommands = new HashSet<String>();
-		List<String> theList = super.getStringList("disabledCommands"); 
-		if( theList != null ) {
-			for(String s : theList) {
-				disabledCommands.add(s.toLowerCase());
-			}
-		}
-		else
-		
-		commandParams = new HashMap<String, Map<String, Object>>();
-		Set<String> keys = super.getKeys();
-		if( keys != null ) {
-			for(String key : keys) {
-				if( key.equals("disabledCommands") || key.equals("useUberCommands") )
-					continue;
+        disabledCommands = new HashSet<String>();
+        List<String> theList = super.getStringList("disabledCommands");
+        if (theList != null) {
+            for (String s : theList) {
+                disabledCommands.add(s.toLowerCase());
+            }
+        } else
 
-				log.debug("loading config params for command {}",key);
-				ConfigurationSection cmdSection = super.getConfigurationSection(key);
-				if( cmdSection == null ) {
-					log.warn("no parameters defined for command {}, skipping", key);
-					continue;
-				}
-				
-				Set<String> parameters = cmdSection.getKeys();
-				if( parameters == null || parameters.size() == 0 ) {
-					log.warn("no parameters defined for command {}, skipping", key);
-					continue;
-				}
-				
-				HashMap<String, Object> paramMap = new HashMap<String, Object>();
-				commandParams.put(key,  paramMap);
-				for(String param : parameters) {
-					final Object val = cmdSection.get(param);
-					log.debug("command {}; key={}, val={}", key, param, val);
-					paramMap.put(param, val);
-				}
-			}
-		}
-	}
+            commandParams = new HashMap<String, Map<String, Object>>();
+        Set<String> keys = super.getKeys();
+        if (keys != null) {
+            for (String key : keys) {
+                if (key.equals("disabledCommands") || key.equals("useUberCommands"))
+                    continue;
+
+                log.debug("loading config params for command {}", key);
+                ConfigurationSection cmdSection = super.getConfigurationSection(key);
+                if (cmdSection == null) {
+                    log.warn("no parameters defined for command {}, skipping", key);
+                    continue;
+                }
+
+                Set<String> parameters = cmdSection.getKeys();
+                if (parameters == null || parameters.size() == 0) {
+                    log.warn("no parameters defined for command {}, skipping", key);
+                    continue;
+                }
+
+                HashMap<String, Object> paramMap = new HashMap<String, Object>();
+                commandParams.put(key, paramMap);
+                for (String param : parameters) {
+                    final Object val = cmdSection.get(param);
+                    log.debug("command {}; key={}, val={}", key, param, val);
+                    paramMap.put(param, val);
+                }
+            }
+        }
+    }
 }

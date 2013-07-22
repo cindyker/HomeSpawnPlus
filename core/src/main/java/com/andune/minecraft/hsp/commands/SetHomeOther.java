@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
@@ -41,64 +38,67 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="setOther",
-    aliases={"so"}, help="Set another player's home")
+@UberCommand(uberCommand = "home", subCommand = "setOther",
+        aliases = {"so"}, help = "Set another player's home")
 public class SetHomeOther extends BaseCommand {
-    @Inject private HomeUtil util;
+    @Inject
+    private HomeUtil util;
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"sethomeo", "sho"}; }
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"sethomeo", "sho"};
+    }
 
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SETHOMEOTHER_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SETHOMEOTHER_USAGE);
+    }
 
-	@Override
-	public boolean execute(final Player p, String[] args) {
-		if(args.length < 1) {
-			return false;
-		}
-		
-		final String setter = p.getName();
-		final Location l = p.getLocation();
-		
-		String homeowner = null;
-		// try player name best match
-		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
-		if( otherPlayer != null ) {
-			homeowner = otherPlayer.getName();
-		}
-		// no match, no point in proceeding, no online or offline player by
-		// that name exists
-		else {
-			server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
-					"player", args[0]);
-			return true;
-		}
-		
-		if( args.length > 1 ) {
-		    String errorMsg = util.setNamedHome(homeowner, l, args[1], setter);
-			if( errorMsg != null)
-			    p.sendMessage(errorMsg);
-			else
-			    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
-						"name", args[1], "player", homeowner);
-		}
-		else {
-		    String errorMsg = util.setHome(homeowner, l, setter, true, false);
-            if( errorMsg != null)
+    @Override
+    public boolean execute(final Player p, String[] args) {
+        if (args.length < 1) {
+            return false;
+        }
+
+        final String setter = p.getName();
+        final Location l = p.getLocation();
+
+        String homeowner = null;
+        // try player name best match
+        final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
+        if (otherPlayer != null) {
+            homeowner = otherPlayer.getName();
+        }
+        // no match, no point in proceeding, no online or offline player by
+        // that name exists
+        else {
+            server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+                    "player", args[0]);
+            return true;
+        }
+
+        if (args.length > 1) {
+            String errorMsg = util.setNamedHome(homeowner, l, args[1], setter);
+            if (errorMsg != null)
                 p.sendMessage(errorMsg);
             else
-			    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
-						"player", homeowner);
-		}
-		
-		return true;
-	}
+                server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_HOME_SET,
+                        "name", args[1], "player", homeowner);
+        } else {
+            String errorMsg = util.setHome(homeowner, l, setter, true, false);
+            if (errorMsg != null)
+                p.sendMessage(errorMsg);
+            else
+                server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOMEOTHER_DEFAULT_HOME_SET,
+                        "player", homeowner);
+        }
+
+        return true;
+    }
 
 }

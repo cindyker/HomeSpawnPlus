@@ -26,35 +26,34 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.reflections.Reflections;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigBase;
 import com.andune.minecraft.hsp.config.ConfigLoader;
 import com.andune.minecraft.hsp.strategy.StrategyConfig;
 import com.google.inject.Injector;
+import org.reflections.Reflections;
 
-/** This class is used to initialize all classes within HSP that
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+/**
+ * This class is used to initialize all classes within HSP that
  * implement the Initializable interface, in order of priority.
- * 
- * @author andune
  *
+ * @author andune
  */
 @Singleton
 public class Initializer extends com.andune.minecraft.commonlib.Initializer {
     private final ConfigLoader configLoader;
     private final StrategyConfig strategyConfig;
-    
+
     @Inject
     public Initializer(Reflections reflections, Injector injector,
-            ConfigLoader configLoader, StrategyConfig strategyConfig) {
+                       ConfigLoader configLoader, StrategyConfig strategyConfig) {
         super(reflections, injector);
         this.configLoader = configLoader;
         this.strategyConfig = strategyConfig;
@@ -63,22 +62,22 @@ public class Initializer extends com.andune.minecraft.commonlib.Initializer {
     /**
      * Called to initialize Config objects only, useful for reloading
      * configuration files.
-     * 
+     *
      * @throws Exception
      */
     public void initConfigs() throws Exception {
-    	log.debug("ENTER: initConfigs()");
+        log.debug("ENTER: initConfigs()");
         configLoader.flush();
 
-        for(Initializable init : getSortedInitObjects()) {
-            if( init instanceof ConfigBase ) {
-            	log.debug("initializing {}", init);
+        for (Initializable init : getSortedInitObjects()) {
+            if (init instanceof ConfigBase) {
+                log.debug("initializing {}", init);
                 init.init();
             }
         }
-        
+
         // re-initialize strategyConfig since it preprocesses and caches event config data
         strategyConfig.init();
-    	log.debug("EXIT: initConfigs()");
+        log.debug("EXIT: initConfigs()");
     }
 }

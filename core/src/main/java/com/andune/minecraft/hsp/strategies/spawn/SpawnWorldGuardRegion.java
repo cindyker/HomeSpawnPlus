@@ -26,50 +26,46 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
+import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
+import com.andune.minecraft.hsp.strategy.*;
+
 import javax.inject.Inject;
 
-import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyException;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
-
-/** Spawn inside the WorldGuard region using the WorldGuard flag.
- * 
+/**
+ * Spawn inside the WorldGuard region using the WorldGuard flag.
+ * <p/>
  * This strategy requires WorldGuard and is specific to Bukkit.
- * 
- * @author andune
  *
+ * @author andune
  */
 @NoArgStrategy
 public class SpawnWorldGuardRegion extends BaseStrategy {
-    @Inject private WorldGuard worldGuard;
+    @Inject
+    private WorldGuard worldGuard;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-        if( !worldGuard.isEnabled() ) {
-            log.warn("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        if (!worldGuard.isEnabled()) {
+            log.warn("Attempted to use " + getStrategyConfigName() + " without WorldGuard installed. Strategy ignored.");
             return null;
         }
 
-		return new StrategyResultImpl( worldGuard.getWorldGuardSpawnLocation(context.getEventLocation()) );
-	}
-	
-	@Override
-	public void validate() throws StrategyException {
-        if( !worldGuard.isEnabled() )
-            throw new StrategyException("Attempted to use "+getStrategyConfigName()+" without WorldGuard installed. Strategy ignored.");
-	}
+        return new StrategyResultImpl(worldGuard.getWorldGuardSpawnLocation(context.getEventLocation()));
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnWGregion";
-	}
+    @Override
+    public void validate() throws StrategyException {
+        if (!worldGuard.isEnabled())
+            throw new StrategyException("Attempted to use " + getStrategyConfigName() + " without WorldGuard installed. Strategy ignored.");
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnWGregion";
+    }
 
 }

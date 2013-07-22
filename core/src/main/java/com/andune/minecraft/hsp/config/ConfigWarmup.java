@@ -26,57 +26,55 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigWarmup.WarmupsPerWorld;
 
+import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author andune
- *
  */
 @Singleton
-@ConfigOptions(fileName="warmup.yml", basePath="warmup")
+@ConfigOptions(fileName = "warmup.yml", basePath = "warmup")
 public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPerWorld> implements Initializable {
     /**
      * Determine if warmups are enabled.
-     * 
+     *
      * @return true if warmups are enabled.
      */
     public boolean isEnabled() {
         return super.getBoolean("enabled");
     }
-    
+
     /**
      * Determine if warmups should be canceled when a player is damaged.
-     * 
+     *
      * @return true if warmups should be canceled on damage
      */
     public boolean isCanceledOnDamage() {
         return super.getBoolean("onDamageCancel");
     }
-    
+
     /**
      * Determine if warmups should be canceled when a player moves.
-     * 
+     *
      * @return true if warmups should be canceled on movement
      */
     public boolean isCanceledOnMovement() {
         return super.getBoolean("onMoveCancel");
     }
-    
+
     /**
      * For a given world & warmup combo, return the applicable warmup timer.
-     * 
+     *
      * @param warmup
      * @param world
      * @return
@@ -85,11 +83,11 @@ public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPe
         WarmupsPerWorld warmups = perWorldEntries.get(world);
         return warmups != null ? warmups.getWarmups().get(warmup) : 0;
     }
-    
+
     /**
      * For a given warmup, return it's global warmup time (exclusive of
      * per-permission and per-world warmup values).
-     * 
+     *
      * @param warmup
      * @return
      */
@@ -100,12 +98,15 @@ public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPe
 
     public class WarmupsPerPermission extends PerPermissionEntry {
         Map<String, Integer> warmups = new HashMap<String, Integer>();
-        public Map<String, Integer> getWarmups() { return warmups; }
-        
+
+        public Map<String, Integer> getWarmups() {
+            return warmups;
+        }
+
         public void setValue(String key, Object o) {
             warmups.put(key, (Integer) o);
         }
-        
+
         public void finishedProcessing() {
             warmups = Collections.unmodifiableMap(warmups);
         }
@@ -113,25 +114,32 @@ public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPe
 
     public class WarmupsPerWorld extends PerWorldEntry {
         Map<String, Integer> warmups = new HashMap<String, Integer>();
-        public Map<String, Integer> getWarmups() { return warmups; }
-        
+
+        public Map<String, Integer> getWarmups() {
+            return warmups;
+        }
+
         public void setValue(String key, Object o) {
             // warmupPerWorld option is deprecated, in fact it never actually
             // did anything at all, so we just silently ignore it
-            if( key.equals("warmupPerWorld") )
+            if (key.equals("warmupPerWorld"))
                 return;
-            
+
             warmups.put(key, (Integer) o);
         }
-        
+
         public void finishedProcessing() {
             warmups = Collections.unmodifiableMap(warmups);
         }
     }
 
     @Override
-    protected WarmupsPerPermission newPermissionEntry() { return new WarmupsPerPermission(); }
+    protected WarmupsPerPermission newPermissionEntry() {
+        return new WarmupsPerPermission();
+    }
 
     @Override
-    protected WarmupsPerWorld newWorldEntry() { return new WarmupsPerWorld(); }
+    protected WarmupsPerWorld newWorldEntry() {
+        return new WarmupsPerWorld();
+    }
 }

@@ -26,14 +26,13 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
 
 
 /**
  * @author andune
- *
  */
 public interface ConfigStorage {
     public enum Type {
@@ -43,8 +42,11 @@ public interface ConfigStorage {
         YAML_SINGLE_FILE,
         PERSISTANCE_REIMPLEMENTED_EBEANS,
         UNKNOWN;
-    };
-    
+    }
+
+    ;
+
     public Type getStorageType();
+
     public boolean useInMemoryCache();
 }

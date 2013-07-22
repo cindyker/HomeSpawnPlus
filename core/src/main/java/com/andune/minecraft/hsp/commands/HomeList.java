@@ -26,13 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -41,45 +37,51 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.Storage;
 
+import javax.inject.Inject;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="list", aliases={"l"}, help="List your homes")
+@UberCommand(uberCommand = "home", subCommand = "list", aliases = {"l"}, help = "List your homes")
 public class HomeList extends BaseCommand {
-    @Inject private Storage storage;
+    @Inject
+    private Storage storage;
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"homel", "listhomes", "hl", "homes"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"homel", "listhomes", "hl", "homes"};
+    }
+
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_USAGE);
+    }
 
     @Override
     public boolean execute(Player player, String[] args) {
         String world = "all";
-        if( args.length > 0 )
+        if (args.length > 0)
             world = args[0];
-        
+
         return executeCommand(player, player.getName(), world);
     }
 
-	/** Package visibility, code is reused by HomeListOther.
-	 * 
-	 * @param sender
-	 * @param command
-	 * @param args
-	 * @return
-	 */
-	boolean executeCommand(CommandSender sender, String player, String world) {
-		Set<? extends com.andune.minecraft.hsp.entity.Home> homes;
-		
-		homes = storage.getHomeDAO().findHomesByWorldAndPlayer(world, player);
-		
-		if( homes != null && homes.size() > 0 ) {
-			/*
+    /**
+     * Package visibility, code is reused by HomeListOther.
+     *
+     * @param sender
+     * @param command
+     * @param args
+     * @return
+     */
+    boolean executeCommand(CommandSender sender, String player, String world) {
+        Set<? extends com.andune.minecraft.hsp.entity.Home> homes;
+
+        homes = storage.getHomeDAO().findHomesByWorldAndPlayer(world, player);
+
+        if (homes != null && homes.size() > 0) {
+            /*
 			 *  MC uses variable-width font, so tabular sprintf-style formatted strings don't
 			 *  line up properly.  Boo.
 			util.sendMessage(p, String.format("%-16s %12s/%6s/%6s/%6s %-8s",
@@ -89,28 +91,27 @@ public class HomeList extends BaseCommand {
 					"default"));
 					*/
 
-			if( world.equals("all") || world.equals("*") )
-                sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_ALL_WORLDS,
-						"player", player) );
-			else
-                sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_FOR_WORLD,
-						"world", world, "player", player) );
-			
-			for(com.andune.minecraft.hsp.entity.Home home : homes) {
-				String name = home.getName();
-				if( name == null )
-					name = "<noname>";
-				sender.sendMessage(name+" [id:"+home.getId()+"]: "+ home.getLocation().shortLocationString()
-						+ (home.isDefaultHome()
-								? " ("+server.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT)+")"
-								: ""));
-			}
-		}
-		else
-		    sender.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
-					"world", world, "player", player) );
+            if (world.equals("all") || world.equals("*"))
+                sender.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_ALL_WORLDS,
+                        "player", player));
+            else
+                sender.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_FOR_WORLD,
+                        "world", world, "player", player));
 
-		return true;
-	}
+            for (com.andune.minecraft.hsp.entity.Home home : homes) {
+                String name = home.getName();
+                if (name == null)
+                    name = "<noname>";
+                sender.sendMessage(name + " [id:" + home.getId() + "]: " + home.getLocation().shortLocationString()
+                        + (home.isDefaultHome()
+                        ? " (" + server.getLocalizedMessage(HSPMessages.GENERIC_DEFAULT) + ")"
+                        : ""));
+            }
+        } else
+            sender.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMELIST_NO_HOMES_FOUND,
+                    "world", world, "player", player));
+
+        return true;
+    }
 
 }

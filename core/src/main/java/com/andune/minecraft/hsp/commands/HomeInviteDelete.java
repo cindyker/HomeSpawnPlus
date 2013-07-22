@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
@@ -39,59 +39,57 @@ import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
  * @author andune
- *
  */
 public class HomeInviteDelete extends BaseCommand {
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"hid"}; }
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"hid"};
+    }
 
-	@Override
-	public String getUsage() {
-		return	server.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_DELETE_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_HOME_INVITE_DELETE_USAGE);
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		if( args.length < 1 ) {
-			server.sendLocalizedMessage(p, HSPMessages.ERROR_ID_NUMBER_REQUIRED,
-					"input", "null");
-			return true;
-		}
-		
-		int id = -1;
-		try {
-			id = Integer.parseInt(args[0]);
-		}
-		catch(NumberFormatException e) {
-			server.sendLocalizedMessage(p, HSPMessages.ERROR_ID_NUMBER_REQUIRED,
-					"input", args[0]);
-			return true;
-		}
-		com.andune.minecraft.hsp.entity.HomeInvite hi = storage.getHomeInviteDAO().findHomeInviteById(id);
-		
-		// make sure we found an object and that the home is owned by the player
-		if( hi != null && p.getName().equals(hi.getHome().getPlayerName()) ) {
-			try {
-				Home h = hi.getHome();
-				String invitee = hi.getInvitedPlayer();
-				storage.getHomeInviteDAO().deleteHomeInvite(hi);
-				server.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_DELETED,
-						"id", id,
-						"home", h.getName(),
-						"invitee", invitee);
-			}
-			catch(StorageException e) {
-				server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-				log.warn("Caught exception in /"+getCommandName(), e);
-			}
-		}
-		else {
-			server.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_ID_NOT_FOUND,
-					"id", args[0]);
-		}
-		
-		return true;
-	}
+    @Override
+    public boolean execute(Player p, String[] args) {
+        if (args.length < 1) {
+            server.sendLocalizedMessage(p, HSPMessages.ERROR_ID_NUMBER_REQUIRED,
+                    "input", "null");
+            return true;
+        }
+
+        int id = -1;
+        try {
+            id = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            server.sendLocalizedMessage(p, HSPMessages.ERROR_ID_NUMBER_REQUIRED,
+                    "input", args[0]);
+            return true;
+        }
+        com.andune.minecraft.hsp.entity.HomeInvite hi = storage.getHomeInviteDAO().findHomeInviteById(id);
+
+        // make sure we found an object and that the home is owned by the player
+        if (hi != null && p.getName().equals(hi.getHome().getPlayerName())) {
+            try {
+                Home h = hi.getHome();
+                String invitee = hi.getInvitedPlayer();
+                storage.getHomeInviteDAO().deleteHomeInvite(hi);
+                server.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_DELETED,
+                        "id", id,
+                        "home", h.getName(),
+                        "invitee", invitee);
+            } catch (StorageException e) {
+                server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+                log.warn("Caught exception in /" + getCommandName(), e);
+            }
+        } else {
+            server.sendLocalizedMessage(p, HSPMessages.HOMEINVITE_ID_NOT_FOUND,
+                    "id", args[0]);
+        }
+
+        return true;
+    }
 
 }

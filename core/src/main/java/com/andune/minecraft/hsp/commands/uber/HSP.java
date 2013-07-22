@@ -26,19 +26,17 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands.uber;
 
-import javax.inject.Inject;
-
+import com.andune.minecraft.hsp.server.api.Factory;
 import org.reflections.Reflections;
 
-import com.andune.minecraft.hsp.server.api.Factory;
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 public class HSP extends BaseUberCommand {
     @Inject

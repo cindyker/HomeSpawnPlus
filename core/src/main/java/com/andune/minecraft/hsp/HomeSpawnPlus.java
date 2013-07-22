@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp;
 
@@ -40,10 +40,10 @@ import com.google.inject.Injector;
 
 import javax.inject.Inject;
 
-/** Main object that controls plugin startup and shutdown.
- * 
- * @author andune
+/**
+ * Main object that controls plugin startup and shutdown.
  *
+ * @author andune
  */
 public class HomeSpawnPlus {
     private final Logger log = LoggerFactory.getLogger(HomeSpawnPlus.class);
@@ -52,12 +52,16 @@ public class HomeSpawnPlus {
     private final InjectorFactory injectorFactory;
 
     // members that are injected by the IoC container
-    @Inject private Initializer initializer;
-    @Inject private EventDispatcher eventDispatcher;
-    @Inject private Plugin plugin;
-    @Inject private SpawnUtil spawnUtil;
+    @Inject
+    private Initializer initializer;
+    @Inject
+    private EventDispatcher eventDispatcher;
+    @Inject
+    private Plugin plugin;
+    @Inject
+    private SpawnUtil spawnUtil;
     private boolean initialized = false;
-    
+
     public HomeSpawnPlus(InjectorFactory injectorFactory) {
         this.injectorFactory = injectorFactory;
     }
@@ -69,31 +73,31 @@ public class HomeSpawnPlus {
 
         initializer.initAll();
         eventDispatcher.registerEvents();
-        
+
         log.info("{} version {}, build {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());
         initialized = true;
     }
-    
+
     public void onDisable() {
-        if( initialized ) {
+        if (initialized) {
             // unhook multiverse (if needed)
-    //        multiverse.onDisable();
-    
-            if( spawnUtil != null )
+            //        multiverse.onDisable();
+
+            if (spawnUtil != null)
                 spawnUtil.updateAllPlayerLocations();
-            if( initializer != null )
+            if (initializer != null)
                 initializer.shutdownAll();
         }
 
-        if( plugin != null )
+        if (plugin != null)
             log.info("{} version {}, build {} is disabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());
-        
+
         initialized = false;
     }
 
     /** Routine to detect other plugins that use the same commands as HSP and
      * often cause conflicts and create confusion.
-     * 
+     *
      */
     /* only method left from old plugin class, probably should put this into the integration
      * classes when I build them.

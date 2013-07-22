@@ -26,16 +26,16 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.api;
 
 
-/** Interface for configuration items that might return different
+/**
+ * Interface for configuration items that might return different
  * values depending on the implementation.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface ServerConfig {
     /**
@@ -43,7 +43,7 @@ public interface ServerConfig {
      * that will be displayed properly when added to a string sent to
      * a user. For example, in Bukkit these strings are something like
      * "\u00A7f" (representing White in the Bukkit example).
-     * 
+     *
      * @return
      */
     public String getDefaultColor();

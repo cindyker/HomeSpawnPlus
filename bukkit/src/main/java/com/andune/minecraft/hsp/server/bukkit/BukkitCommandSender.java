@@ -34,7 +34,6 @@ import com.andune.minecraft.hsp.server.api.Server;
 
 /**
  * @author andune
- *
  */
 public class BukkitCommandSender extends com.andune.minecraft.commonlib.server.bukkit.BukkitCommandSender {
     private final Server server;
@@ -51,7 +50,7 @@ public class BukkitCommandSender extends com.andune.minecraft.commonlib.server.b
 
     @Override
     public void sendMessage(String[] messages) {
-        if( messages != null && messages.length > 0 )
+        if (messages != null && messages.length > 0)
             messages[0] = server.getDefaultColor() + messages[0];
         super.sendMessage(messages);
     }

@@ -26,13 +26,14 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.multiverse;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.hsp.config.ConfigCore;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
@@ -40,14 +41,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.commonlib.Initializable;
-import com.andune.minecraft.commonlib.Logger;
-import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.hsp.config.ConfigCore;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class MultiversePortalsModule implements MultiversePortals, Initializable {
@@ -68,9 +66,9 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
 
     @Override
     public boolean isEnabled() {
-        if( configCore.isMultiverseEnabled() ) {    // enabled in config?
+        if (configCore.isMultiverseEnabled()) {    // enabled in config?
             Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-            if( p != null )                         // plugin exists?
+            if (p != null)                         // plugin exists?
                 return p.isEnabled();               // plugin is enabled?
         }
 
@@ -81,7 +79,7 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
     @Override
     public String getVersion() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-        if( p != null )
+        if (p != null)
             return p.getDescription().getVersion();
         else
             return null;
@@ -89,12 +87,12 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
 
     @Override
     public void init() throws Exception {
-        if( !isEnabled() )
+        if (!isEnabled())
             return;
-        
+
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-        if( p != null ) {
-            if( p.getDescription().getVersion().startsWith("2.4") ) {
+        if (p != null) {
+            if (p.getDescription().getVersion().startsWith("2.4")) {
                 log.debug("Registering Multiverse-Portals listener");
                 registerListener();
             }
@@ -132,7 +130,7 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
 
     private void registerListener() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-        if( p != null ) {
+        if (p != null) {
             plugin.getServer().getPluginManager().registerEvent(com.onarandombox.MultiversePortals.event.MVPortalEvent.class,
                     multiverseListener,
                     EventPriority.NORMAL,

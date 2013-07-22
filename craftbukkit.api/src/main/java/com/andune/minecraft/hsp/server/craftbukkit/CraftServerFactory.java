@@ -26,18 +26,18 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.craftbukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-/** Class to determine which version of CraftServer we need at
+/**
+ * Class to determine which version of CraftServer we need at
  * runtime.
- * 
- * @author andune
  *
+ * @author andune
  */
 public class CraftServerFactory {
     private final Plugin plugin;
@@ -49,15 +49,15 @@ public class CraftServerFactory {
 
     /**
      * Code heavily borrowed from mbaxter's AbstractionExamplePlugin.
-     * 
+     *
      * @return
      */
     public CraftServer getCraftServer() {
-        if( craftServer != null )
+        if (craftServer != null)
             return craftServer;
-        
+
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        
+
         // Get full package string of CraftServer.
         // org.bukkit.craftbukkit.versionstring (or for pre-refactor, just org.bukkit.craftbukkit
         String version = packageName.substring(packageName.lastIndexOf('.') + 1);
@@ -72,13 +72,12 @@ public class CraftServerFactory {
             if (CraftServer.class.isAssignableFrom(clazz)) { // Make sure it actually implements our interface
                 craftServer = (CraftServer) clazz.getConstructor().newInstance();
             }
+        } catch (Exception e) {
         }
-        catch (Exception e) {
-        }
-        
-        if( craftServer == null )
+
+        if (craftServer == null)
             craftServer = new CraftServerNotAvailable(plugin);
-        
+
         return craftServer;
     }
 }

@@ -26,44 +26,48 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
-
-import java.util.Set;
-
 
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public interface SpawnDAO {
     static final String NEW_PLAYER_SPAWN = "newPlayerSpawn";
 
-	Spawn findSpawnByWorld(String world);
-	Spawn findSpawnByWorldAndGroup(String world, String group);
-	Spawn findSpawnByName(String name);
-	Spawn findSpawnById(int id);
-	
-	/** Return the single spawn defined as new player spawn; if any.
-	 * 
-	 * @return new player spawn or null
-	 */
-	Spawn getNewPlayerSpawn();
-	
-	/** Return full set of defined spawn groups.
-	 * 
-	 * @return
-	 */
-	Set<String> getSpawnDefinedGroups();
+    Spawn findSpawnByWorld(String world);
 
-	Set<? extends Spawn> findAllSpawns();
+    Spawn findSpawnByWorldAndGroup(String world, String group);
 
-	void saveSpawn(Spawn spawn) throws StorageException;
-	void deleteSpawn(Spawn spawn) throws StorageException;
+    Spawn findSpawnByName(String name);
+
+    Spawn findSpawnById(int id);
+
+    /**
+     * Return the single spawn defined as new player spawn; if any.
+     *
+     * @return new player spawn or null
+     */
+    Spawn getNewPlayerSpawn();
+
+    /**
+     * Return full set of defined spawn groups.
+     *
+     * @return
+     */
+    Set<String> getSpawnDefinedGroups();
+
+    Set<? extends Spawn> findAllSpawns();
+
+    void saveSpawn(Spawn spawn) throws StorageException;
+
+    void deleteSpawn(Spawn spawn) throws StorageException;
 
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)

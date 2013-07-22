@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.bukkit;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.bukkit.entity.Player;
 
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.config.ConfigCore;
@@ -42,21 +37,24 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.google.inject.Injector;
+import org.bukkit.entity.Player;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class BukkitFactory extends com.andune.minecraft.commonlib.server.bukkit.BukkitFactory
-implements com.andune.minecraft.hsp.server.api.Factory {
+        implements com.andune.minecraft.hsp.server.api.Factory {
     private final ConfigCore configCore;
     private final PlayerDAO playerDAO;
     private final Server server;
-    
+
     @Inject
     protected BukkitFactory(Injector injector, PermissionSystem perm,
-            ConfigCore configCore, PlayerDAO playerDAO, Server server) {
+                            ConfigCore configCore, PlayerDAO playerDAO, Server server) {
         super(injector, perm);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
@@ -72,7 +70,7 @@ implements com.andune.minecraft.hsp.server.api.Factory {
     public Command newCommand(Class<? extends Command> commandClass) {
         return injector.getInstance(commandClass);
     }
-    
+
     @Override
     public BukkitPlayer newBukkitPlayer(Player bukkitPlayer) {
         return new BukkitPlayer(configCore, playerDAO, perm, bukkitPlayer, server);

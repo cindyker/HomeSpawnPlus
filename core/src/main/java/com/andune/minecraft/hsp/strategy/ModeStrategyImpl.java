@@ -26,34 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategy;
 
-import com.andune.minecraft.hsp.strategy.ModeStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-
-
-/** Base strategy for Strategy Modes. Implements common logic.
- * 
- * @author andune
+/**
+ * Base strategy for Strategy Modes. Implements common logic.
  *
+ * @author andune
  */
 public abstract class ModeStrategyImpl extends BaseStrategy implements ModeStrategy {
-	@Override
-	public abstract StrategyMode getMode();
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.strategy.ModeStrategy#isAdditive()
-	 */
-	@Override
-	public boolean isAdditive() { return false; }
-	
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-	    context.addMode(this);
-		logVerbose("Evaluated mode change strategy, new mode = "+context.getCurrentModes().toString());
-		return null;
-	}
+    @Override
+    public abstract StrategyMode getMode();
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.strategy.ModeStrategy#isAdditive()
+     */
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        context.addMode(this);
+        logVerbose("Evaluated mode change strategy, new mode = " + context.getCurrentModes().toString());
+        return null;
+    }
 }

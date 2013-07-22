@@ -26,122 +26,123 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializablePlayerSpawn;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author andune
- *
  */
 public class PlayerSpawnDAOYaml extends AbstractDAOYaml<PlayerSpawn, SerializablePlayerSpawn>
-implements PlayerSpawnDAO
-{
-	private static final String CONFIG_SECTION = "playerSpawns";
+        implements PlayerSpawnDAO {
+    private static final String CONFIG_SECTION = "playerSpawns";
 
-	public PlayerSpawnDAOYaml(final File file, final YamlConfiguration yaml) {
-		super(CONFIG_SECTION);
-		this.yaml = yaml;
-		this.file = file;
-	}
-	public PlayerSpawnDAOYaml(final File file) {
-		this(file, null);
-	}
+    public PlayerSpawnDAOYaml(final File file, final YamlConfiguration yaml) {
+        super(CONFIG_SECTION);
+        this.yaml = yaml;
+        this.file = file;
+    }
 
-	@Override
-	public PlayerSpawn findById(int id) {
-		PlayerSpawn playerSpawn = null;
-		
-		Set<PlayerSpawn> playerSpawns = findAll();
-		if( playerSpawns != null && playerSpawns.size() > 0 ) {
-			for(PlayerSpawn s: playerSpawns) {
-				if( id == s.getId() ) {
-					playerSpawn = s;
-					break;
-				}
-			}
-		}
-		
-		return playerSpawn;
-	}
+    public PlayerSpawnDAOYaml(final File file) {
+        this(file, null);
+    }
 
-	@Override
-	public PlayerSpawn findByWorldAndPlayerName(String world, String playerName) {
-		PlayerSpawn playerSpawn = null;
-		
-		Set<PlayerSpawn> playerSpawns = findAll();
-		if( playerSpawns != null && playerSpawns.size() > 0 ) {
-			for(PlayerSpawn s: playerSpawns) {
-				if( world.equals(s.getWorld()) && playerName.equals(s.getPlayerName()) ) {
-					playerSpawn = s;
-					break;
-				}
-			}
-		}
-		
-		return playerSpawn;
-	}
+    @Override
+    public PlayerSpawn findById(int id) {
+        PlayerSpawn playerSpawn = null;
 
-	@Override
-	public Set<PlayerSpawn> findByPlayerName(String playerName) {
-		Set<PlayerSpawn> set = new HashSet<PlayerSpawn>();
-		
-		Set<PlayerSpawn> playerSpawns = findAll();
-		if( playerSpawns != null && playerSpawns.size() > 0 ) {
-			for(PlayerSpawn s: playerSpawns) {
-				if( playerName.equals(s.getPlayerName()) ) {
-					set.add(s);
-				}
-			}
-		}
-		
-		return set;
-	}
+        Set<PlayerSpawn> playerSpawns = findAll();
+        if (playerSpawns != null && playerSpawns.size() > 0) {
+            for (PlayerSpawn s : playerSpawns) {
+                if (id == s.getId()) {
+                    playerSpawn = s;
+                    break;
+                }
+            }
+        }
 
-	@Override
-	public Set<PlayerSpawn> findAll() {
-		return super.findAllObjects();
-	}
+        return playerSpawn;
+    }
 
-	@Override
-	public void save(PlayerSpawn playerSpawn) throws StorageException {
-		super.saveObject(playerSpawn);
-	}
+    @Override
+    public PlayerSpawn findByWorldAndPlayerName(String world, String playerName) {
+        PlayerSpawn playerSpawn = null;
 
-	@Override
-	public void delete(PlayerSpawn playerSpawn) throws StorageException {
-		super.deleteObject(playerSpawn);
-	}
+        Set<PlayerSpawn> playerSpawns = findAll();
+        if (playerSpawns != null && playerSpawns.size() > 0) {
+            for (PlayerSpawn s : playerSpawns) {
+                if (world.equals(s.getWorld()) && playerName.equals(s.getPlayerName())) {
+                    playerSpawn = s;
+                    break;
+                }
+            }
+        }
 
-	@Override
-	protected SerializablePlayerSpawn newSerializable(PlayerSpawn object) {
-		return new SerializablePlayerSpawn(object);
-	}
-	
+        return playerSpawn;
+    }
+
+    @Override
+    public Set<PlayerSpawn> findByPlayerName(String playerName) {
+        Set<PlayerSpawn> set = new HashSet<PlayerSpawn>();
+
+        Set<PlayerSpawn> playerSpawns = findAll();
+        if (playerSpawns != null && playerSpawns.size() > 0) {
+            for (PlayerSpawn s : playerSpawns) {
+                if (playerName.equals(s.getPlayerName())) {
+                    set.add(s);
+                }
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<PlayerSpawn> findAll() {
+        return super.findAllObjects();
+    }
+
+    @Override
+    public void save(PlayerSpawn playerSpawn) throws StorageException {
+        super.saveObject(playerSpawn);
+    }
+
+    @Override
+    public void delete(PlayerSpawn playerSpawn) throws StorageException {
+        super.deleteObject(playerSpawn);
+    }
+
+    @Override
+    protected SerializablePlayerSpawn newSerializable(PlayerSpawn object) {
+        return new SerializablePlayerSpawn(object);
+    }
+
     @Override
     public int purgePlayer(String playerName) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public Set<String> getAllPlayerNames() {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgePlayerData(long purgeTime) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgeWorldData(String world) {
         throw new FeatureNotImplemented();

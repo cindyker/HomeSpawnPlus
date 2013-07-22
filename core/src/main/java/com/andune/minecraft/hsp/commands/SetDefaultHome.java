@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
@@ -39,45 +39,44 @@ import com.andune.minecraft.hsp.storage.StorageException;
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="setDefault",
-    aliases={"sd"}, help="Set your default home")
+@UberCommand(uberCommand = "home", subCommand = "setDefault",
+        aliases = {"sd"}, help = "Set your default home")
 public class SetDefaultHome extends BaseCommand {
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"sdh"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTHOME_USAGE);
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"sdh"};
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		if( args.length < 1 ) {
-			server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_SPECIFY_HOMENAME);
-		}
-		else {
-			String homeName = args[0];
-			
-			com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(p.getName(), homeName);
-			
-			if( home != null ) {
-				home.setDefaultHome(true);
-				try {
-					storage.getHomeDAO().saveHome(home);
-					server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_HOME_CHANGED,
-							"world", home.getWorld(), "home", home.getName());
-				}
-				catch(StorageException e) {
-				    server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-					log.warn("Error caught in /"+getCommandName(), e);
-				}
-			}
-		}
-		
-		return true;
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTHOME_USAGE);
+    }
+
+    @Override
+    public boolean execute(Player p, String[] args) {
+        if (args.length < 1) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_SPECIFY_HOMENAME);
+        } else {
+            String homeName = args[0];
+
+            com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(p.getName(), homeName);
+
+            if (home != null) {
+                home.setDefaultHome(true);
+                try {
+                    storage.getHomeDAO().saveHome(home);
+                    server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_HOME_CHANGED,
+                            "world", home.getWorld(), "home", home.getName());
+                } catch (StorageException e) {
+                    server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+                    log.warn("Error caught in /" + getCommandName(), e);
+                }
+            }
+        }
+
+        return true;
+    }
 
 }

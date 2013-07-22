@@ -30,17 +30,18 @@
  */
 package com.andune.minecraft.hsp.storage.dao;
 
-import java.util.Set;
-
 import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public interface PlayerDAO extends PurgePlayer {
     Player findPlayerByName(String name);
+
     Set<Player> findAllPlayers();
+
     void savePlayer(Player player) throws StorageException;
 }

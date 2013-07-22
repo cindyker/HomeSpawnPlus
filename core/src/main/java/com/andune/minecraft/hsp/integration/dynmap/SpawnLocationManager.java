@@ -26,49 +26,48 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public class SpawnLocationManager implements LocationManager {
-	private final Storage storage;
+    private final Storage storage;
 
-	public SpawnLocationManager(final Storage storage) {
-		this.storage = storage;
-	}
+    public SpawnLocationManager(final Storage storage) {
+        this.storage = storage;
+    }
 
-	@Override
-	public List<NamedLocation> getLocations(final World w) {
-		List<NamedLocation> locations = new ArrayList<NamedLocation>();
-		
-		String world = w.getName();
-		
-		SpawnDAO dao = storage.getSpawnDAO();
-		Set<? extends Spawn> allSpawns = dao.findAllSpawns();
-		if( allSpawns != null && allSpawns.size() > 0 ) {
-			for(Spawn spawn : allSpawns) {
-				// skip any spawns that aren't in the given world
-				if( !spawn.getWorld().equals(world) )
-					continue;
-				
-				locations.add(new SpawnNamedLocation(spawn));
-			}
-		}
-		
-		return locations;
-	}
+    @Override
+    public List<NamedLocation> getLocations(final World w) {
+        List<NamedLocation> locations = new ArrayList<NamedLocation>();
+
+        String world = w.getName();
+
+        SpawnDAO dao = storage.getSpawnDAO();
+        Set<? extends Spawn> allSpawns = dao.findAllSpawns();
+        if (allSpawns != null && allSpawns.size() > 0) {
+            for (Spawn spawn : allSpawns) {
+                // skip any spawns that aren't in the given world
+                if (!spawn.getWorld().equals(world))
+                    continue;
+
+                locations.add(new SpawnNamedLocation(spawn));
+            }
+        }
+
+        return locations;
+    }
 
 }

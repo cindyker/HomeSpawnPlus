@@ -26,70 +26,69 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.multiverse;
 
-import javax.inject.Singleton;
-
-import org.bukkit.event.Listener;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
 import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.MultiverseCore.event.MVTeleportEvent;
 import com.onarandombox.MultiversePortals.MVPortal;
 import com.onarandombox.MultiversePortals.destination.PortalDestination;
 import com.onarandombox.MultiversePortals.event.MVPortalEvent;
+import org.bukkit.event.Listener;
 
-/** Class incomplete, may not be necessary.
- * 
- * @author andune
+import javax.inject.Singleton;
+
+/**
+ * Class incomplete, may not be necessary.
  *
+ * @author andune
  */
 @Singleton
 public class MultiverseListener implements Listener {
     private static final Logger log = LoggerFactory.getLogger(MultiverseListener.class);
-    
-	private MultiverseCore multiverseCoreModule;
+
+    private MultiverseCore multiverseCoreModule;
     private MultiversePortals multiversePortalsModule;
-	
-	public MultiverseListener() {
-	}
-	
-	public void setMultiverseCoreModule(MultiverseCore multiverseCoreModule) {
+
+    public MultiverseListener() {
+    }
+
+    public void setMultiverseCoreModule(MultiverseCore multiverseCoreModule) {
         this.multiverseCoreModule = multiverseCoreModule;
-	}
-	
+    }
+
     public void setMultiversePortalsModule(MultiversePortals multiversePortalsModule) {
         this.multiversePortalsModule = multiversePortalsModule;
     }
 
-	public void onMultiverseTeleport(MVTeleportEvent event) {
-		if(event.isCancelled())
-			return;
-		
-		if( multiverseCoreModule != null ) {
-    		log.debug("onMultiverseTeleport(): setting entity to {}",event.getTeleportee());
-    		multiverseCoreModule.setCurrentTeleporter(event.getTeleportee().getName());
-		}
-	}
-	
-	public void onMultiversePortalEvent(MVPortalEvent event) {
-		if(event.isCancelled())
-			return;
-		
-		if( multiversePortalsModule != null ) {
-    		log.debug("onMultiversePortalEvent(): setting entity to {}",event.getTeleportee());
-    		MVPortal portal = event.getSendingPortal();
-    		if( portal != null )
-    		    multiversePortalsModule.setSourcePortalName(portal.getName());
-    		
-    		MVDestination destination = event.getDestination();
-    		if( destination != null && destination instanceof PortalDestination ) {
-    			PortalDestination portalDestination = (PortalDestination) destination;
-    			multiversePortalsModule.setDestinationPortalName(portalDestination.getName());
-    		}
-		}
-	}
+    public void onMultiverseTeleport(MVTeleportEvent event) {
+        if (event.isCancelled())
+            return;
+
+        if (multiverseCoreModule != null) {
+            log.debug("onMultiverseTeleport(): setting entity to {}", event.getTeleportee());
+            multiverseCoreModule.setCurrentTeleporter(event.getTeleportee().getName());
+        }
+    }
+
+    public void onMultiversePortalEvent(MVPortalEvent event) {
+        if (event.isCancelled())
+            return;
+
+        if (multiversePortalsModule != null) {
+            log.debug("onMultiversePortalEvent(): setting entity to {}", event.getTeleportee());
+            MVPortal portal = event.getSendingPortal();
+            if (portal != null)
+                multiversePortalsModule.setSourcePortalName(portal.getName());
+
+            MVDestination destination = event.getDestination();
+            if (destination != null && destination instanceof PortalDestination) {
+                PortalDestination portalDestination = (PortalDestination) destination;
+                multiversePortalsModule.setDestinationPortalName(portalDestination.getName());
+            }
+        }
+    }
 }

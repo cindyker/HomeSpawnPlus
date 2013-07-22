@@ -26,63 +26,62 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnLastLocation extends BaseStrategy {
     protected Storage storage;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
 
-	private String world;
-	
-	public SpawnLastLocation() {}
-	public SpawnLastLocation(final String world) {
-		this.world = world;
-	}
-	
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult result = null;
-		final Player p = context.getPlayer();
-		
-		// take the world from the argument, if given
-		String worldName = context.getArg();
-		// otherwise use the name given at instantiation
-		if( worldName == null )
-			worldName = this.world;
+    @Inject
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
 
-		// if no arg was given at runtime or instantiation, use location
-		// of the player to determine the world
-		if( worldName == null )
-			worldName = context.getEventLocation().getWorld().getName();
+    private String world;
 
-		PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
-		PlayerLastLocation	 pll = dao.findByWorldAndPlayerName(worldName, p.getName());
-		
-		if( pll != null )
-			result = new StrategyResultImpl(pll.getLocation());
-		
-		return result;
-	}
+    public SpawnLastLocation() {
+    }
+
+    public SpawnLastLocation(final String world) {
+        this.world = world;
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        StrategyResult result = null;
+        final Player p = context.getPlayer();
+
+        // take the world from the argument, if given
+        String worldName = context.getArg();
+        // otherwise use the name given at instantiation
+        if (worldName == null)
+            worldName = this.world;
+
+        // if no arg was given at runtime or instantiation, use location
+        // of the player to determine the world
+        if (worldName == null)
+            worldName = context.getEventLocation().getWorld().getName();
+
+        PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
+        PlayerLastLocation pll = dao.findByWorldAndPlayerName(worldName, p.getName());
+
+        if (pll != null)
+            result = new StrategyResultImpl(pll.getLocation());
+
+        return result;
+    }
 }

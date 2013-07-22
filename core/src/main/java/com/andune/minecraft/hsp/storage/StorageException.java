@@ -26,49 +26,49 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage;
 
-/** Exceptions relating to backing storage. Usually wraps some other exception
+/**
+ * Exceptions relating to backing storage. Usually wraps some other exception
  * type such as SQLException or IOException, to give us a consistent exception
  * interface.
- * 
- * @author andune
  *
+ * @author andune
  */
 public class StorageException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * 
-	 */
-	public StorageException() {
-	}
+    /**
+     *
+     */
+    public StorageException() {
+    }
 
-	/**
-	 * @param message
-	 */
-	public StorageException(String message) {
-		super(message);
-	}
+    /**
+     * @param message
+     */
+    public StorageException(String message) {
+        super(message);
+    }
 
-	/**
-	 * @param cause
-	 */
-	public StorageException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * @param cause
+     */
+    public StorageException(Throwable cause) {
+        super(cause);
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public StorageException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public StorageException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

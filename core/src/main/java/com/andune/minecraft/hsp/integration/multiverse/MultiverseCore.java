@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.multiverse;
 
@@ -34,9 +34,9 @@ import com.andune.minecraft.hsp.integration.PluginIntegration;
 
 /**
  * @author andune
- *
  */
 public interface MultiverseCore extends PluginIntegration {
-    String getCurrentTeleporter();    
+    String getCurrentTeleporter();
+
     void setCurrentTeleporter(String name);
 }

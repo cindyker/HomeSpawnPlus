@@ -26,49 +26,44 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class SpawnSpecificWorld extends BaseStrategy {
-    @Inject private SpawnDAO spawnDAO;
-    
-	private final String worldName;
-	
-	public SpawnSpecificWorld(final String worldName) {
-		this.worldName = worldName;
-	}
+    @Inject
+    private SpawnDAO spawnDAO;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-	    Spawn spawn = spawnDAO.findSpawnByWorld(worldName);
-		// since worldSpawn is very specific, it's usually an error condition if we didn't
-		// find a spawn that the admin identified, so print a warning so they can fix the
-		// issue.
-		if( spawn == null )
-			log.warn("No spawn found for name \""+worldName+"\" for \""+getStrategyConfigName()+"\" strategy");
-		
-		return new StrategyResultImpl(spawn);
-	}
+    private final String worldName;
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnSpecificWorld";
-	}
+    public SpawnSpecificWorld(final String worldName) {
+        this.worldName = worldName;
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        Spawn spawn = spawnDAO.findSpawnByWorld(worldName);
+        // since worldSpawn is very specific, it's usually an error condition if we didn't
+        // find a spawn that the admin identified, so print a warning so they can fix the
+        // issue.
+        if (spawn == null)
+            log.warn("No spawn found for name \"" + worldName + "\" for \"" + getStrategyConfigName() + "\" strategy");
+
+        return new StrategyResultImpl(spawn);
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnSpecificWorld";
+    }
 }

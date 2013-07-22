@@ -27,116 +27,125 @@
  */
 package com.andune.minecraft.hsp.strategy;
 
-import java.util.List;
-
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 
+import java.util.List;
+
 public interface StrategyContext {
 
-	String getEventType();
+    String getEventType();
 
-	void setEventType(String eventType);
+    void setEventType(String eventType);
 
-	Player getPlayer();
+    Player getPlayer();
 
-	/** Return the "location" of the event, which might be a manually passed in location
-	 * or the player location, depending on which data we have.
-	 * 
-	 * @return
-	 */
-	Location getEventLocation();
+    /**
+     * Return the "location" of the event, which might be a manually passed in location
+     * or the player location, depending on which data we have.
+     *
+     * @return
+     */
+    Location getEventLocation();
 
-	/** The location the event is happening, which may be different than
-	 * the player location.
-	 * 
-	 * @return
-	 */
-	Location getLocation();
+    /**
+     * The location the event is happening, which may be different than
+     * the player location.
+     *
+     * @return
+     */
+    Location getLocation();
 
-	void setLocation(Location location);
+    void setLocation(Location location);
 
-	Location getFromLocation();
+    Location getFromLocation();
 
-	void setFromLocation(Location fromLocation);
+    void setFromLocation(Location fromLocation);
 
-	void setPlayer(Player player);
+    void setPlayer(Player player);
 
-	List<ModeStrategy> getCurrentModes();
+    List<ModeStrategy> getCurrentModes();
 
-	void addMode(ModeStrategy mode);
+    void addMode(ModeStrategy mode);
 
-	void resetCurrentModes();
+    void resetCurrentModes();
 
-	/** Home default mode is true as long as no home exclusive modes are set
-	 * that would cancel it out.
-	 * 
-	 * @return
-	 */
-	boolean isInHomeDefaultMode();
+    /**
+     * Home default mode is true as long as no home exclusive modes are set
+     * that would cancel it out.
+     *
+     * @return
+     */
+    boolean isInHomeDefaultMode();
 
-	boolean isDefaultModeEnabled();
+    boolean isDefaultModeEnabled();
 
-	/** Loop through all existing modes that have been set to see if a given mode
-	 * has been enabled.
-	 * 
-	 * @param mode
-	 * @return
-	 */
-	boolean isModeEnabled(StrategyMode mode);
+    /**
+     * Loop through all existing modes that have been set to see if a given mode
+     * has been enabled.
+     *
+     * @param mode
+     * @return
+     */
+    boolean isModeEnabled(StrategyMode mode);
 
-	/** If a mode is enabled, return the mode object.
-	 * 
-	 * @param mode
-	 * @return
-	 */
-	ModeStrategy getMode(StrategyMode mode);
+    /**
+     * If a mode is enabled, return the mode object.
+     *
+     * @param mode
+     * @return
+     */
+    ModeStrategy getMode(StrategyMode mode);
 
     /**
      * If a mode is enabled, return all instances of that mode. This is useful
      * for modes that can possibly be set multiple times, such as ModeEffect.
-     * 
+     *
      * @param mode
      * @return
      */
     List<ModeStrategy> getModeList(StrategyMode mode);
-    
+
     /**
      * This call clears any ModeEffect modes out of the mode list, typically
      * used after those modes have just been applied.
      */
     void clearEffectModes();
 
-	/** Method for checking boolean states of any active modes to see if those
-	 * modes allow strategy processing given the current context.
-	 * 
-	 * @return
-	 */
-	boolean isStrategyProcessingAllowed();
+    /**
+     * Method for checking boolean states of any active modes to see if those
+     * modes allow strategy processing given the current context.
+     *
+     * @return
+     */
+    boolean isStrategyProcessingAllowed();
 
-	/** Using currently set modes, return the current bounds
-	 * 
-	 * @return current bounds, guaranteed not to be null
-	 */
-	TeleportOptions getTeleportOptions();
+    /**
+     * Using currently set modes, return the current bounds
+     *
+     * @return current bounds, guaranteed not to be null
+     */
+    TeleportOptions getTeleportOptions();
 
-	/** Validate the locations meet any distance limit criteria specified in the current
-	 * context. The context "getEventLocation()" is the anchor location (usually the
-	 * player location).
-	 * 
-	 * @param newLoation the location being compared
-	 * @return true if the location is within the distance bounds, false if not
-	 */
-	boolean checkDistance(Location newLocation);
+    /**
+     * Validate the locations meet any distance limit criteria specified in the current
+     * context. The context "getEventLocation()" is the anchor location (usually the
+     * player location).
+     *
+     * @param newLoation the location being compared
+     * @return true if the location is within the distance bounds, false if not
+     */
+    boolean checkDistance(Location newLocation);
 
-	String getArg();
+    String getArg();
 
-	/** Optional argument that might be used by strategies to take input
-	 * from user commands, for example. 
-	 * 
-	 * @param arg
-	 */
-	void setArg(String arg);
+    /**
+     * Optional argument that might be used by strategies to take input
+     * from user commands, for example.
+     *
+     * @param arg
+     */
+    void setArg(String arg);
 
 }

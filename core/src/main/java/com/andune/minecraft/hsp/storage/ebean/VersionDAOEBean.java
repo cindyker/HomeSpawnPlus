@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
@@ -38,26 +38,25 @@ import com.avaje.ebean.Query;
 
 /**
  * @author andune
- *
  */
 public class VersionDAOEBean implements VersionDAO {
-	private EbeanServer ebean;
-	
-	public VersionDAOEBean(final EbeanServer ebean) {
-		setEbeanServer(ebean);
-	}
-	
-	public void setEbeanServer(final EbeanServer ebean) {
-		this.ebean = ebean;
-	}
+    private EbeanServer ebean;
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.VersionDAO#getVersionObject()
-	 */
-	@Override
-	public Version getVersionObject() {
-		String q = "find version where id = 1";
-		Query<Version> versionQuery = ebean.createQuery(Version.class, q);
-		return versionQuery.findUnique();
-	}
+    public VersionDAOEBean(final EbeanServer ebean) {
+        setEbeanServer(ebean);
+    }
+
+    public void setEbeanServer(final EbeanServer ebean) {
+        this.ebean = ebean;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.VersionDAO#getVersionObject()
+     */
+    @Override
+    public Version getVersionObject() {
+        String q = "find version where id = 1";
+        Query<Version> versionQuery = ebean.createQuery(Version.class, q);
+        return versionQuery.findUnique();
+    }
 }

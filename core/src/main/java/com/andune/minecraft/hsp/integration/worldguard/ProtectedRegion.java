@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldguard;
 
@@ -34,16 +34,15 @@ import com.andune.minecraft.commonlib.server.api.Location;
 
 /**
  * @author andune
- *
  */
 public interface ProtectedRegion {
     /**
      * Return the name/id of this region.
-     * 
+     *
      * @return
      */
     public String getName();
-    
+
     /**
      * Return the minimum point.
      *
@@ -59,8 +58,8 @@ public interface ProtectedRegion {
     public Location getMaximumPoint();
 
     /**
-     * Determine whether the region contains the given x,y,z point. 
-     * 
+     * Determine whether the region contains the given x,y,z point.
+     *
      * @param x
      * @param y
      * @param z

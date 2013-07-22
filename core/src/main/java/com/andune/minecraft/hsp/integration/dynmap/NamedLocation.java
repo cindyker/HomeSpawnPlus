@@ -26,35 +26,38 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
 import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
 import com.andune.minecraft.commonlib.server.api.Location;
 
-/** Interface for HSP locations.
- * 
- * @author andune
+/**
+ * Interface for HSP locations.
  *
+ * @author andune
  */
 public interface NamedLocation {
-	public Location getLocation();
-	public String getName();
+    public Location getLocation();
 
-	/** If the object is owned by a player, this method should return
-	 * the player name of the owner.
-	 * 
-	 * @return
-	 */
-	public String getPlayerName();
-	
-	/** Determine whether this NamedLocation is enabled and should be
-	 * shown. The ConfigurationSection is expected to be relevant
-	 * to the object type, so that it can look up any configuration
-	 * options to make decisions about whether it is enabled or not.
-	 * 
-	 * @return
-	 */
-	public boolean isEnabled(ConfigurationSection section);
+    public String getName();
+
+    /**
+     * If the object is owned by a player, this method should return
+     * the player name of the owner.
+     *
+     * @return
+     */
+    public String getPlayerName();
+
+    /**
+     * Determine whether this NamedLocation is enabled and should be
+     * shown. The ConfigurationSection is expected to be relevant
+     * to the object type, so that it can look up any configuration
+     * options to make decisions about whether it is enabled or not.
+     *
+     * @return
+     */
+    public boolean isEnabled(ConfigurationSection section);
 }

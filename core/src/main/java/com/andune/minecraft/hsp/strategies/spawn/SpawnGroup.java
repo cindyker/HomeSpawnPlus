@@ -26,34 +26,33 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class SpawnGroup extends BaseStrategy {
-	@Inject private SpawnGroupSpecificWorld sgsw;
+    @Inject
+    private SpawnGroupSpecificWorld sgsw;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return sgsw.evaluate(context, context.getPlayer().getWorld().getName());
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return sgsw.evaluate(context, context.getPlayer().getWorld().getName());
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnGroup";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnGroup";
+    }
 
 }

@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.bukkit;
-
-import java.io.File;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -41,42 +36,47 @@ import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
+import org.bukkit.Bukkit;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Bukkit implementation of Player API.
- * 
- * @author andune
  *
+ * @author andune
  */
 public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.BukkitPlayer {
     private static final Logger log = LoggerFactory.getLogger(BukkitPlayer.class);
-    
+
     private ConfigCore configCore;
     private PlayerDAO playerDAO;
     private Server server;
-    
-    /** Protected constructor, should only be invoked from BukkitFactory.
-     * 
+
+    /**
+     * Protected constructor, should only be invoked from BukkitFactory.
+     *
      * @param configCore
      * @param playerDAO
      * @param bukkitPlayer
      */
     protected BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO,
-            PermissionSystem perm, org.bukkit.entity.Player bukkitPlayer,
-            Server server) {
+                           PermissionSystem perm, org.bukkit.entity.Player bukkitPlayer,
+                           Server server) {
         super(perm, bukkitPlayer);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
         this.server = server;
     }
-    
+
     @Override
     public void sendMessage(String message) {
         super.sendMessage(server.getDefaultColor() + message);
     }
+
     @Override
     public void sendMessage(String[] messages) {
-        if( messages != null && messages.length > 0 )
+        if (messages != null && messages.length > 0)
             messages[0] = server.getDefaultColor() + messages[0];
         super.sendMessage(messages);
     }
@@ -84,20 +84,20 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
     @Override
     public boolean isNewPlayer() {
         boolean isNewPlayer = false;
-        
+
         ConfigCore.NewPlayerStrategy newPlayerStrategy = configCore.getNewPlayerStrategy();
-        switch(newPlayerStrategy) {
+        switch (newPlayerStrategy) {
             case BUKKIT:
-                isNewPlayer = !bukkitPlayer.hasPlayedBefore(); 
+                isNewPlayer = !bukkitPlayer.hasPlayedBefore();
                 break;
-                
+
             case ORIGINAL:
-                if( playerDAO.findPlayerByName(getName()) == null ) {
+                if (playerDAO.findPlayerByName(getName()) == null) {
                     isNewPlayer = true;
                     break;
                 }
                 // ORIGINAL FALLS THORUGH TO PLAYER_DAT
-                
+
             case PLAYER_DAT:
             default:
                 File worldContainer = Bukkit.getWorldContainer();
@@ -106,8 +106,8 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
                 final String worldName = worlds.get(0).getName();
                 final String playerDat = getName() + ".dat";
 
-                File file = new File(worldContainer, worldName+"/players/"+playerDat);
-                if( !file.exists() ) {
+                File file = new File(worldContainer, worldName + "/players/" + playerDat);
+                if (!file.exists()) {
                     isNewPlayer = true;
                 }
         }

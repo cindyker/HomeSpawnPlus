@@ -26,52 +26,49 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
-import java.util.Map;
-
-import org.bukkit.configuration.serialization.SerializableAs;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
+import org.bukkit.configuration.serialization.SerializableAs;
+
+import java.util.Map;
 
 /**
  * @author andune
- *
  */
 @SerializableAs("PlayerSpawn")
 public class SerializablePlayerSpawn extends AbstractSerializableEntityWithLocation<PlayerSpawn>
-implements SerializableYamlObject<PlayerSpawn>
-{
+        implements SerializableYamlObject<PlayerSpawn> {
     private final static Logger log = LoggerFactory.getLogger(SerializablePlayerSpawn.class);
-	private final static String ATTR_PLAYER_NAME = "player_name";
-	
-	public SerializablePlayerSpawn(PlayerSpawn playerSpawn) {
-		super(playerSpawn);
-	}
+    private final static String ATTR_PLAYER_NAME = "player_name";
 
-	public SerializablePlayerSpawn(Map<String, Object> map) {
-		super(map);
-		
-		log.debug("SerializablePlayerSpawn constructor, map={}",map);
+    public SerializablePlayerSpawn(PlayerSpawn playerSpawn) {
+        super(playerSpawn);
+    }
 
-		Object o = map.get(ATTR_PLAYER_NAME);
-		if( o instanceof String )
-			getObject().setPlayerName((String) o);
-	}
+    public SerializablePlayerSpawn(Map<String, Object> map) {
+        super(map);
 
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = super.serialize();
-		map.put(ATTR_PLAYER_NAME, getObject().getPlayerName());
-		return map;
-	}
+        log.debug("SerializablePlayerSpawn constructor, map={}", map);
 
-	@Override
-	protected PlayerSpawn newEntity() {
-		return new PlayerSpawn();
-	}
+        Object o = map.get(ATTR_PLAYER_NAME);
+        if (o instanceof String)
+            getObject().setPlayerName((String) o);
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = super.serialize();
+        map.put(ATTR_PLAYER_NAME, getObject().getPlayerName());
+        return map;
+    }
+
+    @Override
+    protected PlayerSpawn newEntity() {
+        return new PlayerSpawn();
+    }
 }

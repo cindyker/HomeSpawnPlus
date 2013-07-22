@@ -26,14 +26,13 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
 /**
  * @author andune
- *
  */
 public interface SerializableYamlObject<T> {
-	public T getObject();
+    public T getObject();
 }

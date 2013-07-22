@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -40,22 +37,23 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
+import javax.inject.Inject;
+
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="setFirst",
-    aliases={"sf"}, help="Set first login spawn")
-public class SetFirstSpawn extends BaseCommand
-{
-    @Inject private SpawnUtil util;
+@UberCommand(uberCommand = "spawn", subCommand = "setFirst",
+        aliases = {"sf"}, help = "Set first login spawn")
+public class SetFirstSpawn extends BaseCommand {
+    @Inject
+    private SpawnUtil util;
 
-	@Override
-	public boolean execute(Player p, String[] args) throws StorageException {
-	    util.setFirstSpawn(p.getLocation(), p.getName());
-	    server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
-		
-		return true;
-	}
+    @Override
+    public boolean execute(Player p, String[] args) throws StorageException {
+        util.setFirstSpawn(p.getLocation(), p.getName());
+        server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
+
+        return true;
+    }
 }

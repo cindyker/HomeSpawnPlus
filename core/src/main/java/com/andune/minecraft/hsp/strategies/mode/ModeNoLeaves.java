@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -35,21 +35,21 @@ import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Strategy to avoid spawning over leaves.
- * 
- * @author andune
+/**
+ * Strategy to avoid spawning over leaves.
  *
+ * @author andune
  */
 @NoArgStrategy
 public class ModeNoLeaves extends ModeStrategyImpl {
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_NO_LEAVES;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_NO_LEAVES;
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

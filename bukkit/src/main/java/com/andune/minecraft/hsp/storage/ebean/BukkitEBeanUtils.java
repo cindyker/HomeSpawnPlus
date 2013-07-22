@@ -26,115 +26,120 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
 
+import com.andune.minecraft.commonlib.server.api.Plugin;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import com.andune.minecraft.commonlib.server.api.Plugin;
-
-/** Class which acts as an interface to load the "bukkit.yml" EBean settings
+/**
+ * Class which acts as an interface to load the "bukkit.yml" EBean settings
  * for the purpose of allowing SQLite schema upgrades, which are impossible otherwise
- * with just the Ajave EBeanInterface provided by Bukkit via the JavaPlugin class. 
- * 
- * @author andune
+ * with just the Ajave EBeanInterface provided by Bukkit via the JavaPlugin class.
  *
+ * @author andune
  */
 @Singleton
 public class BukkitEBeanUtils implements EBeanUtils {
-	private final Plugin plugin;
-	private final Properties connectionProperties;
-	private final YamlConfiguration configuration;
+    private final Plugin plugin;
+    private final Properties connectionProperties;
+    private final YamlConfiguration configuration;
 
-	@Inject
-	private BukkitEBeanUtils(Plugin plugin) {
-		this.plugin = plugin;
-		this.configuration = YamlConfiguration.loadConfiguration(new File("bukkit.yml"));
-		connectionProperties = new Properties();
-		connectionProperties.put("user", configuration.getString("database.username"));
-		connectionProperties.put("password", configuration.getString("database.password"));
-	}
-	
-	/* (non-Javadoc)
+    @Inject
+    private BukkitEBeanUtils(Plugin plugin) {
+        this.plugin = plugin;
+        this.configuration = YamlConfiguration.loadConfiguration(new File("bukkit.yml"));
+        connectionProperties = new Properties();
+        connectionProperties.put("user", configuration.getString("database.username"));
+        connectionProperties.put("password", configuration.getString("database.password"));
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getDriver()
      */
-	@Override
+    @Override
     public String getDriver() {
-		return configuration.getString("database.driver");
-	}
-	/* (non-Javadoc)
+        return configuration.getString("database.driver");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getUrl()
      */
-	@Override
+    @Override
     public String getUrl() {
-		return configuration.getString("database.url");
-	}
-	/* (non-Javadoc)
+        return configuration.getString("database.url");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getUsername()
      */
-	@Override
+    @Override
     public String getUsername() {
-		return configuration.getString("database.username");
-	}
-	/* (non-Javadoc)
+        return configuration.getString("database.username");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getPassword()
      */
-	@Override
+    @Override
     public String getPassword() {
-		return configuration.getString("database.password");
-	}
-	/* (non-Javadoc)
+        return configuration.getString("database.password");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getIsolation()
      */
-	@Override
+    @Override
     public String getIsolation() {
-		return configuration.getString("database.isolation");
-	}
-	/* (non-Javadoc)
+        return configuration.getString("database.isolation");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getLogging()
      */
-	@Override
+    @Override
     public Boolean getLogging() {
-		return configuration.getBoolean("database.logging", false);
-	}
-	/* (non-Javadoc)
+        return configuration.getBoolean("database.logging", false);
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getRebuild()
      */
-	@Override
+    @Override
     public Boolean getRebuild() {
-		return configuration.getBoolean("database.rebuild", false);
-	}
+        return configuration.getBoolean("database.rebuild", false);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#isSqlLite()
      */
-	@Override
+    @Override
     public boolean isSqlLite() {
-		return configuration.getString("database.driver").contains("sqlite");
-	}
-	
-	/* (non-Javadoc)
+        return configuration.getString("database.driver").contains("sqlite");
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.ebean.EBeanUtils#getConnection()
      */
-	@Override
+    @Override
     public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(replaceDatabaseString(
-				configuration.getString("database.url")),
-				connectionProperties);
-	}
+        return DriverManager.getConnection(replaceDatabaseString(
+                configuration.getString("database.url")),
+                connectionProperties);
+    }
 
-	private String replaceDatabaseString(String input) {
-		input = input.replaceAll("\\{DIR\\}", plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
-		input = input.replaceAll("\\{NAME\\}", plugin.getName().replaceAll("[^\\w_-]", ""));
-		return input;
-	}}
+    private String replaceDatabaseString(String input) {
+        input = input.replaceAll("\\{DIR\\}", plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
+        input = input.replaceAll("\\{NAME\\}", plugin.getName().replaceAll("[^\\w_-]", ""));
+        return input;
+    }
+}

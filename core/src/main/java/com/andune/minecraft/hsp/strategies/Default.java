@@ -26,32 +26,27 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies;
 
 
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class Default extends BaseStrategy {
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl(true, true);
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(true, true);
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "default";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "default";
+    }
 
 }

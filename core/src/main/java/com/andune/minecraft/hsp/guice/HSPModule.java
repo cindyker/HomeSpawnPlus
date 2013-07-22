@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.guice;
-
-import javax.inject.Singleton;
-
-import org.reflections.Reflections;
-import org.reflections.util.FilterBuilder;
 
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
@@ -49,34 +44,27 @@ import com.andune.minecraft.hsp.config.ConfigLoaderImpl;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageFactory;
-import com.andune.minecraft.hsp.storage.dao.HomeDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
-import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.strategy.StrategyConfig;
-import com.andune.minecraft.hsp.strategy.StrategyConfigImpl;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyContextImpl;
-import com.andune.minecraft.hsp.strategy.StrategyEngine;
-import com.andune.minecraft.hsp.strategy.StrategyEngineImpl;
-import com.andune.minecraft.hsp.strategy.StrategyResultFactory;
-import com.andune.minecraft.hsp.strategy.StrategyResultFactoryImpl;
+import com.andune.minecraft.hsp.storage.dao.*;
+import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.BedUtilsImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import org.reflections.Reflections;
+import org.reflections.util.FilterBuilder;
 
-/** Guice IoC Injector for HomeSpawnPlus.
- * 
- * @author andune
+import javax.inject.Singleton;
+
+/**
+ * Guice IoC Injector for HomeSpawnPlus.
  *
+ * @author andune
  */
 public class HSPModule extends AbstractModule {
     private final ConfigStorage configStorage;
     private Reflections reflections;
-    
+
     public HSPModule(ConfigStorage configStorage) {
         this.configStorage = configStorage;
     }
@@ -87,33 +75,33 @@ public class HSPModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(EventListener.class)
-            .to(com.andune.minecraft.hsp.EventListener.class);
+                .to(com.andune.minecraft.hsp.EventListener.class);
         bind(BedUtils.class)
-            .to(BedUtilsImpl.class);
+                .to(BedUtilsImpl.class);
         bind(Locale.class)
-            .to(LocaleStringReplacerImpl.class)
-            .in(Scopes.SINGLETON);
+                .to(LocaleStringReplacerImpl.class)
+                .in(Scopes.SINGLETON);
         bind(Colors.class)
-            .in(Scopes.SINGLETON);
+                .in(Scopes.SINGLETON);
         bind(TeleportOptions.class)
-            .to(TeleportOptionsImpl.class);
+                .to(TeleportOptionsImpl.class);
         bind(ConfigLoader.class)
-            .to(ConfigLoaderImpl.class)
-            .in(Scopes.SINGLETON);
+                .to(ConfigLoaderImpl.class)
+                .in(Scopes.SINGLETON);
         bind(Permissions.class)
-            .to(PermissionsImpl.class)
-            .in(Scopes.SINGLETON);
-        
+                .to(PermissionsImpl.class)
+                .in(Scopes.SINGLETON);
+
         bind(StrategyResultFactory.class)
-            .to(StrategyResultFactoryImpl.class);
+                .to(StrategyResultFactoryImpl.class);
         bind(StrategyEngine.class)
-            .to(StrategyEngineImpl.class);
+                .to(StrategyEngineImpl.class);
         bind(StrategyConfig.class)
-            .to(StrategyConfigImpl.class);
+                .to(StrategyConfigImpl.class);
         bind(StrategyContext.class)
-            .to(StrategyContextImpl.class);
+                .to(StrategyContextImpl.class);
     }
-    
+
     @Provides
     @Singleton
     protected ConfigStorage getConfigStorage() {
@@ -129,14 +117,14 @@ public class HSPModule extends AbstractModule {
     @Provides
     @Singleton
     protected Reflections provideReflections() {
-        if( reflections == null ) {
+        if (reflections == null) {
             this.reflections = Reflections.collect("META-INF/reflections",
                     new FilterBuilder().include(".*-reflections.yml"),
                     new YamlSerializer());
         }
         return reflections;
     }
-    
+
     @Provides
     @Singleton
     protected SpawnDAO provideSpawnDAO(Storage storage) {
@@ -160,7 +148,7 @@ public class HSPModule extends AbstractModule {
     protected HomeDAO provideHomeDAO(Storage storage) {
         return storage.getHomeDAO();
     }
-    
+
     @Provides
     @Singleton
     protected PlayerLastLocationDAO providePlayerLastLocationDAO(Storage storage) {

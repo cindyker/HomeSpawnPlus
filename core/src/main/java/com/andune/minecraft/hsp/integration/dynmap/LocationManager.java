@@ -26,22 +26,22 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
-import java.util.List;
-
 import com.andune.minecraft.commonlib.server.api.World;
 
-/** In the original Dynmap-CommandBook plugin, the code uses CommandBook's location
+import java.util.List;
+
+/**
+ * In the original Dynmap-CommandBook plugin, the code uses CommandBook's location
  * manager concept, which is a nice generic interface for querying locations. Since
  * HSP doesn't have a similar abstract location paradigm, we create one here to
  * minimize code change on the original Dynmap-CommandBook algorithms.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface LocationManager {
-	List<NamedLocation> getLocations(World world);
+    List<NamedLocation> getLocations(World world);
 }

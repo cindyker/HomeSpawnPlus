@@ -26,46 +26,43 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp;
+
+import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.hsp.guice.BukkitInjectorFactory;
+import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigStorage;
+import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
+import com.andune.minecraft.hsp.util.LogUtil;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.hsp.HomeSpawnPlus;
-import com.andune.minecraft.hsp.guice.BukkitInjectorFactory;
-import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigStorage;
-import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
-import com.andune.minecraft.hsp.util.LogUtil;
-
 /**
  * This class is the implementation of Bukkit's Plugin interface. This is
  * abstracted from the rest of the plugin so as to minimize impact to the code
  * when Bukkit makes API changes and to simplify supporting MC-API, Spout or
  * other frameworks.
- * 
+ *
  * @author andune
- * 
  */
 public class HomeSpawnPlusBukkit extends JavaPlugin {
     private HomeSpawnPlus mainClass;
 
     @Override
     public void onEnable() {
-    	LoggerFactory.setLoggerPrefix("[HomeSpawnPlus] ");
+        LoggerFactory.setLoggerPrefix("[HomeSpawnPlus] ");
 
         // disable reflections spam; it's a bug that prints warnings that look alarming
         Logger.getLogger("org.reflections").setLevel(Level.OFF);
-        
+
         File debugFlagFile = new File(getDataFolder(), "devDebug");
-        if( debugFlagFile.exists() )
+        if (debugFlagFile.exists())
             LogUtil.enableDebug();
 
         try {
@@ -73,33 +70,31 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
                     new BukkitConfigStorage(getStorageConfig()));
             mainClass = new HomeSpawnPlus(factory);
             mainClass.onEnable();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Caught exception loading plugin, shutting down", e);
             getServer().getPluginManager().disablePlugin(this);
         }
     }
-    
+
     /**
-	 * Find and load the storage configuration, this is required prior to
-	 * handing off control to the core injection routines.
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
+     * Find and load the storage configuration, this is required prior to
+     * handing off control to the core injection routines.
+     *
+     * @return
+     * @throws Exception
+     */
     private YamlConfiguration getStorageConfig() throws Exception {
         YamlConfiguration storageConfig = new YamlConfiguration();
         YamlConfiguration defaultStorageConfig = new YamlConfiguration();
-        
+
         // use file if it exists
         File storageConfigFile = new File(getDataFolder(), "config/core.yml");
-        if( storageConfigFile.exists() ) {
-        	storageConfig.load(new File(getDataFolder(), "config/core.yml"));
-        }
-        else {
+        if (storageConfigFile.exists()) {
+            storageConfig.load(new File(getDataFolder(), "config/core.yml"));
+        } else {
             // otherwise try the old-style single config file
             storageConfigFile = new File(getDataFolder(), "config.yml");
-            if( storageConfigFile.exists() ) {
+            if (storageConfigFile.exists()) {
                 storageConfig.load(new File(getDataFolder(), "config.yml"));
             }
             // otherwise use the default file in the JAR
@@ -114,10 +109,10 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
 
         return storageConfig;
     }
-    
+
     @Override
     public void onDisable() {
-        if( mainClass != null )
+        if (mainClass != null)
             mainClass.onDisable();
     }
 
@@ -125,7 +120,7 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
     public List<Class<?>> getDatabaseClasses() {
         return StorageEBeans.getDatabaseClasses();
     }
-    
+
     public File _getJarFile() {
         return super.getFile();
     }

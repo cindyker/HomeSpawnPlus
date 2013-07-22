@@ -26,71 +26,65 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
 
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 @OneArgStrategy
 public class HomeNamedHome extends HomeStrategy {
-	private String homeName;
-	
-	public HomeNamedHome() {}
-	public HomeNamedHome(String homeName) {
-		this.homeName = homeName;
-	}
-	
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		Home home = null;
-		
-		// take the name from the argument, if given
-		String name = context.getArg();
-		// otherwise use the name given at instantiation
-		if( name == null )
-			name = homeName;
-		
-		log.debug("HomeNamedHome: name={}",name);
+    private String homeName;
 
-		if( name != null ) {
-		    home = homeDAO.findHomeByNameAndPlayer(name, context.getPlayer().getName());
-			
-			log.debug("HomeNamedHome: home pre-modes={}, current modes={}", home, context.getCurrentModes());
-			
-			if( context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && !home.isDefaultHome() )
-				home = null;
-			if( context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) && !home.isBedHome() )
-				home = null;
-			if( context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) && home.isBedHome() )
-				home = null;
-			if( context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(home) ) {
-				logVerbose("Home ",home," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
-				home = null;
-			}
-		}
-		else
-			log.warn("Strategy "+getStrategyConfigName()+" was not given a homeName argument, nothing to do");
-		
-		return new StrategyResultImpl(home);
-	}
+    public HomeNamedHome() {
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "homeNamedHome";
-	}
+    public HomeNamedHome(String homeName) {
+        this.homeName = homeName;
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        Home home = null;
+
+        // take the name from the argument, if given
+        String name = context.getArg();
+        // otherwise use the name given at instantiation
+        if (name == null)
+            name = homeName;
+
+        log.debug("HomeNamedHome: name={}", name);
+
+        if (name != null) {
+            home = homeDAO.findHomeByNameAndPlayer(name, context.getPlayer().getName());
+
+            log.debug("HomeNamedHome: home pre-modes={}, current modes={}", home, context.getCurrentModes());
+
+            if (context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && !home.isDefaultHome())
+                home = null;
+            if (context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) && !home.isBedHome())
+                home = null;
+            if (context.isModeEnabled(StrategyMode.MODE_HOME_NO_BED) && home.isBedHome())
+                home = null;
+            if (context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(home)) {
+                logVerbose("Home ", home, " skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+                home = null;
+            }
+        } else
+            log.warn("Strategy " + getStrategyConfigName() + " was not given a homeName argument, nothing to do");
+
+        return new StrategyResultImpl(home);
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "homeNamedHome";
+    }
 
 }

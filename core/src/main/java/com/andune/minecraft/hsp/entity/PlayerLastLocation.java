@@ -26,185 +26,175 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.entity;
 
-import java.sql.Timestamp;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
-
-
 import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.hsp.entity.EntityWithLocation;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
 
-/** Entity for recording a players last known location unique to
+import javax.persistence.*;
+import javax.persistence.Version;
+import java.sql.Timestamp;
+
+/**
+ * Entity for recording a players last known location unique to
  * a given world. This allows us to later send them back to that
- * exact same location. 
- * 
- * @author andune
+ * exact same location.
  *
+ * @author andune
  */
 @Entity()
-@Table(name="hsp_playerlastloc",
-		uniqueConstraints={
-			@UniqueConstraint(columnNames={"world", "player_name"})
-		}
+@Table(name = "hsp_playerlastloc",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"world", "player_name"})
+        }
 )
-public class PlayerLastLocation implements EntityWithLocation
-{
+public class PlayerLastLocation implements EntityWithLocation {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    
+
     @NotEmpty
-    @Length(max=32)
-    @Column(name="player_name")
+    @Length(max = 32)
+    @Column(name = "player_name")
     private String playerName;
-    
+
     @NotEmpty
-    @Length(max=32)
-	private String world;
-    
+    @Length(max = 32)
+    private String world;
+
     @NotNull
     private Double x;
     @NotNull
     private Double y;
     @NotNull
     private Double z;
-    
+
     private Float pitch;
-	private Float yaw;
-	
-	@Version
-	private Timestamp lastModified;
-	
-	@CreatedTimestamp
-	private Timestamp dateCreated;
-	
+    private Float yaw;
+
+    @Version
+    private Timestamp lastModified;
+
+    @CreatedTimestamp
+    private Timestamp dateCreated;
+
     @Transient
     private transient Location location;
-    
-    public PlayerLastLocation() {}
 
-	public int getId() {
-		return id;
-	}
+    public PlayerLastLocation() {
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getPlayerName() {
-		return playerName;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
-	}
+    public String getPlayerName() {
+        return playerName;
+    }
 
-	public String getWorld() {
-		return world;
-	}
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
 
-	public void setWorld(String world) {
-		this.world = world;
-	}
+    public String getWorld() {
+        return world;
+    }
 
-	public Double getX() {
-		return x;
-	}
+    public void setWorld(String world) {
+        this.world = world;
+    }
 
-	public void setX(Double x) {
-		this.x = x;
-	}
+    public Double getX() {
+        return x;
+    }
 
-	public Double getY() {
-		return y;
-	}
+    public void setX(Double x) {
+        this.x = x;
+    }
 
-	public void setY(Double y) {
-		this.y = y;
-	}
+    public Double getY() {
+        return y;
+    }
 
-	public Double getZ() {
-		return z;
-	}
+    public void setY(Double y) {
+        this.y = y;
+    }
 
-	public void setZ(Double z) {
-		this.z = z;
-	}
+    public Double getZ() {
+        return z;
+    }
 
-	public Float getPitch() {
-		return pitch;
-	}
+    public void setZ(Double z) {
+        this.z = z;
+    }
 
-	public void setPitch(Float pitch) {
-		this.pitch = pitch;
-	}
+    public Float getPitch() {
+        return pitch;
+    }
 
-	public Float getYaw() {
-		return yaw;
-	}
+    public void setPitch(Float pitch) {
+        this.pitch = pitch;
+    }
 
-	public void setYaw(Float yaw) {
-		this.yaw = yaw;
-	}
+    public Float getYaw() {
+        return yaw;
+    }
 
-	public Timestamp getLastModified() {
-		return lastModified;
-	}
+    public void setYaw(Float yaw) {
+        this.yaw = yaw;
+    }
 
-	public void setLastModified(Timestamp lastModified) {
-		this.lastModified = lastModified;
-	}
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
 
-	public Timestamp getDateCreated() {
-		return dateCreated;
-	}
+    public void setLastModified(Timestamp lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	public void setDateCreated(Timestamp dateCreated) {
-		this.dateCreated = dateCreated;
-	}
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
 
-	public Location getLocation() {
-        if( location == null ) {
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Location getLocation() {
+        if (location == null) {
             location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
         }
-        
+
         return location;
-	}
+    }
 
-	public void setLocation(Location location) {
-    	setWorld(location.getWorld().getName());
-		setX(location.getX());
-		setY(location.getY());
-		setZ(location.getZ());
-		setYaw(location.getYaw());
-		setPitch(location.getPitch());
+    public void setLocation(Location location) {
+        setWorld(location.getWorld().getName());
+        setX(location.getX());
+        setY(location.getY());
+        setZ(location.getZ());
+        setYaw(location.getYaw());
+        setPitch(location.getPitch());
 
-		this.location = location;
-	}
-	
-	public String toString() {
-		return "{id="+getId()
-			+",playerName="+getPlayerName()
-			+",world="+getWorld()
-			+",x="+getX()
-			+",y="+getY()
-			+",z="+getZ()
-			+"}";
-	}
+        this.location = location;
+    }
+
+    public String toString() {
+        return "{id=" + getId()
+                + ",playerName=" + getPlayerName()
+                + ",world=" + getWorld()
+                + ",x=" + getX()
+                + ",y=" + getY()
+                + ",z=" + getZ()
+                + "}";
+    }
 }

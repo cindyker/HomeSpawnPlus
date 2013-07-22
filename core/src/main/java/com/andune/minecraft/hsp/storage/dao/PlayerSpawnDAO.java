@@ -26,26 +26,30 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
-
-import java.util.Set;
 
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public interface PlayerSpawnDAO extends PurgePlayer {
-	PlayerSpawn findById(int id);
-	PlayerSpawn findByWorldAndPlayerName(String world, String playerName);
-	Set<PlayerSpawn> findByPlayerName(String playerName);
-	Set<PlayerSpawn> findAll();
-	void save(PlayerSpawn playerSpawn) throws StorageException;
-	void delete(PlayerSpawn playerSpawn) throws StorageException;
+    PlayerSpawn findById(int id);
+
+    PlayerSpawn findByWorldAndPlayerName(String world, String playerName);
+
+    Set<PlayerSpawn> findByPlayerName(String playerName);
+
+    Set<PlayerSpawn> findAll();
+
+    void save(PlayerSpawn playerSpawn) throws StorageException;
+
+    void delete(PlayerSpawn playerSpawn) throws StorageException;
 
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.Storage#purgeWorldData(java.lang.String)

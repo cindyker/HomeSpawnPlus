@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -37,22 +37,21 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class ModeHomeDefaultOnly extends ModeStrategyImpl {
-	@Override
-	public String getStrategyConfigName() {
-		return "modeHomeDefaultOnly";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "modeHomeDefaultOnly";
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_HOME_DEFAULT_ONLY;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_HOME_DEFAULT_ONLY;
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

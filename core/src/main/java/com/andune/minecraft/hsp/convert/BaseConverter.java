@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.convert;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -38,12 +36,12 @@ import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Factory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.Server;
-
 import com.andune.minecraft.hsp.storage.Storage;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 public abstract class BaseConverter implements Converter {
     protected Logger log = LoggerFactory.getLogger(BaseConverter.class);
@@ -53,20 +51,34 @@ public abstract class BaseConverter implements Converter {
     protected Server server;
     protected Storage storage;
     protected Factory factory;
-    
-    @Inject public void setPlugin(Plugin plugin) { this.plugin = plugin; }
-    @Inject public void setServer(Server server) { this.server = server; }
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
-    @Inject public void setFactory(Factory factory) { this.factory = factory; }
-    
+
+    @Inject
+    public void setPlugin(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    @Inject
+    public void setServer(Server server) {
+        this.server = server;
+    }
+
+    @Inject
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    @Inject
+    public void setFactory(Factory factory) {
+        this.factory = factory;
+    }
+
     @Override
     public void run() {
         try {
             int homesConverted = convert();
-            if( initiatingSender != null )
-                initiatingSender.sendMessage("Finished converting "+homesConverted+" homes");
-        }
-        catch(Exception e) {
+            if (initiatingSender != null)
+                initiatingSender.sendMessage("Finished converting " + homesConverted + " homes");
+        } catch (Exception e) {
             log.warn("error trying to convert homes", e);
             initiatingSender.sendMessage("Error converting homes, check your server.log");
         }

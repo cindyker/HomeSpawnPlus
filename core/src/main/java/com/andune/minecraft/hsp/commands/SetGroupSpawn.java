@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -40,37 +37,37 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
+import javax.inject.Inject;
+
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="setGroup",
-    aliases={"sg"}, help="Set a group spawn")
-public class SetGroupSpawn extends BaseCommand
-{
-    @Inject private SpawnUtil util;
+@UberCommand(uberCommand = "spawn", subCommand = "setGroup",
+        aliases = {"sg"}, help = "Set a group spawn")
+public class SetGroupSpawn extends BaseCommand {
+    @Inject
+    private SpawnUtil util;
 
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SETGROUPSPAWN_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SETGROUPSPAWN_USAGE);
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		if( args.length < 1 )
-			return false;
-		
-		String group = args[0];
-		try {
-    		util.setGroupSpawn(group, p.getLocation(), p.getName());
-    		p.sendMessage("Group spawn for "+group+" set successfully!");
-		}
-        catch(StorageException e) {
-            log.warn("Caught exception in command /"+getCommandName(), e);
+    @Override
+    public boolean execute(Player p, String[] args) {
+        if (args.length < 1)
+            return false;
+
+        String group = args[0];
+        try {
+            util.setGroupSpawn(group, p.getLocation(), p.getName());
+            p.sendMessage("Group spawn for " + group + " set successfully!");
+        } catch (StorageException e) {
+            log.warn("Caught exception in command /" + getCommandName(), e);
             server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
         }
-		
-		return true;
-	}
+
+        return true;
+    }
 }

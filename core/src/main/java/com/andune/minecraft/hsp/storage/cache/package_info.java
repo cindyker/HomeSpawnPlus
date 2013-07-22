@@ -33,7 +33,7 @@
  * keep the entire data set in memory (which is a small amount of data
  * even for a large HSP site), cache misses should be rare once the cache
  * is warmed up.
- * 
+ *
  * For writes, they are also done to the in-memory cache and then flagged
  * in a queue to be asynchronously committed to the backing store at some
  * regular interval. This offloads writes from the main server thread onto

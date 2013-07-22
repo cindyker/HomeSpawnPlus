@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.multiverse;
 
@@ -34,11 +34,13 @@ import com.andune.minecraft.hsp.integration.PluginIntegration;
 
 /**
  * @author andune
- *
  */
 public interface MultiversePortals extends PluginIntegration {
     String getSourcePortalName();
+
     void setSourcePortalName(String sourcePortalName);
+
     String getDestinationPortalName();
+
     void setDestinationPortalName(String destinationPortalName);
 }

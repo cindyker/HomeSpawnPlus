@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -42,35 +39,37 @@ import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="setDefault",
-    aliases={"sd"}, help="Change the default spawn for a world")
+@UberCommand(uberCommand = "spawn", subCommand = "setDefault",
+        aliases = {"sd"}, help = "Change the default spawn for a world")
 public class SetDefaultSpawn extends BaseCommand {
-    @Inject private SpawnUtil util;
+    @Inject
+    private SpawnUtil util;
 
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTSPAWN_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SETDEFAULTSPAWN_USAGE);
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) throws StorageException {
-		if( args.length < 1 ) {
-			server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
-			return true;
-		}
-		
-		Spawn spawn = storage.getSpawnDAO().findSpawnByName(args[0]);
-		if( spawn != null ) {
-		    Location l = spawn.getLocation();
-		    util.setDefaultWorldSpawn(l, p.getName());
-		    server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
-		            "name", spawn.getName(), "location", l.shortLocationString());
-		}
+    @Override
+    public boolean execute(Player p, String[] args) throws StorageException {
+        if (args.length < 1) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
+            return true;
+        }
 
-		return true;
-	}
+        Spawn spawn = storage.getSpawnDAO().findSpawnByName(args[0]);
+        if (spawn != null) {
+            Location l = spawn.getLocation();
+            util.setDefaultWorldSpawn(l, p.getName());
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
+                    "name", spawn.getName(), "location", l.shortLocationString());
+        }
+
+        return true;
+    }
 }

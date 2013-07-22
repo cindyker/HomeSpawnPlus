@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldguard;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.server.api.Location;
@@ -41,56 +36,60 @@ import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.server.bukkit.BukkitFactory;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
+import org.bukkit.plugin.Plugin;
 
-/** Abstraction layer for WorldGuardInterface. This allows this class (and
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+/**
+ * Abstraction layer for WorldGuardInterface. This allows this class (and
  * therefore HSP) to load even if WorldGuard isn't installed on the server.
- * 
- * @author andune
  *
+ * @author andune
  */
 @Singleton
 public class WorldGuardModule implements WorldGuard, Initializable {
-	private final Plugin plugin;
+    private final Plugin plugin;
     private final BukkitFactory factory;
     private final StrategyEngine strategyEngine;
-	private WorldGuardInterface worldGuardInterface;
-	private RegionListener worldGuardRegion;
-	private Server server;
-	
-	@Inject
-	public WorldGuardModule(Plugin plugin, BukkitFactory factory,
-	        StrategyEngine strategyEngine, Server server) {
-		this.plugin = plugin;
-		this.factory = factory;
-		this.strategyEngine = strategyEngine;
-	}
-	
-	@Override
-	public boolean isEnabled() {
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-		if( p != null )
-			return p.isEnabled();
-		else
-			return false;
-	}
-	
+    private WorldGuardInterface worldGuardInterface;
+    private RegionListener worldGuardRegion;
+    private Server server;
+
+    @Inject
+    public WorldGuardModule(Plugin plugin, BukkitFactory factory,
+                            StrategyEngine strategyEngine, Server server) {
+        this.plugin = plugin;
+        this.factory = factory;
+        this.strategyEngine = strategyEngine;
+    }
+
     @Override
-	public String getVersion() {
+    public boolean isEnabled() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-        if( p != null )
+        if (p != null)
+            return p.isEnabled();
+        else
+            return false;
+    }
+
+    @Override
+    public String getVersion() {
+        Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+        if (p != null)
             return p.getDescription().getVersion();
         else
             return null;
-	}
-	
+    }
+
     @Override
-	public void init() {
-		if( !isEnabled() )
-			return;
-		
-		worldGuardInterface = new WorldGuardInterface(plugin, factory);
-		worldGuardRegion = new RegionListener(plugin, this, factory, strategyEngine, server);
-	}
+    public void init() {
+        if (!isEnabled())
+            return;
+
+        worldGuardInterface = new WorldGuardInterface(plugin, factory);
+        worldGuardRegion = new RegionListener(plugin, this, factory, strategyEngine, server);
+    }
 
     @Override
     public void shutdown() throws Exception {
@@ -117,12 +116,12 @@ public class WorldGuardModule implements WorldGuard, Initializable {
     public void registerRegion(World world, String regionName) {
         worldGuardRegion.registerRegion(world, regionName);
     }
-    
+
     @Override
     public boolean isLocationInRegion(Location l, String regionName) {
         return worldGuardInterface.isLocationInRegion(l, regionName);
     }
-    
+
     /**
      * for internal package use
      */

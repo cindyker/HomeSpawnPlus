@@ -30,9 +30,10 @@
  */
 package com.andune.minecraft.hsp.integration.multiverse;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.hsp.config.ConfigCore;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
@@ -40,14 +41,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.commonlib.Initializable;
-import com.andune.minecraft.commonlib.Logger;
-import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.hsp.config.ConfigCore;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class MultiverseCoreModule implements MultiverseCore, Initializable {
@@ -67,9 +65,9 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
     @Override
     public boolean isEnabled() {
-        if( configCore.isMultiverseEnabled() ) {    // enabled in config?
+        if (configCore.isMultiverseEnabled()) {    // enabled in config?
             Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-            if( p != null )                         // plugin exists?
+            if (p != null)                         // plugin exists?
                 return p.isEnabled();               // plugin is enabled?
         }
 
@@ -80,7 +78,7 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
     @Override
     public String getVersion() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        if( p != null )
+        if (p != null)
             return p.getDescription().getVersion();
         else
             return null;
@@ -97,15 +95,15 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
     @Override
     public void init() throws Exception {
-        if( !isEnabled() )
+        if (!isEnabled())
             return;
 
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        if( p != null ) {
+        if (p != null) {
             // we only support specific versions because of the in-depth hooking we do of Multiverse
             // internals, so there's no guarantee HSP's hooking will work with future versions
             // until specific support is added and known to work.
-            if( p.getDescription().getVersion().startsWith("2.4") || p.getDescription().getVersion().startsWith("2.5") ) {
+            if (p.getDescription().getVersion().startsWith("2.4") || p.getDescription().getVersion().startsWith("2.5")) {
                 com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
                 log.debug("Hooking Multiverse");
                 teleporter = new MultiverseSafeTeleporter(multiverse, this);
@@ -113,16 +111,15 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
                 this.multiverseListener = new MultiverseListener();
 
                 registerListener();
-            }
-            else {
-                log.info("Unsupported version of Multiverse: "+p.getDescription().getVersion());
+            } else {
+                log.info("Unsupported version of Multiverse: " + p.getDescription().getVersion());
             }
         }
     }
 
     @Override
     public void shutdown() throws Exception {
-        if( teleporter != null ) {
+        if (teleporter != null) {
             teleporter.uninstall();
             teleporter = null;
         }
@@ -145,7 +142,7 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
     private void registerListener() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        if( p != null ) {
+        if (p != null) {
             plugin.getServer().getPluginManager().registerEvent(com.onarandombox.MultiverseCore.event.MVTeleportEvent.class,
                     multiverseListener,
                     EventPriority.NORMAL,

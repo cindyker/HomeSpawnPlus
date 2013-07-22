@@ -26,93 +26,91 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldborder;
-
-import javax.inject.Singleton;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitLocation;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder.BorderData;
+import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.plugin.Plugin;
+
+import javax.inject.Singleton;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class WorldBorderIntegration {
-	private final Plugin plugin;
-	private com.wimbli.WorldBorder.WorldBorder worldBorder;
-	
-	public WorldBorderIntegration(Plugin plugin) {
-		this.plugin = plugin;
-	}
-	
-	public void init() {
+    private final Plugin plugin;
+    private com.wimbli.WorldBorder.WorldBorder worldBorder;
+
+    public WorldBorderIntegration(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public void init() {
         Plugin p = plugin.getServer().getPluginManager().getPlugin("WorldBorder");
-        if( p != null )
+        if (p != null)
             worldBorder = (com.wimbli.WorldBorder.WorldBorder) p;
-	}
+    }
 
-	public boolean isEnabled() {
-	    return worldBorder != null;
-	}
-	
-	public String getVersion() {
-	    if( worldBorder != null )
-	        return worldBorder.getDescription().getVersion();
-	    else
-	        return null;
-	}
+    public boolean isEnabled() {
+        return worldBorder != null;
+    }
 
-	public BorderData getBorderData(String worldName) {
-		if( worldBorder != null ) {
+    public String getVersion() {
+        if (worldBorder != null)
+            return worldBorder.getDescription().getVersion();
+        else
+            return null;
+    }
+
+    public BorderData getBorderData(String worldName) {
+        if (worldBorder != null) {
             com.wimbli.WorldBorder.BorderData border = worldBorder.GetWorldBorder(worldName);
             return new BorderDataImpl(border);
-		}
-		else
-			throw new NotImplementedException("attempt to use WorldBorderIntegration with no WorldBorder installed");
-	}
-	
-	public static class BorderDataImpl implements BorderData
-	{
-	    // If the admin has not defined a border for a given world, it's
-	    // possible for this to be null.
-	    private com.wimbli.WorldBorder.BorderData worldBorderData;
-		
-		public BorderDataImpl(com.wimbli.WorldBorder.BorderData worldBorderData) {
-			this.worldBorderData = worldBorderData;
-		}
-		
-		public boolean insideBorder(Location l) {
-			if( worldBorderData != null )
-				return worldBorderData.insideBorder(((BukkitLocation) l).getBukkitLocation());
-			else
-				return true;
-		}
-		
-		public double getX() {
-            if( worldBorderData != null )
+        } else
+            throw new NotImplementedException("attempt to use WorldBorderIntegration with no WorldBorder installed");
+    }
+
+    public static class BorderDataImpl implements BorderData {
+        // If the admin has not defined a border for a given world, it's
+        // possible for this to be null.
+        private com.wimbli.WorldBorder.BorderData worldBorderData;
+
+        public BorderDataImpl(com.wimbli.WorldBorder.BorderData worldBorderData) {
+            this.worldBorderData = worldBorderData;
+        }
+
+        public boolean insideBorder(Location l) {
+            if (worldBorderData != null)
+                return worldBorderData.insideBorder(((BukkitLocation) l).getBukkitLocation());
+            else
+                return true;
+        }
+
+        public double getX() {
+            if (worldBorderData != null)
                 return worldBorderData.getX();
             else
                 return 0;
-		}
+        }
+
         public double getZ() {
-            if( worldBorderData != null )
+            if (worldBorderData != null)
                 return worldBorderData.getZ();
             else
                 return 0;
         }
+
         public int getRadius() {
-            if( worldBorderData != null )
+            if (worldBorderData != null)
                 return worldBorderData.getRadius();
-            // no border defined? just use a really large number that won't break MineCraft
+                // no border defined? just use a really large number that won't break MineCraft
             else
-                return 2^30;
+                return 2 ^ 30;
         }
-	}
+    }
 }

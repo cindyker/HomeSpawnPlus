@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
@@ -39,48 +36,52 @@ import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="listOther",
-    aliases={"lo"}, help="List another player's homes")
+@UberCommand(uberCommand = "home", subCommand = "listOther",
+        aliases = {"lo"}, help = "List another player's homes")
 public class HomeListOther extends BaseCommand {
-	@Inject private HomeList homeListCommand;
+    @Inject
+    private HomeList homeListCommand;
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"hlo"}; }
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"hlo"};
+    }
 
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_HOMELISTOTHER_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_HOMELISTOTHER_USAGE);
+    }
 
-	@Override
+    @Override
     public boolean execute(CommandSender p, String cmd, String[] args) {
-        if( !defaultCommandChecks(p) )
+        if (!defaultCommandChecks(p))
             return false;
-        
-		String player = null;
-		String world = "all";
-		
-		if( args.length < 1 ) {
-			return false;
-		}
-		
-		// try player name best match
-		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
-		if( otherPlayer != null )
-			player = otherPlayer.getName();
-		else {
-		    server.sendLocalizedMessage(p, HSPMessages.GENERIC_PLAYER_NOT_FOUND, "player", args[0]);
-		    return true;
-		}
 
-		if( args.length > 1 )
-			world = args[1];
-		
-		return homeListCommand.executeCommand(p, player, world);
-	}
+        String player = null;
+        String world = "all";
+
+        if (args.length < 1) {
+            return false;
+        }
+
+        // try player name best match
+        final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
+        if (otherPlayer != null)
+            player = otherPlayer.getName();
+        else {
+            server.sendLocalizedMessage(p, HSPMessages.GENERIC_PLAYER_NOT_FOUND, "player", args[0]);
+            return true;
+        }
+
+        if (args.length > 1)
+            world = args[1];
+
+        return homeListCommand.executeCommand(p, player, world);
+    }
 
 }

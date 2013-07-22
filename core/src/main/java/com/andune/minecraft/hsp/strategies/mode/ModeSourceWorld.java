@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -38,33 +38,32 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class ModeSourceWorld extends ModeStrategyImpl {
-	private String worldName;
+    private String worldName;
 
-	public ModeSourceWorld(String worldName) {
-		this.worldName = worldName;
-	}
-	
-	public String getWorldName() {
-		return worldName;
-	}
+    public ModeSourceWorld(String worldName) {
+        this.worldName = worldName;
+    }
 
-	@Override
-	public void validate() throws StrategyException {
-		if( worldName == null )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": strategy argument is null");
-	}
+    public String getWorldName() {
+        return worldName;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_SOURCE_WORLD;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    @Override
+    public void validate() throws StrategyException {
+        if (worldName == null)
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": strategy argument is null");
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_SOURCE_WORLD;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

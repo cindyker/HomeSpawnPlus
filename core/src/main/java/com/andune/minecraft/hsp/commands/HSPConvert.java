@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
@@ -44,50 +41,49 @@ import com.andune.minecraft.hsp.convert.Essentials29;
 import com.andune.minecraft.hsp.convert.SpawnControl;
 import com.google.inject.Injector;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="hsp", subCommand="convert", help="HSP conversion commands")
+@UberCommand(uberCommand = "hsp", subCommand = "convert", help = "HSP conversion commands")
 public class HSPConvert extends BaseCommand {
-    @Inject private Injector injector;
-    @Inject private Scheduler scheduler;
-    
+    @Inject
+    private Injector injector;
+    @Inject
+    private Scheduler scheduler;
+
     @Override
     public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_HSPCONVERT_USAGE);
+        return server.getLocalizedMessage(HSPMessages.CMD_HSPCONVERT_USAGE);
     }
 
-	public boolean execute(CommandSender sender, String cmd, String[] args) {
-        if( !permissions.isAdmin(sender) )
+    public boolean execute(CommandSender sender, String cmd, String[] args) {
+        if (!permissions.isAdmin(sender))
             return false;
-		
-		Converter converter = null;
-		
-		if( args.length < 1 ) {
-			return false;
-		}
-		else if( args[0].equalsIgnoreCase("commandbook") ) {
-			converter = injector.getInstance(CommandBook.class);
-		}
-		else if( args[0].equalsIgnoreCase("essentials") ) {
+
+        Converter converter = null;
+
+        if (args.length < 1) {
+            return false;
+        } else if (args[0].equalsIgnoreCase("commandbook")) {
+            converter = injector.getInstance(CommandBook.class);
+        } else if (args[0].equalsIgnoreCase("essentials")) {
             converter = injector.getInstance(Essentials29.class);
-		}
-		else if( args[0].equalsIgnoreCase("spawncontrol") ) {
+        } else if (args[0].equalsIgnoreCase("spawncontrol")) {
             converter = injector.getInstance(SpawnControl.class);
-		}
-		else {
-			sender.sendMessage("Unknown conversion type: "+args[0]);
-		}
-		
-		if( converter != null ) {
-		    converter.setInitiatingSender(sender);
-            sender.sendMessage("Starting "+converter.getConverterName()+" conversion");
-			scheduler.scheduleAsyncDelayedTask(converter, 0L);
-			return true;
-		}
-		
-		return false;
-	}
+        } else {
+            sender.sendMessage("Unknown conversion type: " + args[0]);
+        }
+
+        if (converter != null) {
+            converter.setInitiatingSender(sender);
+            sender.sendMessage("Starting " + converter.getConverterName() + " conversion");
+            scheduler.scheduleAsyncDelayedTask(converter, 0L);
+            return true;
+        }
+
+        return false;
+    }
 
 }

@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
@@ -41,59 +41,59 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="delete", help="Delete a spawn")
+@UberCommand(uberCommand = "spawn", subCommand = "delete", help = "Delete a spawn")
 public class SpawnDelete extends BaseCommand {
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"spawnd", "deletespawn", "rmspawn"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SPAWNDELETE_USAGE);
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"spawnd", "deletespawn", "rmspawn"};
+    }
 
-	@Override
-	public boolean execute(CommandSender p, String cmd, String[] args) {
-	    if( !defaultCommandChecks(p) )
-	        return false;
-	    
-		Spawn spawn = null;
-		
-		if( args.length < 1 ) {
-			return false;
-		}
-		
-		SpawnDAO dao = storage.getSpawnDAO();
-		
-		int id = -1;
-		try {
-			id = Integer.parseInt(args[0]);
-		}
-		catch(NumberFormatException e) {}
-		if( id != -1 )
-			spawn = dao.findSpawnById(id);
-		
-		if( spawn == null )
-			spawn = dao.findSpawnByName(args[0]);
-		
-		if( spawn == null ) {
-			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
-					"name", args[0]);
-			return true;
-		}
-		
-		try {
-			dao.deleteSpawn(spawn);
-			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
-					"name", args[0]);
-		}
-		catch(StorageException e) {
-			server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-			log.warn("Error caught in /"+getCommandName(), e);
-		}
-		return true;
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SPAWNDELETE_USAGE);
+    }
+
+    @Override
+    public boolean execute(CommandSender p, String cmd, String[] args) {
+        if (!defaultCommandChecks(p))
+            return false;
+
+        Spawn spawn = null;
+
+        if (args.length < 1) {
+            return false;
+        }
+
+        SpawnDAO dao = storage.getSpawnDAO();
+
+        int id = -1;
+        try {
+            id = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+        }
+        if (id != -1)
+            spawn = dao.findSpawnById(id);
+
+        if (spawn == null)
+            spawn = dao.findSpawnByName(args[0]);
+
+        if (spawn == null) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
+                    "name", args[0]);
+            return true;
+        }
+
+        try {
+            dao.deleteSpawn(spawn);
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
+                    "name", args[0]);
+        } catch (StorageException e) {
+            server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
+            log.warn("Error caught in /" + getCommandName(), e);
+        }
+        return true;
+    }
 
 }

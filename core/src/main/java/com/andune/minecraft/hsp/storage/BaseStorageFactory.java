@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
@@ -42,109 +40,109 @@ import com.andune.minecraft.hsp.storage.cache.StorageCache;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.google.inject.Injector;
 
+import javax.inject.Inject;
+
 
 /**
  * @author andune
- *
  */
 public abstract class BaseStorageFactory implements Initializable, StorageFactory {
     protected static final Logger log = LoggerFactory.getLogger(BaseStorageFactory.class);
-    
+
     protected final ConfigStorage configStorage;
     protected final Injector injector;
     protected final Plugin plugin;
-	
+
     protected Storage storageInstance;
-	
-	@Inject
-	public BaseStorageFactory(ConfigStorage configStorage, Injector injector, Plugin plugin) {
-	    this.configStorage = configStorage;
-	    this.injector = injector;
-	    this.plugin = plugin;
-	}
-	
-	/** Ordinarily this is BAD to expose enum ordinal values. Sadly, these
-	 * values started life as static ints and were exposed in the config
-	 * directly that way, so many existing configs have the int values in
-	 * them and so backwards compatibility requires we allow the int values
-	 * to still work.
-	 */
-	static public Type getType(int intType) {
-		Type[] types = Type.values();
-		for(int i=0; i < types.length; i++) {
-			if( types[i].ordinal() == intType )
-				return types[i];
-		}
-		
-		return Type.UNKNOWN;
-	}
-	
-	static public Type getType(String stringType) {
-		Type[] types = Type.values();
-		for(int i=0; i < types.length; i++) {
-			if( types[i].toString().equalsIgnoreCase(stringType) )
-				return types[i];
-		}
-		
+
+    @Inject
+    public BaseStorageFactory(ConfigStorage configStorage, Injector injector, Plugin plugin) {
+        this.configStorage = configStorage;
+        this.injector = injector;
+        this.plugin = plugin;
+    }
+
+    /**
+     * Ordinarily this is BAD to expose enum ordinal values. Sadly, these
+     * values started life as static ints and were exposed in the config
+     * directly that way, so many existing configs have the int values in
+     * them and so backwards compatibility requires we allow the int values
+     * to still work.
+     */
+    static public Type getType(int intType) {
+        Type[] types = Type.values();
+        for (int i = 0; i < types.length; i++) {
+            if (types[i].ordinal() == intType)
+                return types[i];
+        }
+
         return Type.UNKNOWN;
-	}
-	
-	/* (non-Javadoc)
+    }
+
+    static public Type getType(String stringType) {
+        Type[] types = Type.values();
+        for (int i = 0; i < types.length; i++) {
+            if (types[i].toString().equalsIgnoreCase(stringType))
+                return types[i];
+        }
+
+        return Type.UNKNOWN;
+    }
+
+    /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.storage.StorageFactory#getInstance()
      */
-	@Override
-    public Storage getInstance()
-	{
-	    if( storageInstance != null )
-	        return storageInstance;
+    @Override
+    public Storage getInstance() {
+        if (storageInstance != null)
+            return storageInstance;
 
-	    Type storageType = configStorage.getStorageType();
-		log.debug("StorageFactory.getInstance(), type = {}", storageType);
-		
-		switch(storageType)
-		{
-		case PERSISTANCE_REIMPLEMENTED_EBEANS:
-            StorageEBeans ebeans = injector.getInstance(StorageEBeans.class);
-            ebeans.setUsePersistanceReimplemented(true);
-            storageInstance = ebeans;
-			break;
+        Type storageType = configStorage.getStorageType();
+        log.debug("StorageFactory.getInstance(), type = {}", storageType);
 
-        // container-specific factories must provide YAML capabilities if they support them
-        // and assign storageInstance, at which point any future calls to this method will
-        // return the assigned StorageInstance and not hit this exception.
-        case YAML:
-        case YAML_SINGLE_FILE:
-            log.warn(storageType+" not implemented on this server container, defaulting to EBEANS");
-            break;
-	            
-        case CACHED_EBEANS:
-            log.warn("CACHED_EBEANS storage is no longer supported, defaulting to regular EBEANS storage");
-            break;
+        switch (storageType) {
+            case PERSISTANCE_REIMPLEMENTED_EBEANS:
+                StorageEBeans ebeans = injector.getInstance(StorageEBeans.class);
+                ebeans.setUsePersistanceReimplemented(true);
+                storageInstance = ebeans;
+                break;
 
-        case EBEANS:
-            // if they explicitly chose ebeans, just exit since that is the default
-            break;
-            
-        default:
-            log.warn("Unknown storage type encountered, defaulting to EBEANS storage");
-            break;
-		}
-		
+            // container-specific factories must provide YAML capabilities if they support them
+            // and assign storageInstance, at which point any future calls to this method will
+            // return the assigned StorageInstance and not hit this exception.
+            case YAML:
+            case YAML_SINGLE_FILE:
+                log.warn(storageType + " not implemented on this server container, defaulting to EBEANS");
+                break;
+
+            case CACHED_EBEANS:
+                log.warn("CACHED_EBEANS storage is no longer supported, defaulting to regular EBEANS storage");
+                break;
+
+            case EBEANS:
+                // if they explicitly chose ebeans, just exit since that is the default
+                break;
+
+            default:
+                log.warn("Unknown storage type encountered, defaulting to EBEANS storage");
+                break;
+        }
+
         // default is just to use EBEANS
-		if( storageInstance == null )
+        if (storageInstance == null)
             storageInstance = injector.getInstance(StorageEBeans.class);
-		
-		// if using in-memory cache, the cache will just wrap the
-		// backing store already chosen.
-		if( configStorage.useInMemoryCache() ) {
-			Storage backingStore = storageInstance;
-			storageInstance = new StorageCache(backingStore);
-			injector.injectMembers(storageInstance);
-		}
-		
-		log.debug("BaseStorageFactory:getInstance() selected {} as storage", storageInstance.getImplName());
-		return storageInstance;
-	}
+
+        // if using in-memory cache, the cache will just wrap the
+        // backing store already chosen.
+        if (configStorage.useInMemoryCache()) {
+            Storage backingStore = storageInstance;
+            storageInstance = new StorageCache(backingStore);
+            injector.injectMembers(storageInstance);
+        }
+
+        log.debug("BaseStorageFactory:getInstance() selected {} as storage", storageInstance.getImplName());
+        return storageInstance;
+    }
 
     @Override
     public void init() throws Exception {

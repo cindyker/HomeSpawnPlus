@@ -26,15 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.i18n.ChatColor;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
@@ -46,103 +40,107 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.server.api.ServerConfig;
 import com.andune.minecraft.hsp.storage.Storage;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="list", aliases={"l"}, help="List all spawns")
+@UberCommand(uberCommand = "spawn", subCommand = "list", aliases = {"l"}, help = "List all spawns")
 public class SpawnList extends BaseCommand {
-    @Inject private ServerConfig serverConfig;
+    @Inject
+    private ServerConfig serverConfig;
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"spawnl", "listspawns"}; }
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"spawnl", "listspawns"};
+    }
 
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SPAWNLIST_USAGE);
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SPAWNLIST_USAGE);
+    }
 
     @Override
     public boolean execute(CommandSender p, String cmd, String[] originalArgs) {
-        if( !defaultCommandChecks(p) )
+        if (!defaultCommandChecks(p))
             return false;
 
-		boolean showMapSpawn = false;
-		List<String> args = new ArrayList<String>(originalArgs.length);
-		
-		String world = "all";
-		if( originalArgs.length > 0 ) {
-			for(int i=0; i < originalArgs.length; i++) {
-				if( originalArgs[i].equals("-m") ) {
-					showMapSpawn = true;
-				}
-				else
-					args.add(originalArgs[i]);
-			}
-			
-			if( args.size() > 0 )
-				world = args.get(0);
-		}
-		
-		final Set<? extends com.andune.minecraft.hsp.entity.Spawn> spawns = storage.getSpawnDAO().findAllSpawns();
-		
-		boolean displayedSpawn = false;
-		if( spawns != null && spawns.size() > 0 ) {
-			if( world.equals("all") || world.equals("*") ) {
-				world = "all";
-				server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_ALL_WORLDS);
-			}
-			else
-			    server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_FOR_WORLD,
-						"world", world);
-			
-			if( showMapSpawn ) {
-				List<World> worlds = null;
-				if( world.equals("all") ) {
-					worlds = server.getWorlds();
-				}
-				else {
-					worlds = new ArrayList<World>();
-					World w = server.getWorld(world);
-					if( w != null )
-						worlds.add(w);
-				}
-				
-				for(World w : worlds) {
-					Location l = w.getSpawnLocation();
-					p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + "none " + serverConfig.getDefaultColor()
-							+ l.shortLocationString()
-							+ ChatColor.GREEN + " (map spawn)"
-							);
-				}
-			}
-			
-			for(com.andune.minecraft.hsp.entity.Spawn spawn : spawns) {
-				if( !world.equals("all") && !world.equals(spawn.getWorld()) )
-					continue;
-					
-				displayedSpawn = true;
-				
-				String group = spawn.getGroup();
-				if( Storage.HSP_WORLD_SPAWN_GROUP.equals(group) )
-					group = null;
-				String name = spawn.getName();
-				
-				p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + spawn.getId() + " " + serverConfig.getDefaultColor()
-						+ (name != null ? "["+server.getLocalizedMessage(HSPMessages.GENERIC_NAME)+": " + ChatColor.RED + name + serverConfig.getDefaultColor() + "] " : "")
-						+ (group != null ? "["+server.getLocalizedMessage(HSPMessages.GENERIC_GROUP)+": " + ChatColor.RED + group + serverConfig.getDefaultColor() + "] " : "")
-						+ spawn.getLocation().shortLocationString()
-						+ (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup())
-								? ChatColor.GREEN + " ("+server.getLocalizedMessage(HSPMessages.GENERIC_WORLD_DEFAULT)+")"
-								: ""));
-			}
-		}
-		
-		if( !displayedSpawn )
-			server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_NO_SPAWNS_FOUND,
-					"world", world);
+        boolean showMapSpawn = false;
+        List<String> args = new ArrayList<String>(originalArgs.length);
 
-		return true;
-	}
+        String world = "all";
+        if (originalArgs.length > 0) {
+            for (int i = 0; i < originalArgs.length; i++) {
+                if (originalArgs[i].equals("-m")) {
+                    showMapSpawn = true;
+                } else
+                    args.add(originalArgs[i]);
+            }
+
+            if (args.size() > 0)
+                world = args.get(0);
+        }
+
+        final Set<? extends com.andune.minecraft.hsp.entity.Spawn> spawns = storage.getSpawnDAO().findAllSpawns();
+
+        boolean displayedSpawn = false;
+        if (spawns != null && spawns.size() > 0) {
+            if (world.equals("all") || world.equals("*")) {
+                world = "all";
+                server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_ALL_WORLDS);
+            } else
+                server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_FOR_WORLD,
+                        "world", world);
+
+            if (showMapSpawn) {
+                List<World> worlds = null;
+                if (world.equals("all")) {
+                    worlds = server.getWorlds();
+                } else {
+                    worlds = new ArrayList<World>();
+                    World w = server.getWorld(world);
+                    if (w != null)
+                        worlds.add(w);
+                }
+
+                for (World w : worlds) {
+                    Location l = w.getSpawnLocation();
+                    p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + "none " + serverConfig.getDefaultColor()
+                            + l.shortLocationString()
+                            + ChatColor.GREEN + " (map spawn)"
+                    );
+                }
+            }
+
+            for (com.andune.minecraft.hsp.entity.Spawn spawn : spawns) {
+                if (!world.equals("all") && !world.equals(spawn.getWorld()))
+                    continue;
+
+                displayedSpawn = true;
+
+                String group = spawn.getGroup();
+                if (Storage.HSP_WORLD_SPAWN_GROUP.equals(group))
+                    group = null;
+                String name = spawn.getName();
+
+                p.sendMessage(serverConfig.getDefaultColor() + "id: " + ChatColor.RED + spawn.getId() + " " + serverConfig.getDefaultColor()
+                        + (name != null ? "[" + server.getLocalizedMessage(HSPMessages.GENERIC_NAME) + ": " + ChatColor.RED + name + serverConfig.getDefaultColor() + "] " : "")
+                        + (group != null ? "[" + server.getLocalizedMessage(HSPMessages.GENERIC_GROUP) + ": " + ChatColor.RED + group + serverConfig.getDefaultColor() + "] " : "")
+                        + spawn.getLocation().shortLocationString()
+                        + (Storage.HSP_WORLD_SPAWN_GROUP.equals(spawn.getGroup())
+                        ? ChatColor.GREEN + " (" + server.getLocalizedMessage(HSPMessages.GENERIC_WORLD_DEFAULT) + ")"
+                        : ""));
+            }
+        }
+
+        if (!displayedSpawn)
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNLIST_NO_SPAWNS_FOUND,
+                    "world", world);
+
+        return true;
+    }
 
 }

@@ -55,28 +55,10 @@ package com.andune.minecraft.hsp;
  * either expressed or implied, of anybody else.
  */
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
-import javax.inject.Inject;
-
+import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.i18n.Locale;
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
+import com.andune.minecraft.hsp.storage.Storage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -84,10 +66,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.andune.minecraft.commonlib.Initializable;
-import com.andune.minecraft.commonlib.i18n.Locale;
-import com.andune.minecraft.commonlib.server.api.PermissionSystem;
-import com.andune.minecraft.hsp.storage.Storage;
+import javax.inject.Inject;
+import java.io.*;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Tooling to post to metrics.griefcraft.com
@@ -164,7 +150,7 @@ public class Metrics implements Initializable {
      * Unique server id
      */
     private String guid;
-    
+
     private final PermissionSystem permSystem;
     private final Locale locale;
     private final Storage storage;
@@ -176,22 +162,23 @@ public class Metrics implements Initializable {
         this.locale = locale;
         this.storage = storage;
     }
-    
+
     @Override
     public void init() throws Exception {
         loadConfiguration();
         findCustomData();
         start();
     }
-    
+
     @Override
-    public void shutdown() throws Exception {}
-    
+    public void shutdown() throws Exception {
+    }
+
     @Override
     public int getInitPriority() {
         return 9;
     }
-    
+
     private void loadConfiguration() throws IOException {
         // load the config
         configurationFile = new File(CONFIG_FILE);
@@ -210,7 +197,7 @@ public class Metrics implements Initializable {
         // Load the guid then
         guid = configuration.getString("guid");
     }
-    
+
     /**
      * Construct and create a Graph that can be used to separate specific plotters to their own graphs
      * on the metrics website. Plotters can be added to the graph object returned.
@@ -238,8 +225,8 @@ public class Metrics implements Initializable {
         return graph;
     }
 
-    /** Add HSP custom data graphs.
-     * 
+    /**
+     * Add HSP custom data graphs.
      */
     public void findCustomData() {
         // Create our Permission Graph and Add our permission Plotters
@@ -262,7 +249,7 @@ public class Metrics implements Initializable {
                 return 1;
             }
         });
-        
+
         Graph storageGraph = createGraph(plugin, Graph.Type.Pie, "Storage");
         final String storageName = storage.getImplName();
         // Add our Chat Plotters
@@ -396,7 +383,7 @@ public class Metrics implements Initializable {
      * @return
      */
     public boolean isOptOut() {
-        synchronized(optOutLock) {
+        synchronized (optOutLock) {
             try {
                 // Reload the metrics file
                 configuration.load(CONFIG_FILE);
@@ -413,12 +400,11 @@ public class Metrics implements Initializable {
 
     /**
      * Generic method that posts a plugin to the metrics website
-     *
      */
     private void postPlugin(boolean isPing) throws IOException {
         // The plugin's description file containg all of the plugin data such as name, version, author, etc
         final PluginDescriptionFile description = plugin.getDescription();
-        
+
         // Construct the post data
         StringBuffer data = new StringBuffer(encode("guid") + '=' + encode(guid)
                 + encodeDataPair("version", description.getVersion())
@@ -436,7 +422,7 @@ public class Metrics implements Initializable {
 
         // Acquire a lock on the graphs, which lets us make the assumption we also lock everything
         // inside of the graph (e.g plotters)
-        synchronized(graphs) {
+        synchronized (graphs) {
             Iterator<Graph> iter = graphs.iterator();
 
             while (iter.hasNext()) {
@@ -490,7 +476,7 @@ public class Metrics implements Initializable {
         // close resources
         writer.close();
         reader.close();
-        
+
         if (response == null || response.startsWith("ERR")) {
             throw new IOException(response); //Throw the exception
         } else {
@@ -561,11 +547,12 @@ public class Metrics implements Initializable {
             return false;
         }
     }
+
     /**
      * Encode a key/value data pair to be used in a HTTP post request. This INCLUDES a & so the first
      * key/value pair MUST be included manually, e.g:
      * <p>
-     *     String httpData = encode("guid") + "=" + encode("1234") + encodeDataPair("authors") + "..";
+     * String httpData = encode("guid") + "=" + encode("1234") + encodeDataPair("authors") + "..";
      * </p>
      *
      * @param key
@@ -585,6 +572,7 @@ public class Metrics implements Initializable {
     private static String encode(String text) throws UnsupportedEncodingException {
         return URLEncoder.encode(text, "UTF-8");
     }
+
     /**
      * Represents a custom graph on the website
      */
@@ -670,6 +658,7 @@ public class Metrics implements Initializable {
 
         /**
          * Gets an <b>unmodifiable</b> set of the plotter objects in the graph
+         *
          * @return
          */
         public Set<Plotter> getPlotters() {
@@ -692,6 +681,7 @@ public class Metrics implements Initializable {
         }
 
     }
+
     /**
      * Interface used to collect custom data for a plugin
      */

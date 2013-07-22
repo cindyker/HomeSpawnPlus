@@ -26,46 +26,39 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
-public class SpawnNewPlayer extends BaseStrategy
-{
-    @Inject private SpawnDAO spawnDAO;
-    
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		Spawn spawn = null;
-		
-		if( context.getPlayer().isNewPlayer() ) {
-			logVerbose("player is detemined to be a new player");
-			spawn = spawnDAO.getNewPlayerSpawn();
-		}
-		else 
-			logVerbose("player is detemined to NOT be a new player");
+public class SpawnNewPlayer extends BaseStrategy {
+    @Inject
+    private SpawnDAO spawnDAO;
 
-		return new StrategyResultImpl(spawn);
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        Spawn spawn = null;
 
-	@Override
-	public final String getStrategyConfigName() {
-		return "spawnNewPlayer";
-	}
+        if (context.getPlayer().isNewPlayer()) {
+            logVerbose("player is detemined to be a new player");
+            spawn = spawnDAO.getNewPlayerSpawn();
+        } else
+            logVerbose("player is detemined to NOT be a new player");
+
+        return new StrategyResultImpl(spawn);
+    }
+
+    @Override
+    public final String getStrategyConfigName() {
+        return "spawnNewPlayer";
+    }
 }

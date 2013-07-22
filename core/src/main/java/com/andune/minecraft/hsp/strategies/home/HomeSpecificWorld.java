@@ -26,37 +26,32 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
 
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class HomeSpecificWorld extends HomeStrategy {
-	private final String worldName;
-	
-	public HomeSpecificWorld(final String worldName) {
-		this.worldName = worldName;
-	}
-	
-	@Override
-	public String getStrategyConfigName() {
-		return "homeSpecificWorld";
-	}
+    private final String worldName;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl(getModeHome(context, worldName));
-	}
+    public HomeSpecificWorld(final String worldName) {
+        this.worldName = worldName;
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "homeSpecificWorld";
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(getModeHome(context, worldName));
+    }
 
 }

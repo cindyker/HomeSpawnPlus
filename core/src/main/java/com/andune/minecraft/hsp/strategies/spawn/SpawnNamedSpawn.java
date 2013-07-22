@@ -26,61 +26,60 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.Storage;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnNamedSpawn extends BaseStrategy {
     protected Storage storage;
-    @Inject public void setStorage(Storage storage) { this.storage = storage; }
-    
-	private String namedSpawn;
-	
-	public SpawnNamedSpawn() {}
-	public SpawnNamedSpawn(final String namedSpawn) {
-		this.namedSpawn = namedSpawn;
-	}
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		// take the name from the argument, if given
-		String name = context.getArg();
-		// otherwise use the name given at instantiation
-		if( name == null )
-			name = namedSpawn;
+    @Inject
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
 
-		Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
-		
-		// since namedSpawn is very specific, it's usually an error condition if we didn't
-		// find a named spawn that the admin identified, so print a warning so they can
-		// fix the issue.
-		if( spawn == null )
-			log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
-		
-		return new StrategyResultImpl(spawn);
-	}
+    private String namedSpawn;
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnNamedSpawn";
-	}
+    public SpawnNamedSpawn() {
+    }
+
+    public SpawnNamedSpawn(final String namedSpawn) {
+        this.namedSpawn = namedSpawn;
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        // take the name from the argument, if given
+        String name = context.getArg();
+        // otherwise use the name given at instantiation
+        if (name == null)
+            name = namedSpawn;
+
+        Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
+
+        // since namedSpawn is very specific, it's usually an error condition if we didn't
+        // find a named spawn that the admin identified, so print a warning so they can
+        // fix the issue.
+        if (spawn == null)
+            log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
+
+        return new StrategyResultImpl(spawn);
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnNamedSpawn";
+    }
 
 }

@@ -26,13 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import static org.mockito.Mockito.when;
-
-import org.mockito.Mock;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -43,14 +39,16 @@ import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
+import org.mockito.Mock;
+
+import static org.mockito.Mockito.when;
 
 /**
  * @author andune
- *
  */
 public class BaseCommandTest {
     protected final String MSG_NO_PERMISSION = "no permission";
-    
+
     @Mock
     protected Server server;
     @Mock
@@ -67,7 +65,7 @@ public class BaseCommandTest {
     protected CommandSender commandSender;
     @Mock
     protected Player player;
-    
+
     public void beforeMethod() {
         when(server.getLocalizedMessage(HSPMessages.NO_PERMISSION)).thenReturn(MSG_NO_PERMISSION);
     }

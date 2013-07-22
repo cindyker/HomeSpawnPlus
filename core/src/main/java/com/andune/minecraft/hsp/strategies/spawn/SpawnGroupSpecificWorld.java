@@ -26,57 +26,55 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.SpawnUtil;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnGroupSpecificWorld extends BaseStrategy {
-    @Inject private SpawnUtil spawnUtil;
-    @Inject private PermissionSystem perm;
+    @Inject
+    private SpawnUtil spawnUtil;
+    @Inject
+    private PermissionSystem perm;
 
-	private String worldName;
-	
-    public SpawnGroupSpecificWorld() {}
-	public SpawnGroupSpecificWorld(final String worldName) {
-		this.worldName = worldName;
-	}
+    private String worldName;
 
-	public StrategyResult evaluate(final StrategyContext context, final String world) {
-		Spawn spawn = null;
-		
-		String group = perm.getPlayerGroup(world, context.getPlayer().getName());
-		if( group != null )
-			spawn = spawnUtil.getGroupSpawn(group, world);
+    public SpawnGroupSpecificWorld() {
+    }
 
-		return new StrategyResultImpl(spawn);		
-	}
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return evaluate(context, worldName);
-	}
+    public SpawnGroupSpecificWorld(final String worldName) {
+        this.worldName = worldName;
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnGroupSpecificWorld";
-	}
+    public StrategyResult evaluate(final StrategyContext context, final String world) {
+        Spawn spawn = null;
+
+        String group = perm.getPlayerGroup(world, context.getPlayer().getName());
+        if (group != null)
+            spawn = spawnUtil.getGroupSpawn(group, world);
+
+        return new StrategyResultImpl(spawn);
+    }
+
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return evaluate(context, worldName);
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnGroupSpecificWorld";
+    }
 
 }

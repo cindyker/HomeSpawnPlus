@@ -30,13 +30,6 @@
  */
 package com.andune.minecraft.hsp.command;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
@@ -55,12 +48,18 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.google.common.base.Joiner;
 
+import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Map;
 
-/** Abstract class that takes care of some routine tasks for commands, to keep those
+
+/**
+ * Abstract class that takes care of some routine tasks for commands, to keep those
  * objects as light as possible and so as to not violate the DRY principle.
  *
  * @author andune
- *
  */
 public abstract class BaseCommand implements Command {
     protected static final Logger log = LoggerFactory.getLogger(BaseCommand.class);
@@ -81,50 +80,53 @@ public abstract class BaseCommand implements Command {
     private ConfigEconomy configEconomy;
     private transient boolean isConsoleCommand = false;
 
-    public String getDescription() { return null; }
+    public String getDescription() {
+        return null;
+    }
+
     public String getUsage() {
         return "/<command>";
     }
 
-    /** For convenience, BaseCommand detects if a command is executed by a player and
+    /**
+     * For convenience, BaseCommand detects if a command is executed by a player and
      * invokes this method if so. This allows subclasses to deal with Player class directly
      * rather than every command having to check for Console.
-     *
+     * <p/>
      * If a command can respond to Console input, it should override the
      * {@link #execute(CommandSender, String[])} method instead.
-     *
+     * <p/>
      * Note this method does nothing, it's simply a stub to be overridden by a subclass.
      */
     public boolean execute(Player player, String[] args) throws Exception {
         return false;
     }
 
-    /** By default, commands do not respond to console input. They can override this method
+    /**
+     * By default, commands do not respond to console input. They can override this method
      * if they wish to do so.
      *
      * @param sender the sender object (usually a Player or Console)
-     * @param cmd the actual command that was run (if a command supports aliases, this will
-     * return the exact alias that was used)
-     * @param args any arguments passed to the command
-     *
+     * @param cmd    the actual command that was run (if a command supports aliases, this will
+     *               return the exact alias that was used)
+     * @param args   any arguments passed to the command
      * @return true if the command was successfully processed, false if not successful. A
-     * false status will result in usage info being displayed back to the sender.
+     *         false status will result in usage info being displayed back to the sender.
      */
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         isConsoleCommand = false;
 
-        if( sender instanceof Player ) {
+        if (sender instanceof Player) {
             Player p = (Player) sender;
 
-            if( !hasPermission(p) )
+            if (!hasPermission(p))
                 return true;
 
             // do generic error logging for convenience
             try {
                 return this.execute(p, args);
-            }
-            catch(Exception e) {
-                log.warn("Caught exception in command /"+getCommandName(), e);
+            } catch (Exception e) {
+                log.warn("Caught exception in command /" + getCommandName(), e);
                 server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
             }
         }
@@ -133,15 +135,14 @@ public abstract class BaseCommand implements Command {
         // operate the command on. This is useful for admins that want to
         // setup command blocks or want to run command from the console.
         else {
-            if( args.length < 1 ) {
-                sender.sendMessage("From the console, command /"+cmd+" requires the first argument to be the player to run as");
+            if (args.length < 1) {
+                sender.sendMessage("From the console, command /" + cmd + " requires the first argument to be the player to run as");
                 return true;
-            }
-            else {
+            } else {
                 String playerName = args[0];
                 Player p = server.getPlayer(playerName);
-                if( p == null ) {
-                    sender.sendMessage("Player "+playerName+" not found online.");
+                if (p == null) {
+                    sender.sendMessage("Player " + playerName + " not found online.");
                     return true;
                 }
 
@@ -154,14 +155,13 @@ public abstract class BaseCommand implements Command {
                 Joiner joiner = Joiner.on(" ").skipNulls();
                 String joinedArgs = joiner.join(newArgs);
                 String newCmd = cmd + " " + joinedArgs;
-                sender.sendMessage("Running command as player \""+playerName+"\": "+newCmd);
+                sender.sendMessage("Running command as player \"" + playerName + "\": " + newCmd);
 
                 // do generic error logging for convenience
                 try {
                     return this.execute(p, newArgs);
-                }
-                catch(Exception e) {
-                    log.warn("Caught exception in command /"+getCommandName(), e);
+                } catch (Exception e) {
+                    log.warn("Caught exception in command /" + getCommandName(), e);
                     server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
                 } finally {
                     isConsoleCommand = false;
@@ -175,13 +175,16 @@ public abstract class BaseCommand implements Command {
     public void setCommandParameters(Map<String, Object> params) {
         this.commandParams = params;
     }
+
     protected Object getParam(String param) {
-        if( commandParams != null )
+        if (commandParams != null)
             return commandParams.get(param);
         else
             return null;
     }
-    /** Return a given parameter as a string. If the parameter doesn't exist
+
+    /**
+     * Return a given parameter as a string. If the parameter doesn't exist
      * or it is not a string, null is returned.
      *
      * @param param
@@ -189,9 +192,9 @@ public abstract class BaseCommand implements Command {
      */
     protected String getStringParam(String param) {
         Object v = getParam(param);
-        if( v != null && v instanceof String)
+        if (v != null && v instanceof String)
             return (String) v;
-        else if( v != null )
+        else if (v != null)
             return v.toString();
         else
             return null;
@@ -236,7 +239,8 @@ public abstract class BaseCommand implements Command {
 //		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
 //	}
 
-    /** Check to see if player has sufficient money to pay for this command.
+    /**
+     * Check to see if player has sufficient money to pay for this command.
      *
      * @param p
      * @return
@@ -244,21 +248,20 @@ public abstract class BaseCommand implements Command {
     protected boolean costCheck(Player p) {
         boolean returnValue = false;
 
-        if( economy == null )
+        if (economy == null)
             returnValue = true;
 
-        if( !returnValue && permissions.isCostExempt(p, getCommandName()) )
+        if (!returnValue && permissions.isCostExempt(p, getCommandName()))
             returnValue = true;
 
-        if( !returnValue ) {
+        if (!returnValue) {
             int price = getPrice(p);
-            if( price > 0 ) {
+            if (price > 0) {
                 double balance = economy.getBalance(p.getName());
-                if( balance >= price )
+                if (balance >= price)
                     returnValue = true;
-            }
-            else
-                returnValue = true;	// no cost for this command
+            } else
+                returnValue = true;    // no cost for this command
         }
 
         return returnValue;
@@ -269,122 +272,119 @@ public abstract class BaseCommand implements Command {
     }
 
     protected void printInsufficientFundsMessage(Player p) {
-        if( economy != null )
-            p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_INSUFFICIENT_FUNDS,
+        if (economy != null)
+            p.sendMessage(server.getLocalizedMessage(HSPMessages.COST_INSUFFICIENT_FUNDS,
                     "price", economy.format(getPrice(p)),
-                    "balance", economy.format(economy.getBalance(p.getName()))) );
+                    "balance", economy.format(economy.getBalance(p.getName()))));
     }
 
     /**
-     *
      * @param p
      * @return true on success, false if there was an error that should prevent the action from taking place
      */
     protected boolean applyCost(Player p, boolean applyCooldown, String cooldownName) {
         boolean returnValue = false;
 
-        if( economy == null || configEconomy.isEnabled() == false )
+        if (economy == null || configEconomy.isEnabled() == false)
             returnValue = true;
 
-        if( !returnValue && permissions.isCostExempt(p, getCommandName()) )
+        if (!returnValue && permissions.isCostExempt(p, getCommandName()))
             returnValue = true;
         log.debug("applyCost: player={}, exempt returnValue={}", p, returnValue);
 
-        if( !costCheck(p) ) {
+        if (!costCheck(p)) {
             printInsufficientFundsMessage(p);
             returnValue = false;
-        }
-        else if( !returnValue ) {
+        } else if (!returnValue) {
             int price = getPrice(p);
-            if( price > 0 ) {
+            if (price > 0) {
                 String error = economy.withdrawPlayer(p.getName(), price);
 
-                if( error == null ) {   // SUCCESS
-                    if( configEconomy.isVerboseOnCharge() ) {
+                if (error == null) {   // SUCCESS
+                    if (configEconomy.isVerboseOnCharge()) {
                         // had an error report that might have been related to a null value
                         // being returned from economy.format(price), so let's check for that
                         // and protect against any error.
                         String priceString = economy.format(price);
-                        if( priceString == null )
-                            priceString = ""+price;
+                        if (priceString == null)
+                            priceString = "" + price;
 
-                        p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_CHARGED,
+                        p.sendMessage(server.getLocalizedMessage(HSPMessages.COST_CHARGED,
                                 "price", priceString,
-                                "command", getCommandName()) );
+                                "command", getCommandName()));
                     }
 
                     returnValue = true;
-                }
-                else {
-                    p.sendMessage( server.getLocalizedMessage(HSPMessages.COST_ERROR,
+                } else {
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.COST_ERROR,
                             "price", economy.format(price),
-                            "errorMessage", error) );
+                            "errorMessage", error));
                     returnValue = false;
                 }
-            }
-            else
-                returnValue = true;	// no cost for this command
+            } else
+                returnValue = true;    // no cost for this command
         }
 
         // if applyCooldown flag is true and the returnValue is true, then apply the Cooldown now
-        if( applyCooldown && returnValue == true )
+        if (applyCooldown && returnValue == true)
             applyCooldown(p, cooldownName);
 
         return returnValue;
     }
+
     protected boolean applyCost(Player p, boolean applyCooldown) {
         return applyCost(p, applyCooldown, null);
     }
+
     protected boolean applyCost(Player p) {
         return applyCost(p, false);
     }
 
     protected void doWarmup(Player p, WarmupRunner wr) {
-        if ( !isWarmupPending(p, wr.getWarmupName()) ) {
+        if (!isWarmupPending(p, wr.getWarmupName())) {
             warmupManager.startWarmup(p.getName(), wr);
 
-            p.sendMessage( server.getLocalizedMessage(HSPMessages.WARMUP_STARTED,
+            p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_STARTED,
                     "name", wr.getWarmupName(),
-                    "seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime) );
-        }
-        else
-            p.sendMessage( server.getLocalizedMessage(HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName()) );
+                    "seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime));
+        } else
+            p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName()));
 
     }
 
-    /** Most commands for this plugin check 3 things:
-     *
-     *   1 - is the command enabled in the config?
-     *   2 - does the player have access to run the command?
-     *   3 - is the command on cooldown for the player?
-     *
+    /**
+     * Most commands for this plugin check 3 things:
+     * <p/>
+     * 1 - is the command enabled in the config?
+     * 2 - does the player have access to run the command?
+     * 3 - is the command on cooldown for the player?
+     * <p/>
      * This method just implements all 3 checks.
      *
      * @param p the player object that is running the command
-     *
      * @return returns false if the checks fail and Command processing should stop, true if the command is allowed to continue
      */
     protected boolean defaultCommandChecks(Player p) {
         log.debug("defaultCommandChecks()");
 
         final boolean hasP = hasPermission(p);
-        log.debug("defaultCommandChecks() hasPermission = {}",hasP);
-        if( !hasP )
+        log.debug("defaultCommandChecks() hasPermission = {}", hasP);
+        if (!hasP)
             return false;
 
         final boolean cd = cooldownCheck(p);
-        log.debug("defaultCommandChecks() cooldownCheck = {}",cd);
-        if( !cd )
+        log.debug("defaultCommandChecks() cooldownCheck = {}", cd);
+        if (!cd)
             return false;
 
         log.debug("defaultCommandChecks() all defaultCommandChecks return true");
         return true;
     }
+
     protected boolean defaultCommandChecks(CommandSender sender) {
-        if( sender instanceof Player ) {
+        if (sender instanceof Player) {
             return defaultCommandChecks((Player) sender);
-        }
-        else {		// it's a local or remote console
+        } else {        // it's a local or remote console
             return true;
         }
     }
@@ -394,68 +394,74 @@ public abstract class BaseCommand implements Command {
         commandName = name;
     }
 
-    /** Can be overridden, but default implementation just applies the command name
+    /**
+     * Can be overridden, but default implementation just applies the command name
      * as the lower case version of the class name of the implemented command.
      */
     @Override
     public String getCommandName() {
-        if( commandName == null ) {
+        if (commandName == null) {
             String className = this.getClass().getName();
             int index = className.lastIndexOf('.');
-            commandName = className.substring(index+1).toLowerCase();
+            commandName = className.substring(index + 1).toLowerCase();
         }
 
         return commandName;
     }
 
-    /** Here for convenience if the command has no aliases.  Otherwise, this should be overridden.
-     *
+    /**
+     * Here for convenience if the command has no aliases.  Otherwise, this should be overridden.
      */
     @Override
     public String[] getCommandAliases() {
         return null;
     }
 
-    /** check the default command cooldown for the player
+    /**
+     * check the default command cooldown for the player
      *
      * @param p
      * @param cooldownName
-     * @param sendMessage if true, a cooldown message will be sent to the player
+     * @param sendMessage  if true, a cooldown message will be sent to the player
      * @return true if cooldown is available, false if currently in cooldown period
      */
     protected boolean cooldownCheck(Player p, String cooldownName, boolean sendMessage) {
-        if( cooldownName == null )
+        if (cooldownName == null)
             cooldownName = getCommandName();
         return cooldownManager.cooldownCheck(p, cooldownName, sendMessage);
     }
+
     protected boolean cooldownCheck(Player p, String cooldownName) {
         return cooldownCheck(p, cooldownName, true);
     }
+
     protected boolean cooldownCheck(Player p) {
         return cooldownCheck(p, getCommandName());
     }
 
     protected void applyCooldown(Player p, String cooldownName) {
-        if( cooldownName == null )
+        if (cooldownName == null)
             cooldownName = getCommandName();
-        cooldownManager.setCooldown(p,  cooldownName);
+        cooldownManager.setCooldown(p, cooldownName);
     }
+
     protected void applyCooldown(Player p) {
-        applyCooldown(p,  getCommandName());
+        applyCooldown(p, getCommandName());
     }
 
     /**
-     *
      * @return true if this command & player has a warmup associated with it
      */
     protected boolean hasWarmup(Player p, String warmupName) {
         return warmupManager.hasWarmup(p, warmupName);
     }
+
     protected boolean hasWarmup(Player p) {
         return hasWarmup(p, getCommandName());
     }
 
-    /** check if a warmup is already pending for this command
+    /**
+     * check if a warmup is already pending for this command
      *
      * @param p
      * @return true if warmup is already pending, false if not
@@ -463,22 +469,23 @@ public abstract class BaseCommand implements Command {
     protected boolean isWarmupPending(Player p, String warmupName) {
         return warmupManager.isWarmupPending(p.getName(), warmupName);
     }
+
     protected boolean isWarmupPending(Player p) {
         return isWarmupPending(p, getCommandName());
     }
 
     protected String getCooldownName(String baseName, String homeName) {
-        if( baseName == null )
+        if (baseName == null)
             baseName = getCommandName();
 
-        if( homeName != null && cooldownManager.isCooldownSeparationEnabled(baseName) )
+        if (homeName != null && cooldownManager.isCooldownSeparationEnabled(baseName))
             return baseName + "." + homeName;
         else
             return baseName;
     }
 
     public final String getCommandPermissionNode() {
-        if( permissionNode == null ) {
+        if (permissionNode == null) {
             // set permission node from config params, if set
             permissionNode = getStringParam("permission");
         }
@@ -492,22 +499,20 @@ public abstract class BaseCommand implements Command {
      * false. This should also take into account custom command permissions
      * that might have been defined by the admin.
      *
-     * @param p
-     *            the player to check
-     * @param displayMessage
-     *            true if a message should be displayed to the player if they
-     *            don't have permission
+     * @param p              the player to check
+     * @param displayMessage true if a message should be displayed to the player if they
+     *                       don't have permission
      * @return true if the player has permission, false if not
      */
     public boolean hasPermission(Player p, boolean displayMessage) {
-        if( !permissions.hasCommandPermission(p, this) ) {
-            if( displayMessage )
-                p.sendMessage( server.getLocalizedMessage(HSPMessages.NO_PERMISSION) );
+        if (!permissions.hasCommandPermission(p, this)) {
+            if (displayMessage)
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.NO_PERMISSION));
             return false;
-        }
-        else
+        } else
             return true;
     }
+
     protected boolean hasPermission(Player p) {
         return hasPermission(p, true);
     }
@@ -530,8 +535,7 @@ public abstract class BaseCommand implements Command {
             this.obj = obj;
         }
 
-        public Object invoke(Object proxy, Method m, Object[] args) throws Throwable
-        {
+        public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
             Object result = null;
             try {
                 log.debug("proxy method invoke {}, isConsoleCommand={}", m.getName(), isConsoleCommand);
@@ -539,9 +543,9 @@ public abstract class BaseCommand implements Command {
                 // if this command was executed on the console (which includes
                 // running in a command block), then permissions checks are
                 // always true
-                if( isConsoleCommand &&
+                if (isConsoleCommand &&
                         (m.getName().startsWith("has") || m.getName().startsWith("is"))
-                        && m.getReturnType().equals(boolean.class) ) {
+                        && m.getReturnType().equals(boolean.class)) {
                     result = true;
                 }
                 // otherwise just pass through to the real object

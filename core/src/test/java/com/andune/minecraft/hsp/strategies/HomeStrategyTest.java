@@ -26,42 +26,41 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
-
-import java.util.Set;
-
-import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.HomeUtil;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.util.Set;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andune
- *
  */
 public abstract class HomeStrategyTest extends BaseStrategyTest {
     @Mock
     protected HomeUtil homeUtil;
     @Mock
     protected BedUtils bedUtil;
-    
+
     @Mock
     protected HomeDAO homeDAO;
     @Mock
     protected Player player;
-    
-    /** Invoke in subclass, AFTER MockitoAnnotations.initMocks
+
+    /**
+     * Invoke in subclass, AFTER MockitoAnnotations.initMocks
      * has been called.
      */
     protected void beforeMethod() {
@@ -70,13 +69,14 @@ public abstract class HomeStrategyTest extends BaseStrategyTest {
         doAnswer(new Answer<Set<HomeImpl>>() {
             public Set<HomeImpl> answer(InvocationOnMock invocation) {
                 String name = (String) invocation.getArguments()[0];
-                if( name.equals("fooplayer") ) {
+                if (name.equals("fooplayer")) {
                     return getHome(name);
                 }
                 return null;
-            }})
-            .when(homeDAO).findHomesByPlayer(any(String.class));
+            }
+        })
+                .when(homeDAO).findHomesByPlayer(any(String.class));
     }
-    
+
     protected abstract Set<HomeImpl> getHome(String playerName);
 }

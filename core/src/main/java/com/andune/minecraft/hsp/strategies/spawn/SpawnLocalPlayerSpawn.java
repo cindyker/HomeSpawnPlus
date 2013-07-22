@@ -26,47 +26,42 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.entity.PlayerSpawn;
 import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class SpawnLocalPlayerSpawn extends BaseStrategy {
-    @Inject private PlayerSpawnDAO playerSpawnDAO;
+    @Inject
+    private PlayerSpawnDAO playerSpawnDAO;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult result = null;
-		
-		Player p = context.getPlayer();
-		String worldName = context.getEventLocation().getWorld().getName();
-		log.debug("SpawnLocalPlayerSpawn.evaluate() worldName={}",worldName);
-		
-		PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
-		
-		if( ps != null ) {
-			if( ps.getSpawn() != null )
-				result = new StrategyResultImpl(ps.getSpawn());
-			else
-				result = new StrategyResultImpl(ps.getLocation());
-		}
-		
-		return result;
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        StrategyResult result = null;
+
+        Player p = context.getPlayer();
+        String worldName = context.getEventLocation().getWorld().getName();
+        log.debug("SpawnLocalPlayerSpawn.evaluate() worldName={}", worldName);
+
+        PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
+
+        if (ps != null) {
+            if (ps.getSpawn() != null)
+                result = new StrategyResultImpl(ps.getSpawn());
+            else
+                result = new StrategyResultImpl(ps.getLocation());
+        }
+
+        return result;
+    }
 }

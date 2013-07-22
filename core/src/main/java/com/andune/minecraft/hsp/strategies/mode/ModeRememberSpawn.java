@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -37,17 +37,16 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class ModeRememberSpawn extends ModeStrategyImpl {
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_REMEMBER_SPAWN;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_REMEMBER_SPAWN;
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

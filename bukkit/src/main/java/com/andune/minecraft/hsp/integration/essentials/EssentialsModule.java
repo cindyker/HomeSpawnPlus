@@ -26,23 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.essentials;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
@@ -51,29 +37,36 @@ import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.server.bukkit.command.BukkitCommandRegister;
 import com.earth2me.essentials.AlternativeCommandsHandler;
 import com.earth2me.essentials.Essentials;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class EssentialsModule implements com.andune.minecraft.hsp.integration.Essentials, Initializable {
     private static final Logger log = LoggerFactory.getLogger(EssentialsModule.class);
-    
+
     private Plugin essentialsPlugin;
     private Map<String, List<PluginCommand>> altcommands;
     private final Plugin plugin;
     private final BukkitCommandRegister bukkitCommandRegister;
     private final Scheduler scheduler;
-    
+
     @Inject
     public EssentialsModule(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister,
-            Scheduler scheduler) {
+                            Scheduler scheduler) {
         this.plugin = bukkitPlugin;
         this.bukkitCommandRegister = bukkitCommandRegister;
         this.scheduler = scheduler;
     }
-    
+
     /**
      * Called to register HSP's commands with Essentials, which then enables
      * Essentials "respectful" command usurp behavior which will let HSP own
@@ -81,25 +74,24 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
      */
     private void registerCommands() {
         log.debug("entering registerCommands()");
-        
+
         essentialsPlugin = plugin.getServer().getPluginManager().getPlugin("Essentials");
-        
-        if( essentialsPlugin == null ) {
+
+        if (essentialsPlugin == null) {
             log.debug("Essentials plugin not found, registerComamnds() doing nothing");
             return;
         }
-        
+
         try {
             grabInternalAltCommands();
             mapHSPCommands();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.error("Caught exception when trying to register commands with Essentials", e);
         }
-        
+
         log.debug("exiting registerCommands()");
     }
-    
+
     /**
      * Using Essentials own internal alternate commands map, assign HSP
      * commands into the map. This is a replication of the internal algorithm
@@ -112,9 +104,8 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
 //        final String pluginName = plugin.getDescription().getName().toLowerCase();
 
         log.debug("commands.size() = {}", commands == null ? null : commands.size());
-        for (Command command : commands)
-        {
-            final PluginCommand pc = (PluginCommand)command;
+        for (Command command : commands) {
+            final PluginCommand pc = (PluginCommand) command;
             final List<String> labels = new ArrayList<String>(pc.getAliases());
             labels.add(pc.getName());
 
@@ -129,25 +120,20 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
 //                continue;
 //            }
 //            log.debug("reg = {}", reg);
-            for (String label : labels)
-            {
+            for (String label : labels) {
                 log.debug("registering label {}", label);
                 List<PluginCommand> plugincommands = altcommands.get(label.toLowerCase());
-                if (plugincommands == null)
-                {
+                if (plugincommands == null) {
                     plugincommands = new ArrayList<PluginCommand>();
                     altcommands.put(label.toLowerCase(), plugincommands);
                 }
                 boolean found = false;
-                for (PluginCommand pc2 : plugincommands)
-                {
-                    if (pc2.getPlugin().equals(plugin))
-                    {
+                for (PluginCommand pc2 : plugincommands) {
+                    if (pc2.getPlugin().equals(plugin)) {
                         found = true;
                     }
                 }
-                if (!found)
-                {
+                if (!found) {
                     plugincommands.add(pc);
                 }
             }
@@ -157,11 +143,11 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
     /**
      * Method to grab Essentials internal altCommands hash. This is ugly code
      * but Essentials offers no external APIs to make this any cleaner.
-     * 
-     * @throws NoSuchFieldException 
-     * @throws SecurityException 
-     * @throws IllegalAccessException 
-     * @throws IllegalArgumentException 
+     *
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
      */
     @SuppressWarnings("unchecked")
     private void grabInternalAltCommands() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -172,7 +158,7 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
         Field altCommandsField = ach.getClass().getDeclaredField("altcommands");
         altCommandsField.setAccessible(true);
         altcommands = (HashMap<String, List<PluginCommand>>) altCommandsField.get(ach);
-        
+
         log.debug("altcommands = {}", altcommands);
     }
 
@@ -203,7 +189,7 @@ public class EssentialsModule implements com.andune.minecraft.hsp.integration.Es
 
     @Override
     public String getVersion() {
-        if( essentialsPlugin != null )
+        if (essentialsPlugin != null)
             return essentialsPlugin.getDescription().getVersion();
         else
             return null;

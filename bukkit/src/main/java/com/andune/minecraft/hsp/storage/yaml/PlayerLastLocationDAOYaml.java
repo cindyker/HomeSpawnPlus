@@ -26,117 +26,118 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializablePlayerLastLocation;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author andune
- *
  */
 public class PlayerLastLocationDAOYaml extends AbstractDAOYaml<PlayerLastLocation, SerializablePlayerLastLocation>
-implements PlayerLastLocationDAO
-{
-	private static final String CONFIG_SECTION = "playerLastLocation";
+        implements PlayerLastLocationDAO {
+    private static final String CONFIG_SECTION = "playerLastLocation";
 
-	public PlayerLastLocationDAOYaml(final File file, final YamlConfiguration yaml) {
-		super(CONFIG_SECTION);
-		this.yaml = yaml;
-		this.file = file;
-	}
-	public PlayerLastLocationDAOYaml(final File file) {
-		this(file, null);
-	}
+    public PlayerLastLocationDAOYaml(final File file, final YamlConfiguration yaml) {
+        super(CONFIG_SECTION);
+        this.yaml = yaml;
+        this.file = file;
+    }
 
-	@Override
-	public PlayerLastLocation findById(int id) {
-		PlayerLastLocation playerLastLocation = null;
-		
-		Set<PlayerLastLocation> playerLastLocations = findAll();
-		if( playerLastLocations != null && playerLastLocations.size() > 0 ) {
-			for(PlayerLastLocation pll: playerLastLocations) {
-				if( id == pll.getId() ) {
-					playerLastLocation = pll;
-					break;
-				}
-			}
-		}
-		
-		return playerLastLocation;
-	}
+    public PlayerLastLocationDAOYaml(final File file) {
+        this(file, null);
+    }
 
-	@Override
-	public PlayerLastLocation findByWorldAndPlayerName(String world, String playerName) {
-		PlayerLastLocation playerLastLocation = null;
-		
-		Set<PlayerLastLocation> playerLastLocations = findAll();
-		if( playerLastLocations != null && playerLastLocations.size() > 0 ) {
-			for(PlayerLastLocation pll: playerLastLocations) {
-				if( world.equals(pll.getWorld()) && playerName.equals(pll.getPlayerName()) ) {
-					playerLastLocation = pll;
-					break;
-				}
-			}
-		}
-		
-		return playerLastLocation;
-	}
+    @Override
+    public PlayerLastLocation findById(int id) {
+        PlayerLastLocation playerLastLocation = null;
 
-	@Override
-	public Set<PlayerLastLocation> findByPlayerName(String playerName) {
-		Set<PlayerLastLocation> set = new HashSet<PlayerLastLocation>();
-		
-		Set<PlayerLastLocation> playerLastLocations = findAll();
-		if( playerLastLocations != null && playerLastLocations.size() > 0 ) {
-			for(PlayerLastLocation pll: playerLastLocations) {
-				if( playerName.equals(pll.getPlayerName()) ) {
-					set.add(pll);
-				}
-			}
-		}
-		
-		return set;
-	}
+        Set<PlayerLastLocation> playerLastLocations = findAll();
+        if (playerLastLocations != null && playerLastLocations.size() > 0) {
+            for (PlayerLastLocation pll : playerLastLocations) {
+                if (id == pll.getId()) {
+                    playerLastLocation = pll;
+                    break;
+                }
+            }
+        }
 
-	@Override
-	public Set<PlayerLastLocation> findAll() {
-		return super.findAllObjects();
-	}
+        return playerLastLocation;
+    }
 
-	@Override
-	public void save(PlayerLastLocation playerLastLocation) throws StorageException {
-		super.saveObject(playerLastLocation);
-	}
+    @Override
+    public PlayerLastLocation findByWorldAndPlayerName(String world, String playerName) {
+        PlayerLastLocation playerLastLocation = null;
 
-	@Override
-	protected SerializablePlayerLastLocation newSerializable(PlayerLastLocation object) {
-		return new SerializablePlayerLastLocation(object);
-	}
+        Set<PlayerLastLocation> playerLastLocations = findAll();
+        if (playerLastLocations != null && playerLastLocations.size() > 0) {
+            for (PlayerLastLocation pll : playerLastLocations) {
+                if (world.equals(pll.getWorld()) && playerName.equals(pll.getPlayerName())) {
+                    playerLastLocation = pll;
+                    break;
+                }
+            }
+        }
 
-	@Override
+        return playerLastLocation;
+    }
+
+    @Override
+    public Set<PlayerLastLocation> findByPlayerName(String playerName) {
+        Set<PlayerLastLocation> set = new HashSet<PlayerLastLocation>();
+
+        Set<PlayerLastLocation> playerLastLocations = findAll();
+        if (playerLastLocations != null && playerLastLocations.size() > 0) {
+            for (PlayerLastLocation pll : playerLastLocations) {
+                if (playerName.equals(pll.getPlayerName())) {
+                    set.add(pll);
+                }
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<PlayerLastLocation> findAll() {
+        return super.findAllObjects();
+    }
+
+    @Override
+    public void save(PlayerLastLocation playerLastLocation) throws StorageException {
+        super.saveObject(playerLastLocation);
+    }
+
+    @Override
+    protected SerializablePlayerLastLocation newSerializable(PlayerLastLocation object) {
+        return new SerializablePlayerLastLocation(object);
+    }
+
+    @Override
     public int purgePlayer(String playerName) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public Set<String> getAllPlayerNames() {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgePlayerData(long purgeTime) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgeWorldData(String world) {
         throw new FeatureNotImplemented();

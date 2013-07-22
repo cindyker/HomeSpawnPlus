@@ -26,19 +26,15 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
-import java.util.Collection;
-
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import java.util.Collection;
 
 /**
  * This strategy is conceptually similar to HomeLocalWorld except that it will
@@ -46,40 +42,39 @@ import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
  * a player on world "world" that had a home on "world_nether" but not one on
  * "world", this strategy would find the home on their associated home_nether
  * world and send them there.
- * 
+ *
  * @author andune
- * 
  */
 @NoArgStrategy
 public class HomeAssociatedWorld extends HomeStrategy {
     @Override
     public StrategyResult evaluate(StrategyContext context) {
         Home result = null;
-        
+
         World world = context.getEventLocation().getWorld();
-        if( world != null ) {
+        if (world != null) {
             // first we check the world the strategy is based on.
             result = super.getModeHome(context, world.getName());
-            
+
             // failing that, parent world is next
-            if( result == null ) {
+            if (result == null) {
                 World parent = world.getParentWorld();
-                if( parent != null ) {
+                if (parent != null) {
                     result = super.getModeHome(context, parent.getName());
                 }
-                
+
                 // failing that, children are next
-                if( result == null ) {
+                if (result == null) {
                     Collection<World> children = world.getChildWorlds();
-                    for(World child : children) {
+                    for (World child : children) {
                         result = super.getModeHome(context, child.getName());
-                        if( result != null )
+                        if (result != null)
                             break;
                     }
                 }
             }
         }
-        
+
         return new StrategyResultImpl(result);
     }
 }

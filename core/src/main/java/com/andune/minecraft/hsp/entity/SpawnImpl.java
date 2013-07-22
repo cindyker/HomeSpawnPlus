@@ -26,21 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.entity;
-
-import java.sql.Timestamp;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.storage.Storage;
@@ -49,291 +37,309 @@ import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
+import javax.persistence.*;
+import javax.persistence.Version;
+import java.sql.Timestamp;
+
 /**
  * @author andune
- *
  */
 @Entity()
-@Table(name="hsp_spawn",
-		uniqueConstraints={
-			@UniqueConstraint(columnNames={"name"}),
-			@UniqueConstraint(columnNames={"world", "group_name"})
-		}
+@Table(name = "hsp_spawn",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name"}),
+                @UniqueConstraint(columnNames = {"world", "group_name"})
+        }
 )
 public class SpawnImpl implements EntityWithLocation, Spawn {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    
+
     @NotNull
-    @Length(max=32)
-	private String world;
-    
-    @Length(max=32)
-	private String name;
-    
+    @Length(max = 32)
+    private String world;
+
+    @Length(max = 32)
+    private String name;
+
     @NotNull
-    @Length(max=32)
+    @Length(max = 32)
     private String updatedBy;
-    
+
     /* Optional group associated with this spawn.
      */
-    @Length(max=32)
-    @Column(name="group_name")
-	private String group;
-    
+    @Length(max = 32)
+    @Column(name = "group_name")
+    private String group;
+
     @NotNull
     private Double x;
     @NotNull
     private Double y;
     @NotNull
     private Double z;
-    
+
     private Float pitch;
-	private Float yaw;
-	
-	@Version
-	private Timestamp lastModified;
-	
-	@CreatedTimestamp
-	private Timestamp dateCreated;
-    
-	@Transient
+    private Float yaw;
+
+    @Version
+    private Timestamp lastModified;
+
+    @CreatedTimestamp
+    private Timestamp dateCreated;
+
+    @Transient
     private transient Location location;
-	
-    public SpawnImpl() {}
-    
-    /** Create a new spawn object.
-     * 
+
+    public SpawnImpl() {
+    }
+
+    /**
+     * Create a new spawn object.
+     *
      * @param l
      * @param updatedBy
-     * @param group the Group this spawn represents. Can be null to represent global spawn for the given world.
+     * @param group     the Group this spawn represents. Can be null to represent global spawn for the given world.
      */
     public SpawnImpl(Location l, String updatedBy) {
-    	setLocation(l);
-    	setUpdatedBy(updatedBy);
+        setLocation(l);
+        setUpdatedBy(updatedBy);
 //    	setGroup(group);
     }
-    
+
     @Override
-	public void setLocation(Location l) {
-    	setWorld(l.getWorld().getName());
-		setX(l.getX());
-		setY(l.getY());
-		setZ(l.getZ());
-		setYaw(l.getYaw());
-		setPitch(l.getPitch());
-		
-		location = l;
+    public void setLocation(Location l) {
+        setWorld(l.getWorld().getName());
+        setX(l.getX());
+        setY(l.getY());
+        setZ(l.getZ());
+        setYaw(l.getYaw());
+        setPitch(l.getPitch());
+
+        location = l;
     }
-    
+
     @Override
-	public Location getLocation() {
-        if( location == null ) {
+    public Location getLocation() {
+        if (location == null) {
             location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
         }
-    	
-    	return location;
+
+        return location;
     }
-    
+
     /* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#isNewPlayerSpawn()
+     * @see com.andune.minecraft.hsp.entity.Spawn#isNewPlayerSpawn()
 	 */
     @Override
-	public boolean isNewPlayerSpawn() {
+    public boolean isNewPlayerSpawn() {
         return SpawnDAO.NEW_PLAYER_SPAWN.equals(getName());
     }
-    
+
     /* (non-Javadoc)
 	 * @see com.andune.minecraft.hsp.entity.Spawn#isDefaultSpawn()
 	 */
     @Override
-	public boolean isDefaultSpawn() {
+    public boolean isDefaultSpawn() {
         return Storage.HSP_WORLD_SPAWN_GROUP.equals(getGroup());
     }
-    
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getId()
-	 */
-	@Override
-	public int getId() {
-		return id;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setId(int)
-	 */
-	@Override
-	public void setId(int id) {
-		this.id = id;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getWorld()
-	 */
-	@Override
-	public String getWorld() {
-		return world;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setWorld(java.lang.String)
-	 */
-	@Override
-	public void setWorld(String world) {
-		this.world = world;
-		location = null;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getX()
-	 */
-	@Override
-	public Double getX() {
-		return x;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setX(java.lang.Double)
-	 */
-	@Override
-	public void setX(Double x) {
-		this.x = x;
-		location = null;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getY()
-	 */
-	@Override
-	public Double getY() {
-		return y;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setY(java.lang.Double)
-	 */
-	@Override
-	public void setY(Double y) {
-		this.y = y;
-		location = null;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getZ()
-	 */
-	@Override
-	public Double getZ() {
-		return z;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setZ(java.lang.Double)
-	 */
-	@Override
-	public void setZ(Double z) {
-		this.z = z;
-		location = null;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setName(java.lang.String)
-	 */
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getGroup()
-	 */
-	@Override
-	public String getGroup() {
-		return group;
-	}
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setGroup(java.lang.String)
-	 */
-	@Override
-	public void setGroup(String group) {
-		this.group = group;
-	}
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getUpdatedBy()
-	 */
-	@Override
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getId()
+     */
+    @Override
+    public int getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setUpdatedBy(java.lang.String)
-	 */
-	@Override
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-	
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setId(int)
+     */
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getWorld()
+     */
+    @Override
+    public String getWorld() {
+        return world;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setWorld(java.lang.String)
+     */
+    @Override
+    public void setWorld(String world) {
+        this.world = world;
+        location = null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getX()
+     */
+    @Override
+    public Double getX() {
+        return x;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setX(java.lang.Double)
+     */
+    @Override
+    public void setX(Double x) {
+        this.x = x;
+        location = null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getY()
+     */
+    @Override
+    public Double getY() {
+        return y;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setY(java.lang.Double)
+     */
+    @Override
+    public void setY(Double y) {
+        this.y = y;
+        location = null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getZ()
+     */
+    @Override
+    public Double getZ() {
+        return z;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setZ(java.lang.Double)
+     */
+    @Override
+    public void setZ(Double z) {
+        this.z = z;
+        location = null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getGroup()
+     */
+    @Override
+    public String getGroup() {
+        return group;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setGroup(java.lang.String)
+     */
+    @Override
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getUpdatedBy()
+     */
+    @Override
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setUpdatedBy(java.lang.String)
+     */
+    @Override
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     /* (non-Javadoc)
 	 * @see com.andune.minecraft.hsp.entity.Spawn#getPitch()
 	 */
     @Override
-	public Float getPitch() {
-		return pitch;
-	}
+    public Float getPitch() {
+        return pitch;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setPitch(java.lang.Float)
-	 */
-	@Override
-	public void setPitch(Float pitch) {
-		this.pitch = pitch;
-		location = null;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setPitch(java.lang.Float)
+     */
+    @Override
+    public void setPitch(Float pitch) {
+        this.pitch = pitch;
+        location = null;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getYaw()
-	 */
-	@Override
-	public Float getYaw() {
-		return yaw;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getYaw()
+     */
+    @Override
+    public Float getYaw() {
+        return yaw;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setYaw(java.lang.Float)
-	 */
-	@Override
-	public void setYaw(Float yaw) {
-		this.yaw = yaw;
-		location = null;
-	}
-	
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setYaw(java.lang.Float)
+     */
+    @Override
+    public void setYaw(Float yaw) {
+        this.yaw = yaw;
+        location = null;
+    }
+
     /* (non-Javadoc)
 	 * @see com.andune.minecraft.hsp.entity.Spawn#getLastModified()
 	 */
     @Override
-	public Timestamp getLastModified() {
-		return lastModified;
-	}
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setLastModified(java.sql.Timestamp)
-	 */
-	@Override
-	public void setLastModified(Timestamp lastModified) {
-		this.lastModified = lastModified;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setLastModified(java.sql.Timestamp)
+     */
+    @Override
+    public void setLastModified(Timestamp lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#getDateCreated()
-	 */
-	@Override
-	public Timestamp getDateCreated() {
-		return dateCreated;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#getDateCreated()
+     */
+    @Override
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.entity.Spawn#setDateCreated(java.sql.Timestamp)
-	 */
-	@Override
-	public void setDateCreated(Timestamp dateCreated) {
-		this.dateCreated = dateCreated;
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.entity.Spawn#setDateCreated(java.sql.Timestamp)
+     */
+    @Override
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 }

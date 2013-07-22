@@ -26,13 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.bukkit;
-
-import javax.inject.Inject;
-
-import org.bukkit.plugin.Plugin;
 
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
@@ -41,19 +37,20 @@ import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.server.api.Server;
+import org.bukkit.plugin.Plugin;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 public class BukkitServer extends com.andune.minecraft.commonlib.server.bukkit.BukkitServer
-implements Server {
+        implements Server {
     private final Colors colors;
-    
+
     @Inject
     public BukkitServer(Plugin plugin, Teleport teleport, Locale locale,
-            BukkitFactoryInterface bukkitFactory, Colors colors)
-    {
+                        BukkitFactoryInterface bukkitFactory, Colors colors) {
         super(plugin, teleport, locale, bukkitFactory);
         this.colors = colors;
     }
@@ -67,7 +64,7 @@ implements Server {
     public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
         sendLocalizedMessage(sender, key.toString(), args);
     }
-    
+
     @Override
     public String getDefaultColor() {
         return colors.getDefaultColorString();

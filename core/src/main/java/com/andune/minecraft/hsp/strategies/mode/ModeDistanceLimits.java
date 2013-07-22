@@ -25,8 +25,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-                                 /**
- * 
+/**
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -36,69 +36,73 @@ import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Mode to set distance bounds. This has the effect of modifying other
+/**
+ * Mode to set distance bounds. This has the effect of modifying other
  * strategies to have to be within the distance bounce specified in order
  * to be used.
- * 
- * @author andune
  *
+ * @author andune
  */
 @OneArgStrategy
 public class ModeDistanceLimits extends ModeStrategyImpl {
-	private String arg;
-	private int minDistance = 0;
-	private int maxDistance = Integer.MAX_VALUE;
+    private String arg;
+    private int minDistance = 0;
+    private int maxDistance = Integer.MAX_VALUE;
 
-	public ModeDistanceLimits(String arg) {
-		this.arg = arg;
-	}
-	
-	public int getMinDistance() { return minDistance; }
-	public int getMaxDistance() { return maxDistance; }
-	
-	@Override
-	public void validate() throws StrategyException {
-		if( arg == null ) {
-            throw new StrategyException(getStrategyConfigName()+" not given any bounds; ignoring strategy");
-		}
-		
-		String[] args = arg.split(";");
-		if( args.length < 2 ) {
-			try {
-				maxDistance = Integer.parseInt(args[0]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing argument, not a number: "+args[0]);
-			}
-			
-			logInfo(getStrategyConfigName()+" only given one bound, assuming bound is maxDistance (maxDistance="+maxDistance+")");
-		}
-		else {
-			try {
-				minDistance = Integer.parseInt(args[0]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing minY argument, not a number: "+args[0]);
-			}
-			
-			try {
-				maxDistance = Integer.parseInt(args[1]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing maxY argument, not a number: "+args[1]);
-			}
-		}
-	}
-	
-	@Override
-	public String getStrategyConfigName() {
-		return "modeDistanceLimits";
-	}
+    public ModeDistanceLimits(String arg) {
+        this.arg = arg;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_DISTANCE_LIMITS;
-	}
+    public int getMinDistance() {
+        return minDistance;
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    public int getMaxDistance() {
+        return maxDistance;
+    }
+
+    @Override
+    public void validate() throws StrategyException {
+        if (arg == null) {
+            throw new StrategyException(getStrategyConfigName() + " not given any bounds; ignoring strategy");
+        }
+
+        String[] args = arg.split(";");
+        if (args.length < 2) {
+            try {
+                maxDistance = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing argument, not a number: " + args[0]);
+            }
+
+            logInfo(getStrategyConfigName() + " only given one bound, assuming bound is maxDistance (maxDistance=" + maxDistance + ")");
+        } else {
+            try {
+                minDistance = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing minY argument, not a number: " + args[0]);
+            }
+
+            try {
+                maxDistance = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing maxY argument, not a number: " + args[1]);
+            }
+        }
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "modeDistanceLimits";
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_DISTANCE_LIMITS;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

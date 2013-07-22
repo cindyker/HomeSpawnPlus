@@ -26,36 +26,32 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.hsp.config.ConfigCore;
+import com.andune.minecraft.hsp.util.SpawnUtil;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.commonlib.server.api.World;
-import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.util.SpawnUtil;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * @author andune
- *
  */
 public class TestSetSpawn extends BaseCommandTest {
     @InjectMocks
     private SetSpawn objectUnderTest;
-    
+
     @Mock
     private ConfigCore config;
     @Mock
@@ -66,7 +62,7 @@ public class TestSetSpawn extends BaseCommandTest {
         MockitoAnnotations.initMocks(this);
         super.beforeMethod();
     }
-    
+
     @Test
     public void testSetSpawnNoPermission() throws Exception {
         // Given
@@ -76,27 +72,27 @@ public class TestSetSpawn extends BaseCommandTest {
         // Then
         verify(player).sendMessage(MSG_NO_PERMISSION);
     }
-    
+
     @Test
     public void testNamedSpawn() throws Exception {
         // Given
         when(permissions.hasCommandPermission(player, objectUnderTest)).thenReturn(true);
         // When
-        objectUnderTest.execute(player, null, new String[] {"dummy"});
+        objectUnderTest.execute(player, null, new String[]{"dummy"});
         // Then
         verify(util).setNamedSpawn(eq("dummy"), any(Location.class), any(String.class));
     }
-    
+
     @Test
     public void testSetDefaultSpawn() throws Exception {
         // Given
         when(permissions.hasCommandPermission(player, objectUnderTest)).thenReturn(true);
         // When
-        objectUnderTest.execute(player, null, new String[] {});
+        objectUnderTest.execute(player, null, new String[]{});
         // Then
         verify(util).setDefaultWorldSpawn(any(Location.class), any(String.class));
     }
-    
+
     @Test
     public void testSetDefaultSpawnWithWorldOverride() throws Exception {
         // Given
@@ -108,7 +104,7 @@ public class TestSetSpawn extends BaseCommandTest {
         when(player.getLocation()).thenReturn(l);
 
         // When
-        objectUnderTest.execute(player, null, new String[] {});
+        objectUnderTest.execute(player, null, new String[]{});
         // Then
         verify(util).setDefaultWorldSpawn(eq(l), any(String.class));
         verify(w).setSpawnLocation(anyInt(), anyInt(), anyInt());

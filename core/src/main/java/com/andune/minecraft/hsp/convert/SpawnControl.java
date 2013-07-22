@@ -26,102 +26,91 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.convert;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
+import javax.inject.Inject;
+import java.sql.*;
 
-/** Converter for original SpawnControl.
- * 
- * @author andune
+
+/**
+ * Converter for original SpawnControl.
  *
+ * @author andune
  */
-public class SpawnControl extends BaseConverter
-{
-    @Inject private HomeUtil util;
-    
+public class SpawnControl extends BaseConverter {
+    @Inject
+    private HomeUtil util;
+
     @Override
     public String getConverterName() {
         return "SpawnControl";
     }
 
     @Override
-	public int convert() {
+    public int convert() {
         int convertedCount = 0;
 
         Connection conn = null;
         PreparedStatement ps = null;
-		try
-        {
-			String db = "jdbc:sqlite:plugins/SpawnControl/spawncontrol.db";
-    		Class.forName("org.sqlite.JDBC");
-        	conn = DriverManager.getConnection(db);
-        	ps = conn.prepareStatement("SELECT * FROM `players`");
+        try {
+            String db = "jdbc:sqlite:plugins/SpawnControl/spawncontrol.db";
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection(db);
+            ps = conn.prepareStatement("SELECT * FROM `players`");
             ResultSet rs = ps.executeQuery();
 
 //            HomeSpawnUtils util = plugin.getUtil();
-            
+
             int consecutiveErrors = 0;
             while (rs.next()) {
-            	// protect against a bunch of consecutive errors spamming the logfile
-            	if( consecutiveErrors > 10 )
-            		break;
-            	
-            	try {
-            		String playerName = rs.getString("name");
-            		String worldName = rs.getString("world");
-            		World world = server.getWorld(worldName);
-            		
+                // protect against a bunch of consecutive errors spamming the logfile
+                if (consecutiveErrors > 10)
+                    break;
+
+                try {
+                    String playerName = rs.getString("name");
+                    String worldName = rs.getString("world");
+                    World world = server.getWorld(worldName);
+
                     Location l = factory.newLocation(world.getName(), rs.getDouble("x"), rs.getDouble("y"),
                             rs.getDouble("z"), rs.getFloat("r"), rs.getFloat("p"));
-            		
-            		util.setHome(playerName, l, "[SpawnControl_Conversion]", true, false);
-            		convertedCount++;
-            		
-            		consecutiveErrors = 0;	// success! reset consecutiveErrors counter
-            	}
-            	catch(Exception e) {
-            		log.warn("error trying to process SQL row", e);
-            		consecutiveErrors++;
-            	}
+
+                    util.setHome(playerName, l, "[SpawnControl_Conversion]", true, false);
+                    convertedCount++;
+
+                    consecutiveErrors = 0;    // success! reset consecutiveErrors counter
+                } catch (Exception e) {
+                    log.warn("error trying to process SQL row", e);
+                    consecutiveErrors++;
+                }
             }
-        	conn.close();
-        	
-        	if( consecutiveErrors > 10 )
-        		log.warn("conversion process aborted, too many consecutive errors");
-        }
-        catch(SQLException e)
-        {
+            conn.close();
+
+            if (consecutiveErrors > 10)
+                log.warn("conversion process aborted, too many consecutive errors");
+        } catch (SQLException e) {
             log.error("Caught exception", e);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             log.error("Caught exception", e);
-        }
-        finally {
+        } finally {
             try {
-                if( ps != null )
+                if (ps != null)
                     ps.close();
-            } catch(SQLException e) {}
+            } catch (SQLException e) {
+            }
             try {
-                if( conn != null )
+                if (conn != null)
                     conn.close();
-            } catch(SQLException e) {}
+            } catch (SQLException e) {
+            }
         }
-        
+
         return convertedCount;
-	}
+    }
 }

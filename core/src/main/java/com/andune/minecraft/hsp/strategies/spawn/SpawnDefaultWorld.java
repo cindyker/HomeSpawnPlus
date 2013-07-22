@@ -26,36 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.SpawnUtil;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class SpawnDefaultWorld extends BaseStrategy {
-    @Inject protected SpawnUtil spawnUtil;
+    @Inject
+    protected SpawnUtil spawnUtil;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl(spawnUtil.getDefaultSpawn().getLocation());
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(spawnUtil.getDefaultSpawn().getLocation());
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnDefaultWorld";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnDefaultWorld";
+    }
 
 }

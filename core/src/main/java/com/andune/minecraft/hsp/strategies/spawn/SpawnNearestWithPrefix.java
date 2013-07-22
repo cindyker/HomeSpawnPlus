@@ -27,83 +27,77 @@
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.OneArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
+import java.util.Set;
 
 /**
  * Spawn at the nearest spawn to the players current location, but
  * it must match the defined prefix.
- * 
+ * <p/>
  * This allows, for example, the implementation of a graveyard concept
  * without risk that the player might spawn at the newplayer or default
  * spawns. All graveyard spawns could be named with the prefix "graveyard"
  * and that prefix used to restrict this strategy.
- * 
- * @author andune
  *
+ * @author andune
  */
 @OneArgStrategy
 public class SpawnNearestWithPrefix extends BaseStrategy {
-    @Inject private SpawnDAO spawnDAO;
+    @Inject
+    private SpawnDAO spawnDAO;
 
     private final String prefix;
-    
+
     public SpawnNearestWithPrefix(final String prefix) {
         this.prefix = prefix;
     }
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		// simple algorithm for now, it's not called that often and we assume the list
-		// of spawns is relatively small (ie. not in the hundreds or thousands).
-		final Set<? extends Spawn> allSpawns = spawnDAO.findAllSpawns();
-		final Location playerLoc = context.getEventLocation();
-		
-		final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
-		
-		final String playerWorld = playerLoc.getWorld().getName();
-		double shortestDistance = -1;
-		Spawn closestSpawn = null;
-		for(Spawn theSpawn : allSpawns) {
-			// this fixes a bug in R5+ where non-loaded worlds apparently won't even
-			// return valid location or world objects anymore. So we check the String
-			// world values before we do anything else and skip worlds that the
-			// player is not on.
-			if( !playerWorld.equals(theSpawn.getWorld()) )
-				continue;
-			
-			// skip newPlayerSpawn if so directed
-			if( excludeNewPlayerSpawn && theSpawn.isNewPlayerSpawn() ) {
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        // simple algorithm for now, it's not called that often and we assume the list
+        // of spawns is relatively small (ie. not in the hundreds or thousands).
+        final Set<? extends Spawn> allSpawns = spawnDAO.findAllSpawns();
+        final Location playerLoc = context.getEventLocation();
+
+        final boolean excludeNewPlayerSpawn = context.isModeEnabled(StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
+
+        final String playerWorld = playerLoc.getWorld().getName();
+        double shortestDistance = -1;
+        Spawn closestSpawn = null;
+        for (Spawn theSpawn : allSpawns) {
+            // this fixes a bug in R5+ where non-loaded worlds apparently won't even
+            // return valid location or world objects anymore. So we check the String
+            // world values before we do anything else and skip worlds that the
+            // player is not on.
+            if (!playerWorld.equals(theSpawn.getWorld()))
+                continue;
+
+            // skip newPlayerSpawn if so directed
+            if (excludeNewPlayerSpawn && theSpawn.isNewPlayerSpawn()) {
                 log.debug("Skipped spawn choice {} because mode {} is enabled", theSpawn, StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN);
-				continue;
-			}
-			
-            if( !theSpawn.getName().startsWith(prefix) ) {
+                continue;
+            }
+
+            if (!theSpawn.getName().startsWith(prefix)) {
                 log.debug("Skipped spawn choice {} because prefix doesn't match {}", theSpawn, prefix);
                 continue;
             }
-            
-			final Location theLocation = theSpawn.getLocation();
-			if( theLocation.getWorld().equals(playerLoc.getWorld()) ) {	// must be same world
-				double distance = theLocation.distance(playerLoc);
-				if( distance < shortestDistance || shortestDistance == -1 ) {
-					shortestDistance = distance;
-					closestSpawn = theSpawn;
-				}
-			}
-		}
-		
-		return new StrategyResultImpl(closestSpawn);
-	}
+
+            final Location theLocation = theSpawn.getLocation();
+            if (theLocation.getWorld().equals(playerLoc.getWorld())) {    // must be same world
+                double distance = theLocation.distance(playerLoc);
+                if (distance < shortestDistance || shortestDistance == -1) {
+                    shortestDistance = distance;
+                    closestSpawn = theSpawn;
+                }
+            }
+        }
+
+        return new StrategyResultImpl(closestSpawn);
+    }
 }

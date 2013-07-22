@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
@@ -38,39 +36,41 @@ import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class ModeInRegion extends ModeStrategyImpl {
-    @Inject WorldGuard worldGuard;
-	private String regionName;
+    @Inject
+    WorldGuard worldGuard;
+    private String regionName;
 
-	public ModeInRegion(String regionName) {
-		this.regionName = regionName;
-	}
-	
-	public String getRegionName() {
-		return regionName;
-	}
+    public ModeInRegion(String regionName) {
+        this.regionName = regionName;
+    }
 
-	@Override
-	public void validate() throws StrategyException {
-	    if( !worldGuard.isEnabled() )
-			throw new StrategyException("Attempt to use "+getStrategyConfigName()+" strategy but WorldGuard is not installed");
-		
-		if( regionName == null )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": strategy argument is null");
-	}
+    public String getRegionName() {
+        return regionName;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_IN_REGION;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    @Override
+    public void validate() throws StrategyException {
+        if (!worldGuard.isEnabled())
+            throw new StrategyException("Attempt to use " + getStrategyConfigName() + " strategy but WorldGuard is not installed");
+
+        if (regionName == null)
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": strategy argument is null");
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_IN_REGION;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

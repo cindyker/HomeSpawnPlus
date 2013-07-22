@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
@@ -40,24 +40,25 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="setMap",
-    aliases={"sm"}, help="Set the map spawn")
+@UberCommand(uberCommand = "spawn", subCommand = "setMap",
+        aliases = {"sm"}, help = "Set the map spawn")
 public class SetMapSpawn extends BaseCommand {
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"sms"}; }
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"sms"};
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		final World world = p.getWorld();
-		final Location l = p.getLocation();
-		world.setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-		server.sendLocalizedMessage(p, HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
-				"world", world.getName(), "location", l.shortLocationString());
+    @Override
+    public boolean execute(Player p, String[] args) {
+        final World world = p.getWorld();
+        final Location l = p.getLocation();
+        world.setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        server.sendLocalizedMessage(p, HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
+                "world", world.getName(), "location", l.shortLocationString());
 
-		return true;
-	}
+        return true;
+    }
 
 }

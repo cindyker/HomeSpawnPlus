@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
@@ -41,42 +39,48 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
-/** Command to return the group HSP thinks a player is in, based on the underlying
- * Permission system in use.
- * 
- * @author andune
- *
- */
-@UberCommand(uberCommand="hsp", subCommand="groupQuery",
-	aliases={"gq"}, help="Query player primary group name")
-public class GroupQuery extends BaseCommand {
-    @Inject private PermissionSystem permSystem;
-    @Inject private SpawnUtil util;
-    
-	@Override
-	public String[] getCommandAliases() { return new String[] {"gq"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_GROUPQUERY_USAGE);
-	}
+import javax.inject.Inject;
 
-	@Override
-	public boolean execute(CommandSender sender, String cmd, String[] args) {
-		if( !defaultCommandChecks(sender) )
-			return true;
-		
-		String playerName = null;
-		String playerWorld = null;
-		boolean playerOffline = false;
-		
-		if( args.length > 0 ) {
-		    OfflinePlayer offline = server.getBestMatchPlayer(args[0]);
+/**
+ * Command to return the group HSP thinks a player is in, based on the underlying
+ * Permission system in use.
+ *
+ * @author andune
+ */
+@UberCommand(uberCommand = "hsp", subCommand = "groupQuery",
+        aliases = {"gq"}, help = "Query player primary group name")
+public class GroupQuery extends BaseCommand {
+    @Inject
+    private PermissionSystem permSystem;
+    @Inject
+    private SpawnUtil util;
+
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"gq"};
+    }
+
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_GROUPQUERY_USAGE);
+    }
+
+    @Override
+    public boolean execute(CommandSender sender, String cmd, String[] args) {
+        if (!defaultCommandChecks(sender))
+            return true;
+
+        String playerName = null;
+        String playerWorld = null;
+        boolean playerOffline = false;
+
+        if (args.length > 0) {
+            OfflinePlayer offline = server.getBestMatchPlayer(args[0]);
             playerName = offline.getName();
-            
-            if( args.length > 1 )
+
+            if (args.length > 1)
                 playerWorld = args[1];
-            else if( offline instanceof Player )
+            else if (offline instanceof Player)
                 playerWorld = ((Player) offline).getWorld().getName();
             else {
                 // no way to get the world of an offline player, so we have
@@ -85,24 +89,23 @@ public class GroupQuery extends BaseCommand {
             }
 
             // didn't find any player by that name, error out
-            if( playerName == null ) {
-                sender.sendMessage("Player "+args[0]+" not found.");
+            if (playerName == null) {
+                sender.sendMessage("Player " + args[0] + " not found.");
                 return true;
             }
-		}
-		else if( sender instanceof Player ) {
-			Player p = (Player) sender;
-			playerName = p.getName();
-			playerWorld = p.getWorld().getName();
-		}
-		
-		if( playerName == null )
-			return false;
+        } else if (sender instanceof Player) {
+            Player p = (Player) sender;
+            playerName = p.getName();
+            playerWorld = p.getWorld().getName();
+        }
 
-		String group = permSystem.getPlayerGroup(playerWorld, playerName);
-		sender.sendMessage("Player "+playerName+" is in group \""+group+"\" on "+playerWorld
-				+ (playerOffline ? " [player offline]" : "")
-				+ " (using perms "+permSystem.getSystemInUse()+")");
-		return true;
-	}
+        if (playerName == null)
+            return false;
+
+        String group = permSystem.getPlayerGroup(playerWorld, playerName);
+        sender.sendMessage("Player " + playerName + " is in group \"" + group + "\" on " + playerWorld
+                + (playerOffline ? " [player offline]" : "")
+                + " (using perms " + permSystem.getSystemInUse() + ")");
+        return true;
+    }
 }

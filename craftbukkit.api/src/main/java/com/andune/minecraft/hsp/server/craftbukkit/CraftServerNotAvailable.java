@@ -26,32 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.craftbukkit;
-
-import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.plugin.Plugin;
 
+import java.util.logging.Logger;
+
 /**
  * @author andune
- *
  */
 public class CraftServerNotAvailable implements CraftServer {
     private final Logger log;
-    
+
     // keep track of if we've already printed a warning, so we don't spam the log file
     private boolean hasWarned = false;
-    
+
     public CraftServerNotAvailable(Plugin plugin) {
         this.log = plugin.getLogger();
     }
 
     @Override
     public void registerCommand(Command command) {
-        if( !hasWarned ) {
+        if (!hasWarned) {
             log.severe("CraftBukkit server implementation not found, commands will not be enabled");
             hasWarned = true;
         }

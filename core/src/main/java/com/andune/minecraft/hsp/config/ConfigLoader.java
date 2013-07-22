@@ -27,17 +27,16 @@
  */
 package com.andune.minecraft.hsp.config;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
 import com.andune.minecraft.commonlib.server.api.config.ConfigException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * ConfigLoader is responsible for loading config data from storage.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface ConfigLoader {
 
@@ -46,11 +45,11 @@ public interface ConfigLoader {
      * that represents the config data. This will either load the config
      * from one large file ("config.yml") if it exists or from individual
      * config files.
-     * 
+     *
      * @return
-     * @throws ConfigException 
-     * @throws IOException 
-     * @throws FileNotFoundException 
+     * @throws ConfigException
+     * @throws IOException
+     * @throws FileNotFoundException
      */
     public ConfigurationSection load(String fileName, String basePath)
             throws IOException, ConfigException;

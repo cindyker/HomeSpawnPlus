@@ -26,42 +26,42 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategy;
 
 
-/** Different modes that strategies can run under, which can change
+/**
+ * Different modes that strategies can run under, which can change
  * the behavior of other strategies.
- * 
- * @author andune
  *
+ * @author andune
  */
 public enum StrategyMode {
-	MODE_HOME_NORMAL,
-	MODE_HOME_BED_ONLY,
-	MODE_HOME_NO_BED,
-	MODE_HOME_DEFAULT_ONLY,
-	MODE_HOME_ANY,
-	MODE_HOME_REQUIRES_BED,
-	MODE_NO_WATER,
-	MODE_NO_LILY_PAD,
-	MODE_NO_LEAVES,
-	MODE_NO_ICE,
-	MODE_YBOUNDS,
-	MODE_DEFAULT,
-	MODE_REMEMBER_SPAWN,
-	MODE_REMEMBER_LOCATION,
-	MODE_MULTIVERSE_SOURCE_PORTAL,
-	MODE_MULTIVERSE_DESTINATION_PORTAL,
-	MODE_IN_REGION,
-	MODE_SOURCE_WORLD,
-	MODE_EXCLUDE_NEW_PLAYER_SPAWN,
-	MODE_DISTANCE_LIMITS,
-	MODE_EFFECT;
-	
+    MODE_HOME_NORMAL,
+    MODE_HOME_BED_ONLY,
+    MODE_HOME_NO_BED,
+    MODE_HOME_DEFAULT_ONLY,
+    MODE_HOME_ANY,
+    MODE_HOME_REQUIRES_BED,
+    MODE_NO_WATER,
+    MODE_NO_LILY_PAD,
+    MODE_NO_LEAVES,
+    MODE_NO_ICE,
+    MODE_YBOUNDS,
+    MODE_DEFAULT,
+    MODE_REMEMBER_SPAWN,
+    MODE_REMEMBER_LOCATION,
+    MODE_MULTIVERSE_SOURCE_PORTAL,
+    MODE_MULTIVERSE_DESTINATION_PORTAL,
+    MODE_IN_REGION,
+    MODE_SOURCE_WORLD,
+    MODE_EXCLUDE_NEW_PLAYER_SPAWN,
+    MODE_DISTANCE_LIMITS,
+    MODE_EFFECT;
+
 	/*
-	// associated Teleport safeMode flag, if any
+    // associated Teleport safeMode flag, if any
 	private int flagId = 0;
 	
 	private StrategyMode() {}

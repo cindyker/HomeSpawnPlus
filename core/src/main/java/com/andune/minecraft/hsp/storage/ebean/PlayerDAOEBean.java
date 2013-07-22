@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
@@ -39,46 +36,48 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlUpdate;
 import com.avaje.ebean.Transaction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public class PlayerDAOEBean implements PlayerDAO {
-	private EbeanServer ebean;
+    private EbeanServer ebean;
     private final EbeanStorageUtil util;
-	
-	public PlayerDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
-		setEbeanServer(ebean);
-		this.util = util;
-	}
-	
-	public void setEbeanServer(final EbeanServer ebean) {
-		this.ebean = ebean;
-	}
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findPlayerByName(java.lang.String)
-	 */
-	@Override
-	public Player findPlayerByName(String name) {
-		return ebean.find(Player.class).where().ieq("name", name).findUnique();
-	}
+    public PlayerDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
+        setEbeanServer(ebean);
+        this.util = util;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findAllPlayers()
-	 */
-	@Override
-	public Set<Player> findAllPlayers() {
-		return ebean.find(Player.class).findSet();
-	}
+    public void setEbeanServer(final EbeanServer ebean) {
+        this.ebean = ebean;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#savePlayer(com.andune.minecraft.hsp.entity.Player)
-	 */
-	@Override
-	public void savePlayer(Player player) {
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findPlayerByName(java.lang.String)
+     */
+    @Override
+    public Player findPlayerByName(String name) {
+        return ebean.find(Player.class).where().ieq("name", name).findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#findAllPlayers()
+     */
+    @Override
+    public Set<Player> findAllPlayers() {
+        return ebean.find(Player.class).findSet();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.PlayerDAO#savePlayer(com.andune.minecraft.hsp.entity.Player)
+     */
+    @Override
+    public void savePlayer(Player player) {
         ebean.save(player);
-	}
+    }
 
     @Override
     public int purgePlayerData(long purgeTime) {
@@ -99,8 +98,8 @@ public class PlayerDAOEBean implements PlayerDAO {
     @Override
     public Set<String> getAllPlayerNames() {
         Set<Player> set = ebean.find(Player.class).select("name").findSet();
-        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
-        for(Player player : set) {
+        Set<String> playerNames = new HashSet<String>(set.size() * 3 / 2);
+        for (Player player : set) {
             playerNames.add(player.getName());
         }
         return playerNames;

@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -35,25 +35,25 @@ import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Mode that specifies teleports should not be done above lily pads.
- * 
- * @author andune
+/**
+ * Mode that specifies teleports should not be done above lily pads.
  *
+ * @author andune
  */
 @NoArgStrategy
 public class ModeNoLilyPad extends ModeStrategyImpl {
-	@Override
-	public String getStrategyConfigName() {
-		return "modeNoLilyPad";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "modeNoLilyPad";
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_NO_LILY_PAD;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_NO_LILY_PAD;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

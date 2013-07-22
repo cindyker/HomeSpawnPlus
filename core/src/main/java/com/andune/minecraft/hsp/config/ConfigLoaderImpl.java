@@ -26,16 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.Logger;
@@ -46,24 +39,29 @@ import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.YamlFile;
 import com.andune.minecraft.commonlib.server.api.config.ConfigException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * ConfigLoader separated into interface and implementation to avoid
  * circular IoC dependencies.
- * 
+ * <p/>
  * This implementation will load one large config.yml if it exists or
  * else it will load new-style individual config files instead.
- * 
- * @author andune
  *
+ * @author andune
  */
 @Singleton
-public class ConfigLoaderImpl implements ConfigLoader  {
+public class ConfigLoaderImpl implements ConfigLoader {
     private static final Logger log = LoggerFactory.getLogger(ConfigLoaderImpl.class);
-    
+
     private final Plugin plugin;
     private final Factory factory;
     private final JarUtils jarUtil;
-    
+
     private YamlFile singleConfigFile;
 
     @Inject
@@ -81,7 +79,7 @@ public class ConfigLoaderImpl implements ConfigLoader  {
         YamlFile yaml = getSingleConfigFile();
 
         // load individual config file if single "config.yml" is not in use
-        if( yaml == null ) {
+        if (yaml == null) {
             log.debug("No single config.yml found, using multiple config files");
             yaml = loadSingleConfig(fileName, basePath);
         }
@@ -89,27 +87,27 @@ public class ConfigLoaderImpl implements ConfigLoader  {
         ConfigurationSection cs = yaml.getConfigurationSection(basePath);
 
         // returning null config is bad, we need to do something about it
-        if( cs == null ) {
+        if (cs == null) {
             // if we're using single config file (probably old config), then
             // try to load the defaults out of new-style config
-            if( yaml != null ) {
+            if (yaml != null) {
                 log.debug("Defaults for \"{}\" missing, trying to load from single config defaults", basePath);
                 yaml = loadSingleConfig(fileName, basePath);
                 cs = yaml.getConfigurationSection(basePath);
             }
-            
+
             // if it's still null, create an empty section and print a warning
-            if( cs == null ) {
+            if (cs == null) {
                 cs = yaml.createConfigurationSection(basePath);
-                log.warn("ConfigurationSection \""+basePath+"\" not found, bad things might happen!");
+                log.warn("ConfigurationSection \"" + basePath + "\" not found, bad things might happen!");
             }
         }
         return cs;
     }
-    
-    private YamlFile loadSingleConfig(String fileName, String basePath)  throws IOException, ConfigException {
-        File configFileName = new File(plugin.getDataFolder(), "config/"+fileName);
-        if( !configFileName.exists() )
+
+    private YamlFile loadSingleConfig(String fileName, String basePath) throws IOException, ConfigException {
+        File configFileName = new File(plugin.getDataFolder(), "config/" + fileName);
+        if (!configFileName.exists())
             installDefaultFile(fileName);
         YamlFile yaml = factory.newYamlFile();
         yaml.load(configFileName);
@@ -120,28 +118,28 @@ public class ConfigLoaderImpl implements ConfigLoader  {
      * If a single config file exists, this method will load it and
      * return it, caching it for future calls. If it doesn't exist,
      * this method returns null.
-     * 
+     *
      * @return
-     * @throws ConfigException 
-     * @throws IOException 
-     * @throws FileNotFoundException 
+     * @throws ConfigException
+     * @throws IOException
+     * @throws FileNotFoundException
      */
     private YamlFile getSingleConfigFile() throws FileNotFoundException, IOException, ConfigException {
-        if( singleConfigFile == null ) {
+        if (singleConfigFile == null) {
             File configYml = new File(plugin.getDataFolder(), "config.yml");
-            if( configYml.exists() ) {
+            if (configYml.exists()) {
                 log.debug("Single config.yml file exists, loading file");
                 singleConfigFile = factory.newYamlFile();
                 singleConfigFile.load(configYml);
             }
         }
-        
+
         return singleConfigFile;
     }
 
     /**
      * Install the configuration default file if it doesn't exist.
-     * 
+     *
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -149,12 +147,12 @@ public class ConfigLoaderImpl implements ConfigLoader  {
         File pluginDir = plugin.getDataFolder();
         // create the config directory if it doesn't exist
         File configDir = new File(pluginDir, "config");
-        if( !configDir.exists() )
+        if (!configDir.exists())
             configDir.mkdirs();
 
         File configFile = new File(configDir, fileName);
-        if( !configFile.exists() )
-            jarUtil.copyConfigFromJar("config/"+fileName, configFile);
+        if (!configFile.exists())
+            jarUtil.copyConfigFromJar("config/" + fileName, configFile);
     }
 
     /* (non-Javadoc)

@@ -26,21 +26,15 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.guice;
 
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
+import java.util.logging.*;
 
 /**
  * Enable or disable Guice debug output
  * on the console.
- *
  */
 public class GuiceDebug {
     /**
@@ -48,6 +42,7 @@ public class GuiceDebug {
      * on the console.
      */
     private static final Handler HANDLER;
+
     static {
         HANDLER = new StreamHandler(System.out, new Formatter() {
             public String format(LogRecord record) {
@@ -59,7 +54,8 @@ public class GuiceDebug {
         HANDLER.setLevel(Level.ALL);
     }
 
-    private GuiceDebug() {}
+    private GuiceDebug() {
+    }
 
     public static Logger getLogger() {
         return Logger.getLogger("com.google.inject");

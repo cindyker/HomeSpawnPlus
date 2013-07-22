@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -38,56 +38,60 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class ModeEffect extends ModeStrategyImpl {
     private String arg;
     private Effect effect;
-    private boolean toEffect=true;
-    private boolean fromEffect=true;
+    private boolean toEffect = true;
+    private boolean fromEffect = true;
 
     public ModeEffect(String arg) {
         this.arg = arg;
     }
 
-    public Effect getEffect() { return effect; }
-    public boolean isToEffect() { return toEffect; }
-    public boolean isFromEffect() { return fromEffect; }
-    
+    public Effect getEffect() {
+        return effect;
+    }
+
+    public boolean isToEffect() {
+        return toEffect;
+    }
+
+    public boolean isFromEffect() {
+        return fromEffect;
+    }
+
     @Override
     public void validate() throws StrategyException {
-        if( arg == null )
-            throw new StrategyException("required argument is null for strategy "+getStrategyConfigName());
-        
+        if (arg == null)
+            throw new StrategyException("required argument is null for strategy " + getStrategyConfigName());
+
         String effect = null;
         String[] args = arg.split(";");
         effect = args[0];
-        
+
         // look for and process secondary arg, if any
-        if( args.length > 1 ) {
-            if( args[1].equalsIgnoreCase("both") ) {
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("both")) {
                 ; // default, do nothing
-            }
-            else if( args[1].equalsIgnoreCase("to") ) {
+            } else if (args[1].equalsIgnoreCase("to")) {
                 fromEffect = false;
-            }
-            else if( args[1].equalsIgnoreCase("from") ) {
+            } else if (args[1].equalsIgnoreCase("from")) {
                 toEffect = false;
-            }
-            else
-                throw new StrategyException("invalid second argument to "+getStrategyConfigName()+": \""+args[1]+"]\". Valid values are: both,to,from");
+            } else
+                throw new StrategyException("invalid second argument to " + getStrategyConfigName() + ": \"" + args[1] + "]\". Valid values are: both,to,from");
         }
 
-        for(Effect e : Effect.values()) {
-            if( e.getName().equalsIgnoreCase(effect) ) {
+        for (Effect e : Effect.values()) {
+            if (e.getName().equalsIgnoreCase(effect)) {
                 this.effect = e;
                 break;
             }
         }
-        
-        if( this.effect == null )
-            throw new StrategyException(getStrategyConfigName()+" argument \""+arg+"\" doesn't match any known effect");
+
+        if (this.effect == null)
+            throw new StrategyException(getStrategyConfigName() + " argument \"" + arg + "\" doesn't match any known effect");
     }
 
     @Override

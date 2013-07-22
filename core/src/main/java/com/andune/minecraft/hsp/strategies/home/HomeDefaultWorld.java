@@ -26,36 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
-import javax.inject.Inject;
-
-
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.SpawnUtil;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class HomeDefaultWorld extends HomeStrategy {
-    @Inject private SpawnUtil spawnUtil;
+    @Inject
+    private SpawnUtil spawnUtil;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl( super.getModeHome(context, spawnUtil.getDefaultWorld()) );
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(super.getModeHome(context, spawnUtil.getDefaultWorld()));
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "homeDefaultWorld";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "homeDefaultWorld";
+    }
 
 }

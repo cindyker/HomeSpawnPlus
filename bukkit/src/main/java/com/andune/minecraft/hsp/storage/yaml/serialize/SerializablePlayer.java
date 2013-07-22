@@ -26,48 +26,45 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
-import java.util.Map;
-
+import com.andune.minecraft.hsp.entity.Player;
 import org.bukkit.configuration.serialization.SerializableAs;
 
-import com.andune.minecraft.hsp.entity.Player;
+import java.util.Map;
 
 /**
  * @author andune
- *
  */
 @SerializableAs("Player")
 public class SerializablePlayer extends AbstractSerializableEntityWithLocation<Player>
-implements SerializableYamlObject<Player>
-{
-	private final static String ATTR_NAME = "name";
-	
-	public SerializablePlayer(Player player) {
-		super(player);
-	}
-	
-	public SerializablePlayer(Map<String, Object> map) {
-		super(map);
-		
-		Object o = map.get(ATTR_NAME);
-		if( o instanceof String )
-			getObject().setName((String) o);
-	}
+        implements SerializableYamlObject<Player> {
+    private final static String ATTR_NAME = "name";
 
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = super.serialize();
-		map.put(ATTR_NAME, getObject().getName());
-		return map;
-	}
+    public SerializablePlayer(Player player) {
+        super(player);
+    }
 
-	@Override
-	protected Player newEntity() {
-		return new Player();
-	}
+    public SerializablePlayer(Map<String, Object> map) {
+        super(map);
+
+        Object o = map.get(ATTR_NAME);
+        if (o instanceof String)
+            getObject().setName((String) o);
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = super.serialize();
+        map.put(ATTR_NAME, getObject().getName());
+        return map;
+    }
+
+    @Override
+    protected Player newEntity() {
+        return new Player();
+    }
 
 }

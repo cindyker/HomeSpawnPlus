@@ -34,13 +34,17 @@ import java.sql.Timestamp;
 
 /**
  * @author andune
- *
  */
 public interface BasicEntity {
     int getId();
+
     void setId(int id);
+
     Timestamp getLastModified();
+
     void setLastModified(Timestamp lastModified);
+
     Timestamp getDateCreated();
+
     void setDateCreated(Timestamp dateCreated);
 }

@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import java.util.Set;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -42,111 +37,109 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
+import javax.inject.Inject;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="delete", aliases={"d"}, help="Delete a home")
+@UberCommand(uberCommand = "home", subCommand = "delete", aliases = {"d"}, help = "Delete a home")
 public class HomeDelete extends BaseCommand {
     private HomeUtil homeUtil;
-    
+
     @Inject
     public void setHomeUtil(HomeUtil homeUtil) {
         this.homeUtil = homeUtil;
     }
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"homed", "deletehome", "rmhome"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_USAGE);
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"homed", "deletehome", "rmhome"};
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		com.andune.minecraft.hsp.entity.Home home = null;
-		String homeName = null;
-		
-		if( args.length > 0 ) {
-			homeName = args[0];
-			
-			int id = -1;
-			try {
-				id = Integer.parseInt(homeName);
-			}
-			catch(NumberFormatException e) {}
-			
-			if( id != -1 ) {
-				home = storage.getHomeDAO().findHomeById(id);
-				// make sure it belongs to this player
-				if( home != null && !p.getName().equals(home.getPlayerName()) )
-					home = null;
-				
-				// otherwise set the name according to the home that was selected
-				if( home != null )
-					homeName = home.getName() + " (id #"+id+")";
-			}
-			else if( args[0].startsWith("w:") ) {
-				String worldName = homeName.substring(2);
-				home = homeUtil.getDefaultHome(p.getName(), worldName);
-				if( home == null ) {
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName) );
-					return true;
-				}
-			}
-			else if( homeName.equals("<noname>") ) {
-				Set<? extends com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO()
-						.findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
-				if( homes != null ) {
-					for(com.andune.minecraft.hsp.entity.Home h : homes) {
-						if( h.getName() == null ) {
-							home = h;
-							break;
-						}
-					}
-				}
-			}
-			
-			// if home is still null here, then just do a regular lookup
-			if( home == null )
-			    home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
-		}
-		else
-			home = homeUtil.getDefaultHome(p.getName(), p.getWorld().getName());
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_USAGE);
+    }
 
-		if( home != null ) {
-			// safety check to be sure we aren't deleting someone else's home with this command
-			// (this shouldn't be possible since all checks are keyed to this player's name, but
-			// let's be paranoid anyway)
-			if( !p.getName().equalsIgnoreCase(home.getPlayerName()) ) {
-			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME) );
-				log.warn("ERROR: Shouldn't be possible! Player {} tried to delete home for player {}",
-				        p.getName(), home.getPlayerName());
-			}
-			else {
-				try {
-					storage.getHomeDAO().deleteHome(home);
-					if( homeName != null )
-					    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName) );
-					else
-					    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED) );
-				}
-				catch(StorageException e) {
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.GENERIC_ERROR) );
-					log.warn("Error caught in /"+getCommandName(), e);
-				}
-			}
-		}
-		else if( homeName != null )
-		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_HOME_FOUND, "name", homeName) );
-		else
-		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_DEFAULT_HOME_FOUND) );
-		
-		return true;
-	}
+    @Override
+    public boolean execute(Player p, String[] args) {
+        if (!defaultCommandChecks(p))
+            return true;
+
+        com.andune.minecraft.hsp.entity.Home home = null;
+        String homeName = null;
+
+        if (args.length > 0) {
+            homeName = args[0];
+
+            int id = -1;
+            try {
+                id = Integer.parseInt(homeName);
+            } catch (NumberFormatException e) {
+            }
+
+            if (id != -1) {
+                home = storage.getHomeDAO().findHomeById(id);
+                // make sure it belongs to this player
+                if (home != null && !p.getName().equals(home.getPlayerName()))
+                    home = null;
+
+                // otherwise set the name according to the home that was selected
+                if (home != null)
+                    homeName = home.getName() + " (id #" + id + ")";
+            } else if (args[0].startsWith("w:")) {
+                String worldName = homeName.substring(2);
+                home = homeUtil.getDefaultHome(p.getName(), worldName);
+                if (home == null) {
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOME_NO_HOME_ON_WORLD, "world", worldName));
+                    return true;
+                }
+            } else if (homeName.equals("<noname>")) {
+                Set<? extends com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO()
+                        .findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
+                if (homes != null) {
+                    for (com.andune.minecraft.hsp.entity.Home h : homes) {
+                        if (h.getName() == null) {
+                            home = h;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // if home is still null here, then just do a regular lookup
+            if (home == null)
+                home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
+        } else
+            home = homeUtil.getDefaultHome(p.getName(), p.getWorld().getName());
+
+        if (home != null) {
+            // safety check to be sure we aren't deleting someone else's home with this command
+            // (this shouldn't be possible since all checks are keyed to this player's name, but
+            // let's be paranoid anyway)
+            if (!p.getName().equalsIgnoreCase(home.getPlayerName())) {
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_ERROR_DELETING_OTHER_HOME));
+                log.warn("ERROR: Shouldn't be possible! Player {} tried to delete home for player {}",
+                        p.getName(), home.getPlayerName());
+            } else {
+                try {
+                    storage.getHomeDAO().deleteHome(home);
+                    if (homeName != null)
+                        p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_HOME_DELETED, "name", homeName));
+                    else
+                        p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_DEFAULT_HOME_DELETED));
+                } catch (StorageException e) {
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.GENERIC_ERROR));
+                    log.warn("Error caught in /" + getCommandName(), e);
+                }
+            }
+        } else if (homeName != null)
+            p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_HOME_FOUND, "name", homeName));
+        else
+            p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_HOMEDELETE_NO_DEFAULT_HOME_FOUND));
+
+        return true;
+    }
 
 }

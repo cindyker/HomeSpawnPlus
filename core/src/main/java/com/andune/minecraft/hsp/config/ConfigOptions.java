@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
 
@@ -37,11 +37,11 @@ import java.lang.annotation.Target;
 
 /**
  * @author andune
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ConfigOptions {
     String fileName();
+
     String basePath();
 }

@@ -26,30 +26,25 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
 
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class HomeLocalWorld extends HomeStrategy {
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl( super.getModeHome(context, null) );
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(super.getModeHome(context, null));
+    }
 
-	@Override
-	public final String getStrategyConfigName() {
-		return "homeLocalWorld";
-	}
+    @Override
+    public final String getStrategyConfigName() {
+        return "homeLocalWorld";
+    }
 }

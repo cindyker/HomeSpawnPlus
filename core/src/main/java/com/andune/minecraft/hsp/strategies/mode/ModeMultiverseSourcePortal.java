@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
@@ -38,41 +36,44 @@ import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Mode used for detecting whether or not a Multiverse source portal
+import javax.inject.Inject;
+
+/**
+ * Mode used for detecting whether or not a Multiverse source portal
  * is involved in the current strategy chain.
- * 
- * @author andune
  *
+ * @author andune
  */
 @OneArgStrategy
 public class ModeMultiverseSourcePortal extends ModeStrategyImpl {
-    @Inject private MultiversePortals multiversePortals;
-	private String portalName;
+    @Inject
+    private MultiversePortals multiversePortals;
+    private String portalName;
 
-	public ModeMultiverseSourcePortal(String portalName) {
-		this.portalName = portalName;
-	}
-	
-	public String getPortalName() {
-		return portalName;
-	}
-	
-	@Override
-	public void validate() throws StrategyException {
-		if( !multiversePortals.isEnabled() )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": Multiverse-Portals is not running");
-		
-		if( portalName == null )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": strategy argument is null");
-	}
+    public ModeMultiverseSourcePortal(String portalName) {
+        this.portalName = portalName;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_MULTIVERSE_SOURCE_PORTAL;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    public String getPortalName() {
+        return portalName;
+    }
+
+    @Override
+    public void validate() throws StrategyException {
+        if (!multiversePortals.isEnabled())
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": Multiverse-Portals is not running");
+
+        if (portalName == null)
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": strategy argument is null");
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_MULTIVERSE_SOURCE_PORTAL;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -40,87 +38,86 @@ import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
+import javax.inject.Inject;
+
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="set",
-    aliases={"s"}, help="Set your home")
-public class SetHome extends BaseCommand
-{
+@UberCommand(uberCommand = "home", subCommand = "set",
+        aliases = {"s"}, help = "Set your home")
+public class SetHome extends BaseCommand {
     private HomeUtil util;
-    
+
     @Inject
     public void setHomeUtil(HomeUtil util) {
         this.util = util;
     }
-    
-	@Override
-	public String[] getCommandAliases() { return new String[] {"homeset"}; }
-	
-	@Override
-	public String getUsage() {
-		return server.getLocalizedMessage(HSPMessages.CMD_SETHOME_USAGE);
-	}
 
-	@Override
-	public boolean execute(final Player p, final String[] args) {
-		log.debug("sethome invoked. player={}, args={}", p, args);
-		
-		String cooldownName = null;
-		String homeName = null;
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"homeset"};
+    }
 
-		if( args.length > 0 ) {
-		    if( permissions.hasSetHomeNamed(p) ) {
-				if( !args[0].equals(Storage.HSP_BED_RESERVED_NAME) && !args[0].endsWith("_" + Storage.HSP_BED_RESERVED_NAME )) {
-					homeName = args[0];
-					cooldownName = getCooldownName("sethome-named", homeName);
-				}
-				else {
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]) );
-					return true;
-				}
-			}
-			else {
-			    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION) );
-				return true;
-			}
-		}
-		
-		if( !cooldownCheck(p, cooldownName) )
-			return true;
-		
-		if( !costCheck(p) ) {
-			printInsufficientFundsMessage(p);
-			return true;
-		}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_SETHOME_USAGE);
+    }
 
-		final Location newLocation = p.getLocation();
-		if( newLocation.getY() < 1 || newLocation.getY() > newLocation.getWorld().getMaxHeight()-1 ) {
-		    server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
+    @Override
+    public boolean execute(final Player p, final String[] args) {
+        log.debug("sethome invoked. player={}, args={}", p, args);
+
+        String cooldownName = null;
+        String homeName = null;
+
+        if (args.length > 0) {
+            if (permissions.hasSetHomeNamed(p)) {
+                if (!args[0].equals(Storage.HSP_BED_RESERVED_NAME) && !args[0].endsWith("_" + Storage.HSP_BED_RESERVED_NAME)) {
+                    homeName = args[0];
+                    cooldownName = getCooldownName("sethome-named", homeName);
+                } else {
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_USE_RESERVED_NAME, "name", args[0]));
+                    return true;
+                }
+            } else {
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETHOME_NO_NAMED_HOME_PERMISSION));
+                return true;
+            }
+        }
+
+        if (!cooldownCheck(p, cooldownName))
             return true;
-		}
-		
-        String errorMsg = null;
-		if( homeName != null ) {
-			errorMsg = util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName());
-			if( errorMsg == null ) {     // success
-				if( applyCost(p, true, cooldownName) )
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName) );
-			}
-		}
-		else {
-			errorMsg = util.setHome(p.getName(), p.getLocation(), p.getName(), true, false);
-            if( errorMsg == null ) {        // success
-				if( applyCost(p, true, cooldownName) )
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET) );
-			}
-		}
-		
-		if( errorMsg != null )
-		    p.sendMessage(errorMsg);
 
-		return true;
-	}
+        if (!costCheck(p)) {
+            printInsufficientFundsMessage(p);
+            return true;
+        }
+
+        final Location newLocation = p.getLocation();
+        if (newLocation.getY() < 1 || newLocation.getY() > newLocation.getWorld().getMaxHeight() - 1) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SETHOME_BAD_Y_LOCATION, "name", homeName);
+            return true;
+        }
+
+        String errorMsg = null;
+        if (homeName != null) {
+            errorMsg = util.setNamedHome(p.getName(), p.getLocation(), homeName, p.getName());
+            if (errorMsg == null) {     // success
+                if (applyCost(p, true, cooldownName))
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETHOME_HOME_SET, "name", homeName));
+            }
+        } else {
+            errorMsg = util.setHome(p.getName(), p.getLocation(), p.getName(), true, false);
+            if (errorMsg == null) {        // success
+                if (applyCost(p, true, cooldownName))
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETHOME_DEFAULT_HOME_SET));
+            }
+        }
+
+        if (errorMsg != null)
+            p.sendMessage(errorMsg);
+
+        return true;
+    }
 }

@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands.uber;
 
@@ -37,13 +37,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author andune
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface UberCommand {
     String subCommand();
+
     String[] aliases() default {};
+
     String uberCommand();
+
     String help() default "";
 }

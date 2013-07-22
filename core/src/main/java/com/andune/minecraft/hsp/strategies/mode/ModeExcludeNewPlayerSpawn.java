@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -35,21 +35,21 @@ import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Mode to exclude newPlayer spawn from choice list when selecting
+/**
+ * Mode to exclude newPlayer spawn from choice list when selecting
  * random or nearby spawns.
- * 
- * @author andune
  *
+ * @author andune
  */
 @NoArgStrategy
 public class ModeExcludeNewPlayerSpawn extends ModeStrategyImpl {
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_EXCLUDE_NEW_PLAYER_SPAWN;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

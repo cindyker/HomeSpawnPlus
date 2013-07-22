@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -45,117 +42,119 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.Transaction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public class HomeInviteDAOEBean implements HomeInviteDAO {
     private static final Logger log = LoggerFactory.getLogger(HomeInviteDAOEBean.class);
     protected static final String TABLE = "hsp_homeinvite";
 
-	private EbeanServer ebean;
-	private final Storage storage;
-	private final ConfigCore configCore;
+    private EbeanServer ebean;
+    private final Storage storage;
+    private final ConfigCore configCore;
     private final EbeanStorageUtil util;
 
-	public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage,
-	        ConfigCore configCore, final EbeanStorageUtil util) {
+    public HomeInviteDAOEBean(final EbeanServer ebean, final Storage storage,
+                              ConfigCore configCore, final EbeanStorageUtil util) {
         setEbeanServer(ebean);
-	    this.storage = storage;
+        this.storage = storage;
         this.configCore = configCore;
         this.util = util;
-	}
-	
-	public void setEbeanServer(final EbeanServer ebean) {
-		this.ebean = ebean;
-	}
+    }
 
-	@Override
-	public HomeInvite findHomeInviteById(int id) {
-		String q = "find homeInvite where id = :id";
+    public void setEbeanServer(final EbeanServer ebean) {
+        this.ebean = ebean;
+    }
 
-		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
-		query.setParameter("id", id);
-		
-		return query.findUnique();
-	}
-	
-	@Override
-	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
+    @Override
+    public HomeInvite findHomeInviteById(int id) {
+        String q = "find homeInvite where id = :id";
+
+        Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
+        query.setParameter("id", id);
+
+        return query.findUnique();
+    }
+
+    @Override
+    public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
         String q;
-        if( configCore.useEbeanSearchLower() )
+        if (configCore.useEbeanSearchLower())
             q = "find homeInvite where home = :home and lower(invitedPlayer) = lower(:invitee)";
         else
             q = "find homeInvite where home = :home and invitedPlayer = :invitee";
-		
-		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
-		query.setParameter("home", home.getId());
-		query.setParameter("invitee", invitee);
-		
-		return query.findUnique();
-	}
 
-	@Override
-	public Set<HomeInvite> findInvitesByHome(Home home) {
-		String q = "find homeInvite where home = :home";
-		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
-		query.setParameter("home", home.getId());
-		
-		return query.findSet();
-	}
+        Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
+        query.setParameter("home", home.getId());
+        query.setParameter("invitee", invitee);
 
-	@Override
-	public Set<HomeInvite> findAllAvailableInvites(String invitee) {
+        return query.findUnique();
+    }
+
+    @Override
+    public Set<HomeInvite> findInvitesByHome(Home home) {
+        String q = "find homeInvite where home = :home";
+        Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
+        query.setParameter("home", home.getId());
+
+        return query.findSet();
+    }
+
+    @Override
+    public Set<HomeInvite> findAllAvailableInvites(String invitee) {
         String q;
-        if( configCore.useEbeanSearchLower() )
+        if (configCore.useEbeanSearchLower())
             q = "find homeInvite where lower(invitedPlayer) = lower(:invitee)";
         else
             q = "find homeInvite where invitedPlayer = :invitee";
 
-		Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
-		query.setParameter("invitee", invitee);
-		
-		return query.findSet();
-	}
+        Query<HomeInvite> query = ebean.createQuery(HomeInvite.class, q);
+        query.setParameter("invitee", invitee);
 
-	@Override
-	public Set<HomeInvite> findAllOpenInvites(String player) {
-		Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
-		
-		// first find all homes for this player
-		Set<? extends Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
-		if( homes == null || homes.size() == 0 )
-			return invites;
+        return query.findSet();
+    }
 
-		// then find all HomeInvites related to any of those homes
-		for(Home home : homes) {
-			Set<HomeInvite> homeInvites = findInvitesByHome(home);
-			if( homeInvites != null )
-				invites.addAll(homeInvites);
-		}
-		
-		return invites;
-	}
+    @Override
+    public Set<HomeInvite> findAllOpenInvites(String player) {
+        Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
 
-	@Override
-	public void saveHomeInvite(HomeInvite homeInvite) {
-		Transaction tx = ebean.beginTransaction();
+        // first find all homes for this player
+        Set<? extends Home> homes = storage.getHomeDAO().findHomesByPlayer(player);
+        if (homes == null || homes.size() == 0)
+            return invites;
+
+        // then find all HomeInvites related to any of those homes
+        for (Home home : homes) {
+            Set<HomeInvite> homeInvites = findInvitesByHome(home);
+            if (homeInvites != null)
+                invites.addAll(homeInvites);
+        }
+
+        return invites;
+    }
+
+    @Override
+    public void saveHomeInvite(HomeInvite homeInvite) {
+        Transaction tx = ebean.beginTransaction();
         ebean.save(homeInvite, tx);
         tx.commit();
-	}
+    }
 
-	@Override
-	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
-		Transaction tx = ebean.beginTransaction();
-		tx.setPersistCascade(false);
-		ebean.delete(homeInvite, tx);
-		tx.commit();
-	}
+    @Override
+    public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
+        Transaction tx = ebean.beginTransaction();
+        tx.setPersistCascade(false);
+        ebean.delete(homeInvite, tx);
+        tx.commit();
+    }
 
-	@Override
-	public Set<HomeInvite> findAllHomeInvites() {
-		return ebean.find(HomeInvite.class).findSet();
-	}
+    @Override
+    public Set<HomeInvite> findAllHomeInvites() {
+        return ebean.find(HomeInvite.class).findSet();
+    }
 
     @Override
     public int purgePlayerData(long purgeTime) {
@@ -165,16 +164,15 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
     @Override
     public int purgeWorldData(final String world) {
         int rowsPurged = 0;
-        
+
         // delete any invites whose home is on the purged world
         Set<HomeInvite> set = findAllHomeInvites();
-        for(HomeInvite hi : set) {
-            if( world.equals(hi.getHome().getWorld()) ) {
+        for (HomeInvite hi : set) {
+            if (world.equals(hi.getHome().getWorld())) {
                 try {
                     deleteHomeInvite(hi);
                     rowsPurged++;
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     log.error("Caught exception while purging homeInvite", e);
                 }
             }
@@ -186,15 +184,14 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
     public int purgePlayer(String playerName) {
         // first delete any homeInvites the player was invited too
         int rowsPurged = util.deleteRows(TABLE, "invited_player", playerName);
-        
+
         // then delete any HomeInvites the player sent out to others
         Set<HomeInvite> set = findAllOpenInvites(playerName);
-        for(HomeInvite hi : set) {
+        for (HomeInvite hi : set) {
             try {
                 deleteHomeInvite(hi);
                 rowsPurged++;
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 log.error("Caught exception while purging homeInvite", e);
             }
         }
@@ -204,8 +201,8 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
     @Override
     public Set<String> getAllPlayerNames() {
         Set<HomeInvite> set = findAllHomeInvites();
-        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
-        for(HomeInvite hi : set) {
+        Set<String> playerNames = new HashSet<String>(set.size() * 3 / 2);
+        for (HomeInvite hi : set) {
             playerNames.add(hi.getInvitedPlayer());
             playerNames.add(hi.getHome().getPlayerName());
         }

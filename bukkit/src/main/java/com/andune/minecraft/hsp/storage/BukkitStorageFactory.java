@@ -26,14 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage;
-
-import java.io.File;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.server.api.Plugin;
@@ -42,9 +37,12 @@ import com.andune.minecraft.hsp.config.ConfigStorage.Type;
 import com.andune.minecraft.hsp.storage.yaml.StorageYaml;
 import com.google.inject.Injector;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.File;
+
 /**
  * @author andune
- *
  */
 @Singleton
 public class BukkitStorageFactory extends BaseStorageFactory implements Initializable {
@@ -54,28 +52,26 @@ public class BukkitStorageFactory extends BaseStorageFactory implements Initiali
     }
 
     @Override
-    public Storage getInstance()
-    {
-        if( storageInstance != null )
+    public Storage getInstance() {
+        if (storageInstance != null)
             return storageInstance;
 
         Type storageType = configStorage.getStorageType();
         log.debug("BukkitStorageFactory.getInstance(), type = {}", storageType);
-        
-        switch(storageType)
-        {
-        case YAML:
-            storageInstance = new StorageYaml(plugin, false, null);
-            break;
-            
-        case YAML_SINGLE_FILE:
-            storageInstance = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
-            break;
-            
-        default:
-            // do nothing, super call below will do any additional storage resolution
+
+        switch (storageType) {
+            case YAML:
+                storageInstance = new StorageYaml(plugin, false, null);
+                break;
+
+            case YAML_SINGLE_FILE:
+                storageInstance = new StorageYaml(plugin, true, new File(plugin.getDataFolder(), "data.yml"));
+                break;
+
+            default:
+                // do nothing, super call below will do any additional storage resolution
         }
-        
+
         final Storage storage = super.getInstance();
         log.debug("BukkitStorageFactory.getInstance() returning {}", storage);
         return storage;

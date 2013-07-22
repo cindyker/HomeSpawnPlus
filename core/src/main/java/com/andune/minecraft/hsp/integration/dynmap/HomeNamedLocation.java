@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
@@ -36,51 +36,50 @@ import com.andune.minecraft.hsp.entity.Home;
 
 /**
  * @author andune
- *
  */
 public class HomeNamedLocation implements NamedLocation {
-	private final Home home;
-	private String name;
-	
-	public HomeNamedLocation(final Home home) {
-		this.home = home;
-	}
+    private final Home home;
+    private String name;
 
-	@Override
-	public Location getLocation() {
-	    return home.getLocation();
-	}
+    public HomeNamedLocation(final Home home) {
+        this.home = home;
+    }
 
-	/** Home "names" on the map are just the player name.
-	 * 
-	 */
-	@Override
-	public String getName() {
-		if( name == null ) {
-			if( home.getName() != null )
-				name = home.getPlayerName() + ":" + home.getName();
-			else
-				name = home.getPlayerName();
-		}
+    @Override
+    public Location getLocation() {
+        return home.getLocation();
+    }
 
-		return name;
-	}
+    /**
+     * Home "names" on the map are just the player name.
+     */
+    @Override
+    public String getName() {
+        if (name == null) {
+            if (home.getName() != null)
+                name = home.getPlayerName() + ":" + home.getName();
+            else
+                name = home.getPlayerName();
+        }
 
-	@Override
-	public String getPlayerName() {
-		return home.getPlayerName();
-	}
-	
-	@Override
-	public boolean isEnabled(ConfigurationSection section) {
-		if( home.isDefaultHome() )
-			return true;
-		if( home.isBedHome() && section.getBoolean("include-bed-home") )
-			return true;
-		if( section.getBoolean("include-named-homes") )
-			return true;
+        return name;
+    }
 
-		// if it hasn't been true yet, then we're not supposed to show it
-		return false;
-	}
+    @Override
+    public String getPlayerName() {
+        return home.getPlayerName();
+    }
+
+    @Override
+    public boolean isEnabled(ConfigurationSection section) {
+        if (home.isDefaultHome())
+            return true;
+        if (home.isBedHome() && section.getBoolean("include-bed-home"))
+            return true;
+        if (section.getBoolean("include-named-homes"))
+            return true;
+
+        // if it hasn't been true yet, then we're not supposed to show it
+        return false;
+    }
 }

@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.Home;
@@ -42,172 +39,174 @@ import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlUpdate;
 import com.avaje.ebean.Transaction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public class HomeDAOEBean implements HomeDAO {
     protected static final String TABLE = "hsp_home";
-    
+
     private final ConfigCore configCore;
     private final EbeanStorageUtil util;
-	private EbeanServer ebean;
-	
-	public HomeDAOEBean(final EbeanServer ebean, final ConfigCore configCore, final EbeanStorageUtil util) {
-		setEbeanServer(ebean);
-		this.configCore = configCore;
-		this.util = util;
-	}
-	
-	public void setEbeanServer(final EbeanServer ebean) {
-		this.ebean = ebean;
-	}
+    private EbeanServer ebean;
 
-	@Override
-	public Home findHomeById(int id) {
-		String q = "find home where id = :id";
-		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
-		query.setParameter("id", id);
-		
-		return query.findUnique();
-	}
+    public HomeDAOEBean(final EbeanServer ebean, final ConfigCore configCore, final EbeanStorageUtil util) {
+        setEbeanServer(ebean);
+        this.configCore = configCore;
+        this.util = util;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Home findDefaultHome(String world, String playerName) {
-	    String q;
-	    if( configCore.useEbeanSearchLower() )
-	        q = "find home where lower(playerName) = lower(:playerName) and world = :world and defaultHome = 1";
-	    else
-            q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
-		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-	}
+    public void setEbeanServer(final EbeanServer ebean) {
+        this.ebean = ebean;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getBedHome(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Home findBedHome(String world, String playerName) {
+    @Override
+    public Home findHomeById(int id) {
+        String q = "find home where id = :id";
+
+        Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+        query.setParameter("id", id);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getDefaultHome(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Home findDefaultHome(String world, String playerName) {
         String q;
-        if( configCore.useEbeanSearchLower() )
+        if (configCore.useEbeanSearchLower())
+            q = "find home where lower(playerName) = lower(:playerName) and world = :world and defaultHome = 1";
+        else
+            q = "find home where playerName = :playerName and world = :world and defaultHome = 1";
+
+        Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+        query.setParameter("playerName", playerName);
+        query.setParameter("world", world);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getBedHome(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Home findBedHome(String world, String playerName) {
+        String q;
+        if (configCore.useEbeanSearchLower())
             q = "find home where lower(playerName) = lower(:playerName) and world = :world and bedHome = 1";
         else
             q = "find home where playerName = :playerName and world = :world and bedHome = 1";
-		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findUnique();
-	}
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getNamedHome(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Home findHomeByNameAndPlayer(String homeName, String playerName) {
+        Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+        query.setParameter("playerName", playerName);
+        query.setParameter("world", world);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getNamedHome(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Home findHomeByNameAndPlayer(String homeName, String playerName) {
         String q;
-        if( configCore.useEbeanSearchLower() )
+        if (configCore.useEbeanSearchLower())
             q = "find home where lower(playerName) = lower(:playerName) and name = :name";
         else
             q = "find home where playerName = :playerName and name = :name";
-		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("name", homeName);
-		
-		return query.findUnique();
-	}
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName) {
+        Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+        query.setParameter("playerName", playerName);
+        query.setParameter("name", homeName);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getHomes(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Set<? extends Home> findHomesByWorldAndPlayer(String world, String playerName) {
         String q;
-        if( configCore.useEbeanSearchLower() )
+        if (configCore.useEbeanSearchLower())
             q = "find home where lower(playerName) = lower(:playerName) and world like :world order by world";
         else
             q = "find home where playerName = :playerName and world like :world order by world";
-		
-		if( world == null || "all".equals(world) || "*".equals(world) )
-			world = "%";
-		
-		Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
-		query.setParameter("playerName", playerName);
-		query.setParameter("world", world);
-		
-		return query.findSet();
-	}
 
-	public Set<? extends Home> findHomesByPlayer(String playerName) {
-		return findHomesByWorldAndPlayer(null, playerName);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getAllHomes()
-	 */
-	@Override
-	public Set<? extends Home> findAllHomes() {
-		return ebean.find(HomeImpl.class).findSet();
-	}
+        if (world == null || "all".equals(world) || "*".equals(world))
+            world = "%";
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#writeHome(com.andune.minecraft.hsp.entity.Home)
-	 */
-	@Override
-	public void saveHome(final Home homeArg) {
-	    HomeImpl home = (HomeImpl) homeArg;
+        Query<HomeImpl> query = ebean.createQuery(HomeImpl.class, q);
+        query.setParameter("playerName", playerName);
+        query.setParameter("world", world);
 
-		final int homeId = home.getId();
-		
-		Transaction tx = ebean.beginTransaction();
-		// We should only have one "BedHome" per player per world. So if this update is setting
-		// BedHome to true, then we make sure to clear out all others for this player/world combo
-		if( home.isBedHome() ) {
-			SqlUpdate update = ebean.createSqlUpdate("update "+TABLE+" set bed_home=0"
-					+" where player_name = :playerName and world = :world and id != :id");
-			update.setParameter("playerName", home.getPlayerName());
-			update.setParameter("world", home.getWorld());
-			update.setParameter("id", homeId);
-			update.execute();
-		}
-		
-		// We should only have one defaultHome per player per world. So if this update is setting
-		// defaultHome to true, then we make sure to clear out all others for this player/world combo
-		if( home.isDefaultHome() ) {
-			SqlUpdate update = ebean.createSqlUpdate("update "+TABLE+" set default_home=0"
-					+" where player_name = :playerName and world = :world and id != :id");
-			update.setParameter("playerName", home.getPlayerName());
-			update.setParameter("world", home.getWorld());
-			update.setParameter("id", homeId);
-			update.execute();
-		}
-		tx.commit();
-		
-		ebean.save(home);
-		
-		// clean up any related home invites as well
-		tx = ebean.beginTransaction();
-		SqlUpdate update = ebean.createSqlUpdate("delete from hsp_homeinvite"
-				+" where home_id = :id");
-		update.setParameter("id", homeId);
-		update.execute();
-		tx.commit();
-	}
+        return query.findSet();
+    }
 
-	@Override
-	public void deleteHome(Home home) {
-		ebean.delete((HomeImpl) home);
-	}
+    public Set<? extends Home> findHomesByPlayer(String playerName) {
+        return findHomesByWorldAndPlayer(null, playerName);
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#getAllHomes()
+     */
+    @Override
+    public Set<? extends Home> findAllHomes() {
+        return ebean.find(HomeImpl.class).findSet();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.HomeDAO#writeHome(com.andune.minecraft.hsp.entity.Home)
+     */
+    @Override
+    public void saveHome(final Home homeArg) {
+        HomeImpl home = (HomeImpl) homeArg;
+
+        final int homeId = home.getId();
+
+        Transaction tx = ebean.beginTransaction();
+        // We should only have one "BedHome" per player per world. So if this update is setting
+        // BedHome to true, then we make sure to clear out all others for this player/world combo
+        if (home.isBedHome()) {
+            SqlUpdate update = ebean.createSqlUpdate("update " + TABLE + " set bed_home=0"
+                    + " where player_name = :playerName and world = :world and id != :id");
+            update.setParameter("playerName", home.getPlayerName());
+            update.setParameter("world", home.getWorld());
+            update.setParameter("id", homeId);
+            update.execute();
+        }
+
+        // We should only have one defaultHome per player per world. So if this update is setting
+        // defaultHome to true, then we make sure to clear out all others for this player/world combo
+        if (home.isDefaultHome()) {
+            SqlUpdate update = ebean.createSqlUpdate("update " + TABLE + " set default_home=0"
+                    + " where player_name = :playerName and world = :world and id != :id");
+            update.setParameter("playerName", home.getPlayerName());
+            update.setParameter("world", home.getWorld());
+            update.setParameter("id", homeId);
+            update.execute();
+        }
+        tx.commit();
+
+        ebean.save(home);
+
+        // clean up any related home invites as well
+        tx = ebean.beginTransaction();
+        SqlUpdate update = ebean.createSqlUpdate("delete from hsp_homeinvite"
+                + " where home_id = :id");
+        update.setParameter("id", homeId);
+        update.execute();
+        tx.commit();
+    }
+
+    @Override
+    public void deleteHome(Home home) {
+        ebean.delete((HomeImpl) home);
+    }
 
     @Override
     public int purgePlayerData(long purgeTime) {
@@ -227,8 +226,8 @@ public class HomeDAOEBean implements HomeDAO {
     @Override
     public Set<String> getAllPlayerNames() {
         Set<HomeImpl> set = ebean.find(HomeImpl.class).select("playerName").findSet();
-        Set<String> playerNames = new HashSet<String>(set.size()*3/2);
-        for(HomeImpl home : set) {
+        Set<String> playerNames = new HashSet<String>(set.size() * 3 / 2);
+        for (HomeImpl home : set) {
             playerNames.add(home.getPlayerName());
         }
         return playerNames;

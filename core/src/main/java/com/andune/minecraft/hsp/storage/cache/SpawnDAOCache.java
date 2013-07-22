@@ -26,15 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.cache;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.commonlib.Logger;
@@ -44,10 +38,14 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
- *
  * @author andune
- *
  */
 public class SpawnDAOCache implements SpawnDAO {
     private final Logger log = LoggerFactory.getLogger(SpawnDAOCache.class);
@@ -61,7 +59,7 @@ public class SpawnDAOCache implements SpawnDAO {
     public SpawnDAOCache(final SpawnDAO backingStore, final AsyncWriter asyncWriter) {
         this.backingDAO = backingStore;
         this.asyncWriter = asyncWriter;
-        
+
         cacheById = new ConcurrentHashMap<Integer, Spawn>();
         cacheByName = new HashMap<String, Spawn>();
         cacheByWorldAndGroup = new HashMap<String, Map<String, Spawn>>();
@@ -82,46 +80,46 @@ public class SpawnDAOCache implements SpawnDAO {
     @Override
     public Spawn findSpawnByWorldAndGroup(String world, String group) {
         Map<String, Spawn> worldMap = cacheByWorldAndGroup.get(world);
-        if( worldMap == null ) {
+        if (worldMap == null) {
             worldMap = new HashMap<String, Spawn>();
             cacheByWorldAndGroup.put(world, worldMap);
         }
-        
+
         Spawn spawn = worldMap.get(group);
-        if( spawn == null ) {
+        if (spawn == null) {
             spawn = backingDAO.findSpawnByWorldAndGroup(world, group);
-            if( spawn != null )
+            if (spawn != null)
                 worldMap.put(group, spawn);
         }
-        
+
         return spawn;
     }
 
     @Override
     public Spawn findSpawnByName(String name) {
         Spawn spawn = cacheByName.get(name);
-        
+
         // if not cached, then query the backing store
-        if( spawn == null ) {
+        if (spawn == null) {
             spawn = backingDAO.findSpawnByName(name);
-            if( spawn != null )
+            if (spawn != null)
                 cacheByName.put(name, spawn);
         }
-        
+
         return spawn;
     }
 
-   @Override
+    @Override
     public Spawn findSpawnById(int id) {
         Spawn spawn = cacheById.get(id);
-        
+
         // if not cached, then query the backing store
-        if( spawn == null ) {
+        if (spawn == null) {
             spawn = backingDAO.findSpawnById(id);
-            if( spawn != null )
+            if (spawn != null)
                 cacheById.put(id, spawn);
         }
-        
+
         return spawn;
     }
 
@@ -137,19 +135,19 @@ public class SpawnDAOCache implements SpawnDAO {
     public Set<String> getSpawnDefinedGroups() {
         Set<String> groups = new HashSet<String>();
         Set<? extends Spawn> spawns = findAllSpawns();
-        
-        for(Spawn spawn : spawns) {
+
+        for (Spawn spawn : spawns) {
             String group = spawn.getGroup();
-            if( group != null )
+            if (group != null)
                 groups.add(group);
         }
-        
+
         return groups;
     }
 
     @Override
     public Set<? extends Spawn> findAllSpawns() {
-        if( allObjects == null )
+        if (allObjects == null)
             allObjects = backingDAO.findAllSpawns();
 
         return allObjects;
@@ -160,19 +158,18 @@ public class SpawnDAOCache implements SpawnDAO {
         asyncWriter.push(new AsyncCommitter(spawn, false));
 
         try {
-            if( spawn.getName() != null )
+            if (spawn.getName() != null)
                 cacheByName.put(spawn.getName(), spawn);
-            if( spawn.getGroup() != null ) {
+            if (spawn.getGroup() != null) {
                 Map<String, Spawn> worldMap = cacheByWorldAndGroup.get(spawn.getWorld());
-                if( worldMap == null ) {
+                if (worldMap == null) {
                     worldMap = new HashMap<String, Spawn>();
                     cacheByWorldAndGroup.put(spawn.getWorld(), worldMap);
                 }
-                
+
                 worldMap.put(spawn.getGroup(), spawn);
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.warn("Caught exception in saveSpawn. Please report this issue to the developer.", e);
             purgeCache();   // safety mechanism, if we have a failure, we purge the cache
         }
@@ -187,10 +184,9 @@ public class SpawnDAOCache implements SpawnDAO {
             cacheById.remove(spawn.getId());
             cacheByName.remove(spawn.getName());
             Map<String, Spawn> worldMap = cacheByWorldAndGroup.get(spawn.getWorld());
-            if( worldMap != null )
+            if (worldMap != null)
                 worldMap.remove(spawn.getGroup());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.warn("Caught exception in deleteSpawn. Please report this issue to the developer.", e);
             purgeCache();   // safety mechanism, if we have a failure, we purge the cache
         }
@@ -199,13 +195,14 @@ public class SpawnDAOCache implements SpawnDAO {
     private class AsyncCommitter implements EntityCommitter {
         private final Spawn spawn;
         private final boolean isDelete;
+
         public AsyncCommitter(Spawn spawn, boolean isDelete) {
             this.spawn = spawn;
             this.isDelete = isDelete;
         }
 
         public void commit() throws Exception {
-            if( isDelete )
+            if (isDelete)
                 backingDAO.deleteSpawn(spawn);
             else {
                 backingDAO.saveSpawn(spawn);
@@ -221,5 +218,7 @@ public class SpawnDAOCache implements SpawnDAO {
      * be sure, we throw an exception that should result in a bug report if they
      * are ever mistakenly called somehow.
      */
-    public int purgeWorldData(String world) { throw new FeatureNotImplemented(); }
+    public int purgeWorldData(String world) {
+        throw new FeatureNotImplemented();
+    }
 }

@@ -26,144 +26,136 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.cache;
 
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
-import com.andune.minecraft.hsp.storage.dao.HomeDAO;
-import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerLastLocationDAO;
-import com.andune.minecraft.hsp.storage.dao.PlayerSpawnDAO;
-import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.storage.dao.VersionDAO;
+import com.andune.minecraft.hsp.storage.dao.*;
 
 /**
  * Not all DAOs are cached, which is simply a tradeoff between the time it takes
  * to code a cached DAO and the performance gains by doing so. When no cached
  * version of a DAO exists, we just return the backing store's uncached DAO
  * instead.
- * 
+ *
  * @author andune
- * 
  */
 public class StorageCache implements Storage {
-	private final Storage backingStore;
-	private final PlayerLastLocationDAOCache playerLastLocationDAO;
-	private final SpawnDAOCache spawnDAO;
+    private final Storage backingStore;
+    private final PlayerLastLocationDAOCache playerLastLocationDAO;
+    private final SpawnDAOCache spawnDAO;
     private final WatchDog watchDog;
     private final AsyncWriter writer;
-	
-	public StorageCache(final Storage backingStore) {
-		this.backingStore = backingStore;
-		
+
+    public StorageCache(final Storage backingStore) {
+        this.backingStore = backingStore;
+
         watchDog = new WatchDog();
         writer = new AsyncWriter(watchDog);
-		playerLastLocationDAO = new PlayerLastLocationDAOCache(backingStore.getPlayerLastLocationDAO(), writer);
-		spawnDAO = new SpawnDAOCache(backingStore.getSpawnDAO(), writer);
-	}
+        playerLastLocationDAO = new PlayerLastLocationDAOCache(backingStore.getPlayerLastLocationDAO(), writer);
+        spawnDAO = new SpawnDAOCache(backingStore.getSpawnDAO(), writer);
+    }
 
-	@Override
-	public void initializeStorage() throws StorageException {
-		backingStore.initializeStorage();
-		watchDog.start(writer);
-	}
-	
     @Override
-	public void shutdownStorage() {
-	    watchDog.shutdown();
-	    writer.stop();
-	    writer.flush();
-	}
+    public void initializeStorage() throws StorageException {
+        backingStore.initializeStorage();
+        watchDog.start(writer);
+    }
 
-	@Override
-	public PlayerLastLocationDAO getPlayerLastLocationDAO() {
-		return playerLastLocationDAO;
-	}
+    @Override
+    public void shutdownStorage() {
+        watchDog.shutdown();
+        writer.stop();
+        writer.flush();
+    }
 
-	@Override
-	public HomeDAO getHomeDAO() {
-		return backingStore.getHomeDAO();
-	}
+    @Override
+    public PlayerLastLocationDAO getPlayerLastLocationDAO() {
+        return playerLastLocationDAO;
+    }
 
-	@Override
-	public HomeInviteDAO getHomeInviteDAO() {
-		return backingStore.getHomeInviteDAO();
-	}
+    @Override
+    public HomeDAO getHomeDAO() {
+        return backingStore.getHomeDAO();
+    }
 
-	@Override
-	public SpawnDAO getSpawnDAO() {
-		return spawnDAO;
-	}
+    @Override
+    public HomeInviteDAO getHomeInviteDAO() {
+        return backingStore.getHomeInviteDAO();
+    }
 
-	@Override
-	public PlayerDAO getPlayerDAO() {
-		return backingStore.getPlayerDAO();
-	}
+    @Override
+    public SpawnDAO getSpawnDAO() {
+        return spawnDAO;
+    }
 
-	@Override
-	public VersionDAO getVersionDAO() {
-		return backingStore.getVersionDAO();
-	}
+    @Override
+    public PlayerDAO getPlayerDAO() {
+        return backingStore.getPlayerDAO();
+    }
 
-	@Override
-	public PlayerSpawnDAO getPlayerSpawnDAO() {
-		return backingStore.getPlayerSpawnDAO();
-	}
+    @Override
+    public VersionDAO getVersionDAO() {
+        return backingStore.getVersionDAO();
+    }
 
-	@Override
-	public void purgeCache() {
-		playerLastLocationDAO.purgeCache();
-		spawnDAO.purgeCache();
-		backingStore.purgeCache();
-	}
+    @Override
+    public PlayerSpawnDAO getPlayerSpawnDAO() {
+        return backingStore.getPlayerSpawnDAO();
+    }
 
-	@Override
-	public int purgePlayerData(long purgeTime) {
-		int ret = backingStore.purgePlayerData(purgeTime);
-		purgeCache();
-		return ret;
-	}
+    @Override
+    public void purgeCache() {
+        playerLastLocationDAO.purgeCache();
+        spawnDAO.purgeCache();
+        backingStore.purgeCache();
+    }
 
-	@Override
-	public int purgeWorldData(String world) {
-		int ret = backingStore.purgeWorldData(world);
-		purgeCache();
-		return ret;
-	}
+    @Override
+    public int purgePlayerData(long purgeTime) {
+        int ret = backingStore.purgePlayerData(purgeTime);
+        purgeCache();
+        return ret;
+    }
 
-	@Override
-	public void deleteAllData() throws StorageException {
-		backingStore.deleteAllData();
-		purgeCache();
-	}
+    @Override
+    public int purgeWorldData(String world) {
+        int ret = backingStore.purgeWorldData(world);
+        purgeCache();
+        return ret;
+    }
 
-	/**
-	 * Deferred writes (only used on backup/restore) don't actually change how
-	 * we manage any caches, so we just pass the hint on to the backing store so
-	 * it can respond appropriately.
-	 * 
-	 * @param deferred
-	 */
-	@Override
-	public void setDeferredWrites(boolean deferred) {
-		backingStore.setDeferredWrites(deferred);
-	}
+    @Override
+    public void deleteAllData() throws StorageException {
+        backingStore.deleteAllData();
+        purgeCache();
+    }
 
-	/**
-	 * 
-	 * @throws StorageException
-	 */
-	@Override
-	public void flushAll() throws StorageException {
-		backingStore.flushAll();
-		writer.flush();
-	}
+    /**
+     * Deferred writes (only used on backup/restore) don't actually change how
+     * we manage any caches, so we just pass the hint on to the backing store so
+     * it can respond appropriately.
+     *
+     * @param deferred
+     */
+    @Override
+    public void setDeferredWrites(boolean deferred) {
+        backingStore.setDeferredWrites(deferred);
+    }
 
-	@Override
-	public String getImplName() {
-		return "CACHED_" + backingStore.getImplName();
-	}
+    /**
+     * @throws StorageException
+     */
+    @Override
+    public void flushAll() throws StorageException {
+        backingStore.flushAll();
+        writer.flush();
+    }
+
+    @Override
+    public String getImplName() {
+        return "CACHED_" + backingStore.getImplName();
+    }
 }

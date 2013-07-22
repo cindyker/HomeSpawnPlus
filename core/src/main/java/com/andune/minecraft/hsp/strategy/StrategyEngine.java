@@ -29,8 +29,6 @@ package com.andune.minecraft.hsp.strategy;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
 
 /**
  * This interface was added primarily to prevent a circular reference in
@@ -40,15 +38,15 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
  * use for that at this time given HSP's scope and the current Engine that
  * fulfills those needs. Thus Guice just binds this interface to the only
  * implementation that exists: StrategyEngineImpl
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface StrategyEngine {
 
-    /** Convenience method for routines only interested in an output location (as
+    /**
+     * Convenience method for routines only interested in an output location (as
      * opposed to other result details).
-     * 
+     *
      * @param event
      * @param player
      * @return
@@ -61,10 +59,10 @@ public interface StrategyEngine {
 
     public StrategyResult getStrategyResult(EventType event, Player player, String... args);
 
-    /** Given a StrategyContext, evaluate the strategies for that context.
-     * 
+    /**
+     * Given a StrategyContext, evaluate the strategies for that context.
+     *
      * @param context
-     * 
      * @return API contract requires the result is never null
      */
     public StrategyResult evaluateStrategies(StrategyContext context);

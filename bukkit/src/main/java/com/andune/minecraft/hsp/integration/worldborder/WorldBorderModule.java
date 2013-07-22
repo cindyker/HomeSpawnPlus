@@ -26,19 +26,17 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldborder;
 
-import javax.inject.Inject;
-
+import com.andune.minecraft.commonlib.Initializable;
 import org.bukkit.plugin.Plugin;
 
-import com.andune.minecraft.commonlib.Initializable;
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 public class WorldBorderModule implements WorldBorder, Initializable {
     private WorldBorderIntegration worldBorder;
@@ -67,7 +65,7 @@ public class WorldBorderModule implements WorldBorder, Initializable {
     public boolean isEnabled() {
         return worldBorder.isEnabled();
     }
-    
+
     @Override
     public String getVersion() {
         return worldBorder.getVersion();

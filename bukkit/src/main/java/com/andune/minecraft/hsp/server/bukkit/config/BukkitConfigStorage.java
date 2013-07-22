@@ -26,17 +26,16 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.bukkit.config;
-
-import javax.inject.Singleton;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.andune.minecraft.hsp.config.ConfigOptions;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.storage.BaseStorageFactory;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import javax.inject.Singleton;
 
 /**
  * While storage is technically part of the core config, it is broken out
@@ -44,19 +43,18 @@ import com.andune.minecraft.hsp.storage.BaseStorageFactory;
  * be injected into several objects that would cause circular injection issues.
  * So we have a separate config that can make a decision about what storage
  * system to inject before any other configs are even loaded.
- * 
+ *
  * @author andune
- * 
  */
 @Singleton
-@ConfigOptions(fileName="core.yml", basePath="core")
+@ConfigOptions(fileName = "core.yml", basePath = "core")
 public class BukkitConfigStorage implements ConfigStorage {
     private final YamlConfiguration yaml;
 
     public BukkitConfigStorage(YamlConfiguration yaml) {
         this.yaml = yaml;
     }
-    
+
     @Override
     public Type getStorageType() {
         return BaseStorageFactory.getType(yaml.getString("core.storage"));

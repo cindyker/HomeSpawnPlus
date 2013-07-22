@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
@@ -36,48 +36,47 @@ import com.andune.minecraft.hsp.entity.Spawn;
 
 /**
  * @author andune
- *
  */
 public class SpawnNamedLocation implements NamedLocation {
-	private final Spawn spawn;
-	private String name = null;
-	
-	public SpawnNamedLocation(final Spawn spawn) {
-		this.spawn = spawn;
-	}
+    private final Spawn spawn;
+    private String name = null;
 
-	@Override
-	public Location getLocation() {
+    public SpawnNamedLocation(final Spawn spawn) {
+        this.spawn = spawn;
+    }
+
+    @Override
+    public Location getLocation() {
         return spawn.getLocation();
-	}
+    }
 
-	@Override
-	public String getName() {
-		if( name == null ) {
-			name = spawn.getName();
-			if( name == null ) {
-				name = spawn.getLocation().getWorld().getName() + " spawn";
-			}
-		}
+    @Override
+    public String getName() {
+        if (name == null) {
+            name = spawn.getName();
+            if (name == null) {
+                name = spawn.getLocation().getWorld().getName() + " spawn";
+            }
+        }
 
-		return name;
-	}
+        return name;
+    }
 
-	@Override
-	public String getPlayerName() {
-		return null;
-	}
-	
-	@Override
-	public boolean isEnabled(ConfigurationSection section) {
-        if( spawn.isDefaultSpawn() )
+    @Override
+    public String getPlayerName() {
+        return null;
+    }
+
+    @Override
+    public boolean isEnabled(ConfigurationSection section) {
+        if (spawn.isDefaultSpawn())
             return true;
 
-	    // named spawns are only shown if asked to do so
-        if( section.getBoolean("include-named-spawns") )
+        // named spawns are only shown if asked to do so
+        if (section.getBoolean("include-named-spawns"))
             return true;
 
         // if it hasn't been true yet, then we're not supposed to show it
         return false;
-	}
+    }
 }

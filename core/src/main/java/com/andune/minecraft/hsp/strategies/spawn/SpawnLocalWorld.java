@@ -26,36 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
-import javax.inject.Inject;
-
-
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
-import com.andune.minecraft.hsp.strategy.BaseStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import com.andune.minecraft.hsp.strategy.*;
+
+import javax.inject.Inject;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class SpawnLocalWorld extends BaseStrategy {
-    @Inject private SpawnDAO spawnDAO;
+    @Inject
+    private SpawnDAO spawnDAO;
 
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		return new StrategyResultImpl( spawnDAO.findSpawnByWorld(context.getPlayer().getWorld().getName()) );
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        return new StrategyResultImpl(spawnDAO.findSpawnByWorld(context.getPlayer().getWorld().getName()));
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "spawnLocalWorld";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "spawnLocalWorld";
+    }
 
 }

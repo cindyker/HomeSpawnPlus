@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -41,85 +38,87 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.util.HomeUtil;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="other",
-    aliases={"o"}, help="Go to another player's home")
+@UberCommand(uberCommand = "home", subCommand = "other",
+        aliases = {"o"}, help = "Go to another player's home")
 public class HomeOther extends BaseCommand {
-    @Inject private Teleport teleport;
-    @Inject private HomeUtil homeUtil;
-    
+    @Inject
+    private Teleport teleport;
+    @Inject
+    private HomeUtil homeUtil;
+
 //	private static final String OTHER_HOME_PERMISSION = HomeSpawnPlus.BASE_PERMISSION_NODE + ".command.home.others";
 
-	@Override
-	public String[] getCommandAliases() { return new String[] {"homeo"}; }
-	
-	@Override
-	public String getUsage() {
-		return	server.getLocalizedMessage(HSPMessages.CMD_HOMEOTHER_USAGE);
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"homeo"};
+    }
 
-	@Override
-	public boolean execute(Player p, String[] args) {
-		if( args.length < 1 ) {
-			return false;
-		}
-		
-		String playerName = null;
-		String worldName = null;
-		String homeName = null;
-		
-		// try player name best match
-		final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
-		if( otherPlayer != null )
-			playerName = otherPlayer.getName();
-		else
-			playerName = args[0];
-		
-		for(int i=1; i < args.length; i++) {
-			if( args[i].startsWith("w:") ) {
-				worldName = args[i].substring(2);
-			}
-			else {
-				if( homeName != null ) {
-					server.sendLocalizedMessage(p, HSPMessages.TOO_MANY_ARGUMENTS);
-					return true;
-				}
-				homeName = args[i];
-			}
-		}
-		
-		if( worldName == null )
-			worldName = p.getWorld().getName();
-		
-		com.andune.minecraft.hsp.entity.Home home;
-		if( homeName != null ) {
-			home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
-		}
-		else {
-			home = homeUtil.getDefaultHome(playerName, worldName);
-		}
-		
-		// didn't find an exact match?  try a best guess match
-		if( home == null )
-			home = homeUtil.getBestMatchHome(playerName, worldName);
-		
-		if( home != null ) {
-			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEOTHER_TELEPORTING,
-					"home", home.getName(), "player", home.getPlayerName(), "world", home.getWorld());
-			if( applyCost(p) )
-	    		teleport.teleport(p, home.getLocation(), null);
-		}
-		else if( homeName != null )
-			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
-					"home", homeName, "player", playerName);
-		else
-			server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
-					"player", playerName, "world", worldName);
-		
-		return true;
-	}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_HOMEOTHER_USAGE);
+    }
+
+    @Override
+    public boolean execute(Player p, String[] args) {
+        if (args.length < 1) {
+            return false;
+        }
+
+        String playerName = null;
+        String worldName = null;
+        String homeName = null;
+
+        // try player name best match
+        final OfflinePlayer otherPlayer = server.getBestMatchPlayer(args[0]);
+        if (otherPlayer != null)
+            playerName = otherPlayer.getName();
+        else
+            playerName = args[0];
+
+        for (int i = 1; i < args.length; i++) {
+            if (args[i].startsWith("w:")) {
+                worldName = args[i].substring(2);
+            } else {
+                if (homeName != null) {
+                    server.sendLocalizedMessage(p, HSPMessages.TOO_MANY_ARGUMENTS);
+                    return true;
+                }
+                homeName = args[i];
+            }
+        }
+
+        if (worldName == null)
+            worldName = p.getWorld().getName();
+
+        com.andune.minecraft.hsp.entity.Home home;
+        if (homeName != null) {
+            home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, playerName);
+        } else {
+            home = homeUtil.getDefaultHome(playerName, worldName);
+        }
+
+        // didn't find an exact match?  try a best guess match
+        if (home == null)
+            home = homeUtil.getBestMatchHome(playerName, worldName);
+
+        if (home != null) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEOTHER_TELEPORTING,
+                    "home", home.getName(), "player", home.getPlayerName(), "world", home.getWorld());
+            if (applyCost(p))
+                teleport.teleport(p, home.getLocation(), null);
+        } else if (homeName != null)
+            server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_HOME_FOUND,
+                    "home", homeName, "player", playerName);
+        else
+            server.sendLocalizedMessage(p, HSPMessages.CMD_HOMEDELETEOTHER_NO_DEFAULT_HOME_FOUND,
+                    "player", playerName, "world", worldName);
+
+        return true;
+    }
 
 }

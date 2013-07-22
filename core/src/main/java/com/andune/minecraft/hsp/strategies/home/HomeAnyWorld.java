@@ -26,65 +26,57 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
 
-import java.util.Set;
-
-
 import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.strategy.HomeStrategy;
-import com.andune.minecraft.hsp.strategy.NoArgStrategy;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
+import com.andune.minecraft.hsp.strategy.*;
+
+import java.util.Set;
 
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class HomeAnyWorld extends HomeStrategy {
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		// get the Set of homes for this player for ALL worlds
-	    Set<? extends Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
-		log.debug("HomeAnyWorld: homes = {}", homes);
-		
-		Home home = null;
-		
-		if( homes != null && homes.size() > 0 ) {
-			for(Home h: homes) {
-				// skip this home if MODE_HOME_REQUIRES_BED is set and no bed is nearby
-				if( context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(h) ) {
-					logVerbose(" Home ",h," skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
-					continue;
-				}
-				
-				// in "normal" or "any" mode, we just grab the first home we find
-				if( context.isDefaultModeEnabled() ||
-						context.isModeEnabled(StrategyMode.MODE_HOME_ANY) ) {
-					home = h;
-					break;
-				}
-				else if( context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) && h.isBedHome() ) {
-					home = h;
-					break;
-				}
-				else if( context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && h.isDefaultHome() ) {
-					home = h;
-					break;
-				}
-			}
-		}
-		
-		return resultFactory.create(home);
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        // get the Set of homes for this player for ALL worlds
+        Set<? extends Home> homes = homeDAO.findHomesByPlayer(context.getPlayer().getName());
+        log.debug("HomeAnyWorld: homes = {}", homes);
 
-	@Override
-	public String getStrategyConfigName() {
-		return "homeAnyWorld";
-	}
+        Home home = null;
+
+        if (homes != null && homes.size() > 0) {
+            for (Home h : homes) {
+                // skip this home if MODE_HOME_REQUIRES_BED is set and no bed is nearby
+                if (context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED) && !isBedNearby(h)) {
+                    logVerbose(" Home ", h, " skipped because MODE_HOME_REQUIRES_BED is true and no bed is nearby the home location");
+                    continue;
+                }
+
+                // in "normal" or "any" mode, we just grab the first home we find
+                if (context.isDefaultModeEnabled() ||
+                        context.isModeEnabled(StrategyMode.MODE_HOME_ANY)) {
+                    home = h;
+                    break;
+                } else if (context.isModeEnabled(StrategyMode.MODE_HOME_BED_ONLY) && h.isBedHome()) {
+                    home = h;
+                    break;
+                } else if (context.isModeEnabled(StrategyMode.MODE_HOME_DEFAULT_ONLY) && h.isDefaultHome()) {
+                    home = h;
+                    break;
+                }
+            }
+        }
+
+        return resultFactory.create(home);
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "homeAnyWorld";
+    }
 
 }

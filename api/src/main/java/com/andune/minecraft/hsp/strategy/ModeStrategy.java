@@ -29,8 +29,8 @@ package com.andune.minecraft.hsp.strategy;
 
 public interface ModeStrategy extends Strategy {
 
-	public abstract StrategyMode getMode();
+    public abstract StrategyMode getMode();
 
-	public abstract boolean isAdditive();
+    public abstract boolean isAdditive();
 
 }

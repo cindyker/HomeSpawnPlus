@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.dao;
 
@@ -34,12 +34,12 @@ import com.andune.minecraft.hsp.entity.Version;
 
 /**
  * @author andune
- *
  */
 public interface VersionDAO {
-	/** There is only a single version object, this method will return it.
-	 * 
-	 * @return
-	 */
-	Version getVersionObject();
+    /**
+     * There is only a single version object, this method will return it.
+     *
+     * @return
+     */
+    Version getVersionObject();
 }

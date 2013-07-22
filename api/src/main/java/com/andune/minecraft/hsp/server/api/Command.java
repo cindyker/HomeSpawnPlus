@@ -26,96 +26,98 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.api;
-
-import java.util.Map;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.Player;
 
+import java.util.Map;
+
 
 /**
  * @author andune
- *
  */
 public interface Command {
 
     /**
      * Execute this command.
-     * 
+     *
      * @param sender the command sender (can be Console or Player)
-     * @param cmd the command that caused this execute to be invoked. If this
-     * command has aliases, this might be different than the command name.
-     * @param args the arguments that were passed to the command
-     * 
+     * @param cmd    the command that caused this execute to be invoked. If this
+     *               command has aliases, this might be different than the command name.
+     * @param args   the arguments that were passed to the command
      * @return true if the command executed successfully, false if command execution should
-     * continue looking for another command.
+     *         continue looking for another command.
      */
-	boolean execute(CommandSender sender, String cmd, String[] args);
+    boolean execute(CommandSender sender, String cmd, String[] args);
 
-	/** If the command allows it's name to be set by external configuration, it
-	 * should implement this call to allow it's name to be changed.
-	 * 
-	 * @param name
-	 */
-	void setCommandName(String name);
-	
-	/** Return the name of the command.  Used in cooldown and permission checks as well as
-	 * for matching the command the player types in.
-	 * 
-	 * @return
-	 */
-	String getCommandName();
-	
-	/** Return any aliases for this command.  Can be null.
-	 * 
-	 * @return
-	 */
-	String[] getCommandAliases();
+    /**
+     * If the command allows it's name to be set by external configuration, it
+     * should implement this call to allow it's name to be changed.
+     *
+     * @param name
+     */
+    void setCommandName(String name);
 
-	/** Commands can be disabled by configuration, this method allows them to declare
-	 * themselves enabled or disabled.
-	 * 
-	 * @return
-	 */
+    /**
+     * Return the name of the command.  Used in cooldown and permission checks as well as
+     * for matching the command the player types in.
+     *
+     * @return
+     */
+    String getCommandName();
+
+    /**
+     * Return any aliases for this command.  Can be null.
+     *
+     * @return
+     */
+    String[] getCommandAliases();
+
+    /** Commands can be disabled by configuration, this method allows them to declare
+     * themselves enabled or disabled.
+     *
+     * @return
+     */
 //	boolean isEnabled();
-	
+
 //	void setPlugin(Plugin plugin);
-	
-	/** If there is a custom permission node for this command, it should be
-	 * returned here. If this returns null, the default command permission
-	 * will be used.
-	 * 
-	 * @return
-	 */
-	String getCommandPermissionNode();
-	
-	/** If this command takes any parameters, it can use this method to receive them.
-	 * 
-	 * @param params
-	 */
-	void setCommandParameters(Map<String, Object> params);
-	
-	/** The usage string, which will be passed through to Bukkit PluginCommand so
-	 * can use the Bukkit convention of <command> and newlines.
-	 * 
-	 * @return
-	 */
-	String getUsage();
-	
+
+    /**
+     * If there is a custom permission node for this command, it should be
+     * returned here. If this returns null, the default command permission
+     * will be used.
+     *
+     * @return
+     */
+    String getCommandPermissionNode();
+
+    /**
+     * If this command takes any parameters, it can use this method to receive them.
+     *
+     * @param params
+     */
+    void setCommandParameters(Map<String, Object> params);
+
+    /**
+     * The usage string, which will be passed through to Bukkit PluginCommand so
+     * can use the Bukkit convention of <command> and newlines.
+     *
+     * @return
+     */
+    String getUsage();
+
     /**
      * Check if the player has permission to run this command. If they don't
      * have permission, optionally print them a message saying so and return
      * false. This should also take into account custom command permissions
      * that might have been defined by the admin.
-     * 
-     * @param p
-     *            the player to check
-     * @param displayMessage
-     *            true if a message should be displayed to the player if they
-     *            don't have permission
+     *
+     * @param p              the player to check
+     * @param displayMessage true if a message should be displayed to the player if they
+     *                       don't have permission
      * @return true if the player has permission, false if not
      */
     boolean hasPermission(Player p, boolean displayMessage);

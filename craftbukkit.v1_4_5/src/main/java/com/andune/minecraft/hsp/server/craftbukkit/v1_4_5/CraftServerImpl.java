@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.craftbukkit.v1_4_5;
 
@@ -37,7 +37,6 @@ import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 
 /**
  * @author andune
- *
  */
 public class CraftServerImpl implements com.andune.minecraft.hsp.server.craftbukkit.CraftServer {
     /* (non-Javadoc)

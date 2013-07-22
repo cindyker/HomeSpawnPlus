@@ -26,9 +26,14 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.convert;
+
+import com.andune.minecraft.commonlib.server.api.*;
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.storage.StorageException;
+import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 import java.io.File;
 import java.util.HashMap;
@@ -36,117 +41,105 @@ import java.util.Map;
 import java.util.Set;
 
 
-import com.andune.minecraft.commonlib.server.api.ConfigurationSection;
-import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.commonlib.server.api.OfflinePlayer;
-import com.andune.minecraft.commonlib.server.api.World;
-import com.andune.minecraft.commonlib.server.api.YamlFile;
-import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.storage.StorageException;
-import com.andune.minecraft.hsp.storage.dao.HomeDAO;
-
-
-/** Class to process Essentials 2.9 data and convert it into our database.
- * 
- * @author andune
+/**
+ * Class to process Essentials 2.9 data and convert it into our database.
  *
+ * @author andune
  */
-public class Essentials29 extends BaseConverter
-{
-    final private Map<String, String> offlinePlayers = new HashMap<String,String>();
+public class Essentials29 extends BaseConverter {
+    final private Map<String, String> offlinePlayers = new HashMap<String, String>();
 
     @Override
     public String getConverterName() {
         return "Essentials 2.9";
     }
-	
+
     @Override
-	public int convert() throws Exception {
-		File folder = plugin.getDataFolder();
-		String parent = folder.getParent();
-		File essentialsUserData = new File(parent + "/Essentials/userdata");
-		
-		if( !essentialsUserData.isDirectory() ) {
-			log.warn("No essentials user directory found, skipping Home import");
-			return 0;
-		}
-		
-		loadOfflinePlayers();
-		
-		HomeDAO dao = storage.getHomeDAO();
-		
-		int convertedCount = 0;
-		File[] files = essentialsUserData.listFiles();
-		for(File file : files) {
-		    YamlFile userData = factory.newYamlFile();
-		    userData.load(file);
-		    ConfigurationSection section = userData.getRootConfigurationSection();
-		    
-			Set<String> homes = section.getKeys("homes");
-			if( homes != null && homes.size() > 0 ) {
-				for(String home : homes) {
-					String worldName = section.getString("homes."+home+".world");
-					// if there's no world, this user doesn't have a home set.  Skip it.
-					if( worldName == null )
-						continue;
-					World world = server.getWorld(worldName);
-					if( world == null ) {
-						log.warn("Essentials 2.9 converter: tried to convert home from world \"{}\", but no such world exists", worldName);
-						continue;
-					}
-					
-					Double x = section.getDouble("homes."+home+".x");
-					Double y = section.getDouble("homes."+home+".y");
-					Double z = section.getDouble("homes."+home+".z");
-					Double yaw = section.getDouble("homes."+home+".yaw");
-					Double pitch = section.getDouble("homes."+home+".pitch");
-					
-					String lowerCaseName = file.getName();
-					lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
-					
-					// Essentials stores names in lowercase, HSP keeps proper case. So we
-					// try to lookup the proper case name from the Bukkit offlinePlayers
-					// map. If one doesn't exist, then we just use the lowercase name.
-					String playerName = offlinePlayers.get(lowerCaseName);
-					if( playerName == null )
-						playerName = lowerCaseName;
-					
-		            Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
-		                    z.doubleValue(), yaw.floatValue(), pitch.floatValue());
-					
-					HomeImpl hspHome = new HomeImpl();
-					hspHome.setLocation(l);
-					hspHome.setPlayerName(playerName);
-					hspHome.setName(home);
-					hspHome.setUpdatedBy("[Essentials29_Conversion]");
-					// "home" is essentials version of HSP default home
-					if( home.equals("home") )
-						hspHome.setDefaultHome(true);
-					
-					try {
-						dao.saveHome(hspHome);
-						convertedCount++;
-					}
-					catch(StorageException e) {
-						log.warn("StorageException attempting to convert Essentials 2.9 home", e);
-					}
-				}
-			}
-			
+    public int convert() throws Exception {
+        File folder = plugin.getDataFolder();
+        String parent = folder.getParent();
+        File essentialsUserData = new File(parent + "/Essentials/userdata");
+
+        if (!essentialsUserData.isDirectory()) {
+            log.warn("No essentials user directory found, skipping Home import");
+            return 0;
+        }
+
+        loadOfflinePlayers();
+
+        HomeDAO dao = storage.getHomeDAO();
+
+        int convertedCount = 0;
+        File[] files = essentialsUserData.listFiles();
+        for (File file : files) {
+            YamlFile userData = factory.newYamlFile();
+            userData.load(file);
+            ConfigurationSection section = userData.getRootConfigurationSection();
+
+            Set<String> homes = section.getKeys("homes");
+            if (homes != null && homes.size() > 0) {
+                for (String home : homes) {
+                    String worldName = section.getString("homes." + home + ".world");
+                    // if there's no world, this user doesn't have a home set.  Skip it.
+                    if (worldName == null)
+                        continue;
+                    World world = server.getWorld(worldName);
+                    if (world == null) {
+                        log.warn("Essentials 2.9 converter: tried to convert home from world \"{}\", but no such world exists", worldName);
+                        continue;
+                    }
+
+                    Double x = section.getDouble("homes." + home + ".x");
+                    Double y = section.getDouble("homes." + home + ".y");
+                    Double z = section.getDouble("homes." + home + ".z");
+                    Double yaw = section.getDouble("homes." + home + ".yaw");
+                    Double pitch = section.getDouble("homes." + home + ".pitch");
+
+                    String lowerCaseName = file.getName();
+                    lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
+
+                    // Essentials stores names in lowercase, HSP keeps proper case. So we
+                    // try to lookup the proper case name from the Bukkit offlinePlayers
+                    // map. If one doesn't exist, then we just use the lowercase name.
+                    String playerName = offlinePlayers.get(lowerCaseName);
+                    if (playerName == null)
+                        playerName = lowerCaseName;
+
+                    Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
+                            z.doubleValue(), yaw.floatValue(), pitch.floatValue());
+
+                    HomeImpl hspHome = new HomeImpl();
+                    hspHome.setLocation(l);
+                    hspHome.setPlayerName(playerName);
+                    hspHome.setName(home);
+                    hspHome.setUpdatedBy("[Essentials29_Conversion]");
+                    // "home" is essentials version of HSP default home
+                    if (home.equals("home"))
+                        hspHome.setDefaultHome(true);
+
+                    try {
+                        dao.saveHome(hspHome);
+                        convertedCount++;
+                    } catch (StorageException e) {
+                        log.warn("StorageException attempting to convert Essentials 2.9 home", e);
+                    }
+                }
+            }
+
 //			log.info("set home for player "+playerName);
-		}
-		
-		return convertedCount;
-	}
-	
-	/** Load Bukkit offline players into offlinePlayers hash, store key as
-	 * lowercase name and value as proper case name.
-	 * 
-	 */
-	private void loadOfflinePlayers() {
-		OfflinePlayer[] players = server.getOfflinePlayers();
-		for(OfflinePlayer player : players) {
-			offlinePlayers.put(player.getName().toLowerCase(), player.getName());
-		}
-	}
+        }
+
+        return convertedCount;
+    }
+
+    /**
+     * Load Bukkit offline players into offlinePlayers hash, store key as
+     * lowercase name and value as proper case name.
+     */
+    private void loadOfflinePlayers() {
+        OfflinePlayer[] players = server.getOfflinePlayers();
+        for (OfflinePlayer player : players) {
+            offlinePlayers.put(player.getName().toLowerCase(), player.getName());
+        }
+    }
 }

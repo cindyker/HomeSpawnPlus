@@ -27,9 +27,9 @@
  */
 package com.andune.minecraft.hsp.entity;
 
-import java.sql.Timestamp;
-
 import com.andune.minecraft.commonlib.server.api.Location;
+
+import java.sql.Timestamp;
 
 public interface Home extends EntityWithLocation {
 

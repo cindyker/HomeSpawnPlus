@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.command;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
@@ -41,83 +38,99 @@ import com.andune.minecraft.hsp.manager.WarmupRunner;
 import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
 public class CustomEventCommand extends BaseCommand {
-    @Inject private Teleport teleport;
-	@Inject private StrategyEngine engine;
-	
-	public String getEvent() {
-		return super.getStringParam("event");
-	}
-	
-	public boolean getNoArg() {
-		Object o = super.getParam("noArg");
-		if( o instanceof Boolean )
-			return (Boolean) o;
-		else
-			return false;		// default is false
-	}
+    @Inject
+    private Teleport teleport;
+    @Inject
+    private StrategyEngine engine;
 
-	@Override
-	public boolean execute(final Player p, final String[] args) {
-		if( !defaultCommandChecks(p) )
-			return true;
-		
-		String event = getEvent();
-		if( event == null ) {
-			p.sendMessage("There was an error, please report it to your administrator");
-			log.warn("CustomChainCommand event is null, cannot execute");
-			return true;
-		}
-		
-		// pass along an argument, if there was one (if allowed)
-		String arg = null;
-		if( args.length > 0 && !getNoArg() )
-			arg = args[0];
-		
-		final StrategyResult result = engine.getStrategyResult(event, p, arg);
-		final Location l = result.getLocation();
-		if( l == null ) {
-			server.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
-			return true;
-		}
-		
-		final String cooldownName = getCooldownName(getCommandName(), null);
-		
-		if( hasWarmup(p, cooldownName) ) {	// warmup name is same as cooldown
-			doWarmup(p, new WarmupRunner() {
-				private boolean canceled = false;
-				private String cdName;
-				private String wuName;
-				
-				public void run() {
-					if( !canceled ) {
-					    server.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
-								"name", getWarmupName(), "place", l.shortLocationString());
-						if( applyCost(p, true, cdName) )
-			                teleport.teleport(p, l, result.getContext().getTeleportOptions());
-					}
-				}
+    public String getEvent() {
+        return super.getStringParam("event");
+    }
 
-				public void cancel() {
-					canceled = true;
-				}
+    public boolean getNoArg() {
+        Object o = super.getParam("noArg");
+        if (o instanceof Boolean)
+            return (Boolean) o;
+        else
+            return false;        // default is false
+    }
 
-				public void setPlayerName(String playerName) {}
-				public void setWarmupId(int warmupId) {}
-				public WarmupRunner setCooldownName(String cd) { cdName = cd; return this; }
-				public WarmupRunner setWarmupName(String warmupName) { wuName = warmupName; return this; }
-				public String getWarmupName() { return wuName; }
-			}.setCooldownName(cooldownName).setWarmupName(cooldownName));
-		}
-		else {
-			if( applyCost(p, true, cooldownName) )
-	            teleport.teleport(p, l, result.getContext().getTeleportOptions());
-		}
+    @Override
+    public boolean execute(final Player p, final String[] args) {
+        if (!defaultCommandChecks(p))
+            return true;
 
-		return true;
-	}
+        String event = getEvent();
+        if (event == null) {
+            p.sendMessage("There was an error, please report it to your administrator");
+            log.warn("CustomChainCommand event is null, cannot execute");
+            return true;
+        }
+
+        // pass along an argument, if there was one (if allowed)
+        String arg = null;
+        if (args.length > 0 && !getNoArg())
+            arg = args[0];
+
+        final StrategyResult result = engine.getStrategyResult(event, p, arg);
+        final Location l = result.getLocation();
+        if (l == null) {
+            server.sendLocalizedMessage(p, HSPMessages.NO_LOCATION_FOUND);
+            return true;
+        }
+
+        final String cooldownName = getCooldownName(getCommandName(), null);
+
+        if (hasWarmup(p, cooldownName)) {    // warmup name is same as cooldown
+            doWarmup(p, new WarmupRunner() {
+                private boolean canceled = false;
+                private String cdName;
+                private String wuName;
+
+                public void run() {
+                    if (!canceled) {
+                        server.sendLocalizedMessage(p, HSPMessages.CMD_WARMUP_FINISHED,
+                                "name", getWarmupName(), "place", l.shortLocationString());
+                        if (applyCost(p, true, cdName))
+                            teleport.teleport(p, l, result.getContext().getTeleportOptions());
+                    }
+                }
+
+                public void cancel() {
+                    canceled = true;
+                }
+
+                public void setPlayerName(String playerName) {
+                }
+
+                public void setWarmupId(int warmupId) {
+                }
+
+                public WarmupRunner setCooldownName(String cd) {
+                    cdName = cd;
+                    return this;
+                }
+
+                public WarmupRunner setWarmupName(String warmupName) {
+                    wuName = warmupName;
+                    return this;
+                }
+
+                public String getWarmupName() {
+                    return wuName;
+                }
+            }.setCooldownName(cooldownName).setWarmupName(cooldownName));
+        } else {
+            if (applyCost(p, true, cooldownName))
+                teleport.teleport(p, l, result.getContext().getTeleportOptions());
+        }
+
+        return true;
+    }
 }

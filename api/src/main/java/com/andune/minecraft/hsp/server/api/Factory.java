@@ -26,30 +26,30 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.server.api;
 
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 
-/** Factory for creating various implementation-specific objects. These
+/**
+ * Factory for creating various implementation-specific objects. These
  * objects will be created by the specific server implementation as well
  * as be fully injected by the IoC container.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface Factory extends com.andune.minecraft.commonlib.server.api.Factory {
     /**
      * Factory method for creating a new StrategyContext object
-     * 
+     *
      * @return the new StrategyContext object
      */
     public StrategyContext newStrategyContext();
-    
+
     /**
      * Factory method for creating a new command object.
-     * 
+     *
      * @param commandClass
      * @return
      */

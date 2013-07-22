@@ -26,18 +26,16 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies;
 
-import org.mockito.Mock;
-
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.strategy.StrategyResultFactory;
+import org.mockito.Mock;
 
 /**
  * @author andune
- *
  */
 public class BaseStrategyTest {
     @Mock

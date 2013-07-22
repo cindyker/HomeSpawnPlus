@@ -30,17 +30,16 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
-import java.util.List;
-import java.util.Map;
-
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.config.ConfigEconomy.PerPermissionEconomyEntry;
 import com.andune.minecraft.hsp.manager.HomeLimitsManager;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author andune
- *
  */
 public class BukkitEconomy extends com.andune.minecraft.commonlib.server.bukkit.BukkitEconomy {
     protected final ConfigEconomy config;
@@ -57,19 +56,19 @@ public class BukkitEconomy extends com.andune.minecraft.commonlib.server.bukkit.
         Map<String, PerPermissionEconomyEntry> map = config.getPerPermissionEntries();
 
         PER_PERMISSION:
-        for(Map.Entry<String, PerPermissionEconomyEntry> e : map.entrySet()) {
+        for (Map.Entry<String, PerPermissionEconomyEntry> e : map.entrySet()) {
             PerPermissionEconomyEntry entry = e.getValue();
 
             Map<String, Integer> costs = entry.getCosts();
             Integer entryCost = costs.get(command);
             // if this command is not listed in this entry, skip it
-            if( entryCost == null )
+            if (entryCost == null)
                 continue;
 
             // command is listed, see if player has a matching permission
             List<String> permissions = entry.getPermissions();
-            for(String perm : permissions) {
-                if( player.hasPermission(perm) ) {
+            for (String perm : permissions) {
+                if (player.hasPermission(perm)) {
                     cost = entryCost;
                     break PER_PERMISSION;
                 }
@@ -78,31 +77,30 @@ public class BukkitEconomy extends com.andune.minecraft.commonlib.server.bukkit.
 
         // if there was no permission-specific cost, so look for
         // a world-specific cost instead
-        if( cost == null )
+        if (cost == null)
             cost = config.getWorldSpecificCost(player.getWorld().getName(), command);
 
         // if we get here and no cost yet, then get the global cost (possibly 0)
-        if( cost == null )
+        if (cost == null)
             cost = config.getGlobalCost(command);
 
         // apply sethome-multiplier, if any
-        if( cost > 0 && command.equalsIgnoreCase("sethome") ) {
+        if (cost > 0 && command.equalsIgnoreCase("sethome")) {
             double multiplier = config.getSethomeMultiplier();
-            if( multiplier > 0 )
-            {
+            if (multiplier > 0) {
                 // by the time this method is called, the new home has already been created,
                 // so it is already part of our globalHomeCount
                 int globalHomeCount = homeLimitsManager.getHomeCount(player.getName(), null);
-                if( globalHomeCount > 1 ) {
+                if (globalHomeCount > 1) {
                     double totalCost = cost;
-                    for(int i=1; i < globalHomeCount; i++)
+                    for (int i = 1; i < globalHomeCount; i++)
                         totalCost *= multiplier;
                     double additionalCost = totalCost - cost;
                     log.debug("applying sethome-multplier {} for player {}"
                             + ", total global home count={}, original cost={}, additionalCost={}",
                             multiplier, player, globalHomeCount, cost, additionalCost);
                     // should always be true, but check just in case
-                    if( additionalCost > 0 )
+                    if (additionalCost > 0)
                         cost += (int) additionalCost;
                 }
             }

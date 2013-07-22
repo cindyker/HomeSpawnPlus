@@ -26,113 +26,100 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.entity;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
-
-
-import com.andune.minecraft.hsp.entity.BasicEntity;
-import com.andune.minecraft.hsp.entity.Home;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
+import javax.persistence.*;
+import javax.persistence.Version;
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * @author andune
- *
  */
 @Entity()
-@Table(name="hsp_homeinvite",
-	uniqueConstraints={
-			@UniqueConstraint(columnNames={"home_id", "invited_player"})
-		}
+@Table(name = "hsp_homeinvite",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"home_id", "invited_player"})
+        }
 )
 public class HomeInvite implements BasicEntity {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @NotNull
-    @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
-    @Column(name="home_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @Column(name = "home_id")
     private HomeImpl home;
-    
+
     @NotNull
-    @Length(max=32)
-    @Column(name="invited_player")
+    @Length(max = 32)
+    @Column(name = "invited_player")
     private String invitedPlayer;
 
     /* If this invite is temporary, the expiration time is recorded here. If the
      * invite is permanent, this will be null.
      * 
      */
-	private Date expires;
-	
-	@Version
-	private Timestamp lastModified;
-	
-	@CreatedTimestamp
-	private Timestamp dateCreated;
+    private Date expires;
 
-	public int getId() {
-		return id;
-	}
+    @Version
+    private Timestamp lastModified;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    @CreatedTimestamp
+    private Timestamp dateCreated;
 
-	public HomeImpl getHome() {
-		return home;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setHome(Home home) {
-		this.home = (HomeImpl) home;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public String getInvitedPlayer() {
-		return invitedPlayer;
-	}
+    public HomeImpl getHome() {
+        return home;
+    }
 
-	public void setInvitedPlayer(String invitedPlayer) {
-		this.invitedPlayer = invitedPlayer;
-	}
+    public void setHome(Home home) {
+        this.home = (HomeImpl) home;
+    }
 
-	public Timestamp getLastModified() {
-		return lastModified;
-	}
+    public String getInvitedPlayer() {
+        return invitedPlayer;
+    }
 
-	public void setLastModified(Timestamp lastModified) {
-		this.lastModified = lastModified;
-	}
+    public void setInvitedPlayer(String invitedPlayer) {
+        this.invitedPlayer = invitedPlayer;
+    }
 
-	public Timestamp getDateCreated() {
-		return dateCreated;
-	}
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
 
-	public void setDateCreated(Timestamp dateCreated) {
-		this.dateCreated = dateCreated;
-	}
+    public void setLastModified(Timestamp lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	public Date getExpires() {
-		return expires;
-	}
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
 
-	public void setExpires(Date expires) {
-		this.expires = expires;
-	}
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
+    }
 }

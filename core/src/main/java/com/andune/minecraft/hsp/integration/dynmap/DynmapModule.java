@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.dynmap;
 
@@ -34,7 +34,6 @@ import com.andune.minecraft.hsp.integration.PluginIntegration;
 
 /**
  * @author andune
- *
  */
 public interface DynmapModule extends PluginIntegration {
     /*

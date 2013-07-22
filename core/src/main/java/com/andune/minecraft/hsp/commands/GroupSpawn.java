@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
@@ -49,125 +46,140 @@ import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 import com.andune.minecraft.hsp.util.SpawnUtil;
 
+import javax.inject.Inject;
+
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="group",
-    aliases={"g"}, help="Go to your group spawn")
-public class GroupSpawn extends BaseCommand
-{
-	@Inject private StrategyEngine engine;
-	@Inject private Teleport teleport;
-    @Inject private ConfigCore configCore;
-    @Inject private PermissionSystem permSystem;
-    @Inject private SpawnUtil util;
-	
-	@Override
-	public String[] getCommandAliases() { return new String[] {"gs"}; }
-	
-	@Override
-	public String getUsage() {
-		return	server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_USAGE);
-	}
+@UberCommand(uberCommand = "spawn", subCommand = "group",
+        aliases = {"g"}, help = "Go to your group spawn")
+public class GroupSpawn extends BaseCommand {
+    @Inject
+    private StrategyEngine engine;
+    @Inject
+    private Teleport teleport;
+    @Inject
+    private ConfigCore configCore;
+    @Inject
+    private PermissionSystem permSystem;
+    @Inject
+    private SpawnUtil util;
 
-	@Override
-	public boolean execute(final Player p, final String[] args) {
-		String cooldownName = "groupspawn";
-		
-		String groupName = permSystem.getPlayerGroup(p.getWorld().getName(), p.getName());
-		
-		StrategyResult result = null;
-		Location l = null;
-		if( args.length > 0 ) {
-			groupName = args[0];
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"gs"};
+    }
 
-			if( permissions.hasOtherGroupSpawnPermission(p) ) {
-				Spawn spawn = util.getGroupSpawn(groupName, p.getWorld().getName());
-				cooldownName = getCooldownName("groupspawn-named", groupName);
-				if( spawn != null )
-					l = spawn.getLocation();
-				
-				if( l == null ) {
-				    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
-							"group", args[0]) );
-					return true;
-				}
-			}
-			else {
-				server.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
-			}
-		}
-		else {
-			result = engine.getStrategyResult(EventType.GROUPSPAWN_COMMAND, p);
-			if( result != null )
-				l = result.getLocation();
-		}
+    @Override
+    public String getUsage() {
+        return server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_USAGE);
+    }
 
-		if( !cooldownCheck(p, cooldownName) )
-			return true;
-    	
-		if( l == null ) {
-		    server.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
-					"group", groupName);
-			
-			return true;
-		}
-		
-		final StrategyContext context;
-		if( result != null )
-			context = result.getContext();
-		else
-			context = null;
+    @Override
+    public boolean execute(final Player p, final String[] args) {
+        String cooldownName = "groupspawn";
 
-		if( hasWarmup(p) ) {
-    		final Location finalL = l;
-    		final String finalGroupName = groupName;
-			doWarmup(p, new WarmupRunner() {
-				private boolean canceled = false;
-				private String wuName = getCommandName();
+        String groupName = permSystem.getPlayerGroup(p.getWorld().getName(), p.getName());
 
-				public void run() {
-					if( !canceled ) {
-					    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_WARMUP_FINISHED,
-								"name", getWarmupName(), "place", "group spawn") );
-						doTeleport(p, finalL, context, finalGroupName);
-					}
-				}
+        StrategyResult result = null;
+        Location l = null;
+        if (args.length > 0) {
+            groupName = args[0];
 
-				public void cancel() {
-					canceled = true;
-				}
+            if (permissions.hasOtherGroupSpawnPermission(p)) {
+                Spawn spawn = util.getGroupSpawn(groupName, p.getWorld().getName());
+                cooldownName = getCooldownName("groupspawn-named", groupName);
+                if (spawn != null)
+                    l = spawn.getLocation();
 
-				public void setPlayerName(String playerName) {}
-				public void setWarmupId(int warmupId) {}
-				public WarmupRunner setWarmupName(String warmupName) { wuName = warmupName; return this; }
-				public String getWarmupName() { return wuName; }
-			});
-		}
-		else {
-			doTeleport(p, l, context, groupName);
-		}
-		
-		return true;
-	}
+                if (l == null) {
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
+                            "group", args[0]));
+                    return true;
+                }
+            } else {
+                server.sendLocalizedMessage(p, HSPMessages.NO_PERMISSION);
+            }
+        } else {
+            result = engine.getStrategyResult(EventType.GROUPSPAWN_COMMAND, p);
+            if (result != null)
+                l = result.getLocation();
+        }
 
-	/** Do the teleport including costs, cooldowns and displaying teleport
-	 * messages. Is used from both warmups and sync call.
-	 * 
-	 * @param p
-	 * @param l
-	 */
-	private void doTeleport(Player p, Location l, StrategyContext context,
-			String groupName) {
-		if( applyCost(p, true) ) {
-		    if( configCore.isTeleportMessages() ) {
-    		    p.sendMessage( server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_TELEPORTING,
-						"group", groupName) );
-    		}
-    		
-    		teleport.teleport(p, l, context.getTeleportOptions());
-		}
-	}
+        if (!cooldownCheck(p, cooldownName))
+            return true;
+
+        if (l == null) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_GROUPSPAWN_NO_GROUPSPAWN_FOR_GROUP,
+                    "group", groupName);
+
+            return true;
+        }
+
+        final StrategyContext context;
+        if (result != null)
+            context = result.getContext();
+        else
+            context = null;
+
+        if (hasWarmup(p)) {
+            final Location finalL = l;
+            final String finalGroupName = groupName;
+            doWarmup(p, new WarmupRunner() {
+                private boolean canceled = false;
+                private String wuName = getCommandName();
+
+                public void run() {
+                    if (!canceled) {
+                        p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_WARMUP_FINISHED,
+                                "name", getWarmupName(), "place", "group spawn"));
+                        doTeleport(p, finalL, context, finalGroupName);
+                    }
+                }
+
+                public void cancel() {
+                    canceled = true;
+                }
+
+                public void setPlayerName(String playerName) {
+                }
+
+                public void setWarmupId(int warmupId) {
+                }
+
+                public WarmupRunner setWarmupName(String warmupName) {
+                    wuName = warmupName;
+                    return this;
+                }
+
+                public String getWarmupName() {
+                    return wuName;
+                }
+            });
+        } else {
+            doTeleport(p, l, context, groupName);
+        }
+
+        return true;
+    }
+
+    /**
+     * Do the teleport including costs, cooldowns and displaying teleport
+     * messages. Is used from both warmups and sync call.
+     *
+     * @param p
+     * @param l
+     */
+    private void doTeleport(Player p, Location l, StrategyContext context,
+                            String groupName) {
+        if (applyCost(p, true)) {
+            if (configCore.isTeleportMessages()) {
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_GROUPSPAWN_TELEPORTING,
+                        "group", groupName));
+            }
+
+            teleport.teleport(p, l, context.getTeleportOptions());
+        }
+    }
 }

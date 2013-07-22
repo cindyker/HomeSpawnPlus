@@ -26,47 +26,46 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategy;
 
 /**
  * @author andune
- *
  */
 public class StrategyException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8120962336938587196L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8120962336938587196L;
 
-	/**
-	 * 
-	 */
-	public StrategyException() {
-	}
+    /**
+     *
+     */
+    public StrategyException() {
+    }
 
-	/**
-	 * @param arg0
-	 */
-	public StrategyException(String arg0) {
-		super(arg0);
-	}
+    /**
+     * @param arg0
+     */
+    public StrategyException(String arg0) {
+        super(arg0);
+    }
 
-	/**
-	 * @param arg0
-	 */
-	public StrategyException(Throwable arg0) {
-		super(arg0);
-	}
+    /**
+     * @param arg0
+     */
+    public StrategyException(Throwable arg0) {
+        super(arg0);
+    }
 
-	/**
-	 * @param arg0
-	 * @param arg1
-	 */
-	public StrategyException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
+    /**
+     * @param arg0
+     * @param arg1
+     */
+    public StrategyException(String arg0, Throwable arg1) {
+        super(arg0, arg1);
+    }
 
 }

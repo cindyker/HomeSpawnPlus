@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -35,26 +35,26 @@ import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
-/** Mode that specifies teleports should not be done above water.
- * 
- * @author andune
+/**
+ * Mode that specifies teleports should not be done above water.
  *
+ * @author andune
  */
 @NoArgStrategy
 public class ModeNoWater extends ModeStrategyImpl {
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_NO_WATER;
-	}
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_NO_WATER;
+    }
 
-	@Override
-	public String getStrategyConfigName() {
-		return "modeNoWater";
-	}
+    @Override
+    public String getStrategyConfigName() {
+        return "modeNoWater";
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

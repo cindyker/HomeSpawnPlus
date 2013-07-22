@@ -26,39 +26,39 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.home;
-
-import javax.inject.Inject;
-
 
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
 @NoArgStrategy
 public class HomeMultiWorld extends BaseStrategy {
-	@Inject private HomeLocalWorld homeLocalWorld;
-	@Inject private HomeDefaultWorld homeDefaultWorld;
-	
-	@Override
-	public StrategyResult evaluate(StrategyContext context) {
-		StrategyResult result = homeLocalWorld.evaluate(context);
-		if( !result.isSuccess() )
-			result = homeDefaultWorld.evaluate(context);
-		
-		return result;
-	}
+    @Inject
+    private HomeLocalWorld homeLocalWorld;
+    @Inject
+    private HomeDefaultWorld homeDefaultWorld;
 
-	@Override
-	public String getStrategyConfigName() {
-		return "homeMultiWorld";
-	}
+    @Override
+    public StrategyResult evaluate(StrategyContext context) {
+        StrategyResult result = homeLocalWorld.evaluate(context);
+        if (!result.isSuccess())
+            result = homeDefaultWorld.evaluate(context);
+
+        return result;
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "homeMultiWorld";
+    }
 
 }

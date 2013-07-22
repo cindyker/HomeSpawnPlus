@@ -26,12 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.ebean;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.entity.SpawnImpl;
@@ -40,120 +37,123 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
 public class SpawnDAOEBean implements SpawnDAO {
     protected static final String TABLE = "hsp_spawn";
-    
+
     private EbeanServer ebean;
     private final EbeanStorageUtil util;
-    
+
     public SpawnDAOEBean(final EbeanServer ebean, final EbeanStorageUtil util) {
         setEbeanServer(ebean);
         this.util = util;
     }
-	
-	public void setEbeanServer(final EbeanServer ebean) {
-		this.ebean = ebean;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorld(java.lang.String)
-	 */
-	@Override
-	public Spawn findSpawnByWorld(String world) {
-		return findSpawnByWorldAndGroup(world, Storage.HSP_WORLD_SPAWN_GROUP);
-	}
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorldAndGroup(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Spawn findSpawnByWorldAndGroup(String world, String group) {
-		String q = "find spawn where world = :world and group_name = :group";
-		
-		Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
-		query.setParameter("world", world);
-		query.setParameter("group", group);
-		
-		return query.findUnique();
-	}
+    public void setEbeanServer(final EbeanServer ebean) {
+        this.ebean = ebean;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByName(java.lang.String)
-	 */
-	@Override
-	public Spawn findSpawnByName(String name) {
-		String q = "find spawn where name = :name";
-		
-		Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
-		query.setParameter("name", name);
-		
-		return query.findUnique();
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorld(java.lang.String)
+     */
+    @Override
+    public Spawn findSpawnByWorld(String world) {
+        return findSpawnByWorldAndGroup(world, Storage.HSP_WORLD_SPAWN_GROUP);
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnById(int)
-	 */
-	@Override
-	public Spawn findSpawnById(int id) {
-		String q = "find spawn where id = :id";
-		
-		Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
-		query.setParameter("id", id);
-		
-		return query.findUnique();
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByWorldAndGroup(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Spawn findSpawnByWorldAndGroup(String world, String group) {
+        String q = "find spawn where world = :world and group_name = :group";
+
+        Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
+        query.setParameter("world", world);
+        query.setParameter("group", group);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnByName(java.lang.String)
+     */
+    @Override
+    public Spawn findSpawnByName(String name) {
+        String q = "find spawn where name = :name";
+
+        Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
+        query.setParameter("name", name);
+
+        return query.findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findSpawnById(int)
+     */
+    @Override
+    public Spawn findSpawnById(int id) {
+        String q = "find spawn where id = :id";
+
+        Query<SpawnImpl> query = ebean.createQuery(SpawnImpl.class, q);
+        query.setParameter("id", id);
+
+        return query.findUnique();
+    }
 
     public Spawn getNewPlayerSpawn() {
         return findSpawnByName(NEW_PLAYER_SPAWN);
     }
 
-	/** We make the assumption that there are relatively few spawns and group combinations,
-	 * thus the easiest algorithm is simply to grab all the spawns and iterate through
-	 * them for the valid group list.
-	 * 
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#getSpawnDefinedGroups()
-	 */
-	@Override
-	public java.util.Set<String> getSpawnDefinedGroups() {
-		Set<String> groups = new HashSet<String>();
-		Set<? extends Spawn> spawns = findAllSpawns();
-		
-		for(Spawn spawn : spawns) {
-			String group = spawn.getGroup();
-			if( group != null )
-				groups.add(group);
-		}
-		
-		return groups;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findAllSpawns()
-	 */
-	@Override
-	public Set<? extends Spawn> findAllSpawns() {
-		return ebean.find(SpawnImpl.class).findSet();
-	}
+    /**
+     * We make the assumption that there are relatively few spawns and group combinations,
+     * thus the easiest algorithm is simply to grab all the spawns and iterate through
+     * them for the valid group list.
+     *
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#getSpawnDefinedGroups()
+     */
+    @Override
+    public java.util.Set<String> getSpawnDefinedGroups() {
+        Set<String> groups = new HashSet<String>();
+        Set<? extends Spawn> spawns = findAllSpawns();
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#saveSpawn(com.andune.minecraft.hsp.entity.Spawn)
-	 */
-	@Override
-	public void saveSpawn(Spawn spawn) {
+        for (Spawn spawn : spawns) {
+            String group = spawn.getGroup();
+            if (group != null)
+                groups.add(group);
+        }
+
+        return groups;
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#findAllSpawns()
+     */
+    @Override
+    public Set<? extends Spawn> findAllSpawns() {
+        return ebean.find(SpawnImpl.class).findSet();
+    }
+
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#saveSpawn(com.andune.minecraft.hsp.entity.Spawn)
+     */
+    @Override
+    public void saveSpawn(Spawn spawn) {
         ebean.save((SpawnImpl) spawn);
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#deleteSpawn(com.andune.minecraft.hsp.entity.Spawn)
-	 */
-	@Override
-	public void deleteSpawn(Spawn spawn) {
-		ebean.delete((SpawnImpl) spawn);
-	}
+    /* (non-Javadoc)
+     * @see com.andune.minecraft.hsp.storage.dao.SpawnDAO#deleteSpawn(com.andune.minecraft.hsp.entity.Spawn)
+     */
+    @Override
+    public void deleteSpawn(Spawn spawn) {
+        ebean.delete((SpawnImpl) spawn);
+    }
 
     @Override
     public int purgeWorldData(String world) {

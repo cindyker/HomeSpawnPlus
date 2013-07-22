@@ -26,9 +26,15 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.convert;
+
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.storage.StorageException;
+import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,89 +44,80 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.commonlib.server.api.World;
-import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.storage.StorageException;
-import com.andune.minecraft.hsp.storage.dao.HomeDAO;
-
-
-/** Class to process Commandbook home data and convert it into our storage format.
- * 
- * @author andune
+/**
+ * Class to process Commandbook home data and convert it into our storage format.
  *
+ * @author andune
  */
-public class CommandBook extends BaseConverter
-{
+public class CommandBook extends BaseConverter {
     @Override
     public String getConverterName() {
         return "CommandBook";
     }
-    
-    @Override
-	public int convert() throws IOException {
-		// keep track of player names as we convert their first home, allows us to
-		// set the first home we run into as the default home.
-		Set<String> playerNames = new HashSet<String>();
-		
-		File folder = plugin.getDataFolder();
-		String parent = folder.getParent();
-		File commandBookHomeData = new File(parent + "/CommandBook/homes.csv");
-		
-		if( !commandBookHomeData.isFile() ) {
-			log.warn("No CommandBook homes.csv found, skipping home import");
-			return 0;
-		}
-		
-		HomeDAO dao = storage.getHomeDAO();
-		
-		int convertedCount = 0;
-		BufferedReader br = new BufferedReader(new FileReader(commandBookHomeData));
-		String line = null;
-		while( (line = br.readLine()) != null ) {
-			line = line.replaceAll("\"", "");
-			String[] arr = line.split(",");
 
-			String homeName = arr[0];
-			String worldName = arr[1];
-			String playerName = arr[2];
-			Double x = Double.parseDouble(arr[3]);
-			Double y = Double.parseDouble(arr[4]);
-			Double z = Double.parseDouble(arr[5]);
-			Double pitch = Double.parseDouble(arr[6]);
-			Double yaw = Double.parseDouble(arr[7]);
-			
-			World world = server.getWorld(worldName);
-			if( world == null ) {
-				log.warn("CommandBook converter: tried to convert home from world \"{}\", but no such world exists", worldName);
-				continue;
-			}
-			
-			Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
-					z.doubleValue(), yaw.floatValue(), pitch.floatValue());
-			
-			HomeImpl hspHome = new HomeImpl();
-			hspHome.setLocation(l);
-			hspHome.setPlayerName(playerName);
-			hspHome.setName(homeName);
-			hspHome.setUpdatedBy("[CommandBook_Conversion]");
-			
-			// first home we find for a player is considered the default home
-			if( !playerNames.contains(playerName) ) {
-				hspHome.setDefaultHome(true);
-				playerNames.add(playerName);
-			}
-			
-			try {
-				dao.saveHome(hspHome);
-				convertedCount++;
-			}
-			catch(StorageException e) {
-				log.warn("StorageException attempting to convert CommandBook home", e);
-			}
-		}
-		br.close();
-		
-		return convertedCount;
-	}
+    @Override
+    public int convert() throws IOException {
+        // keep track of player names as we convert their first home, allows us to
+        // set the first home we run into as the default home.
+        Set<String> playerNames = new HashSet<String>();
+
+        File folder = plugin.getDataFolder();
+        String parent = folder.getParent();
+        File commandBookHomeData = new File(parent + "/CommandBook/homes.csv");
+
+        if (!commandBookHomeData.isFile()) {
+            log.warn("No CommandBook homes.csv found, skipping home import");
+            return 0;
+        }
+
+        HomeDAO dao = storage.getHomeDAO();
+
+        int convertedCount = 0;
+        BufferedReader br = new BufferedReader(new FileReader(commandBookHomeData));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            line = line.replaceAll("\"", "");
+            String[] arr = line.split(",");
+
+            String homeName = arr[0];
+            String worldName = arr[1];
+            String playerName = arr[2];
+            Double x = Double.parseDouble(arr[3]);
+            Double y = Double.parseDouble(arr[4]);
+            Double z = Double.parseDouble(arr[5]);
+            Double pitch = Double.parseDouble(arr[6]);
+            Double yaw = Double.parseDouble(arr[7]);
+
+            World world = server.getWorld(worldName);
+            if (world == null) {
+                log.warn("CommandBook converter: tried to convert home from world \"{}\", but no such world exists", worldName);
+                continue;
+            }
+
+            Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
+                    z.doubleValue(), yaw.floatValue(), pitch.floatValue());
+
+            HomeImpl hspHome = new HomeImpl();
+            hspHome.setLocation(l);
+            hspHome.setPlayerName(playerName);
+            hspHome.setName(homeName);
+            hspHome.setUpdatedBy("[CommandBook_Conversion]");
+
+            // first home we find for a player is considered the default home
+            if (!playerNames.contains(playerName)) {
+                hspHome.setDefaultHome(true);
+                playerNames.add(playerName);
+            }
+
+            try {
+                dao.saveHome(hspHome);
+                convertedCount++;
+            } catch (StorageException e) {
+                log.warn("StorageException attempting to convert CommandBook home", e);
+            }
+        }
+        br.close();
+
+        return convertedCount;
+    }
 }

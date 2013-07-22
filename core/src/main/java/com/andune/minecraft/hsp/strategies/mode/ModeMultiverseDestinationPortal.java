@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
-
-import javax.inject.Inject;
 
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.strategy.ModeStrategyImpl;
@@ -38,39 +36,41 @@ import com.andune.minecraft.hsp.strategy.OneArgStrategy;
 import com.andune.minecraft.hsp.strategy.StrategyException;
 import com.andune.minecraft.hsp.strategy.StrategyMode;
 
+import javax.inject.Inject;
+
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class ModeMultiverseDestinationPortal extends ModeStrategyImpl {
-    @Inject private MultiversePortals multiversePortals;
-	private String portalName;
+    @Inject
+    private MultiversePortals multiversePortals;
+    private String portalName;
 
-	public ModeMultiverseDestinationPortal(String portalName) {
-		this.portalName = portalName;
-	}
-	
-	public String getPortalName() {
-		return portalName;
-	}
+    public ModeMultiverseDestinationPortal(String portalName) {
+        this.portalName = portalName;
+    }
 
-	@Override
-	public void validate() throws StrategyException {
-		if( !multiversePortals.isEnabled() )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": Multiverse-Portals is not running");
-		
-		if( portalName == null )
-			throw new StrategyException("Error validating strategy "+getStrategyConfigName()+": strategy argument is null");
-	}
+    public String getPortalName() {
+        return portalName;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_MULTIVERSE_DESTINATION_PORTAL;
-	}
-	
-	@Override
-	public boolean isAdditive() {
-		return false;
-	}
+    @Override
+    public void validate() throws StrategyException {
+        if (!multiversePortals.isEnabled())
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": Multiverse-Portals is not running");
+
+        if (portalName == null)
+            throw new StrategyException("Error validating strategy " + getStrategyConfigName() + ": strategy argument is null");
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_MULTIVERSE_DESTINATION_PORTAL;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return false;
+    }
 }

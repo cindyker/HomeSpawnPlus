@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies;
 
@@ -39,9 +39,8 @@ import com.andune.minecraft.hsp.strategy.StrategyResult;
  * Strategy primarily intended for testing, just echos the given message to
  * the player when it is fired in the strategy chain. It never returns a
  * result so it will always fall through to the next strategy in the chain.
- * 
- * @author andune
  *
+ * @author andune
  */
 @OneArgStrategy
 public class Message extends BaseStrategy {

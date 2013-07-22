@@ -26,11 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
-
-import java.util.Set;
 
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -38,15 +36,18 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 
+import java.util.Set;
+
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="home", subCommand="rename", aliases={"r"}, help="Rename a home")
+@UberCommand(uberCommand = "home", subCommand = "rename", aliases = {"r"}, help = "Rename a home")
 public class HomeRename extends BaseCommand {
     @Override
-    public String[] getCommandAliases() { return new String[] {"homer", "renamehome"}; }
-    
+    public String[] getCommandAliases() {
+        return new String[]{"homer", "renamehome"};
+    }
+
     @Override
     public String getUsage() {
         return server.getLocalizedMessage(HSPMessages.CMD_HOMERENAME_USAGE);
@@ -54,13 +55,13 @@ public class HomeRename extends BaseCommand {
 
     @Override
     public boolean execute(Player p, String[] args) {
-        if( !defaultCommandChecks(p) )
+        if (!defaultCommandChecks(p))
             return true;
-        
+
         com.andune.minecraft.hsp.entity.Home home = null;
         String homeName = null;
-        
-        if( args.length < 2 ) {
+
+        if (args.length < 2) {
             return false;   // print usage
         }
         homeName = args[0];
@@ -69,24 +70,23 @@ public class HomeRename extends BaseCommand {
         int id = -1;
         try {
             id = Integer.parseInt(homeName);
+        } catch (NumberFormatException e) {
         }
-        catch(NumberFormatException e) {}
 
-        if( id != -1 ) {
+        if (id != -1) {
             home = storage.getHomeDAO().findHomeById(id);
             // make sure it belongs to this player
-            if( home != null && !p.getName().equals(home.getPlayerName()) )
+            if (home != null && !p.getName().equals(home.getPlayerName()))
                 home = null;
 
             // otherwise set the name according to the home that was selected
-            if( home != null )
-                homeName = home.getName() + " (id #"+id+")";
-        }
-        else if( homeName.equals("<noname>") ) {
+            if (home != null)
+                homeName = home.getName() + " (id #" + id + ")";
+        } else if (homeName.equals("<noname>")) {
             Set<? extends com.andune.minecraft.hsp.entity.Home> homes = storage.getHomeDAO().findHomesByWorldAndPlayer(p.getWorld().getName(), p.getName());
-            if( homes != null ) {
-                for(com.andune.minecraft.hsp.entity.Home h : homes) {
-                    if( h.getName() == null ) {
+            if (homes != null) {
+                for (com.andune.minecraft.hsp.entity.Home h : homes) {
+                    if (h.getName() == null) {
                         home = h;
                         break;
                     }
@@ -95,39 +95,36 @@ public class HomeRename extends BaseCommand {
         }
 
         // if home is still null here, then just do a regular lookup
-        if( home == null )
+        if (home == null)
             home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
-        
-        if( home != null ) {
+
+        if (home != null) {
             // safety check to be sure we aren't renaming someone else's home with this command
             // (this shouldn't be possible since all checks are keyed to this player's name, but
             // let's be paranoid anyway)
-            if( !p.getName().equalsIgnoreCase(home.getPlayerName()) ) {
+            if (!p.getName().equalsIgnoreCase(home.getPlayerName())) {
                 server.sendLocalizedMessage(p, HSPMessages.CMD_HOMERENAME_ERROR_RENAMING_OTHER_HOME);
-                log.warn("ERROR: Shouldn't be possible! Player "+p.getName()+" tried to rename home for player "+home.getPlayerName());
-            }
-            else {
-                if( home.isBedHome() || home.isDefaultHome() ) {
+                log.warn("ERROR: Shouldn't be possible! Player " + p.getName() + " tried to rename home for player " + home.getPlayerName());
+            } else {
+                if (home.isBedHome() || home.isDefaultHome()) {
                     server.sendLocalizedMessage(p, HSPMessages.CMD_HOMERENAME_NAMED_HOMES_ONLY);
                     return true;
                 }
-                
+
                 try {
                     home.setName(newName);
                     storage.getHomeDAO().saveHome(home);
                     server.sendLocalizedMessage(p, HSPMessages.CMD_HOMERENAME_HOME_RENAMED,
                             "oldName", homeName, "newName", newName);
-                }
-                catch(StorageException e) {
+                } catch (StorageException e) {
                     server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-                    log.warn("Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+                    log.warn("Error caught in /" + getCommandName() + ": " + e.getMessage(), e);
                 }
             }
-        }
-        else {
+        } else {
             server.sendLocalizedMessage(p, HSPMessages.NO_NAMED_HOME_FOUND, "name", homeName);
         }
-        
+
         return true;
     }
 }

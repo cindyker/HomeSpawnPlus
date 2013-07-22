@@ -26,27 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml;
 
-import java.io.IOException;
-
+import com.andune.minecraft.hsp.storage.StorageException;
 import org.bukkit.configuration.InvalidConfigurationException;
 
-import com.andune.minecraft.hsp.storage.StorageException;
+import java.io.IOException;
 
-/** Interface all YAML DAOs adhere to, so they can be generically processed
+/**
+ * Interface all YAML DAOs adhere to, so they can be generically processed
  * together.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface YamlDAOInterface {
-	public void invalidateCache();
-	public void setDeferredWrite(boolean deferred);
-	public void flush() throws StorageException;
-	public void deleteAllData() throws StorageException;
-	public void load() throws IOException, InvalidConfigurationException;
-	public void save() throws IOException;
+    public void invalidateCache();
+
+    public void setDeferredWrite(boolean deferred);
+
+    public void flush() throws StorageException;
+
+    public void deleteAllData() throws StorageException;
+
+    public void load() throws IOException, InvalidConfigurationException;
+
+    public void save() throws IOException;
 }

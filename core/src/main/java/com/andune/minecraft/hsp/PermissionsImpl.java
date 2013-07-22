@@ -26,15 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp;
-
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
@@ -44,29 +38,33 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.Command;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
 
-/** All HSP Permissions are defined here.
- * 
- * @author andune
+
+/**
+ * All HSP Permissions are defined here.
  *
+ * @author andune
  */
 @Singleton
 public class PermissionsImpl implements Permissions {
     private static final Logger log = LoggerFactory.getLogger(PermissionsImpl.class);
     /**
-     * The base permission prefix - all HSP permissions start with this prefix. 
+     * The base permission prefix - all HSP permissions start with this prefix.
      */
     private static final String PERM_PREFIX = "hsp.";
-    
+
     private final PermissionSystem permSystem;
     private final ConfigCore configCore;
-    
+
     @Inject
     public PermissionsImpl(PermissionSystem permSystem, ConfigCore configCore) {
         this.permSystem = permSystem;
         this.configCore = configCore;
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasPermission(com.andune.minecraft.commonlib.server.api.CommandSender, java.lang.String)
      */
@@ -76,9 +74,9 @@ public class PermissionsImpl implements Permissions {
         log.debug("hasPermission: sender={}, perm={}, result={}", sender, perm, result);
 
         // support legacy HSP "defaultPermissions" setting
-        if( !result ) {
+        if (!result) {
             List<String> defaultPerms = configCore.getDefaultPermissions();
-            if( defaultPerms != null && defaultPerms.contains(perm) )
+            if (defaultPerms != null && defaultPerms.contains(perm))
                 result = true;
         }
 
@@ -86,15 +84,14 @@ public class PermissionsImpl implements Permissions {
     }
 
     /**
-     * Prepend the PREFIX and check if a player has a given permission node. 
-     * 
+     * Prepend the PREFIX and check if a player has a given permission node.
+     *
      * @param sender the player to check
-     * @param perm the permission to check (PREFIX is automatically prepended)
-     * 
+     * @param perm   the permission to check (PREFIX is automatically prepended)
      * @return true if the player has the permission
      */
     private boolean permCheck(CommandSender sender, String perm) {
-        return hasPermission(sender, PERM_PREFIX+ perm);
+        return hasPermission(sender, PERM_PREFIX + perm);
     }
 
     /* (non-Javadoc)
@@ -102,21 +99,21 @@ public class PermissionsImpl implements Permissions {
      */
     @Override
     public boolean hasCommandPermission(CommandSender sender, String command) {
-        return permCheck(sender,  "command." + command);
+        return permCheck(sender, "command." + command);
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasCommandPermission(com.andune.minecraft.commonlib.server.api.CommandSender, com.andune.minecraft.hsp.command.Command)
      */
     @Override
     public boolean hasCommandPermission(CommandSender sender, Command command) {
         String customPerm = command.getCommandPermissionNode();
-        if( customPerm != null )
+        if (customPerm != null)
             return permCheck(sender, customPerm);
-        else 
-            return hasCommandPermission(sender,  command.getCommandName());
+        else
+            return hasCommandPermission(sender, command.getCommandName());
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasSetHomeNamed(com.andune.minecraft.commonlib.server.api.Player)
      */
@@ -124,7 +121,7 @@ public class PermissionsImpl implements Permissions {
     public boolean hasSetHomeNamed(Player player) {
         return permCheck(player, "command.sethome.named");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#isAdmin(com.andune.minecraft.commonlib.server.api.CommandSender)
      */
@@ -132,21 +129,21 @@ public class PermissionsImpl implements Permissions {
     public boolean isAdmin(CommandSender sender) {
         return permCheck(sender, "admin");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#isWarmupExempt(com.andune.minecraft.commonlib.server.api.Player, java.lang.String)
      */
     @Override
     public boolean isWarmupExempt(Player player, String warmup) {
-        return permCheck(player, "WarmupExempt."+warmup);
+        return permCheck(player, "WarmupExempt." + warmup);
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#isCooldownExempt(com.andune.minecraft.commonlib.server.api.Player, java.lang.String)
      */
     @Override
     public boolean isCooldownExempt(Player player, String cooldown) {
-        return permCheck(player, "CooldownExempt."+cooldown);
+        return permCheck(player, "CooldownExempt." + cooldown);
     }
 
     /* (non-Javadoc)
@@ -154,7 +151,7 @@ public class PermissionsImpl implements Permissions {
      */
     @Override
     public boolean isCostExempt(Player player, String cost) {
-        return permCheck(player, "CostExempt."+cost);
+        return permCheck(player, "CostExempt." + cost);
     }
 
     /* (non-Javadoc)
@@ -164,18 +161,18 @@ public class PermissionsImpl implements Permissions {
     public boolean hasOtherGroupSpawnPermission(Player player) {
         return hasCommandPermission(player, "groupspawn.named");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasSpawnNamed(com.andune.minecraft.commonlib.server.api.Player, java.lang.String)
      */
     @Override
     public boolean hasSpawnNamed(Player player, String name) {
-        if( name != null )
-            return hasCommandPermission(player, "spawn.named."+name);
+        if (name != null)
+            return hasCommandPermission(player, "spawn.named." + name);
         else
             return hasCommandPermission(player, "spawn.named");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasPermanentHomeInvite(com.andune.minecraft.commonlib.server.api.Player)
      */
@@ -183,7 +180,7 @@ public class PermissionsImpl implements Permissions {
     public boolean hasPermanentHomeInvite(Player player) {
         return hasCommandPermission(player, "homeinvite.permanent");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasHomeInviteOtherWorld(com.andune.minecraft.commonlib.server.api.Player)
      */
@@ -191,7 +188,7 @@ public class PermissionsImpl implements Permissions {
     public boolean hasHomeInviteOtherWorld(Player player) {
         return hasCommandPermission(player, "homeinvitetp.otherworld");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasHomeOtherWorld(com.andune.minecraft.commonlib.server.api.Player)
      */
@@ -199,7 +196,7 @@ public class PermissionsImpl implements Permissions {
     public boolean hasHomeOtherWorld(Player player) {
         return hasCommandPermission(player, "home.otherworld");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasHomeNamed(com.andune.minecraft.commonlib.server.api.Player)
      */
@@ -207,7 +204,7 @@ public class PermissionsImpl implements Permissions {
     public boolean hasHomeNamed(Player player) {
         return hasCommandPermission(player, "home.named");
     }
-    
+
     /* (non-Javadoc)
      * @see com.andune.minecraft.hsp.Permissions#hasBedSetHome(com.andune.minecraft.commonlib.server.api.Player)
      */

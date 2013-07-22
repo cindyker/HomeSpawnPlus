@@ -26,22 +26,14 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategies;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.testng.AssertJUnit.assertEquals;
-
-import java.util.HashSet;
-import java.util.Set;
-
+import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.strategies.home.HomeAnyWorld;
+import com.andune.minecraft.hsp.strategy.*;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -51,30 +43,29 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.andune.minecraft.hsp.entity.Home;
-import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.strategies.home.HomeAnyWorld;
-import com.andune.minecraft.hsp.strategy.StrategyContext;
-import com.andune.minecraft.hsp.strategy.StrategyContextImpl;
-import com.andune.minecraft.hsp.strategy.StrategyMode;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
-import com.andune.minecraft.hsp.strategy.StrategyResultImpl;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * @author andune
- *
  */
 public class TestHomeAnyWorld extends HomeStrategyTest {
     @InjectMocks
     private HomeAnyWorld objectUnderTest;
-    
+
     private Set<HomeImpl> homeSet;      // test home set to work with
     private HomeImpl bedHome;
     private HomeImpl defaultHome;
     private HomeImpl namedHome;
 
     StrategyResultImpl mockResult;
-    
+
     @BeforeClass
     public void beforeClass() {
         /*
@@ -100,7 +91,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         when(namedHome.getName()).thenReturn("namedhome");
         homeSet.add(namedHome);
     }
-    
+
     @BeforeMethod
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
@@ -111,7 +102,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         when(resultFactory.create(isA(HomeImpl.class))).thenReturn(mockResult);
         when(resultFactory.create(isNull(HomeImpl.class))).thenReturn(mockResult);
     }
-    
+
     @Override
     public Set<HomeImpl> getHome(String player) {
         return homeSet;
@@ -119,7 +110,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
 
     @DataProvider
     private Object[][] modeDeterministicTests() {
-        return new Object[][] {
+        return new Object[][]{
                 {StrategyMode.MODE_HOME_BED_ONLY, bedHome},
                 {StrategyMode.MODE_HOME_DEFAULT_ONLY, defaultHome}
         };
@@ -139,7 +130,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         verify(resultFactory).create(expectedResult);       // validate correct home was chosen
         assertEquals(mockResult, result);                   // validate we got our expected mock result back
     }
-    
+
     @Test
     public void testModeDefault() throws Exception {
         // Given
@@ -177,7 +168,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         when(context.getPlayer()).thenReturn(player);
         when(context.isDefaultModeEnabled()).thenReturn(true);
         when(context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED)).thenReturn(true);
-        
+
         when(bedUtil.isBedNearby(isA(HomeImpl.class))).thenReturn(true);
 
         // When
@@ -195,7 +186,7 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         when(context.getPlayer()).thenReturn(player);
         when(context.isDefaultModeEnabled()).thenReturn(true);
         when(context.isModeEnabled(StrategyMode.MODE_HOME_REQUIRES_BED)).thenReturn(true);
-        
+
         // When
         StrategyResult result = objectUnderTest.evaluate(context);
 
@@ -215,8 +206,9 @@ public class TestHomeAnyWorld extends HomeStrategyTest {
         doAnswer(new Answer<Set<HomeImpl>>() {
             public Set<HomeImpl> answer(InvocationOnMock invocation) {
                 return null;
-            }})
-            .when(homeDAO).findHomesByPlayer(any(String.class));
+            }
+        })
+                .when(homeDAO).findHomesByPlayer(any(String.class));
 
         // When
         StrategyResult result = objectUnderTest.evaluate(context);

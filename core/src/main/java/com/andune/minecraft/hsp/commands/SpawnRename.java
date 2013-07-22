@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.commands;
 
@@ -39,46 +39,47 @@ import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 
 /**
  * @author andune
- *
  */
-@UberCommand(uberCommand="spawn", subCommand="rename", help="Rename a spawn")
+@UberCommand(uberCommand = "spawn", subCommand = "rename", help = "Rename a spawn")
 public class SpawnRename extends BaseCommand {
     @Override
-    public String[] getCommandAliases() { return new String[] {"spawnr", "renamespawn"}; }
-    
+    public String[] getCommandAliases() {
+        return new String[]{"spawnr", "renamespawn"};
+    }
+
     @Override
     public String getUsage() {
-        return  server.getLocalizedMessage(HSPMessages.CMD_SPAWNRENAME_USAGE);
+        return server.getLocalizedMessage(HSPMessages.CMD_SPAWNRENAME_USAGE);
     }
 
     @Override
     public boolean execute(Player p, String[] args) {
-        if( !defaultCommandChecks(p) )
+        if (!defaultCommandChecks(p))
             return true;
- 
+
         com.andune.minecraft.hsp.entity.Spawn spawn = null;
-        
-        if( args.length < 2 ) {
+
+        if (args.length < 2) {
             return false;
         }
         String newName = args[1];
 
         final SpawnDAO dao = storage.getSpawnDAO();
-        
+
         // try search by ID number
         int id = -1;
         try {
             id = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
         }
-        catch(NumberFormatException e) {}
-        if( id != -1 )
+        if (id != -1)
             spawn = dao.findSpawnById(id);
-        
+
         // if argument was not a number or not found, then search by name
-        if( spawn == null )
+        if (spawn == null)
             spawn = dao.findSpawnByName(args[0]);
-        
-        if( spawn == null ) {
+
+        if (spawn == null) {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
                     "name", args[0]);
             return true;
@@ -86,19 +87,18 @@ public class SpawnRename extends BaseCommand {
 
         try {
             String oldName = spawn.getName();
-            if( oldName == null ) {
-                oldName = "id #"+spawn.getId();
+            if (oldName == null) {
+                oldName = "id #" + spawn.getId();
             }
-            
+
             spawn.setName(newName);
             dao.saveSpawn(spawn);
-            
+
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNRENAME_SPAWN_RENAMED,
                     "oldName", oldName, "newName", newName);
-        }
-        catch(StorageException e) {
+        } catch (StorageException e) {
             server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-            log.warn("Error caught in /"+getCommandName()+": "+e.getMessage(), e);
+            log.warn("Error caught in /" + getCommandName() + ": " + e.getMessage(), e);
         }
         return true;
     }

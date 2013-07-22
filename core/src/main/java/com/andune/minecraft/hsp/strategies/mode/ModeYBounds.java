@@ -25,8 +25,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-                                 /**
- * 
+/**
+ *
  */
 package com.andune.minecraft.hsp.strategies.mode;
 
@@ -37,65 +37,68 @@ import com.andune.minecraft.hsp.strategy.StrategyMode;
 
 /**
  * @author andune
- *
  */
 @OneArgStrategy
 public class ModeYBounds extends ModeStrategyImpl {
-	private String arg;
-	private int minY = 1;
-	private int maxY = 255;
+    private String arg;
+    private int minY = 1;
+    private int maxY = 255;
 
-	public ModeYBounds(String arg) {
-		this.arg = arg;
-	}
-	
-	public int getMinY() { return minY; }
-	public int getMaxY() { return maxY; }
-	
-	@Override
-	public void validate() throws StrategyException {
-		if( arg == null ) {
-			logInfo(getStrategyConfigName()+" not given any bounds, using default bounds (minY="+minY+", maxY="+maxY+")");
-			return;
-		}
-		
-		String[] args = arg.split(";");
-		if( args.length < 2 ) {
-			try {
-				minY = Integer.parseInt(args[0]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing argument, not a number: "+args[0]);
-			}
-			
-			logInfo(getStrategyConfigName()+" only given one bound, assuming bound is minY (minY="+minY+")");
-		}
-		else {
-			try {
-				minY = Integer.parseInt(args[0]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing minY argument, not a number: "+args[0]);
-			}
-			
-			try {
-				maxY = Integer.parseInt(args[1]);
-			} catch(NumberFormatException e) {
-				throw new StrategyException(getStrategyConfigName()+" Error processing maxY argument, not a number: "+args[1]);
-			}
-		}
-	}
-	
-	@Override
-	public String getStrategyConfigName() {
-		return "modeYBounds";
-	}
+    public ModeYBounds(String arg) {
+        this.arg = arg;
+    }
 
-	@Override
-	public StrategyMode getMode() {
-		return StrategyMode.MODE_YBOUNDS;
-	}
+    public int getMinY() {
+        return minY;
+    }
 
-	@Override
-	public boolean isAdditive() {
-		return true;
-	}
+    public int getMaxY() {
+        return maxY;
+    }
+
+    @Override
+    public void validate() throws StrategyException {
+        if (arg == null) {
+            logInfo(getStrategyConfigName() + " not given any bounds, using default bounds (minY=" + minY + ", maxY=" + maxY + ")");
+            return;
+        }
+
+        String[] args = arg.split(";");
+        if (args.length < 2) {
+            try {
+                minY = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing argument, not a number: " + args[0]);
+            }
+
+            logInfo(getStrategyConfigName() + " only given one bound, assuming bound is minY (minY=" + minY + ")");
+        } else {
+            try {
+                minY = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing minY argument, not a number: " + args[0]);
+            }
+
+            try {
+                maxY = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " Error processing maxY argument, not a number: " + args[1]);
+            }
+        }
+    }
+
+    @Override
+    public String getStrategyConfigName() {
+        return "modeYBounds";
+    }
+
+    @Override
+    public StrategyMode getMode() {
+        return StrategyMode.MODE_YBOUNDS;
+    }
+
+    @Override
+    public boolean isAdditive() {
+        return true;
+    }
 }

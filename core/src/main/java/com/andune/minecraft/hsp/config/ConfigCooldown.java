@@ -26,32 +26,30 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigCooldown.CooldownsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigCooldown.CooldownsPerWorld;
 
+import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author andune
- *
  */
 @Singleton
-@ConfigOptions(fileName="cooldown.yml", basePath="cooldown")
+@ConfigOptions(fileName = "cooldown.yml", basePath = "cooldown")
 public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, CooldownsPerWorld> implements Initializable {
     public boolean isEnabled() {
         return super.getBoolean("enabled");
     }
-    
+
     @Override
     protected CooldownsPerPermission newPermissionEntry() {
         return new CooldownsPerPermission();
@@ -64,16 +62,16 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
 
     /**
      * Return a list of cooldowns that are on separate timers.
-     * 
+     *
      * @return
      */
     public List<String> getSeparateCooldowns() {
         return super.getStringList("separation");
     }
-    
+
     /**
      * Determine if global cooldowns should reset on player death.
-     * 
+     *
      * @return
      */
     public boolean isGlobalResetOnDeath() {
@@ -83,7 +81,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
     /**
      * For a given cooldown, return it's global cooldown time (exclusive of
      * per-permission and per-world cooldown values).
-     * 
+     *
      * @param cooldown
      * @return
      */
@@ -94,6 +92,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
 
     /**
      * Determine if cooldown per-world is enabled for a given world.
+     *
      * @param world
      * @return
      */
@@ -104,7 +103,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
 
     /**
      * For a given world & cooldown combo, return the applicable timer.
-     * 
+     *
      * @param cooldown
      * @param world
      * @return
@@ -120,21 +119,19 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
         boolean hasResetOnDeath = false;
         boolean isResetOnDeath = false;
         Map<String, Integer> cooldowns = new HashMap<String, Integer>();
-        
+
         public void setValue(String key, Object o) {
-            if( key.startsWith("cooldownPer") ) {   // cooldownPerPermission and cooldownPerWorld
+            if (key.startsWith("cooldownPer")) {   // cooldownPerPermission and cooldownPerWorld
                 hasCooldownPerX = true;
                 isCooldownPerX = (Boolean) o;
-            }
-            else if( key.equals("resetOnDeath") ) {
+            } else if (key.equals("resetOnDeath")) {
                 hasResetOnDeath = true;
                 isResetOnDeath = (Boolean) o;
-            }
-            else {
+            } else {
                 cooldowns.put(key, (Integer) o);
             }
         }
-        
+
         public void finishedProcessing() {
             cooldowns = Collections.unmodifiableMap(cooldowns);
         }
@@ -142,18 +139,32 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
 
     public static class CooldownsPerPermission extends PerPermissionEntry {
         private Entry entry;
-        
-        public boolean hasCooldownPerPermission() { return entry.hasCooldownPerX; }
-        public boolean isCooldownPerPermission() { return entry.isCooldownPerX; }
-        public boolean hasResetOnDeath() { return entry.hasResetOnDeath; }
-        public boolean isResetOnDeath() { return entry.isResetOnDeath; }
-        public Map<String, Integer> getCooldowns() { return entry.cooldowns; }
-        
+
+        public boolean hasCooldownPerPermission() {
+            return entry.hasCooldownPerX;
+        }
+
+        public boolean isCooldownPerPermission() {
+            return entry.isCooldownPerX;
+        }
+
+        public boolean hasResetOnDeath() {
+            return entry.hasResetOnDeath;
+        }
+
+        public boolean isResetOnDeath() {
+            return entry.isResetOnDeath;
+        }
+
+        public Map<String, Integer> getCooldowns() {
+            return entry.cooldowns;
+        }
+
         @Override
         public void setValue(String key, Object o) {
-            entry.setValue(key,  o);
+            entry.setValue(key, o);
         }
-        
+
         @Override
         public void finishedProcessing() {
             entry.finishedProcessing();
@@ -162,18 +173,32 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
 
     public static class CooldownsPerWorld extends PerWorldEntry {
         private Entry entry;
-        
-        public boolean hasCooldownPerWorld() { return entry.hasCooldownPerX; }
-        public boolean isCooldownPerWorld() { return entry.isCooldownPerX; }
-        public boolean hasResetOnDeath() { return entry.hasResetOnDeath; }
-        public boolean isResetOnDeath() { return entry.isResetOnDeath; }
-        public Map<String, Integer> getCooldowns() { return entry.cooldowns; }
-        
+
+        public boolean hasCooldownPerWorld() {
+            return entry.hasCooldownPerX;
+        }
+
+        public boolean isCooldownPerWorld() {
+            return entry.isCooldownPerX;
+        }
+
+        public boolean hasResetOnDeath() {
+            return entry.hasResetOnDeath;
+        }
+
+        public boolean isResetOnDeath() {
+            return entry.isResetOnDeath;
+        }
+
+        public Map<String, Integer> getCooldowns() {
+            return entry.cooldowns;
+        }
+
         @Override
         public void setValue(String key, Object o) {
-            entry.setValue(key,  o);
+            entry.setValue(key, o);
         }
-        
+
         @Override
         public void finishedProcessing() {
             entry.finishedProcessing();

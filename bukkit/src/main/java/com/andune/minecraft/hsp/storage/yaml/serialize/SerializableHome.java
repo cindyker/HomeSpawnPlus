@@ -26,83 +26,81 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
-import java.util.Map;
-
-import org.bukkit.configuration.serialization.SerializableAs;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.storage.yaml.StorageYaml;
+import org.bukkit.configuration.serialization.SerializableAs;
 
-/** Class which maps Home entity to YAML using Bukkit's ConfigurationSerializable
+import java.util.Map;
+
+/**
+ * Class which maps Home entity to YAML using Bukkit's ConfigurationSerializable
  * interface.
- * 
- * @author andune
  *
+ * @author andune
  */
 @SerializableAs("Home")
 public class SerializableHome extends AbstractSerializableEntityWithLocation<Home>
-implements SerializableYamlObject<Home>
-{
+        implements SerializableYamlObject<Home> {
     private final static Logger log = LoggerFactory.getLogger(SerializableHome.class);
-    
-	private final static String ATTR_NAME = "name";
-	private final static String ATTR_PLAYER_NAME = "player_name";
-	private final static String ATTR_UPDATED_BY = "updatedBy";
-	private final static String ATTR_DEFAULT_HOME = "defaultHome";
-	private final static String ATTR_BED_HOME = "bedHome";
-	
-	public SerializableHome(Home home) {
-		super(home);
-	}
-	
-	public SerializableHome(Map<String, Object> map) {
-		super(map);
-		
-		log.debug("SerializeHome constructor, map={}",map);
-		
-		Object o = map.get(ATTR_NAME);
-		if( o instanceof String )
-			getObject().setName((String) o);
-		o = map.get(ATTR_PLAYER_NAME);
-		if( o instanceof String )
-			getObject().setPlayerName((String) o);
-		o = map.get(ATTR_UPDATED_BY);
-		if( o instanceof String )
-			getObject().setUpdatedBy((String) o);
-		o = map.get(ATTR_BED_HOME);
-		if( o instanceof Boolean )
-			getObject().setBedHome((Boolean) o);
-		o = map.get(ATTR_DEFAULT_HOME);
-		if( o instanceof Boolean )
-			getObject().setDefaultHome((Boolean) o);
-		
-		// tell the currently loading StorageYaml that this object has been
-		// loaded. @see com.andune.minecraft.hsp.storage.yaml.HomeDAYYaml.temporaryAllObjects
-		if( StorageYaml.getCurrentlyInitializingInstance() != null ) {
-			StorageYaml.getCurrentlyInitializingInstance().homeLoaded(getObject());
-		}
-	}
 
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = super.serialize();
-		map.put(ATTR_NAME, getObject().getName());
-		map.put(ATTR_PLAYER_NAME, getObject().getPlayerName());
-		map.put(ATTR_UPDATED_BY, getObject().getUpdatedBy());
-		map.put(ATTR_BED_HOME, getObject().isBedHome());
-		map.put(ATTR_DEFAULT_HOME, getObject().isDefaultHome());
-		return map;
-	}
+    private final static String ATTR_NAME = "name";
+    private final static String ATTR_PLAYER_NAME = "player_name";
+    private final static String ATTR_UPDATED_BY = "updatedBy";
+    private final static String ATTR_DEFAULT_HOME = "defaultHome";
+    private final static String ATTR_BED_HOME = "bedHome";
 
-	@Override
-	protected Home newEntity() {
-		return new HomeImpl();
-	}
+    public SerializableHome(Home home) {
+        super(home);
+    }
+
+    public SerializableHome(Map<String, Object> map) {
+        super(map);
+
+        log.debug("SerializeHome constructor, map={}", map);
+
+        Object o = map.get(ATTR_NAME);
+        if (o instanceof String)
+            getObject().setName((String) o);
+        o = map.get(ATTR_PLAYER_NAME);
+        if (o instanceof String)
+            getObject().setPlayerName((String) o);
+        o = map.get(ATTR_UPDATED_BY);
+        if (o instanceof String)
+            getObject().setUpdatedBy((String) o);
+        o = map.get(ATTR_BED_HOME);
+        if (o instanceof Boolean)
+            getObject().setBedHome((Boolean) o);
+        o = map.get(ATTR_DEFAULT_HOME);
+        if (o instanceof Boolean)
+            getObject().setDefaultHome((Boolean) o);
+
+        // tell the currently loading StorageYaml that this object has been
+        // loaded. @see com.andune.minecraft.hsp.storage.yaml.HomeDAYYaml.temporaryAllObjects
+        if (StorageYaml.getCurrentlyInitializingInstance() != null) {
+            StorageYaml.getCurrentlyInitializingInstance().homeLoaded(getObject());
+        }
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = super.serialize();
+        map.put(ATTR_NAME, getObject().getName());
+        map.put(ATTR_PLAYER_NAME, getObject().getPlayerName());
+        map.put(ATTR_UPDATED_BY, getObject().getUpdatedBy());
+        map.put(ATTR_BED_HOME, getObject().isBedHome());
+        map.put(ATTR_DEFAULT_HOME, getObject().isDefaultHome());
+        return map;
+    }
+
+    @Override
+    protected Home newEntity() {
+        return new HomeImpl();
+    }
 }

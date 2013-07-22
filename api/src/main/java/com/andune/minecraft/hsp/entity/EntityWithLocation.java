@@ -33,19 +33,29 @@ package com.andune.minecraft.hsp.entity;
 
 /**
  * @author andune
- *
  */
 public interface EntityWithLocation extends BasicEntity {
-    String getWorld() ;
+    String getWorld();
+
     void setWorld(String world);
+
     Double getX();
+
     void setX(Double x);
+
     Double getY();
+
     void setY(Double y);
+
     Double getZ();
+
     void setZ(Double z);
+
     Float getPitch();
+
     void setPitch(Float pitch);
+
     Float getYaw();
+
     void setYaw(Float yaw);
 }

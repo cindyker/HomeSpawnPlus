@@ -26,15 +26,9 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.storage.yaml;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import com.andune.minecraft.hsp.entity.Home;
@@ -42,132 +36,145 @@ import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 import com.andune.minecraft.hsp.storage.yaml.serialize.SerializableHomeInvite;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author andune
- *
  */
 public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableHomeInvite> implements HomeInviteDAO {
-	private static final String CONFIG_SECTION = "homeInvites";
-	
-	public HomeInviteDAOYaml(final File file, final YamlConfiguration yaml) {
-		super(CONFIG_SECTION);
-		this.yaml = yaml;
-		this.file = file;
-	}
-	public HomeInviteDAOYaml(final File file) {
-		this(file, null);
-	}
-	
-	@Override
-	public HomeInvite findHomeInviteById(int id) {
-		HomeInvite homeInvite = null;
-		
-		Set<HomeInvite> homeInvites = findAllObjects();
-		if( homeInvites != null && homeInvites.size() > 0 ) {
-			for(HomeInvite h: homeInvites) {
-				if( id == h.getId() ) {
-					homeInvite = h;
-					break;
-				}
-			}
-		}
-		
-		return homeInvite;
-	}
-	
-	@Override
-	public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
-		HomeInvite homeInvite = null;
-		
-		Set<HomeInvite> homeInvites = findAllObjects();
-		if( homeInvites != null && homeInvites.size() > 0 ) {
-			for(HomeInvite h: homeInvites) {
-				if( home.equals(h.getHome()) && invitee.equals(h.getInvitedPlayer())) {
-					homeInvite = h;
-					break;
-				}
-			}
-		}
-		
-		return homeInvite;
-	}
-	@Override
-	public Set<HomeInvite> findInvitesByHome(Home home) {
-		Set<HomeInvite> set = new HashSet<HomeInvite>(5);
-		
-		Set<HomeInvite> homeInvites = findAllObjects();
-		if( homeInvites != null && homeInvites.size() > 0 ) {
-			for(HomeInvite h: homeInvites) {
-				if( home.equals(h.getHome()) ) {
-					set.add(h);
-				}
-			}
-		}
-		
-		return set;
-	}
-	@Override
-	public Set<HomeInvite> findAllAvailableInvites(String invitee) {
-		Set<HomeInvite> set = new HashSet<HomeInvite>(5);
-		
-		Set<HomeInvite> homeInvites = findAllObjects();
-		if( homeInvites != null && homeInvites.size() > 0 ) {
-			for(HomeInvite h: homeInvites) {
-				if( invitee.equals(h.getInvitedPlayer()) ) {
-					set.add(h);
-				}
-			}
-		}
-		
-		return set;
-	}
-	
-	@Override
-	public Set<HomeInvite> findAllOpenInvites(String player) {
-		Set<HomeInvite> set = new HashSet<HomeInvite>(5);
-		
-		Set<HomeInvite> homeInvites = findAllObjects();
-		if( homeInvites != null && homeInvites.size() > 0 ) {
-			for(HomeInvite h: homeInvites) {
-				if( player.equals(h.getHome().getPlayerName()) ) {
-					set.add(h);
-				}
-			}
-		}
-		
-		return set;
-	}
+    private static final String CONFIG_SECTION = "homeInvites";
 
-	@Override
-	public Set<HomeInvite> findAllHomeInvites() {
-		return super.findAllObjects();
-	}
+    public HomeInviteDAOYaml(final File file, final YamlConfiguration yaml) {
+        super(CONFIG_SECTION);
+        this.yaml = yaml;
+        this.file = file;
+    }
 
-	@Override
-	public void saveHomeInvite(HomeInvite homeInvite) throws StorageException {
-		super.saveObject(homeInvite);
-	}
-	@Override
-	public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
-		super.deleteObject(homeInvite);
-	}
-	@Override
-	protected SerializableHomeInvite newSerializable(HomeInvite object) {
-		return new SerializableHomeInvite(object);
-	}
+    public HomeInviteDAOYaml(final File file) {
+        this(file, null);
+    }
+
+    @Override
+    public HomeInvite findHomeInviteById(int id) {
+        HomeInvite homeInvite = null;
+
+        Set<HomeInvite> homeInvites = findAllObjects();
+        if (homeInvites != null && homeInvites.size() > 0) {
+            for (HomeInvite h : homeInvites) {
+                if (id == h.getId()) {
+                    homeInvite = h;
+                    break;
+                }
+            }
+        }
+
+        return homeInvite;
+    }
+
+    @Override
+    public HomeInvite findInviteByHomeAndInvitee(Home home, String invitee) {
+        HomeInvite homeInvite = null;
+
+        Set<HomeInvite> homeInvites = findAllObjects();
+        if (homeInvites != null && homeInvites.size() > 0) {
+            for (HomeInvite h : homeInvites) {
+                if (home.equals(h.getHome()) && invitee.equals(h.getInvitedPlayer())) {
+                    homeInvite = h;
+                    break;
+                }
+            }
+        }
+
+        return homeInvite;
+    }
+
+    @Override
+    public Set<HomeInvite> findInvitesByHome(Home home) {
+        Set<HomeInvite> set = new HashSet<HomeInvite>(5);
+
+        Set<HomeInvite> homeInvites = findAllObjects();
+        if (homeInvites != null && homeInvites.size() > 0) {
+            for (HomeInvite h : homeInvites) {
+                if (home.equals(h.getHome())) {
+                    set.add(h);
+                }
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<HomeInvite> findAllAvailableInvites(String invitee) {
+        Set<HomeInvite> set = new HashSet<HomeInvite>(5);
+
+        Set<HomeInvite> homeInvites = findAllObjects();
+        if (homeInvites != null && homeInvites.size() > 0) {
+            for (HomeInvite h : homeInvites) {
+                if (invitee.equals(h.getInvitedPlayer())) {
+                    set.add(h);
+                }
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<HomeInvite> findAllOpenInvites(String player) {
+        Set<HomeInvite> set = new HashSet<HomeInvite>(5);
+
+        Set<HomeInvite> homeInvites = findAllObjects();
+        if (homeInvites != null && homeInvites.size() > 0) {
+            for (HomeInvite h : homeInvites) {
+                if (player.equals(h.getHome().getPlayerName())) {
+                    set.add(h);
+                }
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<HomeInvite> findAllHomeInvites() {
+        return super.findAllObjects();
+    }
+
+    @Override
+    public void saveHomeInvite(HomeInvite homeInvite) throws StorageException {
+        super.saveObject(homeInvite);
+    }
+
+    @Override
+    public void deleteHomeInvite(HomeInvite homeInvite) throws StorageException {
+        super.deleteObject(homeInvite);
+    }
+
+    @Override
+    protected SerializableHomeInvite newSerializable(HomeInvite object) {
+        return new SerializableHomeInvite(object);
+    }
+
     @Override
     public int purgePlayer(String playerName) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public Set<String> getAllPlayerNames() {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgePlayerData(long purgeTime) {
         throw new FeatureNotImplemented();
     }
+
     @Override
     public int purgeWorldData(String world) {
         throw new FeatureNotImplemented();

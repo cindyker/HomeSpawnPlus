@@ -26,32 +26,31 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.config;
-
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerPermission;
 import com.andune.minecraft.hsp.config.ConfigHomeLimits.LimitsPerWorld;
 
+import javax.inject.Singleton;
+
 /**
  * @author andune
- *
  */
 @Singleton
-@ConfigOptions(fileName="homeLimits.yml", basePath="homeLimits")
+@ConfigOptions(fileName = "homeLimits.yml", basePath = "homeLimits")
 public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, LimitsPerWorld> implements Initializable {
     /**
      * Determine if single global home setting is enabled.
-     * 
+     *
      * @return
      */
     public boolean isSingleGlobalHome() {
         return super.getBoolean("singleGlobalHome");
     }
-    
+
     public Integer getDefaultGlobalLimit() {
         return super.getInteger("default.global");
     }
@@ -59,14 +58,14 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
     public Integer getDefaultPerWorldLimit() {
         return super.getInteger("default.perWorld");
     }
-    
+
     /**
      * If true, child worlds such as "world_nether" and "world_the_end"
      * automatically are associated with their base world "world", such that
      * the perWorld limit for world applies for all 3 worlds. If the perWorld
      * limit for "world" were 1, then a player could have only 1 home among all
      * 3 of the associated worlds.
-     * 
+     *
      * @return
      */
     public boolean getInheritAssociatedWorlds() {
@@ -77,24 +76,23 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
     protected LimitsPerPermission newPermissionEntry() {
         return new LimitsPerPermission();
     }
+
     @Override
     protected LimitsPerWorld newWorldEntry() {
         return new LimitsPerWorld();
     }
-    
+
     private class Entry {
         Integer perWorld = null;
         Integer global = null;
         String inherit = null;
-        
+
         public void setValue(String key, Object o) {
-            if( key.equals("perWorld") ) {
+            if (key.equals("perWorld")) {
                 perWorld = (Integer) o;
-            }
-            else if( key.equals("global") ) {
+            } else if (key.equals("global")) {
                 global = (Integer) o;
-            }
-            else if( key.equals("inherit") ) {
+            } else if (key.equals("inherit")) {
                 inherit = (String) o;
             }
         }
@@ -102,26 +100,39 @@ public class ConfigHomeLimits extends ConfigPerXBase<LimitsPerPermission, Limits
 
     public class LimitsPerPermission extends PerPermissionEntry {
         private Entry entry = new Entry();
-        
-        public Integer getPerWorld() { return entry.perWorld; }
-        public Integer getGlobal() { return entry.global; }
-        
+
+        public Integer getPerWorld() {
+            return entry.perWorld;
+        }
+
+        public Integer getGlobal() {
+            return entry.global;
+        }
+
         @Override
         public void setValue(String key, Object o) {
-            entry.setValue(key,  o);
+            entry.setValue(key, o);
         }
     }
 
     public class LimitsPerWorld extends PerWorldEntry {
         private Entry entry = new Entry();
-        
-        public Integer getPerWorld() { return entry.perWorld; }
-        public Integer getGlobal() { return entry.global; }
-        public String getInherit() { return entry.inherit; }
-        
+
+        public Integer getPerWorld() {
+            return entry.perWorld;
+        }
+
+        public Integer getGlobal() {
+            return entry.global;
+        }
+
+        public String getInherit() {
+            return entry.inherit;
+        }
+
         @Override
         public void setValue(String key, Object o) {
-            entry.setValue(key,  o);
+            entry.setValue(key, o);
         }
     }
 }

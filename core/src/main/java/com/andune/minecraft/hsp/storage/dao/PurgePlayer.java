@@ -37,7 +37,6 @@ import java.util.Set;
  * player.
  *
  * @author andune
- *
  */
 public interface PurgePlayer {
     /**

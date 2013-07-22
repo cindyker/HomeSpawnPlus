@@ -26,20 +26,18 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.strategy;
-
-import javax.inject.Singleton;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.hsp.entity.Home;
 import com.andune.minecraft.hsp.entity.Spawn;
-import com.andune.minecraft.hsp.strategy.StrategyResult;
+
+import javax.inject.Singleton;
 
 /**
  * @author andune
- *
  */
 @Singleton
 public class StrategyResultFactoryImpl implements StrategyResultFactory {

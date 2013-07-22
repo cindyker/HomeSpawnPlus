@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldguard;
 
@@ -36,26 +36,25 @@ import org.bukkit.event.HandlerList;
 
 /**
  * @author andune
- *
  */
 public class RegionExitEvent extends RegionEvent {
     private static final HandlerList handlers = new HandlerList();
 
     /**
-     * 
      * @param regionName the name of the region
-     * @param world the world the region belongs to
-     * @param player the player involved in this event
-     * @param to the location the player is moving to
+     * @param world      the world the region belongs to
+     * @param player     the player involved in this event
+     * @param to         the location the player is moving to
      */
     public RegionExitEvent(final String regionName, final String regionWorldName, final Player player, final Location to) {
-    	super(regionName, regionWorldName, player, to);
+        super(regionName, regionWorldName, player, to);
     }
 
-	@Override
-	public HandlerList getHandlers() {
+    @Override
+    public HandlerList getHandlers() {
         return handlers;
-	}
+    }
+
     public static HandlerList getHandlerList() {
         return handlers;
     }

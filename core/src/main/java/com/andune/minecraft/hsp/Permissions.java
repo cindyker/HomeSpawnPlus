@@ -36,25 +36,23 @@ import com.andune.minecraft.hsp.server.api.Command;
  * instances where we want to do something special with permission checks,
  * such as make them all true when a command block is executing something
  * on behalf of the player.
- * 
- * @author andune
  *
+ * @author andune
  */
 public interface Permissions {
 
     /**
      * Determine if a sender has a given permission.
-     * 
-     * @deprecated you should use one of the specific permission methods
-     * or add one if possible, to minimize the spread of permission concerns
-     * throughout the plugin code. This method is only set still
-     * to serve the need of config-exposed permissions, where admins can
-     * directly choose the permissions and therefore the plugin must test
-     * those permissions as-is.
-     * 
+     *
      * @param sender
      * @param perm
      * @return
+     * @deprecated you should use one of the specific permission methods
+     *             or add one if possible, to minimize the spread of permission concerns
+     *             throughout the plugin code. This method is only set still
+     *             to serve the need of config-exposed permissions, where admins can
+     *             directly choose the permissions and therefore the plugin must test
+     *             those permissions as-is.
      */
     boolean hasPermission(CommandSender sender, String perm);
 
@@ -63,7 +61,7 @@ public interface Permissions {
     /**
      * Check for custom command permission first, if there is none, check the
      * default command permission.
-     * 
+     *
      * @param sender
      * @param command
      * @return true if the sender has permission, false if not
@@ -74,7 +72,7 @@ public interface Permissions {
 
     /**
      * Determine if the player should have HSP admin privileges.
-     * 
+     *
      * @param player
      * @return
      */
@@ -82,7 +80,7 @@ public interface Permissions {
 
     /**
      * Determine if the player should be exempt from a given warmup.
-     * 
+     *
      * @param player
      * @param warmup
      * @return
@@ -91,7 +89,7 @@ public interface Permissions {
 
     /**
      * Determine if the player should be exempt from a given cooldown.
-     * 
+     *
      * @param player
      * @param cooldown
      * @return
@@ -100,7 +98,7 @@ public interface Permissions {
 
     /**
      * Determine if the player should be exempt from a given cost.
-     * 
+     *
      * @param player
      * @param cooldown
      * @return
@@ -108,9 +106,9 @@ public interface Permissions {
     boolean isCostExempt(Player player, String cost);
 
     /**
-     * Determine if a player has permission to specify an argument to 
-     * groupspawn commands, such as "/groupspawn somegroup" 
-     * 
+     * Determine if a player has permission to specify an argument to
+     * groupspawn commands, such as "/groupspawn somegroup"
+     *
      * @param player
      * @return
      */
@@ -119,9 +117,9 @@ public interface Permissions {
     /**
      * Determine if the player has permission to go to named spawns, such
      * as "/spawn spawn3".
-     * 
+     *
      * @param player
-     * @param name optional arg, if set, is appended to the permission check
+     * @param name   optional arg, if set, is appended to the permission check
      * @return
      */
     boolean hasSpawnNamed(Player player, String name);
@@ -129,7 +127,7 @@ public interface Permissions {
     /**
      * Determine if the player has permission to send out permament
      * home invites.
-     * 
+     *
      * @param player
      * @return
      */
@@ -143,7 +141,7 @@ public interface Permissions {
 
     /**
      * Determine if player has permission to set bed homes.
-     * 
+     *
      * @param player
      * @return
      */

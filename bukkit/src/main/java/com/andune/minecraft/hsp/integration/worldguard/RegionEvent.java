@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  */
 /**
- * 
+ *
  */
 package com.andune.minecraft.hsp.integration.worldguard;
 
@@ -36,7 +36,6 @@ import org.bukkit.event.Event;
 
 /**
  * @author andune
- *
  */
 public abstract class RegionEvent extends Event {
     private String regionName;
@@ -45,22 +44,35 @@ public abstract class RegionEvent extends Event {
     private Location to;
 
     /**
-     * 
      * @param regionName the name of the region
-     * @param world the world the region belongs to
-     * @param player the player involved in this event
-     * @param to the location the player is moving to
+     * @param world      the world the region belongs to
+     * @param player     the player involved in this event
+     * @param to         the location the player is moving to
      */
     public RegionEvent(final String regionName, final String regionWorldName, final Player player, final Location to) {
-    	this.regionName = regionName;
-    	this.regionWorldName = regionWorldName;
-    	this.player = player;
-    	this.to = to;
+        this.regionName = regionName;
+        this.regionWorldName = regionWorldName;
+        this.player = player;
+        this.to = to;
     }
-    
-    public Player getPlayer() { return player; }
-    public String getRegionName() { return regionName; }
-    public String getRegionWorldName() { return regionWorldName; }
-    public Location getTo() { return to; }
-    public void setTo(Location to) { this.to = to; }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public String getRegionName() {
+        return regionName;
+    }
+
+    public String getRegionWorldName() {
+        return regionWorldName;
+    }
+
+    public Location getTo() {
+        return to;
+    }
+
+    public void setTo(Location to) {
+        this.to = to;
+    }
 }

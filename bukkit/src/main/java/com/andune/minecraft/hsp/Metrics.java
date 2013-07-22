@@ -240,7 +240,6 @@ public class Metrics implements Initializable {
 
     /** Add HSP custom data graphs.
      * 
-     * @param hsp
      */
     public void findCustomData() {
         // Create our Permission Graph and Add our permission Plotters
@@ -415,22 +414,21 @@ public class Metrics implements Initializable {
     /**
      * Generic method that posts a plugin to the metrics website
      *
-     * @param plugin
      */
     private void postPlugin(boolean isPing) throws IOException {
         // The plugin's description file containg all of the plugin data such as name, version, author, etc
         final PluginDescriptionFile description = plugin.getDescription();
         
         // Construct the post data
-        String data = encode("guid") + '=' + encode(guid)
+        StringBuffer data = new StringBuffer(encode("guid") + '=' + encode(guid)
                 + encodeDataPair("version", description.getVersion())
                 + encodeDataPair("server", Bukkit.getVersion())
                 + encodeDataPair("players", Integer.toString(Bukkit.getServer().getOnlinePlayers().length))
-                + encodeDataPair("revision", String.valueOf(REVISION));
+                + encodeDataPair("revision", String.valueOf(REVISION)));
 
         // If we're pinging, append it
         if (isPing) {
-            data += encodeDataPair("ping", "true");
+            data.append(encodeDataPair("ping", "true"));
         }
 
         // Add any custom data available for the plugin
@@ -459,7 +457,7 @@ public class Metrics implements Initializable {
                     String value = Integer.toString(plotter.getValue());
 
                     // Add it to the http post data :)
-                    data += encodeDataPair(key, value);
+                    data.append(encodeDataPair(key, value));
                 }
             }
         }
@@ -482,7 +480,7 @@ public class Metrics implements Initializable {
 
         // Write the data
         OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-        writer.write(data);
+        writer.write(data.toString());
         writer.flush();
 
         // Now read the response

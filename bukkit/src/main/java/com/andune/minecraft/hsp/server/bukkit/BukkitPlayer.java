@@ -76,7 +76,9 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
     }
     @Override
     public void sendMessage(String[] messages) {
-        super.sendMessage(server.getDefaultColor() + messages);
+        if( messages != null && messages.length > 0 )
+            messages[0] = server.getDefaultColor() + messages[0];
+        super.sendMessage(messages);
     }
 
     @Override

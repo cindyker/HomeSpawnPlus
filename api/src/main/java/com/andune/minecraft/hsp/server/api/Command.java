@@ -40,7 +40,7 @@ import com.andune.minecraft.commonlib.server.api.Player;
  * @author andune
  *
  */
-interface Command {
+public interface Command {
 
     /**
      * Execute this command.

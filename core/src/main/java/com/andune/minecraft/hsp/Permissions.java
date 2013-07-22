@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.server.api.Command;
  * @author andune
  *
  */
-interface Permissions {
+public interface Permissions {
 
     /**
      * Determine if a sender has a given permission.

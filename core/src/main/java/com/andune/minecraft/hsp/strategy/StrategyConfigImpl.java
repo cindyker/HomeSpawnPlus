@@ -396,7 +396,7 @@ public class StrategyConfigImpl implements StrategyConfig {
 		int count = 0;
 		for(EventType type : EventType.values()) {
 			for(PermissionStrategies strat : permissionStrategies.values()) {
-				Set<Strategy> set = strat.eventStrategies.get(type);
+				Set<Strategy> set = strat.eventStrategies.get(type.toString());
 				if( set != null ) {
 					for(@SuppressWarnings("unused") Strategy s : set) {
 						count++;
@@ -415,7 +415,7 @@ public class StrategyConfigImpl implements StrategyConfig {
 		int count = 0;
 		for(EventType type : EventType.values()) {
 			for(WorldStrategies strat : worldStrategies.values()) {
-				Set<Strategy> set = strat.eventStrategies.get(type);
+				Set<Strategy> set = strat.eventStrategies.get(type.toString());
 				if( set != null ) {
 					for(@SuppressWarnings("unused") Strategy s : set) {
 						count++;
@@ -450,13 +450,13 @@ public class StrategyConfigImpl implements StrategyConfig {
 		for(EventType type : EventType.values()) {
 			// for each permission strategy, increment strategy counter
 			for(PermissionStrategies strat : permissionStrategies.values()) {
-				Set<Strategy> set = strat.eventStrategies.get(type);
+				Set<Strategy> set = strat.eventStrategies.get(type.toString());
 				incrementStrategyCounters(map, set);
 			}
 			
 			// for each world strategy, increment strategy counter
 			for(WorldStrategies strat : worldStrategies.values()) {
-				Set<Strategy> set = strat.eventStrategies.get(type);
+				Set<Strategy> set = strat.eventStrategies.get(type.toString());
 				incrementStrategyCounters(map, set);
 			}
 		}

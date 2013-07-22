@@ -183,7 +183,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 
         log.debug("evaluateStrategies: checking for world-based strategies");
 		// need to check world strategies if we don't yet have a successful result
-		if( result == null || (result != null && !result.isSuccess()) ) {
+		if( result == null || !result.isSuccess() ) {
 			// is it possible for player to have a null world when they first login? not sure
 			// but lets be sure we don't blow up if it is. Only process world strategy if
 			// player is in a world.

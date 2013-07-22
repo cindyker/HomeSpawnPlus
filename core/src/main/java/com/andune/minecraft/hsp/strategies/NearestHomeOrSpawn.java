@@ -60,14 +60,14 @@ public class NearestHomeOrSpawn extends BaseStrategy {
 		Location spawnLocation;
 		
 		// if either one is null, return the other
-		if( homeResult == null )
+		if( !homeResult.isSuccess() )
 			return spawnResult;
 		else {
 			homeLocation = homeResult.getLocation();
 			if( homeLocation == null )
 				return spawnResult;
 		}
-		if( spawnResult == null )
+		if( !spawnResult.isSuccess() )
 			return homeResult;
 		else {
 			spawnLocation = spawnResult.getLocation();

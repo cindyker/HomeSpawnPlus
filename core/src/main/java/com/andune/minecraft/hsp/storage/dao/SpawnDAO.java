@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-interface SpawnDAO {
+public interface SpawnDAO {
     static final String NEW_PLAYER_SPAWN = "newPlayerSpawn";
 
 	Spawn findSpawnByWorld(String world);

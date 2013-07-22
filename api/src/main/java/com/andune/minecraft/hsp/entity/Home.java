@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 
-interface Home extends EntityWithLocation {
+public interface Home extends EntityWithLocation {
 
     void setLocation(Location l);
 

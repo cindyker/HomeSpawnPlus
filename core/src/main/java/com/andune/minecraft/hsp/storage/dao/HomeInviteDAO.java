@@ -41,7 +41,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-interface HomeInviteDAO extends PurgePlayer {
+public interface HomeInviteDAO extends PurgePlayer {
     /** Given the primary id, find the HomeInvite object.
      *
      * @param id

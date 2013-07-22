@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.integration.PluginIntegration;
  * @author andune
  *
  */
-interface MultiversePortals extends PluginIntegration {
+public interface MultiversePortals extends PluginIntegration {
     String getSourcePortalName();
     void setSourcePortalName(String sourcePortalName);
     String getDestinationPortalName();

@@ -35,7 +35,7 @@ package com.andune.minecraft.hsp.entity;
  * @author andune
  *
  */
-interface EntityWithLocation extends BasicEntity {
+public interface EntityWithLocation extends BasicEntity {
     String getWorld() ;
     void setWorld(String world);
     Double getX();

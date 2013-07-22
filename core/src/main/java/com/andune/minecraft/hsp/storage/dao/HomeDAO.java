@@ -40,7 +40,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-interface HomeDAO extends PurgePlayer {
+public interface HomeDAO extends PurgePlayer {
     Home findHomeById(int id);
     Home findDefaultHome(String world, String playerName);
     Home findBedHome(String world, String playerName);

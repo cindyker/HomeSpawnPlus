@@ -36,7 +36,7 @@ import com.andune.minecraft.hsp.integration.PluginIntegration;
  * @author andune
  *
  */
-interface MultiverseCore extends PluginIntegration {
+public interface MultiverseCore extends PluginIntegration {
     String getCurrentTeleporter();    
     void setCurrentTeleporter(String name);
 }

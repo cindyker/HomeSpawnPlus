@@ -44,7 +44,7 @@ import com.andune.minecraft.hsp.storage.dao.VersionDAO;
  * @author andune
  *
  */
-interface Storage {
+public interface Storage {
 	String HSP_WORLD_SPAWN_GROUP = "HSP_GLOBAL";
 	String HSP_BED_RESERVED_NAME = "bed";
 	

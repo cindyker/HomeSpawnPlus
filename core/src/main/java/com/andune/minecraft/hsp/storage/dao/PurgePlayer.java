@@ -39,7 +39,7 @@ import java.util.Set;
  * @author andune
  *
  */
-interface PurgePlayer {
+public interface PurgePlayer {
     /**
      * This method is called to purge a single player from the given backing
      * store for this entity type.

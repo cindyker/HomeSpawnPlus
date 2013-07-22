@@ -33,7 +33,7 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 
-interface StrategyContext {
+public interface StrategyContext {
 
 	String getEventType();
 

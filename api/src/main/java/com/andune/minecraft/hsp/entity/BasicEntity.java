@@ -36,7 +36,7 @@ import java.sql.Timestamp;
  * @author andune
  *
  */
-interface BasicEntity {
+public interface BasicEntity {
     int getId();
     void setId(int id);
     Timestamp getLastModified();

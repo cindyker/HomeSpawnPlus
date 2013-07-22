@@ -39,7 +39,7 @@ import com.andune.minecraft.hsp.storage.StorageException;
  * @author andune
  *
  */
-interface PlayerDAO extends PurgePlayer {
+public interface PlayerDAO extends PurgePlayer {
     Player findPlayerByName(String name);
     Set<Player> findAllPlayers();
     void savePlayer(Player player) throws StorageException;

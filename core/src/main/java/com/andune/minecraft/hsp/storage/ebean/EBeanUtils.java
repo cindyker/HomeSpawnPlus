@@ -30,7 +30,7 @@ package com.andune.minecraft.hsp.storage.ebean;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-interface EBeanUtils {
+public interface EBeanUtils {
     String getDriver();
 
     String getUrl();

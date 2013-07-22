@@ -350,16 +350,17 @@ public abstract class MyDatabase {
             }
 
             //Turn all the lines back into a single string
-            String newScript = "";
+            StringBuffer newScript = new StringBuffer();
             for(String newLine : scriptLines) {
-                newScript += newLine + "\n";
+                newScript.append(newLine);
+                newScript.append("\n");
             }
 
             //Print the new script
             System.out.println(newScript);
 
             //Return the fixed script
-            return newScript;
+            return newScript.toString();
         } 
         catch (Exception ex) {
             //Exception: Failed to fix the DDL or something just went plain wrong

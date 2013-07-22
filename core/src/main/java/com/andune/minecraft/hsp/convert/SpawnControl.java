@@ -61,13 +61,15 @@ public class SpawnControl extends BaseConverter
     @Override
 	public int convert() {
         int convertedCount = 0;
-        
+
+        Connection conn = null;
+        PreparedStatement ps = null;
 		try
         {
 			String db = "jdbc:sqlite:plugins/SpawnControl/spawncontrol.db";
     		Class.forName("org.sqlite.JDBC");
-        	Connection conn = DriverManager.getConnection(db);
-        	PreparedStatement ps = conn.prepareStatement("SELECT * FROM `players`");
+        	conn = DriverManager.getConnection(db);
+        	ps = conn.prepareStatement("SELECT * FROM `players`");
             ResultSet rs = ps.executeQuery();
 
 //            HomeSpawnUtils util = plugin.getUtil();
@@ -108,6 +110,16 @@ public class SpawnControl extends BaseConverter
         catch(Exception e)
         {
             log.error("Caught exception", e);
+        }
+        finally {
+            try {
+                if( ps != null )
+                    ps.close();
+            } catch(SQLException e) {}
+            try {
+                if( conn != null )
+                    conn.close();
+            } catch(SQLException e) {}
         }
         
         return convertedCount;

@@ -83,7 +83,7 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
 		Set<HomeInvite> homeInvites = findAllObjects();
 		if( homeInvites != null && homeInvites.size() > 0 ) {
 			for(HomeInvite h: homeInvites) {
-				if( home.equals(h) && invitee.equals(h.getInvitedPlayer())) {
+				if( home.equals(h.getHome()) && invitee.equals(h.getInvitedPlayer())) {
 					homeInvite = h;
 					break;
 				}
@@ -99,7 +99,7 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
 		Set<HomeInvite> homeInvites = findAllObjects();
 		if( homeInvites != null && homeInvites.size() > 0 ) {
 			for(HomeInvite h: homeInvites) {
-				if( home.equals(h) ) {
+				if( home.equals(h.getHome()) ) {
 					set.add(h);
 				}
 			}

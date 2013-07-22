@@ -201,7 +201,7 @@ public class StrategyEngineImpl implements StrategyEngine {
 		}
 		
 		// need to check default strategies if we don't yet have a successful result
-		if( result == null || (result != null && !result.isSuccess()) ) {
+		if( result == null || !result.isSuccess() ) {
 			log.debug("evaluateStrategies: evaluating default strategies");
 			Set<Strategy> defaultStrategies = strategyConfig.getDefaultStrategies(context.getEventType());
 			if( defaultStrategies != null && defaultStrategies.size() > 0 ) {

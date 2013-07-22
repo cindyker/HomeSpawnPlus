@@ -476,7 +476,7 @@ public class StrategyConfigImpl implements StrategyConfig {
 		for(Strategy s : set) {
 			Integer i = map.get(s.getStrategyConfigName());
 			if( i == null )
-				i = new Integer(1);
+				i = Integer.valueOf(1);
 			else
 				i++;
 			map.put(s.getStrategyConfigName(), i);

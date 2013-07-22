@@ -128,7 +128,7 @@ public class CooldownManager {
     	
     	if(cdt.cooldownTime > 0) {
     		log.debug("saving cooldown {}, cooldownAmount = {}", cdt.cooldownName, cdt.cooldownTime);
-    		cooldowns.put(p.getName()+"."+cdt.cooldownName, new Long(System.currentTimeMillis()));
+    		cooldowns.put(p.getName()+"."+cdt.cooldownName, Long.valueOf(System.currentTimeMillis()));
     	}
     }
     

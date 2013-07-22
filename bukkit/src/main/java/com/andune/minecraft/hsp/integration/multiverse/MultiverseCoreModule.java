@@ -114,9 +114,9 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
                 registerListener();
             }
-        }
-        else {
-            log.info("Unsupported version of Multiverse: "+p.getDescription().getVersion());
+            else {
+                log.info("Unsupported version of Multiverse: "+p.getDescription().getVersion());
+            }
         }
     }
 

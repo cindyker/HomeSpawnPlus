@@ -87,7 +87,7 @@ public class HomeLimitsManager {
      * @return the world the argument inherits from, if any. Will be null if
      *         there is no inheritance.
      */
-    public String getInheritedWorld(String worldName) {
+    public String getInheritedWorld(final String worldName) {
         log.debug("getInheritedWorld: worldName={}", worldName);
         String inherit = null;
         LimitsPerWorld entry = config.getPerWorldEntry(worldName);
@@ -98,6 +98,10 @@ public class HomeLimitsManager {
         // world name if it is a child world
         if (inherit == null && config.getInheritAssociatedWorlds()) {
             World baseWorld = server.getWorld(worldName);
+            if( baseWorld == null ) {
+                log.error("getInheritedWorld(): Got request for world \"{}\", but no such world was found on the server.", worldName);
+                return null;
+            }
             World parent = baseWorld.getParentWorld();
             if (parent != null)
                 inherit = parent.getName();

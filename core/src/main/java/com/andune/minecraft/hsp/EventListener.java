@@ -39,6 +39,7 @@ import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.manager.CooldownManager;
 import com.andune.minecraft.hsp.manager.EffectsManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Factory;
@@ -71,6 +72,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     private final BedUtils bedUtil;
     private final WarmupManager warmupManager;
     private final EffectsManager effectsManager;
+    private final CooldownManager cooldownManager;
 
     /**
      * We record the last known player/location for common events so that we can
@@ -89,7 +91,8 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     @Inject
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
                          MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
-                         BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager) {
+                         BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager,
+                         CooldownManager cooldownManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -100,6 +103,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         this.bedUtil = bedUtil;
         this.warmupManager = warmupManager;
         this.effectsManager = effectsManager;
+        this.cooldownManager = cooldownManager;
     }
 
     @Override
@@ -366,5 +370,10 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     @Override
     public void playerDamage(PlayerDamageEvent event) {
         warmupManager.processEntityDamage(event);
+    }
+
+    @Override
+    public void playerDeath(PlayerDeathEvent event) {
+        cooldownManager.onDeath(event.getPlayer());
     }
 }

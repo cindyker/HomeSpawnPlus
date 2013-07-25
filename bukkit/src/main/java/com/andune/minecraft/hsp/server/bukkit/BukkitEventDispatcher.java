@@ -40,6 +40,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -201,6 +202,15 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
         com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent apiEvent =
                 new com.andune.minecraft.commonlib.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
         eventListener.playerDamage(apiEvent);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event) {
+        if( event.getEntity() instanceof Player ) {
+            com.andune.minecraft.commonlib.server.api.events.PlayerDeathEvent apiEvent =
+                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerDeathEvent((Player) event.getEntity(), bukkitFactory);
+            eventListener.playerDeath(apiEvent);
+        }
     }
 
     /* Not needed, not used outside of WorldGuard module which will register

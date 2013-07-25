@@ -307,7 +307,6 @@ public class CooldownManager {
      * Should be called when a player dies. Will determine if the player's
      * cooldowns should be reset based on config options and location.
      * <p/>
-     * TODO: 2.0 bug, onDeath() doesn't look to ever be called.
      *
      * @param player
      * @param location

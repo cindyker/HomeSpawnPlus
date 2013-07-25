@@ -45,13 +45,21 @@ import java.util.Map;
 @SerializableAs("HomeInvite")
 public class SerializableHomeInvite extends AbstractSerializableBasicEntity<HomeInvite>
         implements SerializableYamlObject<HomeInvite> {
+    /*
+     * Bukkit contract specifies constructor interface and invocation, thus we have
+     * no opportunity for IoC injection prior to needing the injected object. So we
+     * break the usual IoC model for a static variable that is set one time at plugin
+     * startup to satisfy the dependency.
+     */
+    private static HomeDAO homeDAO;
+
     private final static String ATTR_HOME = "home";
     private final static String ATTR_INVITED_PLAYER = "invitedPlayer";
     private final static String ATTR_EXPIRES = "expires";
 
-    // TODO: need to figure out injection or a factory for this object..
-    @Inject
-    private HomeDAO homeDAO;
+    public static void setHomeDAO(HomeDAO homeDAO) {
+        SerializableHomeInvite.homeDAO = homeDAO;
+    }
 
     public SerializableHomeInvite(HomeInvite homeInvite) {
         super(homeInvite);

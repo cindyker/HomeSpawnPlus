@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.guice;
 
+import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;

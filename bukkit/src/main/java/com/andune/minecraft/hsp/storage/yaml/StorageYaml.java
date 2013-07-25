@@ -141,6 +141,9 @@ public class StorageYaml implements Storage {
             file = new File(dataDirectory, "playerLastLocations.yml");
             playerLastLocationDAO = new PlayerLastLocationDAOYaml(file);
         }
+
+        // static initializer required to work around Bukkit contract conflict with IoC
+        SerializableHomeInvite.setHomeDAO(homeDAO);
     }
 
     @Override
@@ -206,7 +209,7 @@ public class StorageYaml implements Storage {
     /**
      * Keep track of spawns as they are loading, same as homeLoaded() above.
      *
-     * @param home
+     * @param spawn
      */
     public void spawnLoaded(Spawn spawn) {
         spawnDAO.spawnLoaded(spawn);

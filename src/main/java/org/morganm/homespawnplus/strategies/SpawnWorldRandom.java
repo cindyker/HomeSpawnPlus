@@ -89,50 +89,64 @@ public class SpawnWorldRandom extends BaseStrategy {
 			WorldBorder worldBorder = (WorldBorder) p;
 			BorderData border = worldBorder.GetWorldBorder(w.getName());
 			
-			double x = border.getX();
-			double z = border.getZ();
-			int radius = border.getRadius();
-			
-			Location min = new Location(w,x-radius, yBounds.minY, z-radius);
-			Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
-			
-			// we loop and try multiple times, because it's possible we randomly select
-			// a location outside of the border. If so, we just loop and guess again.
-			// This is because our random routine finds a random location within a
-			// square region, while WorldBorder might have defined a circular region.
-			int tries = 0;
-			while( result == null && tries < MAX_TRIES ) {
-				tries++;
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
-				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
-				if( result != null && !border.insideBorder(result) )
-					result = null;
+			if( border != null ) {
+				double x = border.getX();
+				double z = border.getZ();
+				int radius = border.getRadius();
+				
+				Location min = new Location(w,x-radius, yBounds.minY, z-radius);
+				Location max = new Location(w,x+radius, yBounds.maxY, z+radius);
+				
+				// we loop and try multiple times, because it's possible we randomly select
+				// a location outside of the border. If so, we just loop and guess again.
+				// This is because our random routine finds a random location within a
+				// square region, while WorldBorder might have defined a circular region.
+				int tries = 0;
+				while( result == null && tries < MAX_TRIES ) {
+					tries++;
+					Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
+					result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
+					Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+					if( result != null && !border.insideBorder(result) )
+						result = null;
+				}
+				
+				if( tries == MAX_TRIES )
+					log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
 			}
-			
-			if( tries == MAX_TRIES )
-				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
+			else {
+				log.warning(logPrefix+" "+getStrategyConfigName()+": worldBorder installed but no border set for world "+w.getName()+". Using default x/z 1000 border.");
+				result = randomDefaultBorder(w, yBounds, context);
+			}
 		}
 		// no WorldBorder? just assume default min/max of +/- 1000
 		else {
-			Location min = new Location(w, -1000, yBounds.minY, -1000);
-			Location max = new Location(w, 1000, yBounds.maxY, 1000);
-			int tries = 0;
-			while( result == null && tries < MAX_TRIES ) {
-				tries++;
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
-				result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
-				Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
-			}
-
-			if( tries == MAX_TRIES )
-				log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
+			result = randomDefaultBorder(w, yBounds, context);
 		}
 		
 		if( result ==  null )
 			return null;
 		
 		return new StrategyResult(result);
+	}
+	
+	private Location randomDefaultBorder(World w, Teleport.Bounds yBounds, StrategyContext context) {
+		Location result = null;
+
+		Location min = new Location(w, -1000, yBounds.minY, -1000);
+		Location max = new Location(w, 1000, yBounds.maxY, 1000);
+		int tries = 0;
+		while( result == null && tries < MAX_TRIES ) {
+			tries++;
+			Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries);
+			result = plugin.getUtil().findRandomSafeLocation(min, max, yBounds, context.getModeSafeTeleportFlags());
+			Debug.getInstance().devDebug("SpawnWorldRandom: try=",tries,", result=",result);
+		}
+
+		if( tries == MAX_TRIES )
+			log.warning(logPrefix+" "+getStrategyConfigName()+" exceeded "+MAX_TRIES+" tries trying to find random location, likely indicates a problem with your configuration");
+
+		return result;
 	}
 	
 	@Override

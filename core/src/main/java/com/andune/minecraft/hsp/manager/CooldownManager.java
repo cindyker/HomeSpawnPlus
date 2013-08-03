@@ -54,29 +54,28 @@ import java.util.Map;
  */
 @Singleton
 public class CooldownManager {
+    // one full second in milliseconds
+    private final static int ONE_SECOND = 1000;
     private final Logger log = LoggerFactory.getLogger(CooldownManager.class);
 
     private final Server server;
     private final ConfigCooldown config;
-    private final Hashtable<String, Long> cooldowns;
+    private final Map<String, Long> cooldowns;
     private final General generalUtil;
-    private final Permissions perm;
+    private final Permissions permissions;
 
     @Inject
-    public CooldownManager(Server server, ConfigCooldown config, General generalUtil, Permissions perm) {
+    public CooldownManager(Server server, ConfigCooldown config, General generalUtil, Permissions permissions) {
         this.server = server;
         this.config = config;
         this.generalUtil = generalUtil;
-        this.perm = perm;
+        this.permissions = permissions;
         cooldowns = new Hashtable<String, Long>();
     }
 
     private boolean isExemptFromCooldown(Player p, String cooldown) {
         final CooldownNames cn = parseCooldownNames(cooldown);
-        if (perm.isCooldownExempt(p, cn.baseName))
-            return true;
-        else
-            return false;
+        return permissions.isCooldownExempt(p, cn.baseName);
     }
 
     /**
@@ -86,8 +85,8 @@ public class CooldownManager {
      * It also writes a message to the player letting them know they are still
      * in cooldown.
      *
-     * @param p
-     * @param cooldownName
+     * @param p            the player
+     * @param cooldownName the cooldown we are checking
      * @param sendMessage  if true, a message will be sent to the player explaining the
      *                     cooldown and time left.
      * @return true if cooldown is available, false if currently in cooldown
@@ -103,18 +102,13 @@ public class CooldownManager {
             if (sendMessage) {
                 p.sendMessage(server.getLocalizedMessage(HSPMessages.COOLDOWN_IN_EFFECT,
                         "name", cooldownName,
-                        "time", generalUtil.displayTimeString(cooldownTimeLeft * 1000,
+                        "time", generalUtil.displayTimeString(cooldownTimeLeft * ONE_SECOND,
                         false, null)));
             }
             log.debug("cooldownCheck() return false");
             return false;
         }
 
-        // no longer update cooldown here, but require an explicit call to setCooldown() instead.
-        // this forces the interface to work around a bug where a cooldown gets applied
-        // at the start of a command even though the command aborts due to an error condition
-        // (such as player arguments being wrong, etc).
-//		setCooldown(p, cooldownName);
         log.debug("cooldownCheck() return true");
         return true;
     }
@@ -124,16 +118,16 @@ public class CooldownManager {
 
         if (cdt.cooldownTime > 0) {
             log.debug("saving cooldown {}, cooldownAmount = {}", cdt.cooldownName, cdt.cooldownTime);
-            cooldowns.put(p.getName() + "." + cdt.cooldownName, Long.valueOf(System.currentTimeMillis()));
+            cooldowns.put(p.getName() + "." + cdt.cooldownName, System.currentTimeMillis());
         }
     }
 
     /**
-     * Return the number of remaining seconds for a given cooldown.
+     * Determine the number of remaining seconds for a given cooldown.
      *
-     * @param p
-     * @param cooldown
-     * @return
+     * @param p        the player whose cooldowns we are checking
+     * @param cooldown the name of the cooldown being checked
+     * @return the number of remaining seconds
      */
     public long getCooldownRemaining(final Player p, final String cooldown) {
         long cooldownRemaining = 0;
@@ -148,13 +142,15 @@ public class CooldownManager {
         Long cooldownStartTime = cooldowns.get(key);
         log.debug("getCooldownRemaining(): key={}, cooldownStartTime={}", key, cooldownStartTime);
         if (cooldownStartTime != null) {
-            long timeElapsed = (System.currentTimeMillis() - cooldownStartTime) / 1000;
+            long timeElapsed = (System.currentTimeMillis() - cooldownStartTime) / ONE_SECOND;
             log.debug("getCooldownRemaining(): key={}, timeElapsed={}", key, timeElapsed);
 
             if (timeElapsed > cooldownAmount) {
                 log.debug("getCooldownRemaining(): expired cooldown removed, key={}", key);
-                cooldowns.remove(key);                        // cooldown expired, remove it
-            } else
+                // cooldown expired, remove it
+                cooldowns.remove(key);
+            }
+            else
                 cooldownRemaining = cooldownAmount - timeElapsed;
         }
 
@@ -170,17 +166,23 @@ public class CooldownManager {
     private CooldownNames parseCooldownNames(final String cooldown) {
         CooldownNames cn = new CooldownNames();
 
-        cn.fullName = cooldown;                    // "home-named.home1"
+        // "home-named.home1"
+        cn.fullName = cooldown;
 
         int index = cooldown.indexOf('.');
-        if (index != -1)
-            cn.extendedName = cooldown.substring(0, index);        // "home-named";
+
+        if (index != -1) {
+            // "home-named"
+            cn.extendedName = cooldown.substring(0, index);
+        }
         else
             cn.extendedName = cooldown;
 
         index = cn.extendedName.indexOf('-');
-        if (index != -1)
-            cn.baseName = cn.extendedName.substring(0, index);        // "home"
+        if (index != -1) {
+            // "home"
+            cn.baseName = cn.extendedName.substring(0, index);
+        }
         else
             cn.baseName = cn.extendedName;
 
@@ -190,7 +192,7 @@ public class CooldownManager {
             cn.fullName = null;
         if (cn.fullName != null && cn.fullName.equals(cn.extendedName))
             cn.fullName = null;
-        if (cn.extendedName != null && cn.extendedName.equals(cn.baseName))
+        if (cn.extendedName.equals(cn.baseName))
             cn.extendedName = null;
 
         if (cn.fullName != null && cn.extendedName != null)
@@ -213,14 +215,18 @@ public class CooldownManager {
      * permission-specific cooldowns into account. This also returns the cooldown
      * name, which can change if the admin wants the cooldown to be specific to
      * the world or permission.
+     * <p/>
+     * TODO: Cyclomatic Complexity of this method is high, should be refactored.
      *
-     * @param p
-     * @param cooldown
-     * @return
+     * @param player   the player
+     * @param cooldown the cooldown name to check
+     * @return the number of seconds the cooldown should have
      */
     private CooldownTime getCooldownTime(final Player player, final String cooldown) {
         final CooldownTime cdt = new CooldownTime();
-        cdt.cooldownName = cooldown;    // default to existing cooldown name
+
+        // default to existing cooldown name
+        cdt.cooldownName = cooldown;
 
         final CooldownNames cn = parseCooldownNames(cooldown);
         log.debug("getCooldownTime(): cn.baseName={}, cn.extendedName={}, cn.fullName={}",
@@ -246,7 +252,7 @@ public class CooldownManager {
                             if (player.hasPermission(perm)) {
                                 cdt.cooldownTime = value;
 
-                                // change cooldown name if per-perm flag is enabled to do so
+                                // change cooldown name if per-permissions flag is enabled to do so
                                 if (entry.getValue().isCooldownPerPermission())
                                     cdt.cooldownName = cooldown + "." + perm;
                                 else
@@ -308,8 +314,7 @@ public class CooldownManager {
      * cooldowns should be reset based on config options and location.
      * <p/>
      *
-     * @param player
-     * @param location
+     * @param player the player
      */
     public void onDeath(Player player) {
         boolean resetOnDeath = false;
@@ -362,9 +367,9 @@ public class CooldownManager {
         }
     }
 
-    class CooldownTime {
-        int cooldownTime = 0;
-        String cooldownName;
+    private static class CooldownTime {
+        private int cooldownTime = 0;
+        private String cooldownName;
     }
 
     /**
@@ -374,10 +379,13 @@ public class CooldownManager {
      *
      * @author andune
      */
-    class CooldownNames {
-        String baseName = null;            // "home"
-        String extendedName = null;        // "home-named"
-        String fullName = null;            // "home-named.home1" or just "home.home1"
-        String allNames[];
+    private static class CooldownNames {
+        // "home"
+        private String baseName = null;
+        // "home-named"
+        private String extendedName = null;
+        // "home-named.home1" or just "home.home1"
+        private String fullName = null;
+        private String allNames[];
     }
 }

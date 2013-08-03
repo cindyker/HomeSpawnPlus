@@ -62,7 +62,7 @@ import java.util.Map;
  * @author andune
  */
 public abstract class BaseCommand implements Command {
-    protected static final Logger log = LoggerFactory.getLogger(BaseCommand.class);
+    protected final Logger log = LoggerFactory.getLogger(BaseCommand.class);
 
     protected Server server;
     protected Plugin plugin;
@@ -94,11 +94,11 @@ public abstract class BaseCommand implements Command {
      * rather than every command having to check for Console.
      * <p/>
      * If a command can respond to Console input, it should override the
-     * {@link #execute(CommandSender, String[])} method instead.
+     * {@link #execute(CommandSender, String, String[])} method instead.
      * <p/>
      * Note this method does nothing, it's simply a stub to be overridden by a subclass.
      */
-    public boolean execute(Player player, String[] args) throws Exception {
+    public boolean execute(Player player, String[] args) throws CommandException {
         return false;
     }
 
@@ -138,7 +138,8 @@ public abstract class BaseCommand implements Command {
             if (args.length < 1) {
                 sender.sendMessage("From the console, command /" + cmd + " requires the first argument to be the player to run as");
                 return true;
-            } else {
+            }
+            else {
                 String playerName = args[0];
                 Player p = server.getPlayer(playerName);
                 if (p == null) {
@@ -192,7 +193,7 @@ public abstract class BaseCommand implements Command {
      */
     protected String getStringParam(String param) {
         Object v = getParam(param);
-        if (v != null && v instanceof String)
+        if (v instanceof String)
             return (String) v;
         else if (v != null)
             return v.toString();
@@ -235,15 +236,11 @@ public abstract class BaseCommand implements Command {
         this.storage = storage;
     }
 
-//	protected String getDisabledConfigFlag() {
-//		return ConfigOptions.COMMAND_TOGGLE_BASE + getCommandName();
-//	}
-
     /**
      * Check to see if player has sufficient money to pay for this command.
      *
-     * @param p
-     * @return
+     * @param p the player to check
+     * @return true if the player has enough money or the command has no cost
      */
     protected boolean costCheck(Player p) {
         boolean returnValue = false;
@@ -260,8 +257,9 @@ public abstract class BaseCommand implements Command {
                 double balance = economy.getBalance(p.getName());
                 if (balance >= price)
                     returnValue = true;
-            } else
-                returnValue = true;    // no cost for this command
+            }
+            else
+                returnValue = true;
         }
 
         return returnValue;
@@ -285,7 +283,7 @@ public abstract class BaseCommand implements Command {
     protected boolean applyCost(Player p, boolean applyCooldown, String cooldownName) {
         boolean returnValue = false;
 
-        if (economy == null || configEconomy.isEnabled() == false)
+        if ((economy == null) || !configEconomy.isEnabled())
             returnValue = true;
 
         if (!returnValue && permissions.isCostExempt(p, getCommandName()))
@@ -295,12 +293,14 @@ public abstract class BaseCommand implements Command {
         if (!costCheck(p)) {
             printInsufficientFundsMessage(p);
             returnValue = false;
-        } else if (!returnValue) {
+        }
+        else if (!returnValue) {
             int price = getPrice(p);
             if (price > 0) {
                 String error = economy.withdrawPlayer(p.getName(), price);
 
-                if (error == null) {   // SUCCESS
+                // SUCCESS
+                if (error == null) {
                     if (configEconomy.isVerboseOnCharge()) {
                         // had an error report that might have been related to a null value
                         // being returned from economy.format(price), so let's check for that
@@ -315,18 +315,21 @@ public abstract class BaseCommand implements Command {
                     }
 
                     returnValue = true;
-                } else {
+                }
+                else {
                     p.sendMessage(server.getLocalizedMessage(HSPMessages.COST_ERROR,
                             "price", economy.format(price),
                             "errorMessage", error));
                     returnValue = false;
                 }
-            } else
-                returnValue = true;    // no cost for this command
+            }
+            // no cost for this command
+            else
+                returnValue = true;
         }
 
         // if applyCooldown flag is true and the returnValue is true, then apply the Cooldown now
-        if (applyCooldown && returnValue == true)
+        if (applyCooldown && returnValue)
             applyCooldown(p, cooldownName);
 
         return returnValue;
@@ -347,7 +350,8 @@ public abstract class BaseCommand implements Command {
             p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_STARTED,
                     "name", wr.getWarmupName(),
                     "seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime));
-        } else
+        }
+        else
             p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName()));
 
     }
@@ -384,7 +388,9 @@ public abstract class BaseCommand implements Command {
     protected boolean defaultCommandChecks(CommandSender sender) {
         if (sender instanceof Player) {
             return defaultCommandChecks((Player) sender);
-        } else {        // it's a local or remote console
+        }
+        // it's a local or remote console
+        else {
             return true;
         }
     }
@@ -509,7 +515,8 @@ public abstract class BaseCommand implements Command {
             if (displayMessage)
                 p.sendMessage(server.getLocalizedMessage(HSPMessages.NO_PERMISSION));
             return false;
-        } else
+        }
+        else
             return true;
     }
 
@@ -553,9 +560,6 @@ public abstract class BaseCommand implements Command {
                     result = m.invoke(obj, args);
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
-            } catch (Exception e) {
-                throw new RuntimeException("unexpected invocation exception: " +
-                        e.getMessage());
             } finally {
                 log.debug("method result = {}", result);
             }

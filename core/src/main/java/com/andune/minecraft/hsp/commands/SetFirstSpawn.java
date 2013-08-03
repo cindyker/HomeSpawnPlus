@@ -33,6 +33,7 @@ package com.andune.minecraft.hsp.commands;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.command.CommandException;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.util.SpawnUtil;
@@ -50,10 +51,14 @@ public class SetFirstSpawn extends BaseCommand {
     private SpawnUtil util;
 
     @Override
-    public boolean execute(Player p, String[] args) throws StorageException {
-        util.setFirstSpawn(p.getLocation(), p.getName());
-        server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
+    public boolean execute(Player p, String[] args) throws CommandException {
+        try {
+            util.setFirstSpawn(p.getLocation(), p.getName());
+            server.sendLocalizedMessage(p, HSPMessages.CMD_SETFIRSTSPAWN_SET);
 
-        return true;
+            return true;
+        } catch (StorageException e) {
+            throw new CommandException(e);
+        }
     }
 }

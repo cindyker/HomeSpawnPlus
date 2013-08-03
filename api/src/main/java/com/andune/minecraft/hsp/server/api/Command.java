@@ -76,15 +76,6 @@ public interface Command {
      */
     String[] getCommandAliases();
 
-    /** Commands can be disabled by configuration, this method allows them to declare
-     * themselves enabled or disabled.
-     *
-     * @return
-     */
-//	boolean isEnabled();
-
-//	void setPlugin(Plugin plugin);
-
     /**
      * If there is a custom permission node for this command, it should be
      * returned here. If this returns null, the default command permission

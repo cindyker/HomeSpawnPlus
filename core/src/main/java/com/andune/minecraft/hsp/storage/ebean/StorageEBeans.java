@@ -34,7 +34,12 @@ import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.entity.*;
+import com.andune.minecraft.hsp.entity.HomeImpl;
+import com.andune.minecraft.hsp.entity.HomeInvite;
+import com.andune.minecraft.hsp.entity.PlayerLastLocation;
+import com.andune.minecraft.hsp.entity.PlayerSpawn;
+import com.andune.minecraft.hsp.entity.SpawnImpl;
+import com.andune.minecraft.hsp.entity.Version;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -60,8 +65,8 @@ import java.util.List;
  */
 @Singleton
 public class StorageEBeans implements Storage {
-    private static final Logger log = LoggerFactory.getLogger(StorageEBeans.class);
     private static final int CURRENT_VERSION = 170;
+    private final Logger log = LoggerFactory.getLogger(StorageEBeans.class);
 
     private MyDatabase persistanceReimplementedDatabase;
     private boolean usePersistanceReimplemented = false;
@@ -112,7 +117,7 @@ public class StorageEBeans implements Storage {
         return persistanceReimplementedDatabase;
     }
 
-    public EbeanServer getDatabase() {
+    public final EbeanServer getDatabase() {
         if (usePersistanceReimplemented)
             return persistanceReimplementedDatabase.getDatabase();
         else
@@ -155,9 +160,10 @@ public class StorageEBeans implements Storage {
     public void initializeStorage() throws StorageException {
         if (usePersistanceReimplemented) {
             persistanceReimplementedInitialize();
-        } else {
+        }
+        else {
             if (ebeanServer == null)
-                throw new NullPointerException("null EbeanServer!");
+                throw new IllegalStateException("EbeanServer is null!");
 
             // Check that our tables exist - if they don't, then install the database.
             try {
@@ -168,19 +174,18 @@ public class StorageEBeans implements Storage {
                         + " due to first time usage");
 
                 // for some reason bukkit's EBEAN implementation blows up when trying
-                // to create the HomeInvite FK relationship. Pesistance reimplemented
+                // to create the HomeInvite FK relationship. Persistance reimplemented
                 // does not have this problem. So if we have to initialize the database,
                 // we always do it with Persistance Reimplemented, regardless of the
                 // EBEAN implementation we will use after this initialization.
                 persistanceReimplementedInitialize();
-//	            plugin.installDatabaseDDL();
             }
         }
 
         try {
             upgradeDatabase();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Caught exception in initializeStorage()", e);
         }
     }
 
@@ -288,7 +293,9 @@ public class StorageEBeans implements Storage {
     }
 
     private void upgradeDatabase() {
-        int knownVersion = CURRENT_VERSION;        // assume current version to start
+        // assume current version to start
+        int knownVersion = CURRENT_VERSION;
+
         final EbeanServer db = getDatabase();
         Version versionObject = null;
         try {
@@ -306,7 +313,8 @@ public class StorageEBeans implements Storage {
             catch (PersistenceException e) {
                 knownVersion = 63;
             }
-        } else
+        }
+        else
             knownVersion = versionObject.getVersion();
 
         log.debug("knownVersion = {}", knownVersion);
@@ -375,9 +383,11 @@ public class StorageEBeans implements Storage {
         // we must do some special work for SQLite since it doesn't respond to ALTER TABLE
         // statements from within the EBeanServer interface.  PITA!
         if (isSqlLite()) {
+            Connection conn = null;
+            Statement stmt = null;
             try {
-                Connection conn = ebeanUtils.getConnection();
-                Statement stmt = conn.createStatement();
+                conn = ebeanUtils.getConnection();
+                stmt = conn.createStatement();
                 stmt.execute("BEGIN TRANSACTION;");
                 stmt.execute("CREATE TEMPORARY TABLE hsphome_backup("
                         + "id integer primary key"
@@ -419,19 +429,27 @@ public class StorageEBeans implements Storage {
                         + ",last_modified,date_created"
                         + " FROM hsphome_backup;");
                 stmt.execute("DROP TABLE hsphome_backup;");
-                stmt.execute("COMMIT;");
-//				stmt.execute("ALTER TABLE `hsp_home` ADD `name` varchar(32)");
-//				stmt.execute("ALTER TABLE `hsp_home` ADD `bed_home` integer(1) not null");
-//				stmt.execute("ALTER TABLE `hsp_home` ADD `default_home` integer(1) not null");
-//				stmt.execute(sql);
-                stmt.close();
-                conn.close();
 
+                stmt.execute("COMMIT;");
                 success = true;
             } catch (SQLException e) {
                 log.error("error attempting to update SQLite database schema!", e);
+            } finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
             }
-        } else {
+        }
+        else {
             SqlUpdate update = db.createSqlUpdate("ALTER TABLE `hsp_home` ADD (`name` varchar(32)"
                     + ",`bed_home` tinyint(1) DEFAULT '0' NOT NULL"
                     + ",`default_home` tinyint(1) DEFAULT '0' NOT NULL"
@@ -462,9 +480,11 @@ public class StorageEBeans implements Storage {
 
         boolean success = false;
         if (isSqlLite()) {
+            Connection conn = null;
+            Statement stmt = null;
             try {
-                Connection conn = ebeanUtils.getConnection();
-                Statement stmt = conn.createStatement();
+                conn = ebeanUtils.getConnection();
+                stmt = conn.createStatement();
                 stmt.execute("BEGIN TRANSACTION;");
                 stmt.execute("CREATE TABLE hsp_homeinvite ("
                         + "id integer primary key,"
@@ -480,14 +500,26 @@ public class StorageEBeans implements Storage {
                 stmt.execute("CREATE INDEX ix_hsp_homeinvite_home_1 on hsp_homeinvite (home_id);");
 
                 stmt.execute("COMMIT;");
-                stmt.close();
-                conn.close();
-
                 success = true;
             } catch (SQLException e) {
                 log.error("error attempting to update SQLite database schema!", e);
+            } finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
             }
-        } else {    // not SQLite
+        }
+        // not SQLite
+        else {
             SqlUpdate update = db.createSqlUpdate(
                     "CREATE TABLE `hsp_homeinvite` ("
                             + "`id` int(11) NOT NULL AUTO_INCREMENT,"
@@ -518,9 +550,11 @@ public class StorageEBeans implements Storage {
 
         boolean success = false;
         if (isSqlLite()) {
+            Connection conn = null;
+            Statement stmt = null;
             try {
-                Connection conn = ebeanUtils.getConnection();
-                Statement stmt = conn.createStatement();
+                conn = ebeanUtils.getConnection();
+                stmt = conn.createStatement();
                 stmt.execute("BEGIN TRANSACTION;");
                 stmt.execute("CREATE TABLE hsp_playerspawn (id integer primary key"
                         + ", player_name               varchar(32)"
@@ -554,14 +588,25 @@ public class StorageEBeans implements Storage {
                 );
 
                 stmt.execute("COMMIT;");
-                stmt.close();
-                conn.close();
-
                 success = true;
             } catch (SQLException e) {
                 log.error("error attempting to update SQLite database schema!", e);
+            } finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException e) {
+                    log.error("Caught exception closing SQL resource", e);
+                }
             }
-        } else {
+        }
+        else {
             SqlUpdate update = db.createSqlUpdate(
                     "CREATE TABLE `hsp_playerlastloc` ("
                             + "`id` int(11) NOT NULL AUTO_INCREMENT,"

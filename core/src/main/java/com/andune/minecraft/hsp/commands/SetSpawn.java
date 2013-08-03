@@ -34,6 +34,7 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.command.CommandException;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -62,22 +63,27 @@ public class SetSpawn extends BaseCommand {
     }
 
     @Override
-    public boolean execute(Player p, String[] args) throws StorageException {
-        if (args.length > 0) {
-            util.setNamedSpawn(args[0], p.getLocation(), p.getName());
-            p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]));
-        } else {
-            util.setDefaultWorldSpawn(p.getLocation(), p.getName());
-            p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS));
-
-            // also set map spawn if configured to do so
-            if (config.isOverrideWorld()) {
-                final Location l = p.getLocation();
-                l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS));
-                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
-                        "world", l.getWorld().getName(), "location", l.shortLocationString()));
+    public boolean execute(Player p, String[] args) throws CommandException {
+        try {
+            if (args.length > 0) {
+                util.setNamedSpawn(args[0], p.getLocation(), p.getName());
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_NAMED_SUCCESS, "name", args[0]));
             }
+            else {
+                util.setDefaultWorldSpawn(p.getLocation(), p.getName());
+                p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS));
+
+                // also set map spawn if configured to do so
+                if (config.isOverrideWorld()) {
+                    final Location l = p.getLocation();
+                    l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS));
+                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
+                            "world", l.getWorld().getName(), "location", l.shortLocationString()));
+                }
+            }
+        } catch (StorageException e) {
+            throw new CommandException(e);
         }
 
         return true;

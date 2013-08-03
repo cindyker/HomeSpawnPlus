@@ -34,6 +34,7 @@ import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
+import com.andune.minecraft.hsp.command.CommandException;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -56,18 +57,22 @@ public class SetDefaultSpawn extends BaseCommand {
     }
 
     @Override
-    public boolean execute(Player p, String[] args) throws StorageException {
+    public boolean execute(Player p, String[] args) throws CommandException {
         if (args.length < 1) {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPECIFY_NAME);
             return true;
         }
 
-        Spawn spawn = storage.getSpawnDAO().findSpawnByName(args[0]);
-        if (spawn != null) {
-            Location l = spawn.getLocation();
-            util.setDefaultWorldSpawn(l, p.getName());
-            server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
-                    "name", spawn.getName(), "location", l.shortLocationString());
+        try {
+            Spawn spawn = storage.getSpawnDAO().findSpawnByName(args[0]);
+            if (spawn != null) {
+                Location l = spawn.getLocation();
+                util.setDefaultWorldSpawn(l, p.getName());
+                server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTSPAWN_SPAWN_CHANGED,
+                        "name", spawn.getName(), "location", l.shortLocationString());
+            }
+        } catch (StorageException e) {
+            throw new CommandException(e);
         }
 
         return true;

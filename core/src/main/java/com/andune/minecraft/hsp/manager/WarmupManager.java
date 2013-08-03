@@ -52,11 +52,13 @@ import java.util.*;
 @Singleton
 public class WarmupManager {
     private static final Logger log = LoggerFactory.getLogger(WarmupManager.class);
+    private static final int ONE_SECOND = 1000;
+    private static final int TICKS_PER_SECOND = 20;
 
     private static int uniqueWarmupId = 0;
 
-    private final HashMap<Integer, PendingWarmup> warmupsPending;
-    private final HashMap<String, List<PendingWarmup>> warmupsPendingByPlayerName;
+    private final Map<Integer, PendingWarmup> warmupsPending;
+    private final Map<String, List<PendingWarmup>> warmupsPendingByPlayerName;
 
     private final Server server;
     private final Permissions permissions;
@@ -76,10 +78,7 @@ public class WarmupManager {
     }
 
     private boolean isExemptFromWarmup(Player p, String warmup) {
-        if (permissions.isWarmupExempt(p, warmup))
-            return true;
-        else
-            return false;
+        return permissions.isWarmupExempt(p, warmup);
     }
 
     /**
@@ -90,13 +89,9 @@ public class WarmupManager {
      * @return true if warmup should be enforced, flase if not
      */
     public boolean hasWarmup(Player p, String warmupName) {
-        if (configWarmups.isEnabled() &&
+        return configWarmups.isEnabled() &&
                 getWarmupTime(p, warmupName).warmupTime > 0 &&
-                !isExemptFromWarmup(p, warmupName)) {
-            return true;
-        } else {
-            return false;
-        }
+                !isExemptFromWarmup(p, warmupName);
     }
 
     /**
@@ -104,7 +99,7 @@ public class WarmupManager {
      * This method does not start the warmup timer, in order to actually start
      * the warmup you need to use startWarmup().
      *
-     * @param p
+     * @param playerName
      * @param warmupName
      * @return true if warmup is already pending, false if not
      */
@@ -126,7 +121,9 @@ public class WarmupManager {
 
     public WarmupTime getWarmupTime(final Player player, final String warmup) {
         final WarmupTime wut = new WarmupTime();
-        wut.warmupName = warmup;    // default to existing warmup name
+
+        // default to existing warmup name
+        wut.warmupName = warmup;
 
         log.debug("getWarmupTime(): warmup={}", warmup);
 
@@ -182,7 +179,6 @@ public class WarmupManager {
      * Start a given warmup.  Return true if the warmup was started successfully, false if not.
      *
      * @param playerName
-     * @param warmupName
      * @param warmupRunnable
      * @return
      */
@@ -196,7 +192,8 @@ public class WarmupManager {
         WarmupTime wut = getWarmupTime(p, warmupRunnable.getWarmupName());
         final String warmupName = wut.warmupName;
 
-        if (isWarmupPending(playerName, warmupName)) {        // don't let two of the same warmups start
+        // don't let two of the same warmups start
+        if (isWarmupPending(playerName, warmupName)) {
             return false;
         }
 
@@ -235,7 +232,7 @@ public class WarmupManager {
         // be pretty close to that even on a server running at only 10 TPS.
         // and B) it allows us to cancelOnMove close to the player move event
         // without having to hook the expensive onPlayerMove() event.
-        scheduler.scheduleSyncDelayedTask(warmup, 20);
+        scheduler.scheduleSyncDelayedTask(warmup, TICKS_PER_SECOND);
 
         return true;
     }
@@ -247,10 +244,7 @@ public class WarmupManager {
     public boolean isCanceled(int warmupId) {
         PendingWarmup warmup = warmupsPending.get(warmupId);
 
-        if (warmup != null && warmup.cancelled == false)
-            return false;
-        else
-            return true;
+        return warmup != null && warmup.cancelled == false;
     }
 
     /**
@@ -291,19 +285,23 @@ public class WarmupManager {
         }
     }
 
-    public class WarmupTime {
-        public int warmupTime = 0;
-        public String warmupName;
+    public static class WarmupTime {
+        private int warmupTime = 0;
+        private String warmupName;
+
+        public int getWarmupTime() {
+            return warmupTime;
+        }
     }
 
     private class PendingWarmup implements Runnable {
-        public int warmupId;
-        public boolean cancelled = false;
-        public String playerName;
-        public String warmupName;
-        public WarmupRunner runner;
-        public int warmupTime = 0;
-        public long startTime = 0;
+        private int warmupId;
+        private boolean cancelled = false;
+        private String playerName;
+        private String warmupName;
+        private WarmupRunner runner;
+        private int warmupTime = 0;
+        private long startTime = 0;
 
         public Location playerLocation;
 
@@ -352,7 +350,7 @@ public class WarmupManager {
                 }
 
                 if (scheduleNext)
-                    scheduler.scheduleSyncDelayedTask(this, 20);
+                    scheduler.scheduleSyncDelayedTask(this, TICKS_PER_SECOND);
             }
         }
     }

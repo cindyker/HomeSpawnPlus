@@ -59,27 +59,27 @@ import java.util.*;
         help = "HSP Admin Commands")
 public class HSP extends BaseCommand implements UberCommandFallThrough {
     @Inject
-    Initializer initializer;
+    private Initializer initializer;
     @Inject
-    MultiverseCore multiverseCore;
+    private MultiverseCore multiverseCore;
     @Inject
-    MultiversePortals multiversePortals;
+    private MultiversePortals multiversePortals;
     @Inject
-    DynmapModule dynmap;
+    private DynmapModule dynmap;
     @Inject
-    WorldBorder worldBorder;
+    private WorldBorder worldBorder;
     @Inject
-    WorldGuard worldGuard;
+    private WorldGuard worldGuard;
     @Inject
-    Essentials essentials;
+    private Essentials essentials;
     @Inject
-    BackupUtil backupUtil;
+    private BackupUtil backupUtil;
     @Inject
-    Scheduler scheduler;
+    private Scheduler scheduler;
     @Inject
-    General generalUtil;
+    private General generalUtil;
     @Inject
-    ConfigCore configCore;
+    private ConfigCore configCore;
 
     private final List<SubCommand> subCommands;
     private final List<String> subCommandNames;

@@ -349,7 +349,7 @@ public abstract class BaseCommand implements Command {
 
             p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_STARTED,
                     "name", wr.getWarmupName(),
-                    "seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).warmupTime));
+                    "seconds", warmupManager.getWarmupTime(p, wr.getWarmupName()).getWarmupTime()));
         }
         else
             p.sendMessage(server.getLocalizedMessage(HSPMessages.WARMUP_ALREADY_PENDING, "name", wr.getWarmupName()));

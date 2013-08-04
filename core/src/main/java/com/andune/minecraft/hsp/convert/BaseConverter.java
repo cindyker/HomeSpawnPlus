@@ -45,12 +45,12 @@ import javax.inject.Inject;
  */
 public abstract class BaseConverter implements Converter {
     protected Logger log = LoggerFactory.getLogger(BaseConverter.class);
-    private CommandSender initiatingSender;
+    protected CommandSender initiatingSender;
 
-    private Plugin plugin;
-    private Server server;
-    private Storage storage;
-    private Factory factory;
+    protected Plugin plugin;
+    protected Server server;
+    protected Storage storage;
+    protected Factory factory;
 
     @Inject
     public void setPlugin(Plugin plugin) {

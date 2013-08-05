@@ -1,4 +1,4 @@
-v1.7.7 -
+v1.7.7 - Aug 4, 2013
 * built for CraftBukkit v1.6.2 ONLY
 * fix bug with modeSourceWorld not working properly (re-open of DBO ticket #188)
 * DBO ticket #208: print nice message (instead of NPE) if admin forgets to set WorldBorder when using spawnWorldRandom

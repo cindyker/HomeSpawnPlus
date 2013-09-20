@@ -1,3 +1,6 @@
+v1.7.7.1 -
+* built for CraftBukkit v1.6.4 ONLY
+
 v1.7.7 - Aug 4, 2013
 * built for CraftBukkit v1.6.2 ONLY
 * fix bug with modeSourceWorld not working properly (re-open of DBO ticket #188)

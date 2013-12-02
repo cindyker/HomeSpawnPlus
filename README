@@ -3,3 +3,21 @@ HomeSpawnPlus is a home/spawn management tool for Bukkit/Minecraft.
 Please read http://dev.bukkit.org/server-mods/homespawnplus for detailed description and support.
 
 A big thank you to YourKit for their amazing support of open source projects. Their performance and memory tracking tool has been used during the development and testing of HomeSpawnPlus to keep HSP tuned and performing well. You can visit their website at http://www.yourkit.com
+
+TO BUILD
+--------
+
+Unfortunately, due to a maven dependency issue that I have yet to resolve, you must first build and install the common lib in order to then build HSP. Here are the git commands to do just that:
+
+    git clone https://github.com/andune/anduneCommonLib anduneCommonLib
+    cd anduneCommonLib
+    git checkout v0.4
+    mvn install
+
+After doing this, you will have anduneCommonLib v0.4 in your maven local repository, so checking out and building HSP will now work fine:
+
+    git clone https://github.com/andune/HomeSpawnPlus HomeSpawnPlus
+    cd HomeSpawnPlus
+    mvn package
+
+After this, the newly built HomeSpawnPlus.jar will be in the target directory.

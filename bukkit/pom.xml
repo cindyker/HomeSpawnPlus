@@ -63,7 +63,7 @@
         <dependency>
             <groupId>com.andune.minecraft.commonlib</groupId>
             <artifactId>commonBukkitlib</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>0.5</version>
         </dependency>
 
         <!-- CraftBukkit dependencies -->

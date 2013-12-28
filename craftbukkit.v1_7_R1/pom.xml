@@ -75,7 +75,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Implementation-Build>${build.number}</Implementation-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>

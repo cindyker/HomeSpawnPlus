@@ -62,7 +62,7 @@
             <dependency>
                 <groupId>com.andune.minecraft.commonlib</groupId>
                 <artifactId>commonlib</artifactId>
-                <version>0.5</version>
+                <version>0.6-SNAPSHOT</version>
             </dependency>
 
             <!-- Reflections library -->

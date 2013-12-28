@@ -71,11 +71,10 @@ public abstract class ConfigBase implements Initializable {
     public void shutdown() throws Exception {
     }
 
-    ;
-
     @Override
     public int getInitPriority() {
-        return 3;   // default config initialization priority is 3
+        // default config initialization priority is 3
+        return 3;
     }
 
     protected boolean contains(String path) {

@@ -45,7 +45,8 @@ import java.util.Set;
 
 
 /**
- * Class to process Commandbook home data and convert it into our storage format.
+ * Class to process Commandbook home data and convert it into our storage
+ * format.
  *
  * @author andune
  */
@@ -79,14 +80,15 @@ public class CommandBook extends BaseConverter {
             line = line.replaceAll("\"", "");
             String[] arr = line.split(",");
 
-            String homeName = arr[0];
-            String worldName = arr[1];
-            String playerName = arr[2];
-            Double x = Double.parseDouble(arr[3]);
-            Double y = Double.parseDouble(arr[4]);
-            Double z = Double.parseDouble(arr[5]);
-            Double pitch = Double.parseDouble(arr[6]);
-            Double yaw = Double.parseDouble(arr[7]);
+            int i = 0;
+            String homeName = arr[i++];
+            String worldName = arr[i++];
+            String playerName = arr[i++];
+            Double x = Double.parseDouble(arr[i++]);
+            Double y = Double.parseDouble(arr[i++]);
+            Double z = Double.parseDouble(arr[i++]);
+            Double pitch = Double.parseDouble(arr[i++]);
+            Double yaw = Double.parseDouble(arr[i++]);
 
             World world = server.getWorld(worldName);
             if (world == null) {
@@ -94,8 +96,8 @@ public class CommandBook extends BaseConverter {
                 continue;
             }
 
-            Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
-                    z.doubleValue(), yaw.floatValue(), pitch.floatValue());
+            Location l = factory.newLocation(world.getName(), x, y, z,
+                    yaw.floatValue(), pitch.floatValue());
 
             HomeImpl hspHome = new HomeImpl();
             hspHome.setLocation(l);

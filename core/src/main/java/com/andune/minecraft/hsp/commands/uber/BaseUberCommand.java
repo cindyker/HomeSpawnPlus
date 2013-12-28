@@ -48,12 +48,12 @@ public abstract class BaseUberCommand extends BaseCommand {
     private static final Logger log = LoggerFactory.getLogger(BaseUberCommand.class);
     private Reflections reflections;
     private Factory factory;
-    protected String baseName;
+    private String baseName;
     private final Map<String, Command> subCommands = new HashMap<String, Command>(10);
     private final Map<String, Command> subCommandAliases = new HashMap<String, Command>(10);
     private final Map<String, String> shortestAlias = new HashMap<String, String>(10);
     private final UberCommandFallThrough baseFallThroughCommand;
-    private ArrayList<String> sortedKeys;
+    private List<String> sortedKeys;
 
     public BaseUberCommand(Factory factory, Reflections reflections, UberCommandFallThrough baseFallThroughCommand) {
         this.baseFallThroughCommand = baseFallThroughCommand;
@@ -102,8 +102,8 @@ public abstract class BaseUberCommand extends BaseCommand {
     }
 
     /**
-     * Return a simplified help that only shows commands that we have
-     * permission to use.
+     * Return a simplified help that only shows commands that we have permission
+     * to use.
      */
     public String getUsage(CommandSender sender) {
         Player p = null;
@@ -124,7 +124,10 @@ public abstract class BaseUberCommand extends BaseCommand {
         }
 
         StringBuffer sb = new StringBuffer();
-        sb.append("Subcommand help for /" + baseName + "\n");
+        sb.append("Subcommand help for /");
+        sb.append(baseName);
+        sb.append("\n");
+
         for (String key : sortedKeys) {
             if (key.equals("help")) {
                 sb.append("  help: get help on this command or sub-commands\n");
@@ -147,10 +150,12 @@ public abstract class BaseUberCommand extends BaseCommand {
                     }
 
                     if (key.equals("")) {
-                        if (help.length() > 0)
+                        if (help.length() > 0) {
                             sb.append("  (no arg)");
-                        else
-                            continue;   // don't show a line if there's no help
+                        } else {
+                            // don't show a line if there's no help
+                            continue;
+                        }
                     } else {
                         sb.append("  ");
                         sb.append(key);
@@ -203,24 +208,22 @@ public abstract class BaseUberCommand extends BaseCommand {
      * Run a given uber command, possibly in dryRun mode.
      *
      * @param sender the object (person/console) sending the command
-     * @param label  the actual command being run (sometimes this is an alias name)
+     * @param label  the actual command being run (sometimes this is an alias
+     *               name)
      * @param args   any arguments to the command
-     * @param dryRun For uber commands, it can be useful to know whether or not a
-     *               given command context (player, label, args) would do anything,
-     *               without it actually doing anything. This can then be used to
-     *               determine whether to actually call the uber command with the
-     *               given context, or perhaps pass on the context to another
-     *               command.
+     * @param dryRun For uber commands, it can be useful to know whether or not
+     *               a given command context (player, label, args) would do
+     *               anything, without it actually doing anything. This can then
+     *               be used to determine whether to actually call the uber
+     *               command with the given context, or perhaps pass on the
+     *               context to another command.
      * @return In normal mode, returns true if the execution was successful,
-     *         false if the command system should keep looking and pass this
-     *         command on to the next plugin.<br>
-     *         <br>
-     *         In dryRun mode, returns true if the command would have resulted
-     *         in a command execution (actual status unknown), false if the
-     *         command would have resulted in a usage being displayed or a
-     *         normal mode false value.
+     * false if the command system should keep looking and pass this command on
+     * to the next plugin.<br> <br> In dryRun mode, returns true if the command
+     * would have resulted in a command execution (actual status unknown), false
+     * if the command would have resulted in a usage being displayed or a normal
+     * mode false value.
      */
-//    private boolean privateExecute(CommandSender sender, String label, String[] args, boolean dryRun) {
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         Command command = null;
@@ -242,10 +245,8 @@ public abstract class BaseUberCommand extends BaseCommand {
                 usage = getUsage(sender);
 
             // if there is a baseFallThroughCommand, check if we should run that
-            if (baseFallThroughCommand != null) {
-                if (baseFallThroughCommand.processUberCommandDryRun(sender, label, args)) {
-                    return baseFallThroughCommand.execute(sender, label, args);
-                }
+            if (baseFallThroughCommand != null && baseFallThroughCommand.processUberCommandDryRun(sender, label, args)) {
+                return baseFallThroughCommand.execute(sender, label, args);
             }
 
             sender.sendMessage(usage);
@@ -278,30 +279,15 @@ public abstract class BaseUberCommand extends BaseCommand {
                 return false;
         }
         // if there is a baseFallThroughCommand, check if we should run that
-        else if (baseFallThroughCommand != null) {
-            if (baseFallThroughCommand.processUberCommandDryRun(sender, label, args)) {
-                return baseFallThroughCommand.execute(sender, label, args);
-            }
+        else if (baseFallThroughCommand != null && baseFallThroughCommand.processUberCommandDryRun(sender, label, args)) {
+            return baseFallThroughCommand.execute(sender, label, args);
         }
 
         sender.sendMessage(getUsage());
         return true;
     }
 
-    /*
-    @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
-    	if( privateExecute(sender, label, args, true) ) {
-    		return privateExecute(sender, label, args, false);
-    	}
-    	else {
-    		sender.sendMessage("Do something with base command");
-    		return true;
-    	}
-    }
-    */
-
-    protected void loadSubCommands(final String uberCommand) {
+    protected final void loadSubCommands(final String uberCommand) {
         log.debug("loadSubCommands uberCommand={}", uberCommand);
 
         Set<Class<?>> uberSubs = reflections.getTypesAnnotatedWith(UberCommand.class);

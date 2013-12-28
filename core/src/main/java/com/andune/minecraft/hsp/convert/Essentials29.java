@@ -47,7 +47,8 @@ import java.util.Set;
  * @author andune
  */
 public class Essentials29 extends BaseConverter {
-    final private Map<String, String> offlinePlayers = new HashMap<String, String>();
+    private final String ESSENTIALS_CONFIG_HOMES = "homes";
+    private final Map<String, String> offlinePlayers = new HashMap<String, String>();
 
     @Override
     public String getConverterName() {
@@ -71,15 +72,17 @@ public class Essentials29 extends BaseConverter {
 
         int convertedCount = 0;
         File[] files = essentialsUserData.listFiles();
+        assert(files != null);
+
         for (File file : files) {
             YamlFile userData = factory.newYamlFile();
             userData.load(file);
             ConfigurationSection section = userData.getRootConfigurationSection();
 
-            Set<String> homes = section.getKeys("homes");
+            Set<String> homes = section.getKeys(ESSENTIALS_CONFIG_HOMES);
             if (homes != null && homes.size() > 0) {
                 for (String home : homes) {
-                    String worldName = section.getString("homes." + home + ".world");
+                    String worldName = section.getString(ESSENTIALS_CONFIG_HOMES + "." + home + ".world");
                     // if there's no world, this user doesn't have a home set.  Skip it.
                     if (worldName == null)
                         continue;
@@ -89,11 +92,11 @@ public class Essentials29 extends BaseConverter {
                         continue;
                     }
 
-                    Double x = section.getDouble("homes." + home + ".x");
-                    Double y = section.getDouble("homes." + home + ".y");
-                    Double z = section.getDouble("homes." + home + ".z");
-                    Double yaw = section.getDouble("homes." + home + ".yaw");
-                    Double pitch = section.getDouble("homes." + home + ".pitch");
+                    Double x = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".x");
+                    Double y = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".y");
+                    Double z = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".z");
+                    Double yaw = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".yaw");
+                    Double pitch = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".pitch");
 
                     String lowerCaseName = file.getName();
                     lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
@@ -105,8 +108,8 @@ public class Essentials29 extends BaseConverter {
                     if (playerName == null)
                         playerName = lowerCaseName;
 
-                    Location l = factory.newLocation(world.getName(), x.doubleValue(), y.doubleValue(),
-                            z.doubleValue(), yaw.floatValue(), pitch.floatValue());
+                    Location l = factory.newLocation(world.getName(), x, y, z,
+                            yaw.floatValue(), pitch.floatValue());
 
                     HomeImpl hspHome = new HomeImpl();
                     hspHome.setLocation(l);
@@ -125,8 +128,6 @@ public class Essentials29 extends BaseConverter {
                     }
                 }
             }
-
-//			log.info("set home for player "+playerName);
         }
 
         return convertedCount;

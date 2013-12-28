@@ -44,6 +44,8 @@ import java.sql.*;
  * @author andune
  */
 public class SpawnControl extends BaseConverter {
+    private static final int MAX_CONSECUTIVE_ERRORS = 10;
+
     @Inject
     private HomeUtil util;
 
@@ -58,19 +60,18 @@ public class SpawnControl extends BaseConverter {
 
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             String db = "jdbc:sqlite:plugins/SpawnControl/spawncontrol.db";
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(db);
             ps = conn.prepareStatement("SELECT * FROM `players`");
-            ResultSet rs = ps.executeQuery();
-
-//            HomeSpawnUtils util = plugin.getUtil();
+            rs = ps.executeQuery();
 
             int consecutiveErrors = 0;
             while (rs.next()) {
                 // protect against a bunch of consecutive errors spamming the logfile
-                if (consecutiveErrors > 10)
+                if (consecutiveErrors > MAX_CONSECUTIVE_ERRORS)
                     break;
 
                 try {
@@ -84,7 +85,8 @@ public class SpawnControl extends BaseConverter {
                     util.setHome(playerName, l, "[SpawnControl_Conversion]", true, false);
                     convertedCount++;
 
-                    consecutiveErrors = 0;    // success! reset consecutiveErrors counter
+                    // success! reset consecutiveErrors counter
+                    consecutiveErrors = 0;
                 } catch (Exception e) {
                     log.warn("error trying to process SQL row", e);
                     consecutiveErrors++;
@@ -92,7 +94,7 @@ public class SpawnControl extends BaseConverter {
             }
             conn.close();
 
-            if (consecutiveErrors > 10)
+            if (consecutiveErrors > MAX_CONSECUTIVE_ERRORS)
                 log.warn("conversion process aborted, too many consecutive errors");
         } catch (SQLException e) {
             log.error("Caught exception", e);
@@ -100,14 +102,22 @@ public class SpawnControl extends BaseConverter {
             log.error("Caught exception", e);
         } finally {
             try {
+                if (rs != null)
+                    rs.close();
+            } catch (SQLException e) {
+                // ignore error
+            }
+            try {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
+                // ignore error
             }
             try {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e) {
+                // ignore error
             }
         }
 

@@ -34,6 +34,7 @@ import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
+import com.andune.minecraft.hsp.config.ConfigCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
@@ -53,9 +54,9 @@ import java.util.logging.LogRecord;
         aliases = {"d"}, help = "HSP debug commands")
 public class HSPDebug extends BaseCommand {
     @Inject
-    ConfigCore configCore;
+    private ConfigCore configCore;
     @Inject
-    Storage storage;
+    private ConfigCommand configCommand;
 
     private boolean rootHandlerInstalled = false;
 
@@ -71,6 +72,14 @@ public class HSPDebug extends BaseCommand {
 
         if (args.length < 1) {
             return false;
+        } else if (args[0].startsWith("ccd")) {
+            // config core dump
+            sender.sendMessage("defaultColor: "+configCore.getDefaultColor());
+            sender.sendMessage("defaultPermissions: "+configCore.getDefaultPermissions());
+            sender.sendMessage("eventPriority: "+configCore.getEventPriority());
+            sender.sendMessage("performanceWarnMillis: "+configCore.getPerformanceWarnMillis());
+            sender.sendMessage("useEbeanSearchLower: "+configCore.useEbeanSearchLower());
+            sender.sendMessage("isUberCommandsEnabled: "+configCommand.isUberCommandsEnabled());
         } else if (args[0].startsWith("t")) {    // toggle debug mode
             boolean current = configCore.isDebug();
             configCore.setDebug(!current);

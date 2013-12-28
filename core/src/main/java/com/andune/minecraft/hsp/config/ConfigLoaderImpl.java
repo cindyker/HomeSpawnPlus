@@ -76,13 +76,18 @@ public class ConfigLoaderImpl implements ConfigLoader {
      */
     @Override
     public ConfigurationSection load(String fileName, String basePath) throws IOException, ConfigException {
-        YamlFile yaml = getSingleConfigFile();
+        // load individual config file. This will either be used directly, or
+        // if a single large config file is found, this will be used as defaults
+        YamlFile singleYaml = loadSingleConfig(fileName, basePath);
 
-        // load individual config file if single "config.yml" is not in use
+        YamlFile yaml = getSingleConfigFile();
+        boolean singleConfigFlag = false;
         if (yaml == null) {
             log.debug("No single config.yml found, using multiple config files");
-            yaml = loadSingleConfig(fileName, basePath);
+            singleConfigFlag = true;
         }
+        else
+            yaml = singleYaml;
 
         ConfigurationSection cs = yaml.getConfigurationSection(basePath);
 
@@ -102,6 +107,10 @@ public class ConfigLoaderImpl implements ConfigLoader {
                 log.warn("ConfigurationSection \"" + basePath + "\" not found, bad things might happen!");
             }
         }
+
+        if( singleConfigFlag && singleYaml != null )
+            singleYaml.addDefaultConfig(singleYaml.getRootConfigurationSection());
+
         return cs;
     }
 
@@ -124,7 +133,7 @@ public class ConfigLoaderImpl implements ConfigLoader {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    private YamlFile getSingleConfigFile() throws FileNotFoundException, IOException, ConfigException {
+    private YamlFile getSingleConfigFile() throws IOException, ConfigException {
         if (singleConfigFile == null) {
             File configYml = new File(plugin.getDataFolder(), "config.yml");
             if (configYml.exists()) {
@@ -143,7 +152,7 @@ public class ConfigLoaderImpl implements ConfigLoader {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void installDefaultFile(String fileName) throws FileNotFoundException, IOException {
+    private void installDefaultFile(String fileName) throws IOException {
         File pluginDir = plugin.getDataFolder();
         // create the config directory if it doesn't exist
         File configDir = new File(pluginDir, "config");

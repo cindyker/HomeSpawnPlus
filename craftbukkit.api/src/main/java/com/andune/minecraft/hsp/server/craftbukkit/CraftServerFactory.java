@@ -33,6 +33,8 @@ package com.andune.minecraft.hsp.server.craftbukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import java.util.logging.Level;
+
 /**
  * Class to determine which version of CraftServer we need at
  * runtime.
@@ -67,12 +69,14 @@ public class CraftServerFactory {
             version = "pre";
         }
         try {
-            final Class<?> clazz = Class.forName("com.andune.minecraft.hsp.server.craftbukkit." + version + ".CraftServerImpl");
             // Check if we have an implementation class at that location.
-            if (CraftServer.class.isAssignableFrom(clazz)) { // Make sure it actually implements our interface
+            final Class<?> clazz = Class.forName("com.andune.minecraft.hsp.server.craftbukkit." + version + ".CraftServerImpl");
+            // Make sure it actually implements our interface
+            if (CraftServer.class.isAssignableFrom(clazz)) {
                 craftServer = (CraftServer) clazz.getConstructor().newInstance();
             }
         } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Caught exception finding CraftServer", e);
         }
 
         if (craftServer == null)

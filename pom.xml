@@ -121,6 +121,7 @@
                         <exclude>**/src/main/license/**</exclude>
                         <exclude>**/build.number</exclude>
                         <exclude>**/*.md</exclude>
+                        <exclude>.idea/**</exclude>
                         <exclude>*.txt</exclude>
                     </excludes>
                 </configuration>

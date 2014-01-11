@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.command;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,10 +43,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.Logger;
@@ -62,7 +64,6 @@ import com.andune.minecraft.commonlib.reflections.YamlSerializer;
  *
  */
 public class CommandRegister {
-//	private static final String COMMANDS_PACKAGE = "org.morganm.homespawnplus.commands";
 	private static final Map<String, Class<? extends Command>> customClassMap = new HashMap<String, Class<? extends Command>>();
 	
 	private final HomeSpawnPlus plugin;
@@ -103,9 +104,8 @@ public class CommandRegister {
 		// we never load the same command twice
 		if( loadedCommands.contains(cmdName) )
 			return;
-		
-		CraftServer cs = (CraftServer) Bukkit.getServer();
-		SimpleCommandMap commandMap = cs.getCommandMap();
+
+		SimpleCommandMap commandMap = getCommandMap();
 		
 		try {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
@@ -169,6 +169,25 @@ public class CommandRegister {
 		Map<String, Object> cmdParams = commandConfig.getCommandParameters(command.getCommandName());
 		register(command, cmdParams);
 	}
+
+    private SimpleCommandMap getCommandMap() {
+        SimpleCommandMap commandMap = null;
+
+        PluginManager pm = plugin.getServer().getPluginManager();
+        Class clazz = pm.getClass();
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField("commandMap");
+            field.setAccessible(true);
+            commandMap = (SimpleCommandMap) field.get(pm);
+        } catch (NoSuchFieldException e) {
+            log.severe("Couldn't find \"commandMap\" field for dynamic command mapping");
+        } catch (IllegalAccessException e) {
+            log.severe("Couldn't access \"commandMap\" field for dynamic command mapping");
+        }
+
+        return commandMap;
+    }
 	
 	/** Given an unqualified name, find a matching command class. This ignores case,
 	 * so for example if you pass in "homedeleteother", it will find and return the

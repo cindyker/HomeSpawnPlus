@@ -276,7 +276,7 @@ public class HSPPlayerListener implements Listener {
     	
     	// execute ON_JOIN strategy to find out where we should put the player, but only
     	// if there was no result from newPlayer checks
-    	if( result == null || (result != null && !result.isExplicitDefault()) )
+    	if( result == null || (result != null && result.getLocation() == null && !result.isExplicitDefault()) )
     		result = plugin.getStrategyEngine().getStrategyResult(EventType.ON_JOIN, p);
     	
     	Location joinLocation = null;

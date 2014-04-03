@@ -173,7 +173,7 @@ public class CommandRegister {
         SimpleCommandMap commandMap = null;
 
         PluginManager pm = plugin.getServer().getPluginManager();
-        Class clazz = pm.getClass();
+        Class<? extends PluginManager> clazz = pm.getClass();
         Field field = null;
         try {
             field = clazz.getDeclaredField("commandMap");

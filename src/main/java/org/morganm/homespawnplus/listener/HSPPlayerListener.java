@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -110,7 +111,7 @@ public class HSPPlayerListener implements Listener {
 
         Block b = event.getClickedBlock();
 		// did they click on a bed? short-circuit this method if not (fail-fast)
-        if( b.getTypeId() != 26 )
+        if( b.getType() != Material.BED_BLOCK )
         	return;
 
         // config option needs to be enabled in order to use this feature
@@ -276,7 +277,7 @@ public class HSPPlayerListener implements Listener {
     	
     	// execute ON_JOIN strategy to find out where we should put the player, but only
     	// if there was no result from newPlayer checks
-    	if( result == null || (result != null && result.getLocation() == null && !result.isExplicitDefault()) )
+    	if( result == null || (result != null && !result.isExplicitDefault()) )
     		result = plugin.getStrategyEngine().getStrategyResult(EventType.ON_JOIN, p);
     	
     	Location joinLocation = null;

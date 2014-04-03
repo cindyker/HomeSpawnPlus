@@ -33,6 +33,7 @@
  */
 package org.morganm.homespawnplus.util;
 
+import java.util.EnumSet;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -55,9 +56,9 @@ public class Teleport {
     public static final int FLAG_NO_LILY_PAD = 0x02; 
     public static final int FLAG_NO_LEAVES = 0x04; 
     public static final int FLAG_NO_ICE = 0x08; 
-
-    private static final int[] safeIds = new int[4096];
-
+    
+    private static EnumSet<Material> safeMaterials = EnumSet.noneOf(Material.class);
+    
     /*
 	private final static BlockFace[] directions = new BlockFace[] {
 		BlockFace.UP,
@@ -76,33 +77,29 @@ public class Teleport {
     private String currentTeleporter;
 
     static {
-        // initialize all to 0
-        for(int i=0; i < safeIds.length; i++)
-            safeIds[i] = 0;
-
         // now set to 1 those ids we consider safe
-        safeIds[Material.AIR.getId()] = 1;
-        safeIds[Material.YELLOW_FLOWER.getId()] = 1;
-        safeIds[Material.RED_ROSE.getId()] = 1;
-        safeIds[Material.BROWN_MUSHROOM.getId()] = 1;
-        safeIds[Material.RED_MUSHROOM.getId()] = 1;
-        safeIds[Material.LONG_GRASS.getId()] = 1;
-        safeIds[Material.DEAD_BUSH.getId()] = 1;
-        safeIds[Material.CROPS.getId()] = 1;
-        safeIds[Material.TORCH.getId()] = 1;
-        safeIds[Material.REDSTONE_WIRE.getId()] = 1;
-        safeIds[Material.REDSTONE_TORCH_ON.getId()] = 1;
-        safeIds[Material.REDSTONE_TORCH_OFF.getId()] = 1;
-        safeIds[Material.REDSTONE_LAMP_OFF.getId()] = 1;
-        safeIds[Material.REDSTONE_LAMP_ON.getId()] = 1;
-        safeIds[Material.WOOD_PLATE.getId()] = 1;
-        safeIds[Material.DIODE_BLOCK_ON.getId()] = 1;
-        safeIds[Material.DIODE_BLOCK_OFF.getId()] = 1;
-        safeIds[Material.POWERED_RAIL.getId()] = 1;
-        safeIds[Material.DETECTOR_RAIL.getId()] = 1;
-        safeIds[Material.RAILS.getId()] = 1;
-        safeIds[Material.SIGN_POST.getId()] = 1;
-        safeIds[Material.WALL_SIGN.getId()] = 1;
+        safeMaterials.add(Material.AIR);
+        safeMaterials.add(Material.YELLOW_FLOWER);
+        safeMaterials.add(Material.RED_ROSE);
+        safeMaterials.add(Material.BROWN_MUSHROOM);
+        safeMaterials.add(Material.RED_MUSHROOM);
+        safeMaterials.add(Material.LONG_GRASS);
+        safeMaterials.add(Material.DEAD_BUSH);
+        safeMaterials.add(Material.CROPS);
+        safeMaterials.add(Material.TORCH);
+        safeMaterials.add(Material.REDSTONE_WIRE);
+        safeMaterials.add(Material.REDSTONE_TORCH_ON);
+        safeMaterials.add(Material.REDSTONE_TORCH_OFF);
+        safeMaterials.add(Material.REDSTONE_LAMP_OFF);
+        safeMaterials.add(Material.REDSTONE_LAMP_ON);
+        safeMaterials.add(Material.WOOD_PLATE);
+        safeMaterials.add(Material.DIODE_BLOCK_ON);
+        safeMaterials.add(Material.DIODE_BLOCK_OFF);
+        safeMaterials.add(Material.POWERED_RAIL);
+        safeMaterials.add(Material.DETECTOR_RAIL);
+        safeMaterials.add(Material.RAILS);
+        safeMaterials.add(Material.SIGN_POST);
+        safeMaterials.add(Material.WALL_SIGN);
     }
 
     private Teleport() {
@@ -132,47 +129,47 @@ public class Teleport {
 
         final Block up = b.getRelative(BlockFace.UP);
         final Block down = b.getRelative(BlockFace.DOWN);
-        final int bTypeId = b.getTypeId();
-        final int upTypeId = up.getTypeId();
-        final int downTypeId = down.getTypeId();
+        final Material bMaterial = b.getType();
+        final Material upMaterial = up.getType();
+        final Material downMaterial = down.getType();
 
-        if( safeIds[bTypeId] == 1 && safeIds[upTypeId] == 1			// block & UP are safe?
-                && (downTypeId != 10 && down.getTypeId() != 11)		// no lava underneath
-                && (downTypeId != 0)								// no air underneath
-                && (downTypeId != Material.FIRE.getId())			// not fire below
-                && (downTypeId != Material.VINE.getId())			// not vine below, results in possible unsafe teleports (over lava, water, etc)
+        if( safeMaterials.contains(bMaterial) && safeMaterials.contains(upMaterial) // block & UP are safe?
+                && (downMaterial != Material.LAVA && down.getType() != Material.STATIONARY_LAVA) // no lava underneath
+                && (downMaterial != Material.AIR) // no air underneath
+                && (downMaterial != Material.FIRE) // not fire below
+                && (downMaterial != Material.VINE) // not vine below, results in possible unsafe teleports (over lava, water, etc)
                 )
         {
             // check for water
             if( (flags & FLAG_NO_WATER) > 0 ) {
-                if( bTypeId == Material.WATER.getId()
-                        || bTypeId == Material.STATIONARY_WATER.getId()
-                        || downTypeId == Material.WATER.getId()
-                        || downTypeId == Material.STATIONARY_WATER.getId() )
+                if( bMaterial == Material.WATER
+                        || bMaterial == Material.STATIONARY_WATER
+                        || downMaterial == Material.WATER
+                        || downMaterial == Material.STATIONARY_WATER )
                 {
                     return false;
                 }
             }
 
             // check for lily pads
-            if( (flags & FLAG_NO_LILY_PAD) > 0 && downTypeId == Material.WATER_LILY.getId() ) {
+            if( (flags & FLAG_NO_LILY_PAD) > 0 && downMaterial == Material.WATER_LILY ) {
                 return false;
             }
 
             // check for leaves
             if( (flags & FLAG_NO_LEAVES) > 0 ) {
-                if( downTypeId == Material.LEAVES.getId() )
+                if( downMaterial == Material.LEAVES )
                     return false;
 
                 // we check 2 blocks down for FLAG_NO_LEAVES, because often snow
                 // is on top of leaves, so we need to check 1 block lower
                 final Block down2 = down.getRelative(BlockFace.DOWN);
-                if( down2.getTypeId() == Material.LEAVES.getId() )
+                if( down2.getType() == Material.LEAVES )
                     return false;
             }
 
             // check for ice
-            if( (flags & FLAG_NO_ICE) > 0 && downTypeId == Material.ICE.getId() ) {
+            if( (flags & FLAG_NO_ICE) > 0 && downMaterial == Material.ICE ) {
                 return false;
             }
 

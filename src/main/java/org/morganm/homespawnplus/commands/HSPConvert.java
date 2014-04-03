@@ -93,8 +93,9 @@ public class HSPConvert extends BaseCommand {
 			sender.sendMessage("Unknown conversion type: "+args[0]);
 		}
 		
-		if( converter != null )
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, converter);
+		if( converter != null ) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, converter);
+		}
 		
 		return true;
 	}

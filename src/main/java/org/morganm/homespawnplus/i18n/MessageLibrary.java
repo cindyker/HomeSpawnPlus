@@ -128,6 +128,8 @@ public class MessageLibrary {
 			if (optionalBundle != null) {
 				locale.addExtensionBundle(optionalBundle);
 			}
+			
+			file.close();
 		} catch (MissingResourceException e) {
 			log("We are missing the default locale in "+config.getJarFile().toString()+".. What happened to it? :-(");
 			throw e;

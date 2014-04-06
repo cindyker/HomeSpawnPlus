@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.andune.minecraft.hsp</groupId>
     <artifactId>HomeSpawnPlus-parent</artifactId>
@@ -53,27 +57,27 @@
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
-                <version>0.9.8</version>
+                <version>0.9.9-RC1</version>
             </dependency>
 
             <!-- Start of Test Dependencies -->
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.3.1</version>
+                <version>6.8.8</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-testng</artifactId>
-                <version>1.5</version>
+                <version>1.5.4</version>
                 <type>jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-api-mockito</artifactId>
-                <version>1.5</version>
+                <version>1.5.4</version>
                 <type>jar</type>
                 <scope>test</scope>
             </dependency>
@@ -90,20 +94,37 @@
     <build>
         <defaultGoal>clean package</defaultGoal>
 
+        <pluginManagement>
+            <plugins>
+                <!-- Compile plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <verbose>true</verbose>
+                        <fork>true</fork>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <compilerVersion>1.6</compilerVersion>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.reflections</groupId>
+                    <artifactId>reflections-maven</artifactId>
+                    <version>0.9.9-RC1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
-            <!-- Compile plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <verbose>true</verbose>
-                    <fork>true</fork>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <compilerVersion>1.6</compilerVersion>
-                </configuration>
-            </plugin>
 
             <!-- Java API version validation. It turns out simply declaring source/target
                  for the maven compile plugin is not enough, you can still end up using 1.7
@@ -124,6 +145,16 @@
                         <version>1.1</version>
                     </signature>
                 </configuration>
+            </plugin>
+
+            <!-- Easy checking to make sure maven dependencies up to date.
+                 'mvn versions:display-plugin-updates'
+                 'mvn versions:display-dependency-updates'
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
             </plugin>
 
             <!-- License check; run 'mvn license:check' or 'mvn license:format' -->

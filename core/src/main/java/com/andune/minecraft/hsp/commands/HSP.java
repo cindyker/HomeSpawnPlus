@@ -218,7 +218,10 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         }
 
         public void setArgs(String[] args) {
-            System.arraycopy(args, 0, this.args, 0, args.length);
+            if( args != null ) {
+                this.args = new String[args.length];
+                System.arraycopy(args, 0, this.args, 0, args.length);
+            }
         }
     }
 

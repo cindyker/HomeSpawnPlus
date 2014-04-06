@@ -219,7 +219,6 @@
                                     <include>com.andune.minecraft.commonlib:commonBukkitlib</include>
                                     <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
                                     <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
-                                    <include>com.andune.minecraft.hsp:HomeSpawnPlus-craftbukkit-*</include>
                                 </includes>
                             </artifactSet>
 

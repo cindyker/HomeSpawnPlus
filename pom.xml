@@ -29,22 +29,6 @@
         <module>api</module>
         <module>bukkit</module>
         <module>core</module>
-        <module>craftbukkit.api</module>
-        <module>craftbukkit.pre1_4_5</module>
-        <module>craftbukkit.v1_5_R3</module>
-        <module>craftbukkit.v1_6_R2</module>
-        <module>craftbukkit.v1_7_R1</module>
-
-        <!-- Versions that code exists for, but dropped from the build to
-             maintain faster build speed. If users complain and are still
-             using these versions, easy enough to uncomment and add back
-             to the build.
-            <module>craftbukkit.v1_4_5</module>
-            <module>craftbukkit.v1_4_6</module>
-            <module>craftbukkit.v1_4_R1</module>
-            <module>craftbukkit.v1_5_R2</module>
-            <module>craftbukkit.v1_6_R1</module>
-        -->
     </modules>
 
     <dependencyManagement>
@@ -107,6 +91,41 @@
         <defaultGoal>clean package</defaultGoal>
 
         <plugins>
+            <!-- Compile plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <fork>true</fork>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerVersion>1.6</compilerVersion>
+                </configuration>
+            </plugin>
+
+            <!-- Java API version validation. It turns out simply declaring source/target
+                 for the maven compile plugin is not enough, you can still end up using 1.7
+                 or 1.8 API features accidentally and the project will build fine.
+                 animal-sniffer is a plugin to validate that you aren't using features
+                 from versions other than what you intend.
+
+                 Run this check with 'mvn animal-sniffer:check'
+             -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.11</version>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java16</artifactId>
+                        <version>1.1</version>
+                    </signature>
+                </configuration>
+            </plugin>
+
             <!-- License check; run 'mvn license:check' or 'mvn license:format' -->
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>

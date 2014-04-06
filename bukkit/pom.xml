@@ -66,64 +66,6 @@
             <version>0.6-SNAPSHOT</version>
         </dependency>
 
-        <!-- CraftBukkit dependencies -->
-        <dependency>
-            <groupId>com.andune.minecraft.hsp</groupId>
-            <artifactId>HomeSpawnPlus-craftbukkit-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.andune.minecraft.hsp</groupId>
-            <artifactId>HomeSpawnPlus-craftbukkit-pre1.4.5</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <!-- Code exists, but these are no longer included in order
-             to increase the build speed. Can easily be added back to
-             the build if users still need them.
-            <dependency>
-              <groupId>com.andune.minecraft.hsp</groupId>
-              <artifactId>HomeSpawnPlus-craftbukkit-1.4.5</artifactId>
-              <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.andune.minecraft.hsp</groupId>
-              <artifactId>HomeSpawnPlus-craftbukkit-1.4.6</artifactId>
-              <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.andune.minecraft.hsp</groupId>
-              <artifactId>HomeSpawnPlus-craftbukkit-1.4_R1</artifactId>
-              <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.andune.minecraft.hsp</groupId>
-              <artifactId>HomeSpawnPlus-craftbukkit-1.5_R2</artifactId>
-              <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.andune.minecraft.hsp</groupId>
-              <artifactId>HomeSpawnPlus-craftbukkit-1.6_R1</artifactId>
-              <version>${project.parent.version}</version>
-            </dependency>
-        -->
-
-        <dependency>
-            <groupId>com.andune.minecraft.hsp</groupId>
-            <artifactId>HomeSpawnPlus-craftbukkit-1.5_R3</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.andune.minecraft.hsp</groupId>
-            <artifactId>HomeSpawnPlus-craftbukkit-1.6_R2</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.andune.minecraft.hsp</groupId>
-            <artifactId>HomeSpawnPlus-craftbukkit-1.7_R1</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
         <!-- Dependency Injection (guice) -->
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -250,20 +192,6 @@
 
         <!-- Plugins -->
         <plugins>
-            <!-- Compile plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <verbose>true</verbose>
-                    <fork>true</fork>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <compilerVersion>1.6</compilerVersion>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

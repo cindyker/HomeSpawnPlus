@@ -41,20 +41,28 @@ import com.andune.minecraft.hsp.command.CustomEventCommand;
 import com.andune.minecraft.hsp.config.ConfigCommand;
 import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.server.api.Server;
-import com.andune.minecraft.hsp.server.craftbukkit.CraftServer;
-import com.andune.minecraft.hsp.server.craftbukkit.CraftServerFactory;
 import com.google.inject.Injector;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.reflections.Reflections;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class whose job is to register all of HSP commands with the server dynamically,
@@ -76,7 +84,6 @@ public class BukkitCommandRegister implements Initializable {
     private final ConfigCommand commandConfig;
     private final BukkitFactory factory;
     private final Injector injector;
-    private final CraftServerFactory craftServerFactory;
     private final Server server;
 
     @Inject
@@ -90,7 +97,6 @@ public class BukkitCommandRegister implements Initializable {
         this.reflections = reflections;
         this.server = server;
 
-        this.craftServerFactory = new CraftServerFactory(plugin);
         customClassMap.put("customeventcommand", CustomEventCommand.class);
     }
 
@@ -116,6 +122,8 @@ public class BukkitCommandRegister implements Initializable {
 //		command.setPlugin(plugin);
         command.setCommandParameters(cmdParams);
 
+        final SimpleCommandMap commandMap = getCommandMap();
+
         if (cmdParams.containsKey("name"))
             cmdName = (String) cmdParams.get("name");
 
@@ -123,7 +131,6 @@ public class BukkitCommandRegister implements Initializable {
         if (loadedCommands.containsKey(cmdName))
             return;
 
-        CraftServer craftServer = craftServerFactory.getCraftServer();
         try {
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
@@ -158,10 +165,12 @@ public class BukkitCommandRegister implements Initializable {
                 List<String> aliases = null;
                 if (o instanceof List) {
                     aliases = (List<String>) o;
-                } else if (o instanceof String) {
+                }
+                else if (o instanceof String) {
                     aliases = new ArrayList<String>(2);
                     aliases.add((String) o);
-                } else
+                }
+                else
                     log.warn("invalid aliases defined for command ", cmdName, ": ", o);
 
                 if (aliases == null)
@@ -175,16 +184,14 @@ public class BukkitCommandRegister implements Initializable {
                 List<String> aliases = new ArrayList<String>(5);
                 String[] strAliases = command.getCommandAliases();
                 if (strAliases != null) {
-                    for (String alias : strAliases) {
-                        aliases.add(alias);
-                    }
+                    Collections.addAll(aliases, strAliases);
                 }
                 aliases.add("hsp" + command.getCommandName());    // all commands have "hsp" prefix alias
                 pc.setAliases(aliases);
             }
 
             // register it
-            craftServer.registerCommand(pc);
+            commandMap.register("hsp", pc);
             loadedCommands.put(cmdName, pc);
 
             log.debug("register() command {} registered", command);
@@ -208,13 +215,13 @@ public class BukkitCommandRegister implements Initializable {
      * class "com.andune.minecraft.hsp.commands.HomeDeleteOther". If it can't find
      * any matching class, it will return null.
      *
-     * @param cmd
-     * @return
+     * @param cmd the command to find
+     * @return a Command object if the command was found
      */
     private Class<? extends Command> findCommandClass(String cmd) {
         cmd = cmd.toLowerCase();
 
-        Class<? extends Command> customClass = null;
+        Class<? extends Command> customClass;
         if ((customClass = customClassMap.get(cmd)) != null)
             return customClass;
 
@@ -233,8 +240,7 @@ public class BukkitCommandRegister implements Initializable {
      * Given a command name, look for and register that command from
      * the admin-configured command definitions.
      *
-     * @param cmd
-     * @param classes
+     * @param cmd the command to register
      */
     private void registerConfigCommand(String cmd) {
         log.debug("processing config defined command {}", cmd);
@@ -286,7 +292,7 @@ public class BukkitCommandRegister implements Initializable {
      * Given a class file (which must be of our Command interface),
      * register that Command with Bukkit.
      *
-     * @param clazz
+     * @param clazz the Command class to be registered
      */
     private void registerDefaultCommand(Class<? extends Command> clazz) {
         try {
@@ -332,6 +338,25 @@ public class BukkitCommandRegister implements Initializable {
         }
     }
 
+    private SimpleCommandMap getCommandMap() {
+        SimpleCommandMap commandMap = null;
+
+        PluginManager pm = plugin.getServer().getPluginManager();
+        Class<? extends PluginManager> clazz = pm.getClass();
+        Field field;
+        try {
+            field = clazz.getDeclaredField("commandMap");
+            field.setAccessible(true);
+            commandMap = (SimpleCommandMap) field.get(pm);
+        } catch (NoSuchFieldException e) {
+            log.error("Couldn't find \"commandMap\" field for dynamic command mapping");
+        } catch (IllegalAccessException e) {
+            log.error("Couldn't access \"commandMap\" field for dynamic command mapping");
+        }
+
+        return commandMap;
+    }
+
     /* cache object only, always use getCommandClasses()
      */
     private Set<Class<? extends Command>> commandClasses;
@@ -339,7 +364,7 @@ public class BukkitCommandRegister implements Initializable {
     /**
      * Return all classes which extend our Command interface.
      *
-     * @return
+     * @return the Set of classes currently in the classpath that implement Command interface
      */
     private Set<Class<? extends Command>> getCommandClasses() {
         if (commandClasses != null)
@@ -348,11 +373,12 @@ public class BukkitCommandRegister implements Initializable {
         commandClasses = reflections.getSubTypesOf(Command.class);
         Set<Class<? extends BaseCommand>> baseCommandClasses = reflections.getSubTypesOf(BaseCommand.class);
         for (Class<? extends BaseCommand> bc : baseCommandClasses) {
-            commandClasses.add((Class<? extends Command>) bc);
+            commandClasses.add(bc);
         }
 
         if (commandClasses == null || commandClasses.size() == 0) {
             log.error("No command classes found, HSP will not be able to register commands!");
+            return null;
         }
 
         // filter out any abstract classes
@@ -372,7 +398,7 @@ public class BukkitCommandRegister implements Initializable {
     /**
      * Return all Uber Command classes.
      *
-     * @return
+     * @return a Set of command classes that are uber commands
      */
     private Set<Class<? extends Command>> getUberCommandClasses() {
         if (uberCommandClasses != null)

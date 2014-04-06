@@ -1,6 +1,7 @@
-v1.7.8 -
-* remove dependency on CraftBukkit
+v1.7.8 - Apr 6, 2014
+* remove dependency on CraftBukkit; eliminates breaks simply because of changing CraftBukkit versions. Hooray!
 * fix for issue #247; duplicate onJoin event due to faulty onNewPlayer logic
+* some minor code cleanup contributed to the project
 
 v1.7.7.2 - Dec 23, 2013
 * built for CraftBukkit v1.7.2 ONLY

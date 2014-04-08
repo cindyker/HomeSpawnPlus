@@ -84,10 +84,10 @@ public class ConfigLoaderImpl implements ConfigLoader {
         boolean singleConfigFlag = false;
         if (yaml == null) {
             log.debug("No single config.yml found, using multiple config files");
-            singleConfigFlag = true;
+            yaml = singleYaml;
         }
         else
-            yaml = singleYaml;
+            singleConfigFlag = true;
 
         ConfigurationSection cs = yaml.getConfigurationSection(basePath);
 
@@ -108,7 +108,7 @@ public class ConfigLoaderImpl implements ConfigLoader {
             }
         }
 
-        if( singleConfigFlag && singleYaml != null )
+        if( !singleConfigFlag && singleYaml != null )
             singleYaml.addDefaultConfig(singleYaml.getRootConfigurationSection());
 
         return cs;

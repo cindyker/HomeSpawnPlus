@@ -205,7 +205,7 @@
                             <!--
                                           <minimizeJar>true</minimizeJar>
                             -->
-                            <outputFile>${project.build.directory}/${project.artifactId}-uber.jar</outputFile>
+                            <outputFile>${project.build.directory}/HomeSpawnPlus.jar</outputFile>
                             <artifactSet>
                                 <includes>
                                     <include>org.reflections:reflections</include>

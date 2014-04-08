@@ -1,22 +1,3 @@
-#  example of world-specific cooldowns
-#  world:
-#    myworld:
-#      # whether this world should have its own cooldowns
-#      cooldownPerWorld: false
-#      home: 120
-#      spawn: 120
-#      # resetOnDeath can be per-world or even per-permission
-#      resetOnDeath: true
-#
-#  example of permission-specific cooldowns
-#  permission:
-#    entry1:
-#      # whether these permission should have their own cooldowns
-#      cooldownPerPermission: false
-#      permissions:
-#        - my.special.permission
-#      home: 30
-#      spawn: 30
 warmup:
   # globally enable or disable warmups.
   enabled: false

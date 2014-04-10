@@ -1154,9 +1154,9 @@ public class HomeSpawnUtils {
      * @param cause
      * @context StrategyResult context, if any. Can be null.
      */
-    public void teleport(Player p, Location l, TeleportCause cause, StrategyContext context) {
+    public boolean teleport(Player p, Location l, TeleportCause cause, StrategyContext context) {
     	if( l == null || p == null )
-    		return;
+    		return false;
     	if( cause == null )
     		cause = TeleportCause.UNKNOWN;
     	
@@ -1172,11 +1172,12 @@ public class HomeSpawnUtils {
 		}
 		
 		Teleport.getInstance().setCurrentTeleporter(p.getName());
-		p.teleport(l, cause);
+		boolean success = p.teleport(l, cause);
 		Teleport.getInstance().setCurrentTeleporter(null);
+                return success;
     }
-    public void teleport(Player p, Location l, TeleportCause cause) {
-    	teleport(p, l, cause, null);
+    public boolean teleport(Player p, Location l, TeleportCause cause) {
+    	return teleport(p, l, cause, null);
     }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
@@ -1201,8 +1202,11 @@ public class HomeSpawnUtils {
     	public void run() {
     		debug.debug(logPrefix+" delayed teleporting "+p+" to "+l);
     		Teleport.getInstance().setCurrentTeleporter(p.getName());
-    		teleport(p, l, TeleportCause.PLUGIN);
+    		boolean result = teleport(p, l, TeleportCause.PLUGIN);
     		Teleport.getInstance().setCurrentTeleporter(null);
+                if( !result ) {
+                    log.warning("HSP attempted a delayed teleport of player "+p+" from "+p.getLocation()+" to "+l+" and this teleport failed or was cancelled by some other plugin!");
+                }
     	}
     }
 }

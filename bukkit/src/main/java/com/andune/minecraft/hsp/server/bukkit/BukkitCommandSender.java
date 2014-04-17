@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.hsp.server.api.Server;
 
 /**
@@ -38,8 +39,8 @@ import com.andune.minecraft.hsp.server.api.Server;
 public class BukkitCommandSender extends com.andune.minecraft.commonlib.server.bukkit.BukkitCommandSender {
     private final Server server;
 
-    public BukkitCommandSender(org.bukkit.command.CommandSender bukkitSender, Server server) {
-        super(bukkitSender);
+    public BukkitCommandSender(org.bukkit.command.CommandSender bukkitSender, Server server, Colors colors) {
+        super(bukkitSender, colors);
         this.server = server;
     }
 

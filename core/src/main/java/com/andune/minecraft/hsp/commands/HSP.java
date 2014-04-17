@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Initializer;
@@ -47,6 +48,9 @@ import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
+import com.andune.minecraft.hsp.strategy.EventType;
+import com.andune.minecraft.hsp.strategy.Strategy;
+import com.andune.minecraft.hsp.strategy.StrategyConfig;
 import com.andune.minecraft.hsp.util.BackupUtil;
 
 import javax.inject.Inject;
@@ -80,6 +84,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     private General generalUtil;
     @Inject
     private ConfigCore configCore;
+    @Inject
+    private StrategyConfig strategyConfig;
 
     private final List<SubCommand> subCommands;
     private final List<String> subCommandNames;
@@ -94,6 +100,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         cmds.add(new Backup());
         cmds.add(new Restore());
         cmds.add(new Purge());
+        cmds.add(new ListEvents());
+        cmds.add(new ListStrategies());
         this.subCommands = Collections.unmodifiableList(cmds);
 
         List<String> names = new ArrayList<String>(10);
@@ -171,7 +179,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
 
     @Override
     public String[] getExplicitSubCommandName() {
-        return new String[]{"admin", "a"};
+        return null;
+//        return new String[]{"admin", "a"};
     }
 
     @Override
@@ -328,6 +337,66 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
                         "file", backupUtil.getBackupFile());
             } else {
                 sender.sendMessage(errorMessage);
+            }
+        }
+    }
+
+    private class ListEvents extends SubCommand {
+        public String getName() {
+            return "listEvents";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"le"};
+        }
+
+        public void run() {
+            sender.sendMessage("HSP event types:");
+            for(EventType type : EventType.values()) {
+                sender.sendMessage("  "+type);
+            }
+        }
+    }
+
+    private class ListStrategies extends SubCommand {
+        public String getName() {
+            return "listStrategies";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"ls"};
+        }
+
+        public void run() {
+            if (args.length < 2) {
+                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_LIST_STRATEGIES_REQUIRES_ARG);
+            } else {
+                final String eventName = args[1].toLowerCase();
+                Set<Strategy> strategies = strategyConfig.getDefaultStrategies(eventName);
+                if (strategies != null) {
+                    sender.sendMessage("Strategies for event %green%"+eventName);
+                    for(Strategy strategy : strategies) {
+                        sender.sendMessage("  - "+strategy.getStrategyConfigName());
+                    }
+                }
+
+                String worldName = null;
+                if( args.length > 2 )
+                    worldName = args[2];
+                else if( sender instanceof Player ) {
+                    Player p = (Player) sender;
+                    worldName = p.getWorld().getName();
+                }
+
+                if( worldName != null ) {
+                    strategies = strategyConfig.getWorldStrategies(eventName, worldName);
+                    if (strategies != null) {
+                        sender.sendMessage("Strategies for event %green%"+eventName+"%default_color%, world %red%"+worldName);
+                        for(Strategy strategy : strategies) {
+                            sender.sendMessage("  - "+strategy.getStrategyConfigName());
+                        }
+                    }
+                }
             }
         }
     }

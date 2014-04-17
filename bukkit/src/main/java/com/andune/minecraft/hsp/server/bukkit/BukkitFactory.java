@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.Command;
@@ -51,14 +52,16 @@ public class BukkitFactory extends com.andune.minecraft.commonlib.server.bukkit.
     private final ConfigCore configCore;
     private final PlayerDAO playerDAO;
     private final Server server;
+    private final Colors colors;
 
     @Inject
     protected BukkitFactory(Injector injector, PermissionSystem perm,
-                            ConfigCore configCore, PlayerDAO playerDAO, Server server) {
+                            ConfigCore configCore, PlayerDAO playerDAO, Server server, Colors colors) {
         super(injector, perm);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
         this.server = server;
+        this.colors = colors;
     }
 
     @Override
@@ -78,6 +81,6 @@ public class BukkitFactory extends com.andune.minecraft.commonlib.server.bukkit.
 
     @Override
     protected BukkitCommandSender newBukkitCommandSender(org.bukkit.command.CommandSender bukkitSender) {
-        return new BukkitCommandSender(bukkitSender, server);
+        return new BukkitCommandSender(bukkitSender, server, colors);
     }
 }

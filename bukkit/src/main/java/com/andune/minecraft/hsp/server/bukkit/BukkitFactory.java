@@ -57,7 +57,7 @@ public class BukkitFactory extends com.andune.minecraft.commonlib.server.bukkit.
     @Inject
     protected BukkitFactory(Injector injector, PermissionSystem perm,
                             ConfigCore configCore, PlayerDAO playerDAO, Server server, Colors colors) {
-        super(injector, perm);
+        super(injector, perm, colors);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
         this.server = server;
@@ -76,7 +76,7 @@ public class BukkitFactory extends com.andune.minecraft.commonlib.server.bukkit.
 
     @Override
     public BukkitPlayer newBukkitPlayer(Player bukkitPlayer) {
-        return new BukkitPlayer(configCore, playerDAO, perm, bukkitPlayer, server);
+        return new BukkitPlayer(configCore, playerDAO, perm, bukkitPlayer, server, colors);
     }
 
     @Override

@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.server.bukkit;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.Server;
@@ -52,6 +53,7 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
     private ConfigCore configCore;
     private PlayerDAO playerDAO;
     private Server server;
+    private Colors colors;
 
     /**
      * Protected constructor, should only be invoked from BukkitFactory.
@@ -62,8 +64,8 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
      */
     protected BukkitPlayer(ConfigCore configCore, PlayerDAO playerDAO,
                            PermissionSystem perm, org.bukkit.entity.Player bukkitPlayer,
-                           Server server) {
-        super(perm, bukkitPlayer);
+                           Server server, Colors colors) {
+        super(perm, bukkitPlayer, colors);
         this.configCore = configCore;
         this.playerDAO = playerDAO;
         this.server = server;

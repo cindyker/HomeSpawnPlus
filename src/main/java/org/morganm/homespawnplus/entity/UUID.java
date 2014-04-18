@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
- * Class to store UUID/playerName mappings. This entity always represents the latest
+ * Class to store UUID/name mappings. This entity always represents the latest
  * known UUID/name pairing and both UUID and name are guaranteed to be unique.
  *
  * @author andune
@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Table(name = "hsp_uuid",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"uuid"}),
-                @UniqueConstraint(columnNames = {"player_name"})
+                @UniqueConstraint(columnNames = {"name"})
         }
 )
 public class UUID {
@@ -38,8 +38,7 @@ public class UUID {
 
     @Length(max = 32)
     @NotNull
-    @Column(name = "player_name")
-    private String playerName;
+    private String name;
 
     @javax.persistence.Version
     private Timestamp lastModified;
@@ -78,12 +77,12 @@ public class UUID {
         return uuid;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public String getName() {
+        return name;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Timestamp getLastModified() {

@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 @Entity()
 @Table(name = "hsp_uuid_history",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"uuid, player_name"})
+                @UniqueConstraint(columnNames = {"uuid, name"})
         }
 )
 public class UUIDHistory {
@@ -51,7 +51,7 @@ public class UUIDHistory {
 
     @Length(max = 32)
     @NotNull
-    private String playerName;
+    private String name;
 
     @javax.persistence.Version
     private Timestamp lastModified;
@@ -66,7 +66,7 @@ public class UUIDHistory {
 
     public UUIDHistory(java.util.UUID uuid, String playerName) {
         this.uuid = uuid;
-        this.playerName = playerName;
+        this.name = playerName;
         this.UUIDString = uuid.toString();
     }
 
@@ -86,12 +86,12 @@ public class UUIDHistory {
         this.UUIDString = UUIDString;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public String getName() {
+        return name;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Timestamp getLastModified() {

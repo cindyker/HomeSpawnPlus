@@ -52,7 +52,7 @@
       <dependency>
           <groupId>org.bukkit</groupId>
           <artifactId>bukkit</artifactId>
-          <version>1.7.2-R0.3-SNAPSHOT</version>
+          <version>LATEST</version>
       </dependency>
 
     <!-- WorldEdit/WEPIF -->

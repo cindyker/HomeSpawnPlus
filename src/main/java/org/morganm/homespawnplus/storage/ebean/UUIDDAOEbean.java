@@ -22,7 +22,7 @@ public class UUIDDAOEbean implements UUIDDAO {
 
     @Override
     public UUID findByUUID(java.util.UUID uuid) {
-        return ebean.find(UUID.class).where().ieq("uuidString", uuid.toString()).findUnique();
+        return ebean.find(UUID.class).where().ieq("uuid", uuid.toString()).findUnique();
     }
 
     @Override

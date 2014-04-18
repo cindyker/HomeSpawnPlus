@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +48,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.command.BaseCommand;
+import org.morganm.homespawnplus.entity.UUIDHistory;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.Storage;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -95,12 +97,12 @@ public class HSP extends BaseCommand {
 		// admin command to clean up any playerName-case-caused dups
 		else if( args[0].startsWith("dedup") || args[0].equals("dd") ) {
 			p.sendMessage("Starting async HSP database home playerName dup cleanup");
-			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new DeDupDatabaseRunner(p));
+            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DeDupDatabaseRunner(p));
 		}
 		// admin command to switch all database player names to lowercase
 		else if( args[0].startsWith("lowercase") || args[0].equals("lc") ) {
 			p.sendMessage("Starting async HSP database playerName-to-lowercase conversion");
-			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new LowerCaseDatabaseRunner(p));
+            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new LowerCaseDatabaseRunner(p));
 		}
 		else if( args[0].startsWith("reloadc") || args[0].equals("rc") ) {
 			boolean success = false;
@@ -162,6 +164,10 @@ public class HSP extends BaseCommand {
 				e.printStackTrace();
 			}
 		}
+        // UUID history lookup
+        else if( args[0].equals("uhl") ) {
+            new UUIDHistoryLookup(p, args).run();
+        }
 		else if( args[0].equals("test2") ) {
 			Set<org.morganm.homespawnplus.entity.Home> allHomes = plugin.getStorage().getHomeDAO().findAllHomes();
 			p.sendMessage("allHomes.size="+allHomes.size());
@@ -279,6 +285,58 @@ public class HSP extends BaseCommand {
 
 		return true;
 	}
+
+    private class UUIDHistoryLookup implements Runnable {
+        final private CommandSender sender;
+        final private String[] args;
+
+        public UUIDHistoryLookup(CommandSender sender, String[] args) {
+            this.sender = sender;
+            this.args = args;
+        }
+
+        public void run() {
+            if( args.length > 1 ) {
+                final String playerName = args[1];
+
+                UUID uuid = null;
+                Set<UUIDHistory> set = null;
+                try {
+                    uuid = UUID.fromString(args[1]);
+                    set = plugin.getStorage().getUUIDHistoryDAO().findByUUID(uuid);
+                } catch(IllegalArgumentException e) {
+                    // If UUID conversion failed, then we assume it's a player name
+                    set = plugin.getStorage().getUUIDHistoryDAO().findByName(playerName);
+                }
+
+
+                if ((set == null || set.size() == 0)) {
+                    if( uuid != null ) {
+                        sender.sendMessage("No player names matching UUID " + uuid + " were found");
+                    } else {
+                        sender.sendMessage("No UUIDs matching player name " + playerName + " were found");
+                    }
+
+                    return;
+                }
+
+                if( uuid != null ) {
+                    sender.sendMessage("Player name history for UUID "+uuid+":");
+                } else {
+                    sender.sendMessage("UUID history for player name "+playerName+":");
+                }
+                for(UUIDHistory uuidHistory : set) {
+                    sender.sendMessage("  "
+                            +uuidHistory.getDateCreated().toString()
+                            +": "
+                            + ((uuid == null) ? uuidHistory.getUUIDString() : uuidHistory.getName())
+                    );
+                }
+            } else {
+                sender.sendMessage("Player name or UUID argument required.");
+            }
+        }
+    }
 	
 	private class DeDupDatabaseRunner implements Runnable {
 		private CommandSender sender;

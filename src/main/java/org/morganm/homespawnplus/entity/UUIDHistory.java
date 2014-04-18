@@ -4,11 +4,13 @@ import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import java.sql.Timestamp;
 
@@ -46,6 +48,7 @@ public class UUIDHistory {
      * the trade-off for admin readability.
      */
     @Length(max = 36)
+    @Column(name = "uuid")
     @NotNull
     private String UUIDString;
 
@@ -59,6 +62,7 @@ public class UUIDHistory {
     @CreatedTimestamp
     private Timestamp dateCreated;
 
+    @Transient
     private transient java.util.UUID uuid;
 
     public UUIDHistory() {
@@ -68,6 +72,10 @@ public class UUIDHistory {
         this.uuid = uuid;
         this.name = playerName;
         this.UUIDString = uuid.toString();
+    }
+
+    public java.util.UUID getUUID() {
+        return uuid;
     }
 
     public int getId() {

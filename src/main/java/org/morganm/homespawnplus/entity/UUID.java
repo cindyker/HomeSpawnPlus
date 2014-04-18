@@ -46,6 +46,7 @@ public class UUID {
     @CreatedTimestamp
     private Timestamp dateCreated;
 
+    @Transient
     private transient java.util.UUID uuid;
 
     public UUID() {

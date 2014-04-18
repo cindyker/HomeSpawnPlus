@@ -61,6 +61,8 @@ import org.morganm.homespawnplus.entity.HomeInvite;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
 import org.morganm.homespawnplus.entity.PlayerSpawn;
 import org.morganm.homespawnplus.entity.Spawn;
+import org.morganm.homespawnplus.entity.UUID;
+import org.morganm.homespawnplus.entity.UUIDHistory;
 import org.morganm.homespawnplus.entity.Version;
 import org.morganm.homespawnplus.i18n.Colors;
 import org.morganm.homespawnplus.i18n.Locale;
@@ -536,6 +538,8 @@ public class HomeSpawnPlus extends JavaPlugin {
         classList.add(HomeInvite.class);
         classList.add(PlayerSpawn.class);
         classList.add(PlayerLastLocation.class);
+        classList.add(UUID.class);
+        classList.add(UUIDHistory.class);
         return classList;
     }
     

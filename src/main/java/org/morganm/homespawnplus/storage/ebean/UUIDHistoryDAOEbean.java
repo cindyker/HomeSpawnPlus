@@ -22,17 +22,17 @@ public class UUIDHistoryDAOEbean implements UUIDHistoryDAO {
 
     @Override
     public Set<UUIDHistory> findByUUID(java.util.UUID uuid) {
-        return ebean.find(UUIDHistory.class).where().ieq("uuidString", uuid.toString()).findSet();
+        return ebean.find(UUIDHistory.class).where().ieq("uuid", uuid.toString()).orderBy("dateCreated").findSet();
     }
 
     @Override
     public Set<UUIDHistory> findByName(String name) {
-        return ebean.find(UUIDHistory.class).where().ieq("name", name).findSet();
+        return ebean.find(UUIDHistory.class).where().ieq("name", name).orderBy("dateCreated").findSet();
     }
 
     @Override
     public Set<UUIDHistory> findAll() {
-        return ebean.find(UUIDHistory.class).findSet();
+        return ebean.find(UUIDHistory.class).orderBy("dateCreated").findSet();
     }
 
     @Override

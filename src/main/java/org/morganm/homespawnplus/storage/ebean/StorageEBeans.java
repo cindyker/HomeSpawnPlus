@@ -60,7 +60,7 @@ import com.avaje.ebean.SqlUpdate;
  *
  */
 public class StorageEBeans implements Storage {
-	private static final int CURRENT_VERSION = 170;
+	private static final int CURRENT_VERSION = 180;
     private static final Logger log = HomeSpawnPlus.log;
 
 	private final HomeSpawnPlus plugin;
@@ -75,6 +75,8 @@ public class StorageEBeans implements Storage {
 	private VersionDAOEBean versionDAO;
 	private PlayerSpawnDAOEBean playerSpawnDAO;
 	private PlayerLastLocationDAOEBean playerLastLocationDAO;
+    private UUIDDAOEbean uuidDAO;
+    private UUIDHistoryDAOEbean uuidHistoryDAO;
 
 	public StorageEBeans(HomeSpawnPlus plugin) {
 		this.plugin = plugin;
@@ -159,6 +161,8 @@ public class StorageEBeans implements Storage {
         versionDAO = new VersionDAOEBean(getDatabase());
         playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
         playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
+        uuidDAO = new UUIDDAOEbean(getDatabase());
+        uuidHistoryDAO = new UUIDHistoryDAOEbean(getDatabase());
         
         try {
         	upgradeDatabase();
@@ -179,7 +183,11 @@ public class StorageEBeans implements Storage {
 	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
-	
+    @Override
+    public org.morganm.homespawnplus.storage.dao.UUIDDAO getUUIDDAO() { return uuidDAO; }
+    @Override
+    public org.morganm.homespawnplus.storage.dao.UUIDHistoryDAO getUUIDHistoryDAO() { return uuidHistoryDAO; }
+
 	@Override
 	public void purgeCache() {
 		// in theory we should pass this call through to the EBEAN server, but it doesn't
@@ -208,7 +216,13 @@ public class StorageEBeans implements Storage {
 		
 		update = db.createSqlUpdate("delete from hsp_playerlastloc");
 		update.execute();
-		
+
+        update = db.createSqlUpdate("delete from hsp_uuid");
+        update.execute();
+
+        update = db.createSqlUpdate("delete from hsp_uuid_history");
+        update.execute();
+
 		db.commitTransaction();
 	}
 	
@@ -269,6 +283,9 @@ public class StorageEBeans implements Storage {
 		
 		if( knownVersion < 170 )
 			updateToVersion170(db);
+
+        if( knownVersion < 180 )
+            updateToVersion180(db);
 	}
 	
 	private void updateToVersion63(final EbeanServer db) {
@@ -556,7 +573,16 @@ public class StorageEBeans implements Storage {
 		}
 		log.info(logPrefix + " Upgrade from version 1.5.0 database to version 1.7.0 complete");
 	}
-	
+
+    private void updateToVersion180(final EbeanServer db) {
+        log.info(logPrefix + " Upgrading from version 1.7.0 database to version 1.8.0");
+
+        // TODO: do something useful
+        log.info(logPrefix + " DB 1.8.0 Upgrade NOT IMPLEMENTED YET - FIXME!!!");
+
+        log.info(logPrefix + " Upgrade from version 1.7.0 database to version 1.8.0 complete");
+    }
+
 	// Ebeans does nothing with these methods
 	@Override
 	public void setDeferredWrites(boolean deferred) {}

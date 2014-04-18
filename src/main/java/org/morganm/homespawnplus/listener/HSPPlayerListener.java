@@ -30,13 +30,6 @@
  ******************************************************************************/
 package org.morganm.homespawnplus.listener;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -46,6 +39,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -58,6 +52,8 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
+import org.morganm.homespawnplus.entity.UUID;
+import org.morganm.homespawnplus.entity.UUIDHistory;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
 import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
@@ -66,6 +62,13 @@ import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.Teleport;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -100,6 +103,38 @@ public class HSPPlayerListener implements Listener {
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
         debug = Debug.getInstance();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
+        final String playerName = event.getName();
+        final java.util.UUID uuid = event.getUniqueId();
+
+        UUID hspUUIDEntity = plugin.getStorage().getUUIDDAO().findByUUID(uuid);
+        if (hspUUIDEntity == null) {
+            hspUUIDEntity = new UUID(uuid);
+        }
+
+        if (!playerName.equals(hspUUIDEntity.getName())) {
+            if (util.isVerboseLogging()) {
+                log.info("Saw new UUID "+uuid.toString()+" for player "+playerName);
+            }
+
+            hspUUIDEntity.setName(playerName);
+            try {
+                plugin.getStorage().getUUIDDAO().save(hspUUIDEntity);
+            } catch (StorageException e) {
+                log.log(Level.SEVERE, "Caught exception while storing UUID on login for player " + playerName, e);
+            }
+
+            // We saw a name/UUID change, so store it in the history table also
+            UUIDHistory uuidHistory = new UUIDHistory(uuid, playerName);
+            try {
+                plugin.getStorage().getUUIDHistoryDAO().save(uuidHistory);
+            } catch (StorageException e) {
+                log.log(Level.SEVERE, "Caught exception while storing UUID History change event for player " + playerName, e);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)

@@ -35,6 +35,7 @@ package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
 
+import com.andune.minecraft.commonlib.FeatureNotImplemented;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.HomeSpawnPlus;
 import org.morganm.homespawnplus.entity.Home;
@@ -199,7 +200,11 @@ public class StorageYaml implements Storage {
 	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
-	
+    @Override
+    public org.morganm.homespawnplus.storage.dao.UUIDDAO getUUIDDAO() { throw new FeatureNotImplemented(); }
+    @Override
+    public org.morganm.homespawnplus.storage.dao.UUIDHistoryDAO getUUIDHistoryDAO() { throw new FeatureNotImplemented(); }
+
 	@Override
 	public void purgeCache() {
 		for(int i=0; i < allDAOs.length; i++) {

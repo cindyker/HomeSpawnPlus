@@ -9,9 +9,9 @@ import java.util.Set;
 /**
  * @author andune
  */
-interface UUIDDAO {
+public interface UUIDDAO {
     UUID findByUUID(java.util.UUID uuid);
-    UUID findByPlayerName(String name);
+    UUID findByName(String name);
 
     /**
      * Find the list of all known current UUID mappings on this server.
@@ -20,5 +20,5 @@ interface UUIDDAO {
      */
     Set<UUID> findAll();
 
-    void saveUUID(UUID uuid) throws StorageException;
+    void save(UUID uuid) throws StorageException;
 }

@@ -25,7 +25,7 @@ public interface UUIDHistoryDAO {
      * @param name the playerName to search for
      * @return the Set of UUIDs that match, possibly none. Guaranteed to not be null
      */
-    Set<UUIDHistory> findByPlayerName(String name);
+    Set<UUIDHistory> findByName(String name);
 
     /**
      * Find the list of all known UUIDs ever seen by HSP on this server.
@@ -46,5 +46,5 @@ public interface UUIDHistoryDAO {
      * @param uuid
      * @throws StorageException
      */
-    void saveUUID(UUIDHistory uuid) throws StorageException;
+    void save(UUIDHistory uuid) throws StorageException;
 }

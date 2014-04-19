@@ -973,9 +973,11 @@ public class HomeSpawnUtils {
     		
     		final List<World> worlds = Bukkit.getWorlds();
     		final String worldName = worlds.get(0).getName();
-        	final String playerDat = p.getName() + ".dat";
+        	File file;
         	
-        	File file = new File(worldContainer, worldName+"/players/"+playerDat);
+        	
+         file = new File(worldContainer, worldName + "/playerdata/" + p.getUniqueId() + ".dat");
+         
         	if( file.exists() ) {
         		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," exists, player is NOT new");
         		return false;

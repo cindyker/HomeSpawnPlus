@@ -90,7 +90,7 @@ public class Debug {
 		else
 			this.logPrefix = "["+log.getName()+"] ";
 
-		this.useConsoleLogger = false;
+		this.useConsoleLogger = true;
 		
 		setDebugFile(log.getName()+".debug", logFileName);
 		setDebug(isDebug);

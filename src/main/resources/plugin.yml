@@ -3,7 +3,7 @@ main: org.morganm.homespawnplus.HomeSpawnPlus
 url: ${project.url}
 version: ${project.version}
 author: morganm
-database: true
+database: false
 softdepend: [Vault, WorldEdit, WorldGuard, Permissions, PermissionsEx, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
 permissions:
     hsp.*:

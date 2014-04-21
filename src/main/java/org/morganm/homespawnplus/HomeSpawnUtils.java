@@ -973,15 +973,24 @@ public class HomeSpawnUtils {
     		
     		final List<World> worlds = Bukkit.getWorlds();
     		final String worldName = worlds.get(0).getName();
-        	final String playerDat = p.getName() + ".dat";
-        	
-        	File file = new File(worldContainer, worldName+"/players/"+playerDat);
-        	if( file.exists() ) {
-        		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," exists, player is NOT new");
+    		
+         // Player data location is checked against both of these directories
+         // to provide support for both the old (prior to 1.7.9) and new
+         // (1.7.9 and later) locations and file names
+         File playerDatOldLoc = new File(worldContainer, worldName + "/player/" + p.getName() + ".dat");
+         File playerDatNewLoc = new File(worldContainer, worldName + "/playerdata/" + p.getUniqueId() + ".dat");
+         
+        	if( playerDatOldLoc.exists() ) {
+        		debug.debug("isNewPlayer: using ",strategy," strategy, ",playerDatOldLoc," exists, player is NOT new");
         		return false;
         	}
 
-    		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," does not exist");
+         if( playerDatNewLoc.exists() ) {
+            debug.debug("isNewPlayer: using ",strategy," strategy, ",playerDatNewLoc," exists, player is NOT new");
+            return false;
+         }
+         
+    		debug.debug("isNewPlayer: using ",strategy," strategy, ",p.getName() + "/" + p.getUniqueId()," does not exist");
     	}
     	
 		debug.debug("isNewPlayer: using ",strategy," strategy, player is determined to be NEW player");

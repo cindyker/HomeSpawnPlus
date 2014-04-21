@@ -30,13 +30,8 @@
  ******************************************************************************/
 package org.morganm.homespawnplus.util;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
+import com.sk89q.wepif.PermissionsResolverManager;
 import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -48,29 +43,25 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.sk89q.wepif.PermissionsResolverManager;
-
-/** Permission abstraction class, use Vault, WEPIF, Perm2 or superperms, depending on what's available.
- * 
- * Dependencies: (handled through maven automatically now)
- *   Vault 1.x: http://dev.bukkit.org/server-mods/vault/
- *   WorldEdit 5.x: http://build.sk89q.com/
- *   PermissionsEx: http://goo.gl/jthCz
- *   Permissions 2.7 or 3.x: http://goo.gl/liHFt (2.7) or http://goo.gl/rn4LP (3.x) 
- *   
- * Author's note: The "ideal" design would be to setup an interface class and let each permission
- *   type implement that interface and use polymorphism. In fact, that's how Vault and WEPIF work.
- *   However, the design goal for this class is to have a single class I can use between projects
- *   that implements permissions abstraction, thus the less-than-great C-style integer values,
- *   switch statements and if/else ladders.
- * 
- * @author morganm
+/**
+ * This class origin and intent was to be a single Permission file capable
+ * of being copied between my projects. A common library clearly would have
+ * been desired, but having admins install, maintain and update a separate
+ * common library just to run HSP seemed like too much overhead for admins.
  *
+ * Eventually I discovered maven shading to solve the problem and now have
+ * anduneCommonLib to provide this and other capabilities. The integration
+ * work went into HSP 2.0 and so 1.7 still has this legacy class. Someday
+ * HSP 2.0 will make it out the door and this class will become a distant
+ * memory..
+ *
+ * @author andune
+ * @deprecated
  */
 public class PermissionSystem {
 	// class version: 15
@@ -78,8 +69,6 @@ public class PermissionSystem {
 		SUPERPERMS,
 		VAULT,
 		WEPIF,
-		PERM2_COMPAT,
-		PEX,
 		OPS
 	}
 
@@ -101,9 +90,7 @@ public class PermissionSystem {
 	
     private net.milkbowl.vault.permission.Permission vaultPermission = null;
     private PermissionsResolverManager wepifPerms = null;
-    private PermissionHandler perm2Handler;
-    private PermissionsEx pex;
-    
+
 	public PermissionSystem(JavaPlugin plugin, Logger log, String logPrefix) {
 		this.plugin = plugin;
 		if( log != null )
@@ -156,10 +143,6 @@ public class PermissionSystem {
 			}
 			
 			return "WEPIF" + wepifPermInUse;
-		case PERM2_COMPAT:
-			return "PERM2_COMPAT";
-		case PEX:
-			return "PEX";
 		case OPS:
 			return "OPS";
 
@@ -202,22 +185,6 @@ public class PermissionSystem {
 					systemInUse = Type.WEPIF;
 //					if( verbose )
 //						log.info(logPrefix+"using WEPIF permissions");
-					break;
-				}
-			}
-			else if( "pex".equalsIgnoreCase(system) ) {
-				if( setupPEXPermissions() ) {
-					systemInUse = Type.PEX;
-//					if( verbose )
-//						log.info(logPrefix+"using PEX permissions");
-					break;
-				}
-			}
-			else if( "perm2".equalsIgnoreCase(system) || "perm2-compat".equalsIgnoreCase(system) ) {
-				if( setupPerm2() ) {
-					systemInUse = Type.PERM2_COMPAT;
-//					if( verbose )
-//						log.info(logPrefix+"using Perm2-compatible permissions");
 					break;
 				}
 			}
@@ -268,12 +235,6 @@ public class PermissionSystem {
     	case WEPIF:
     		permAllowed = wepifPerms.hasPermission(p.getName(), permission);
     		break;
-    	case PEX:
-    		permAllowed = pex.has(p, permission);
-    		break;
-    	case PERM2_COMPAT:
-    		permAllowed = perm2Handler.has(p, permission);
-    		break;
     	case SUPERPERMS:
     		permAllowed = p.hasPermission(permission);
     		break;
@@ -293,14 +254,6 @@ public class PermissionSystem {
     		break;
     	case WEPIF:
     		permAllowed = wepifPerms.hasPermission(player, permission);
-    		break;
-    	case PEX:
-            PermissionUser user = PermissionsEx.getPermissionManager().getUser(player);
-            if (user != null)
-            	permAllowed = user.has(permission, world);
-    		break;
-    	case PERM2_COMPAT:
-    		permAllowed = perm2Handler.has(world, player, permission);
     		break;
     	case SUPERPERMS:
     	{
@@ -341,20 +294,6 @@ public class PermissionSystem {
     			group = groups[0];
     		break;
     	}
-    	case PEX:
-    	{
-            PermissionUser user = PermissionsEx.getPermissionManager().getUser(playerName);
-            if (user != null) {
-            	String[] groups = user.getGroupsNames();
-        		if( groups != null && groups.length > 0 )
-        			group = groups[0];
-            }
-    		break;
-    	}
-    	case PERM2_COMPAT:
-    		group = perm2Handler.getGroup(world, playerName);
-    		break;
-    	
     	case SUPERPERMS:
     	{
     		Player player = plugin.getServer().getPlayer(playerName);
@@ -420,15 +359,6 @@ public class PermissionSystem {
         return perm;
     }
 
-    private boolean setupPerm2() {
-        Plugin permissionsPlugin = plugin.getServer().getPluginManager().getPlugin("Permissions");
-        if( permissionsPlugin != null ) {
-        	perm2Handler = ((Permissions) permissionsPlugin).getHandler();
-        }
-        	
-        return (perm2Handler != null);
-    }
-    
     private boolean setupVaultPermissions()
     {
     	Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
@@ -484,19 +414,5 @@ public class PermissionSystem {
     	}
     	
     	return wepifPerms != null;
-    }
-    
-    private boolean setupPEXPermissions() {
-    	try {
-            Plugin perms = plugin.getServer().getPluginManager().getPlugin("PermissionsEx");
-	    	if( perms != null ) {
-	    		pex = (PermissionsEx) perms;
-	    	}
-    	}
-    	catch(Exception e) {
-    		log.info(logPrefix + " Unexpected error trying to setup PEX permissions: "+e.getMessage());
-    	}
-    	
-    	return pex != null;
     }
 }

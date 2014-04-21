@@ -64,19 +64,6 @@
   </repositories>
 
   <dependencies>
-    <!-- Required component -->
-    <dependency>
-      <groupId>com.nijiko</groupId>
-      <artifactId>permissions</artifactId>
-      <version>2.7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>ru.tehkode</groupId>
-      <artifactId>PermissionsEx</artifactId>
-      <version>1.19.1</version>
-    </dependency>
-
     <!-- WorldEdit/WEPIF -->
     <dependency>
       <groupId>com.sk89q</groupId>
@@ -113,7 +100,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.7.2-R0.2</version>
+      <version>1.7.9-R0.1-SNAPSHOT</version>
     </dependency>
 
     <!-- WorldBorder -->
@@ -140,13 +127,6 @@
       <groupId>com.onarandombox.multiverseportals</groupId>
       <artifactId>Multiverse-Portals</artifactId>
       <version>2.4</version>
-    </dependency>
-
-    <!-- AuthMe -->
-    <dependency>
-      <groupId>uk.org.whoami.authme</groupId>
-      <artifactId>AuthMe</artifactId>
-      <version>2.7.13</version>
     </dependency>
 
     <!-- Common library -->

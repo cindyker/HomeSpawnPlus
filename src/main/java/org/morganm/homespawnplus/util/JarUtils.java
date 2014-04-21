@@ -84,8 +84,8 @@ public class JarUtils {
         
         if (!outfile.canRead()) {
             try {
-            	JarFile jar = new JarFile(jarFile);
-            	
+            	 JarFile jar = new JarFile(jarFile);
+            	 
                 file.getParentFile().mkdirs();
                 JarEntry entry = jar.getJarEntry(fileName);
                 InputStream is = jar.getInputStream(entry);
@@ -94,6 +94,7 @@ public class JarUtils {
                 is.read(buf, 0, (int) entry.getSize());
                 os.write(buf);
                 os.close();
+                jar.close();
             } catch (Exception e) {
                 log.warning(logPrefix + " Could not copy config file "+fileName+" to default location");
             }
@@ -113,6 +114,7 @@ public class JarUtils {
             Manifest manifest = jar.getManifest();
             Attributes attributes = manifest.getMainAttributes();
             build = attributes.getValue("Implementation-Build");
+            jar.close();
         } catch (Exception e) {
             plugin.getLogger().warning("Could not load build string from JAR");
         }
@@ -155,6 +157,7 @@ public class JarUtils {
     				}
     			}
     		}
+         jar.close();
     	}
     	catch (Exception e) {
     		e.printStackTrace();

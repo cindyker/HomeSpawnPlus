@@ -37,10 +37,10 @@
   </scm>
 
   <repositories>
-      <repository>
-          <id>bukkit-repo</id>
-          <url>http://repo.bukkit.org/content/groups/public/</url>
-      </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
     <repository>
       <id>andune-repo</id>
       <url>http://andune.com/nexus/content/groups/public/</url>
@@ -113,20 +113,7 @@
       <version>2.5</version>
     </dependency>
 
-      <!-- Required component -->
-      <dependency>
-          <groupId>com.nijiko</groupId>
-          <artifactId>permissions</artifactId>
-          <version>2.7</version>
-      </dependency>
-
-      <dependency>
-          <groupId>ru.tehkode</groupId>
-          <artifactId>PermissionsEx</artifactId>
-          <version>1.19.1</version>
-      </dependency>
-
-      <!-- Common library -->
+    <!-- Common library -->
     <dependency>
       <groupId>com.andune.minecraft.commonlib</groupId>
       <artifactId>commonlib</artifactId>

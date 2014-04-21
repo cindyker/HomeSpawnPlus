@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
@@ -173,7 +171,7 @@ public class CommandRegister {
         SimpleCommandMap commandMap = null;
 
         PluginManager pm = plugin.getServer().getPluginManager();
-        Class clazz = pm.getClass();
+        Class<? extends PluginManager> clazz = pm.getClass();
         Field field = null;
         try {
             field = clazz.getDeclaredField("commandMap");

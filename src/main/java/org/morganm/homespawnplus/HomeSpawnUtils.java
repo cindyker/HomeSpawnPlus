@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -973,15 +974,24 @@ public class HomeSpawnUtils {
     		
     		final List<World> worlds = Bukkit.getWorlds();
     		final String worldName = worlds.get(0).getName();
-        	final String playerDat = p.getName() + ".dat";
-        	
-        	File file = new File(worldContainer, worldName+"/players/"+playerDat);
-        	if( file.exists() ) {
-        		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," exists, player is NOT new");
+    		
+         // Player data location is checked against both of these directories
+         // to provide support for both the old (prior to 1.7.9) and new
+         // (1.7.9 and later) locations and file names
+         File playerDatOldLoc = new File(worldContainer, worldName + "/player/" + p.getName() + ".dat");
+         File playerDatNewLoc = new File(worldContainer, worldName + "/playerdata/" + p.getUniqueId() + ".dat");
+         
+        	if( playerDatOldLoc.exists() ) {
+        		debug.debug("isNewPlayer: using ",strategy," strategy, ",playerDatOldLoc," exists, player is NOT new");
         		return false;
         	}
 
-    		debug.debug("isNewPlayer: using ",strategy," strategy, ",file," does not exist");
+         if( playerDatNewLoc.exists() ) {
+            debug.debug("isNewPlayer: using ",strategy," strategy, ",playerDatNewLoc," exists, player is NOT new");
+            return false;
+         }
+         
+    		debug.debug("isNewPlayer: using ",strategy," strategy, ",p.getName() + "/" + p.getUniqueId()," does not exist");
     	}
     	
 		debug.debug("isNewPlayer: using ",strategy," strategy, player is determined to be NEW player");
@@ -1097,11 +1107,11 @@ public class HomeSpawnUtils {
 	 */
 	public Location findBed(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
 		debug.devDebug("findBed: b=",b," currentLevel=",currentLevel);
-		if( b.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+		if( b.getType() == Material.BED_BLOCK ) {	// it's a bed! make sure the other half is there
 			debug.devDebug("findBed: Block ",b," is bed block");
 			for(BlockFace bf : cardinalFaces) {
 				Block nextBlock = b.getRelative(bf);
-				if( nextBlock.getTypeId() == 26 ) {
+				if( nextBlock.getType() == Material.BED_BLOCK ) {
 					debug.devDebug("findBed: Block ",nextBlock," is second bed block");
 					return b.getLocation();
 				}
@@ -1114,11 +1124,11 @@ public class HomeSpawnUtils {
 			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't check the same block twice
 				continue;
 			
-			if( nextBlock.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+			if( nextBlock.getType() == Material.BED_BLOCK ) {	// it's a bed! make sure the other half is there
 				debug.devDebug("findBed: Block ",nextBlock," is bed block");
 				for(BlockFace cardinal : cardinalFaces) {
 					Block possibleBedBlock = nextBlock.getRelative(cardinal);
-					if( possibleBedBlock.getTypeId() == 26 ) {
+					if( possibleBedBlock.getType() == Material.BED_BLOCK ) {
 						debug.devDebug("findBed: Block ",possibleBedBlock," is second bed block");
 						return nextBlock.getLocation();
 					}
@@ -1154,9 +1164,9 @@ public class HomeSpawnUtils {
      * @param cause
      * @context StrategyResult context, if any. Can be null.
      */
-    public void teleport(Player p, Location l, TeleportCause cause, StrategyContext context) {
+    public boolean teleport(Player p, Location l, TeleportCause cause, StrategyContext context) {
     	if( l == null || p == null )
-    		return;
+    		return false;
     	if( cause == null )
     		cause = TeleportCause.UNKNOWN;
     	
@@ -1172,11 +1182,12 @@ public class HomeSpawnUtils {
 		}
 		
 		Teleport.getInstance().setCurrentTeleporter(p.getName());
-		p.teleport(l, cause);
+		boolean success = p.teleport(l, cause);
 		Teleport.getInstance().setCurrentTeleporter(null);
+                return success;
     }
-    public void teleport(Player p, Location l, TeleportCause cause) {
-    	teleport(p, l, cause, null);
+    public boolean teleport(Player p, Location l, TeleportCause cause) {
+    	return teleport(p, l, cause, null);
     }
 
     /** Can be used to teleport the player on a slight delay, which gets around a nasty issue that can crash
@@ -1201,8 +1212,11 @@ public class HomeSpawnUtils {
     	public void run() {
     		debug.debug(logPrefix+" delayed teleporting "+p+" to "+l);
     		Teleport.getInstance().setCurrentTeleporter(p.getName());
-    		teleport(p, l, TeleportCause.PLUGIN);
+    		boolean result = teleport(p, l, TeleportCause.PLUGIN);
     		Teleport.getInstance().setCurrentTeleporter(null);
+                if( !result ) {
+                    log.warning("HSP attempted a delayed teleport of player "+p+" from "+p.getLocation()+" to "+l+" and this teleport failed or was cancelled by some other plugin!");
+                }
     	}
     }
 }

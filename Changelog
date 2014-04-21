@@ -1,7 +1,7 @@
 v1.7.8.1 -
-* cleanup permission abstraction to prevent breakage with latest PEX on CB 1.7.9
-* cleanup some old dependencies
+* cleanup some old dependencies; also removes direct support for PEX and Perm2. (still supported via Superperms, WEPIF and Vault)
 * add extra warning on delayed teleport (onJoin) if another plugin cancels HSP's teleport
+* code cleanup, eliminating some deprecated Bukkit dependencies (thanks @Zhro!)
 
 v1.7.8 - Apr 6, 2014
 * remove dependency on CraftBukkit; eliminates breaks simply because of changing CraftBukkit versions. Hooray!

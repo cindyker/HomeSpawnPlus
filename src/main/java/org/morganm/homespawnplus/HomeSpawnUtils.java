@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -1106,11 +1107,11 @@ public class HomeSpawnUtils {
 	 */
 	public Location findBed(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
 		debug.devDebug("findBed: b=",b," currentLevel=",currentLevel);
-		if( b.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+		if( b.getType() == Material.BED_BLOCK ) {	// it's a bed! make sure the other half is there
 			debug.devDebug("findBed: Block ",b," is bed block");
 			for(BlockFace bf : cardinalFaces) {
 				Block nextBlock = b.getRelative(bf);
-				if( nextBlock.getTypeId() == 26 ) {
+				if( nextBlock.getType() == Material.BED_BLOCK ) {
 					debug.devDebug("findBed: Block ",nextBlock," is second bed block");
 					return b.getLocation();
 				}
@@ -1123,11 +1124,11 @@ public class HomeSpawnUtils {
 			if( checkedLocs.contains(nextBlock.getLocation()) )	// don't check the same block twice
 				continue;
 			
-			if( nextBlock.getTypeId() == 26 ) {	// it's a bed! make sure the other half is there
+			if( nextBlock.getType() == Material.BED_BLOCK ) {	// it's a bed! make sure the other half is there
 				debug.devDebug("findBed: Block ",nextBlock," is bed block");
 				for(BlockFace cardinal : cardinalFaces) {
 					Block possibleBedBlock = nextBlock.getRelative(cardinal);
-					if( possibleBedBlock.getTypeId() == 26 ) {
+					if( possibleBedBlock.getType() == Material.BED_BLOCK ) {
 						debug.devDebug("findBed: Block ",possibleBedBlock," is second bed block");
 						return nextBlock.getLocation();
 					}

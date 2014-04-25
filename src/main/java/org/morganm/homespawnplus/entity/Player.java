@@ -33,27 +33,34 @@
  */
 package org.morganm.homespawnplus.entity;
 
-import java.sql.Timestamp;
+import com.avaje.ebean.annotation.CreatedTimestamp;
+import com.avaje.ebean.validation.Length;
+import com.avaje.ebean.validation.NotNull;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-
-import com.avaje.ebean.annotation.CreatedTimestamp;
-import com.avaje.ebean.validation.Length;
-import com.avaje.ebean.validation.NotNull;
-
-/** Class to keep track of players we've seen before, so we can tell if it's a new player or not.
+/**
+ * Class to keep track of players we've seen before, so we can tell if
+ * it's a new player or not.
+ *
+ * This also tracks the player UUID and the most recent name we have seen
+ * for that UUID on this server.
  * 
- * @author morganm
+ * @author andune
  *
  */
 @Entity()
@@ -71,6 +78,17 @@ public class Player implements EntityWithLocation {
     @NotNull
 	private String name;
 
+    /*
+     * We store UUID as a String in the database so it's easily text readable by an admin,
+     * as opposed to storing the binary uuid object. It's 20 more bytes, but even on a
+     * server with 10,000 players, that's only 160k in extra DB storage. Well worth
+     * the trade-off for admin readability.
+     */
+    @Length(max = 36)
+    @Column(name = "uuid")
+    @NotNull
+    private String UUIDString;
+
     @Length(max=32)
 	private String world;
     private Double x;
@@ -85,6 +103,9 @@ public class Player implements EntityWithLocation {
 	
 	@CreatedTimestamp
 	private Timestamp dateCreated;
+
+    @Transient
+    private transient java.util.UUID uuid;
 	
     public Player() {}
     public Player(org.bukkit.entity.Player player) {
@@ -93,7 +114,6 @@ public class Player implements EntityWithLocation {
     
     /** Update last logout location to the given location.
      * 
-     * @param p
      */
     public void updateLastLogoutLocation(Location l) {
     	setWorld(l.getWorld().getName());
@@ -120,7 +140,28 @@ public class Player implements EntityWithLocation {
 		this.id = id;
 	}
 
-	public String getName() {
+    public String getUUIDString() {
+        return UUIDString;
+    }
+
+    public void setUUIDString(String UUIDString) {
+        this.UUIDString = UUIDString;
+        uuid = java.util.UUID.fromString(UUIDString);
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+        if( uuid != null )
+            this.UUIDString = uuid.toString();
+        else
+            this.UUIDString = null;
+    }
+
+    public String getName() {
 		return name;
 	}
 

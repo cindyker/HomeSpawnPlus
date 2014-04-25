@@ -39,7 +39,6 @@ import org.morganm.homespawnplus.storage.dao.PlayerDAO;
 import org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO;
 import org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO;
 import org.morganm.homespawnplus.storage.dao.SpawnDAO;
-import org.morganm.homespawnplus.storage.dao.UUIDDAO;
 import org.morganm.homespawnplus.storage.dao.UUIDHistoryDAO;
 import org.morganm.homespawnplus.storage.dao.VersionDAO;
 
@@ -69,7 +68,6 @@ public interface Storage {
 	public VersionDAO getVersionDAO();
 	public PlayerSpawnDAO getPlayerSpawnDAO();
 	public PlayerLastLocationDAO getPlayerLastLocationDAO();
-    public UUIDDAO getUUIDDAO();
     public UUIDHistoryDAO getUUIDHistoryDAO();
 
 	/** Notify the backing store that it should purge any in-memory cache it has.

@@ -220,4 +220,7 @@ public class MultiverseSafeTeleporter implements SafeTTeleporter {
 		return original.findPortalBlockNextTo(l);
 	}
 
+    public TeleportResult teleport(CommandSender commandSender, Player player, MVDestination mvDestination) {
+        return this.safelyTeleport(commandSender, player, mvDestination);
+    }
 }

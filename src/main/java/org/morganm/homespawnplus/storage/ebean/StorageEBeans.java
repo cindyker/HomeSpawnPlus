@@ -75,7 +75,6 @@ public class StorageEBeans implements Storage {
 	private VersionDAOEBean versionDAO;
 	private PlayerSpawnDAOEBean playerSpawnDAO;
 	private PlayerLastLocationDAOEBean playerLastLocationDAO;
-    private UUIDDAOEbean uuidDAO;
     private UUIDHistoryDAOEbean uuidHistoryDAO;
 
 	public StorageEBeans(HomeSpawnPlus plugin) {
@@ -161,7 +160,6 @@ public class StorageEBeans implements Storage {
         versionDAO = new VersionDAOEBean(getDatabase());
         playerSpawnDAO = new PlayerSpawnDAOEBean(getDatabase());
         playerLastLocationDAO = new PlayerLastLocationDAOEBean(getDatabase());
-        uuidDAO = new UUIDDAOEbean(getDatabase());
         uuidHistoryDAO = new UUIDHistoryDAOEbean(getDatabase());
         
         try {
@@ -183,8 +181,6 @@ public class StorageEBeans implements Storage {
 	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
-    @Override
-    public org.morganm.homespawnplus.storage.dao.UUIDDAO getUUIDDAO() { return uuidDAO; }
     @Override
     public org.morganm.homespawnplus.storage.dao.UUIDHistoryDAO getUUIDHistoryDAO() { return uuidHistoryDAO; }
 

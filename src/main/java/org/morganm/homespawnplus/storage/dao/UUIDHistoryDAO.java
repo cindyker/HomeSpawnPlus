@@ -1,6 +1,5 @@
 package org.morganm.homespawnplus.storage.dao;
 
-import org.morganm.homespawnplus.entity.UUID;
 import org.morganm.homespawnplus.entity.UUIDHistory;
 import org.morganm.homespawnplus.storage.StorageException;
 

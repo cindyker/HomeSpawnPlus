@@ -180,7 +180,7 @@ public class StorageYaml implements Storage {
 	}
 	/** Keep track of spawns as they are loading, same as homeLoaded() above.
 	 * 
-	 * @param home
+	 * @param spawn
 	 */
 	public void spawnLoaded(Spawn spawn) {
 		spawnDAO.spawnLoaded(spawn);
@@ -200,8 +200,6 @@ public class StorageYaml implements Storage {
 	public org.morganm.homespawnplus.storage.dao.PlayerSpawnDAO getPlayerSpawnDAO() { return playerSpawnDAO; }
 	@Override
 	public org.morganm.homespawnplus.storage.dao.PlayerLastLocationDAO getPlayerLastLocationDAO() { return playerLastLocationDAO; }
-    @Override
-    public org.morganm.homespawnplus.storage.dao.UUIDDAO getUUIDDAO() { throw new FeatureNotImplemented(); }
     @Override
     public org.morganm.homespawnplus.storage.dao.UUIDHistoryDAO getUUIDHistoryDAO() { throw new FeatureNotImplemented(); }
 

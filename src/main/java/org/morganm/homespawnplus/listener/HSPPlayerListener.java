@@ -53,7 +53,6 @@ import org.morganm.homespawnplus.HomeSpawnUtils;
 import org.morganm.homespawnplus.config.ConfigOptions;
 import org.morganm.homespawnplus.entity.Home;
 import org.morganm.homespawnplus.entity.PlayerLastLocation;
-import org.morganm.homespawnplus.entity.UUID;
 import org.morganm.homespawnplus.entity.UUIDHistory;
 import org.morganm.homespawnplus.i18n.HSPMessages;
 import org.morganm.homespawnplus.storage.StorageException;
@@ -111,14 +110,20 @@ public class HSPPlayerListener implements Listener {
         final String playerName = event.getName();
         final java.util.UUID uuid = event.getUniqueId();
 
-        UUID hspUUIDEntity = plugin.getStorage().getUUIDDAO().findByUUID(uuid);
-        if (hspUUIDEntity == null) {
-            hspUUIDEntity = new UUID(uuid);
-        }
+        // TODO: lookup UUID first, if name doesn't match, run entity name update
+        // then update UUID history to record the name change
 
-        if (!playerName.equals(hspUUIDEntity.getName())) {
+        // TODO: if UUID lookup fails (no entity returned), then look for a player
+        // object by that name. If one is found, then add the UUID to it.
+
+        /*
+        org.morganm.homespawnplus.entity.Player hspPlayer = plugin.getStorage().getPlayerDAO().findPlayerByName(playerName);
+
+        if (!uuid.toString().equals(hspPlayer.getUUIDString())) {
+            final String oldPlayerName = hspUUIDEntity.getName();
             if (util.isVerboseLogging()) {
-                log.info("Saw new UUID "+uuid.toString()+" for player "+playerName);
+                log.info("Saw new player name "+playerName+ " for UUID  "+uuid.toString()
+                        + (oldPlayerName != null ? " (old player name "+oldPlayerName+")" : ""));
             }
 
             hspUUIDEntity.setName(playerName);
@@ -135,7 +140,9 @@ public class HSPPlayerListener implements Listener {
             } catch (StorageException e) {
                 log.log(Level.SEVERE, "Caught exception while storing UUID History change event for player " + playerName, e);
             }
+
         }
+        */
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)

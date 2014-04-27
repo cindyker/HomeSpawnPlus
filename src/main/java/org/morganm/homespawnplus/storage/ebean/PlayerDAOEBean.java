@@ -34,6 +34,7 @@
 package org.morganm.homespawnplus.storage.ebean;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.morganm.homespawnplus.entity.Player;
 import org.morganm.homespawnplus.storage.dao.PlayerDAO;
@@ -63,9 +64,14 @@ public class PlayerDAOEBean implements PlayerDAO {
 		return ebean.find(Player.class).where().ieq("name", name).findUnique();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.morganm.homespawnplus.storage.dao.PlayerDAO#findAllPlayers()
-	 */
+    @Override
+    public Player findPlayerByUUID(UUID uuid) {
+        return ebean.find(Player.class).where().ieq("uuid", uuid.toString()).findUnique();
+    }
+
+    /* (non-Javadoc)
+     * @see org.morganm.homespawnplus.storage.dao.PlayerDAO#findAllPlayers()
+     */
 	@Override
 	public Set<Player> findAllPlayers() {
 		return ebean.find(Player.class).findSet();

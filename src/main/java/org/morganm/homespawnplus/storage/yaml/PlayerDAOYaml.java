@@ -35,6 +35,7 @@ package org.morganm.homespawnplus.storage.yaml;
 
 import java.io.File;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.morganm.homespawnplus.entity.Player;
@@ -74,6 +75,23 @@ public class PlayerDAOYaml extends AbstractDAOYaml<Player, SerializablePlayer> i
 		
 		return player;
 	}
+
+    @Override
+    public Player findPlayerByUUID(UUID uuid) {
+        Player player = null;
+
+        Set<Player> players = findAllPlayers();
+        if( players != null && players.size() > 0 ) {
+            for(Player p: players) {
+                if( uuid.equals(p.getUuid()) ) {
+                    player = p;
+                    break;
+                }
+            }
+        }
+
+        return player;
+    }
 
 	@Override
 	public Set<Player> findAllPlayers() {

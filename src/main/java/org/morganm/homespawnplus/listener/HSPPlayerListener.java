@@ -62,6 +62,7 @@ import org.morganm.homespawnplus.strategy.StrategyContext;
 import org.morganm.homespawnplus.strategy.StrategyResult;
 import org.morganm.homespawnplus.util.Debug;
 import org.morganm.homespawnplus.util.Teleport;
+import org.morganm.homespawnplus.util.UUIDNameUpdater;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -95,6 +96,7 @@ public class HSPPlayerListener implements Listener {
     // map sorted by PlayerName->Location->Time of event
     private final HashMap<String, ClickedEvent> bedClicks;
     private long lastCleanup;
+    private final UUIDNameUpdater uuidNameUpdater;
     
     public HSPPlayerListener(HomeSpawnPlus instance) {
         logPrefix = HomeSpawnPlus.logPrefix;
@@ -103,6 +105,7 @@ public class HSPPlayerListener implements Listener {
         util = plugin.getUtil();
         bedClicks = new HashMap<String, ClickedEvent>();
         debug = Debug.getInstance();
+        uuidNameUpdater = new UUIDNameUpdater(plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true)
@@ -110,39 +113,11 @@ public class HSPPlayerListener implements Listener {
         final String playerName = event.getName();
         final java.util.UUID uuid = event.getUniqueId();
 
-        // TODO: lookup UUID first, if name doesn't match, run entity name update
-        // then update UUID history to record the name change
-
-        // TODO: if UUID lookup fails (no entity returned), then look for a player
-        // object by that name. If one is found, then add the UUID to it.
-
-        /*
-        org.morganm.homespawnplus.entity.Player hspPlayer = plugin.getStorage().getPlayerDAO().findPlayerByName(playerName);
-
-        if (!uuid.toString().equals(hspPlayer.getUUIDString())) {
-            final String oldPlayerName = hspUUIDEntity.getName();
-            if (util.isVerboseLogging()) {
-                log.info("Saw new player name "+playerName+ " for UUID  "+uuid.toString()
-                        + (oldPlayerName != null ? " (old player name "+oldPlayerName+")" : ""));
-            }
-
-            hspUUIDEntity.setName(playerName);
-            try {
-                plugin.getStorage().getUUIDDAO().save(hspUUIDEntity);
-            } catch (StorageException e) {
-                log.log(Level.SEVERE, "Caught exception while storing UUID on login for player " + playerName, e);
-            }
-
-            // We saw a name/UUID change, so store it in the history table also
-            UUIDHistory uuidHistory = new UUIDHistory(uuid, playerName);
-            try {
-                plugin.getStorage().getUUIDHistoryDAO().save(uuidHistory);
-            } catch (StorageException e) {
-                log.log(Level.SEVERE, "Caught exception while storing UUID History change event for player " + playerName, e);
-            }
-
+        try {
+            uuidNameUpdater.updateUUID(uuid, playerName);
+        } catch(StorageException e) {
+            log.log(Level.SEVERE, "Caught exception trying to update player UUID data for player "+playerName+", uuid "+uuid, e);
         }
-        */
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)

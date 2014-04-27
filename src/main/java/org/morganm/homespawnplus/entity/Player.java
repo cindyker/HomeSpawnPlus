@@ -66,7 +66,8 @@ import java.util.UUID;
 @Entity()
 @Table(name="hsp_player",
 		uniqueConstraints={
-			@UniqueConstraint(columnNames={"name"})
+			@UniqueConstraint(columnNames={"name"}),
+            @UniqueConstraint(columnNames={"uuid"})
 		}
 )
 public class Player implements EntityWithLocation {

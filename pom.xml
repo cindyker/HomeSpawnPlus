@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>com.andune.minecraft.commonlib</groupId>
                 <artifactId>commonlib</artifactId>
-                <version>0.7</version>
+                <version>0.8-SNAPSHOT</version>
             </dependency>
 
             <!-- Reflections library -->

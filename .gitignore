@@ -10,3 +10,5 @@ old
 dependency-reduced-pom.xml
 *.iml
 .idea
+release.properties
+**/pom.xml.releaseBackup

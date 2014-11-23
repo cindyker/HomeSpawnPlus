@@ -11,6 +11,7 @@ import javax.persistence.PersistenceException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 /**
  * Class responsible for checking to see if the database is updated to the
@@ -409,13 +410,86 @@ public class DatabaseUpgrade {
     private void updateToVersion200() {
         log.info("Upgrading from version 1.7.0 database to version 2.0.0");
 
-        // TODO: need to add UUID to player object
         boolean success = false;
+
+        // Mysql allows simple ALTER TABLE statements, SQLite does not. So
+        // we use a temporary table algorithm which is friendly to both.
+        try {
+            Connection conn = ebeanUtils.getConnection();
+            Statement stmt = conn.createStatement();
+            stmt.execute("BEGIN TRANSACTION;");
+            stmt.execute("CREATE TABLE hsp_player_backup("
+                    +" id integer primary key"
+                    +",name varchar(32) not null"
+                    +",world varchar(32)"
+                    +",x double"
+                    +",y double"
+                    +",z double"
+                    +",pitch float"
+                    +",yaw float"
+                    +",last_modified timestamp not null"
+                    +",date_created timestamp not null"
+                    +",constraint uq_hsp_player_1 unique (name) );");
+            stmt.execute("INSERT INTO hsp_player_backup SELECT"
+                    +" id,name,world,x,y,z,pitch,yaw"
+                    +",last_modified,date_created"
+                    +" FROM hsp_player;");
+
+            stmt.execute("DROP TABLE hsp_player;");
+            stmt.execute("CREATE TABLE hsp_player("
+                    +" id integer primary key"
+                    +",name varchar(32) not null"
+                    +",uuid varchar(32) not null"
+                    +",world varchar(32)"
+                    +",x double"
+                    +",y double"
+                    +",z double"
+                    +",pitch float"
+                    +",yaw float"
+                    +",last_modified timestamp not null"
+                    +",date_created timestamp not null"
+                    +",constraint uq_hsp_player_1 unique (name)"
+                    +",constraint uq_hsp_player_2 unique (uuid) );");
+
+            stmt.execute("INSERT INTO hsp_player SELECT"
+                    +" id, name, name, world, x, y, z, pitch, yaw"
+                    +",last_modified,date_created"
+                    +" FROM hsp_player_backup;");
+            stmt.execute("DROP TABLE hsp_player_backup;");
+            stmt.execute("COMMIT;");
+            stmt.close();
+            conn.close();
+
+            success = true;
+        }
+        catch(SQLException e) {
+            log.error("Error attempting to update database schema", e);
+        }
 
         if (success) {
             SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=200");
             update.execute();
             log.info("Upgrade from version 1.7.0 database to version 2.0.0 complete");
+
+            // The update method we use above changes tables out from
+            // underneath ebeans. There is no way that I know of to tell ebeans
+            // to go reload schema. As a result, the first UUID query against
+            // hsp_player will fail, since Ebeans still has the old schema
+            // in memory and doesn't know about the new UUID column.
+            //
+            // After the failure, Ebeans will then automatically reload
+            // the schema and future queries run fine. So we intentionally
+            // run a query here, which will generate an exception that we
+            // silently ignore. After this, all future UUID queries will
+            // run fine since Ebeans then loads the new schema into memory.
+            //
+            // (note: I am aware of ebean's externalModification() method
+            //  It didn't help)
+            try {
+                storage.getPlayerDAO().findPlayerByUUID(UUID.randomUUID());
+            } catch(Exception e) {
+                // exception ignored
+            }
         }
         else {
             log.error("Upgrade from version 1.7.0 database to version 2.0.0 ** NOT SUCCESSFUL **");

@@ -54,6 +54,12 @@ public class ConfigCore extends ConfigBase implements Initializable {
      */
     private boolean debugOverride = false;
     private boolean debug = false;
+    /**
+     * If event priority is missing, we log a message about it once and
+     * record that we did so we don't spam the log every time the priority
+     * is checked.
+     */
+    private boolean missingEventPriorityLogMessage = false;
 
     @Override
     public int getInitPriority() {
@@ -66,6 +72,8 @@ public class ConfigCore extends ConfigBase implements Initializable {
 
         log.debug("ConfigCore init: defaultColor={}", getDefaultColor());
         colors.setDefaultColor(getDefaultColor());
+
+        missingEventPriorityLogMessage = false;
     }
 
     /**
@@ -384,12 +392,24 @@ public class ConfigCore extends ConfigBase implements Initializable {
      */
     public EventPriority getEventPriority() {
         EventPriority priority = EventPriority.HIGHEST; // default if nothing else is defined
+        if( missingEventPriorityLogMessage )
+            return priority;
 
         String arg = super.getString("eventPriority");
+        if( arg == null ) {
+            missingEventPriorityLogMessage = true;
+            log.warn("No event priority defined in config. Using default event priority {}", priority);
+            return priority;
+        }
+
         try {
             priority = EventPriority.valueOf(arg.toUpperCase());
         } catch (IllegalArgumentException e) {
             log.warn("Invalid eventPriority: \"{}\", defaulting to {}", arg, priority);
+            missingEventPriorityLogMessage = true;
+        } catch (Exception e) {
+            log.warn("Caught exception getting Event priority, using default event priority", e);
+            missingEventPriorityLogMessage = true;
         }
 
         return priority;

@@ -30,6 +30,7 @@ package com.andune.minecraft.hsp.manager;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 
+import javax.inject.Singleton;
 import java.util.HashMap;
 
 /**
@@ -37,8 +38,9 @@ import java.util.HashMap;
  *
  * @author andune
  */
+@Singleton
 public class DeathManager {
-    final HashMap<Player, Location> lastDeathLocation = new HashMap<Player, Location>();
+    final HashMap<String, Location> lastDeathLocation = new HashMap<String, Location>();
 
     public DeathManager() {
     }
@@ -51,7 +53,7 @@ public class DeathManager {
      * @return the last location the player died at, or null
      */
     public Location getLastDeathLocation(Player p) {
-        return lastDeathLocation.get(p);
+        return lastDeathLocation.get(p.getName());
     }
 
     /**
@@ -60,6 +62,6 @@ public class DeathManager {
      * @param p the player
      */
     public void playerDied(final Player p) {
-        lastDeathLocation.put(p, p.getLocation());
+        lastDeathLocation.put(p.getName(), p.getLocation());
     }
 }

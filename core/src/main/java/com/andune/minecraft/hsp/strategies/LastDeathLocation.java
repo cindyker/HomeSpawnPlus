@@ -28,6 +28,7 @@
 package com.andune.minecraft.hsp.strategies;
 
 import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.manager.DeathManager;
 import com.andune.minecraft.hsp.strategy.BaseStrategy;
 import com.andune.minecraft.hsp.strategy.NoArgStrategy;
@@ -48,7 +49,9 @@ public class LastDeathLocation extends BaseStrategy {
 
     @Override
     public StrategyResult evaluate(StrategyContext context) {
-        final Location l = deathManager.getLastDeathLocation(context.getPlayer());
+        final Player p = context.getPlayer();
+        final Location l = deathManager.getLastDeathLocation(p);
+        log.debug("LastDeathLocation player {}, location {}", p, l);
         return resultFactory.create(l);
     }
 }

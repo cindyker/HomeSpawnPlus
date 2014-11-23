@@ -40,6 +40,7 @@ import com.andune.minecraft.hsp.entity.PlayerLastLocation;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.manager.CooldownManager;
+import com.andune.minecraft.hsp.manager.DeathManager;
 import com.andune.minecraft.hsp.manager.EffectsManager;
 import com.andune.minecraft.hsp.manager.WarmupManager;
 import com.andune.minecraft.hsp.server.api.Factory;
@@ -73,6 +74,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     private final WarmupManager warmupManager;
     private final EffectsManager effectsManager;
     private final CooldownManager cooldownManager;
+    private final DeathManager deathManager;
 
     /**
      * We record the last known player/location for common events so that we can
@@ -92,7 +94,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
                          MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
                          BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager,
-                         CooldownManager cooldownManager) {
+                         CooldownManager cooldownManager, DeathManager deathManager) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -104,6 +106,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         this.warmupManager = warmupManager;
         this.effectsManager = effectsManager;
         this.cooldownManager = cooldownManager;
+        this.deathManager = deathManager;
     }
 
     @Override
@@ -391,5 +394,6 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     @Override
     public void playerDeath(PlayerDeathEvent event) {
         cooldownManager.onDeath(event.getPlayer());
+        deathManager.playerDied(event.getPlayer());
     }
 }

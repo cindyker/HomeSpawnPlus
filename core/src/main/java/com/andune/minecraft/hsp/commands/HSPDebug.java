@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
@@ -44,6 +45,7 @@ import com.avaje.ebean.cache.ServerCacheStatistics;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -179,6 +181,12 @@ public class HSPDebug extends BaseCommand {
                 sender.sendMessage(sb.toString());
             } else {
                 sender.sendMessage("Ebeans storage not in use");
+            }
+        } else if (args[0].startsWith("uuid")) {    // ebeans cache stats
+            if( sender instanceof Player ) {
+                Player p = (Player) sender;
+                UUID uuid = p.getUUID();
+                sender.sendMessage("Your UUID is "+uuid);
             }
         } else {
             return false;

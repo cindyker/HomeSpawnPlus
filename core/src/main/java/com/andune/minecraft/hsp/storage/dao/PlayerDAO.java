@@ -34,12 +34,15 @@ import com.andune.minecraft.hsp.entity.Player;
 import com.andune.minecraft.hsp.storage.StorageException;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author andune
  */
 public interface PlayerDAO extends PurgePlayer {
     Player findPlayerByName(String name);
+
+    Player findPlayerByUUID(UUID uuid);
 
     Set<Player> findAllPlayers();
 

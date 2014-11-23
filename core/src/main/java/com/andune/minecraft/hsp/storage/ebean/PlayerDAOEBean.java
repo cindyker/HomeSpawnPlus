@@ -38,6 +38,7 @@ import com.avaje.ebean.Transaction;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author andune
@@ -61,6 +62,11 @@ public class PlayerDAOEBean implements PlayerDAO {
     @Override
     public Player findPlayerByName(String name) {
         return ebean.find(Player.class).where().ieq("name", name).findUnique();
+    }
+
+    @Override
+    public Player findPlayerByUUID(UUID uuid) {
+        return ebean.find(Player.class).where().ieq("uuid", uuid.toString()).findUnique();
     }
 
     /* (non-Javadoc)

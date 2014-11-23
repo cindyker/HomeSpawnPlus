@@ -39,6 +39,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author andune
@@ -64,6 +65,24 @@ public class PlayerDAOYaml extends AbstractDAOYaml<Player, SerializablePlayer> i
         if (players != null && players.size() > 0) {
             for (Player p : players) {
                 if (name.equals(p.getName())) {
+                    player = p;
+                    break;
+                }
+            }
+        }
+
+        return player;
+    }
+
+    @Override
+    public Player findPlayerByUUID(UUID uuid) {
+        Player player = null;
+
+        final String uuidString = uuid.toString();
+        Set<Player> players = findAllPlayers();
+        if (players != null && players.size() > 0) {
+            for (Player p : players) {
+                if (uuidString.equals(p.getUUIDString())) {
                     player = p;
                     break;
                 }

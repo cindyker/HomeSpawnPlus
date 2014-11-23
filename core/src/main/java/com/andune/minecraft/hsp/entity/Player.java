@@ -40,7 +40,8 @@ import javax.persistence.Version;
 import java.sql.Timestamp;
 
 /**
- * Class to keep track of players we've seen before, so we can tell if it's a new player or not.
+ * Class to keep track of players we've seen before, so we can tell if it's a
+ * new player or not.
  *
  * @author andune
  */
@@ -58,6 +59,17 @@ public class Player implements EntityWithLocation {
     @Length(max = 32)
     @NotNull
     private String name;
+
+    /*
+     * We store UUID as a String in the database so it's easily text readable by an admin,
+     * as opposed to storing the binary uuid object. It's 20 more bytes, but even on a
+     * server with 10,000 players, that's only 160k in extra DB storage. Well worth
+     * the trade-off for admin readability.
+     */
+    @Length(max = 36)
+    @Column(name = "uuid")
+    @NotNull
+    private String UUIDString;
 
     @Length(max = 32)
     private String world;
@@ -79,6 +91,7 @@ public class Player implements EntityWithLocation {
 
     public Player(com.andune.minecraft.commonlib.server.api.Player player) {
         this.name = player.getName();
+        this.UUIDString = player.getUUID().toString();
     }
 
     /**
@@ -116,6 +129,14 @@ public class Player implements EntityWithLocation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUUIDString() {
+        return UUIDString;
+    }
+
+    public void setUUIDString(String UUIDString) {
+        this.UUIDString = UUIDString;
     }
 
     public Timestamp getLastModified() {

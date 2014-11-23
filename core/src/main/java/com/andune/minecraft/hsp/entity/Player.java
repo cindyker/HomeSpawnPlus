@@ -68,7 +68,7 @@ public class Player implements EntityWithLocation {
      */
     @Length(max = 36)
     @Column(name = "uuid")
-    @NotNull
+//    @NotNull
     private String UUIDString;
 
     @Length(max = 32)

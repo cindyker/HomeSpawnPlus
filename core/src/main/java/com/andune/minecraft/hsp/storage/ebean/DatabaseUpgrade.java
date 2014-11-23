@@ -462,11 +462,17 @@ public class DatabaseUpgrade {
                     +",last_modified,date_created"
                     +" FROM hsp_player;");
 
+            // for testing, do not make UUID non-null or unique. This
+            // allows people to upgrade to 2.0 and fall back to 1.7
+            // seamlessly on the same database. Once 2.0 is fully stable,
+            // another DB upgrade should be performed to enforce proper
+            // DB constraints on UUID.
             stmt.execute("DROP TABLE hsp_player;");
             stmt.execute("CREATE TABLE hsp_player("
                     +" id integer primary key"
                     +",name varchar(32) not null"
-                    +",uuid varchar(32) not null"
+                    +",uuid varchar(32)"
+//                    +",uuid varchar(32) not null"
                     +",world varchar(32)"
                     +",x double"
                     +",y double"
@@ -476,7 +482,9 @@ public class DatabaseUpgrade {
                     +",last_modified timestamp not null"
                     +",date_created timestamp not null"
                     +",constraint uq_hsp_player_1 unique (name)"
-                    +",constraint uq_hsp_player_2 unique (uuid) );");
+//                    +",constraint uq_hsp_player_2 unique (uuid)"
+                    +");"
+            );
 
             stmt.execute("INSERT INTO hsp_player SELECT"
                     +" id, name, name, world, x, y, z, pitch, yaw"

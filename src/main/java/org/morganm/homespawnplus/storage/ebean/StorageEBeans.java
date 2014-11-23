@@ -573,10 +573,71 @@ public class StorageEBeans implements Storage {
     private void updateToVersion180(final EbeanServer db) {
         log.info(logPrefix + " Upgrading from version 1.7.0 database to version 1.8.0");
 
-        // TODO: do something useful
-        log.info(logPrefix + " DB 1.8.0 Upgrade NOT IMPLEMENTED YET - FIXME!!!");
+        boolean success = false;
+        // Mysql allows simple ALTER TABLE statements, SQLite does not. So
+        // use a temporary table algorithm which is friendly to both.
+        EBeanUtils ebu = EBeanUtils.getInstance();
+        try {
+            Connection conn = ebu.getConnection();
+            Statement stmt = conn.createStatement();
+            stmt.execute("BEGIN TRANSACTION;");
+            stmt.execute("CREATE TABLE hsp_player_backup("
+                    +" id integer primary key"
+                    +",name varchar(32) not null"
+                    +",world varchar(32)"
+                    +",x double"
+                    +",y double"
+                    +",z double"
+                    +",pitch float"
+                    +",yaw float"
+                    +",last_modified timestamp not null"
+                    +",date_created timestamp not null"
+                    +",constraint uq_hsp_player_1 unique (name) );");
+            stmt.execute("INSERT INTO hsp_player_backup SELECT"
+                    +" id,name,world,x,y,z,pitch,yaw"
+                    +",last_modified,date_created"
+                    +" FROM hsp_player;");
 
-        log.info(logPrefix + " Upgrade from version 1.7.0 database to version 1.8.0 complete");
+            stmt.execute("DROP TABLE hsp_player;");
+            stmt.execute("CREATE TABLE hsp_player("
+                    +" id integer primary key"
+                    +",name varchar(32) not null"
+                    +",uuid varchar(32) not null"
+                    +",world varchar(32)"
+                    +",x double"
+                    +",y double"
+                    +",z double"
+                    +",pitch float"
+                    +",yaw float"
+                    +",last_modified timestamp not null"
+                    +",date_created timestamp not null"
+                    +",constraint uq_hsp_player_1 unique (name)"
+                    +",constraint uq_hsp_player_2 unique (uuid) );");
+
+            stmt.execute("INSERT INTO hsp_player SELECT"
+                    +" id, name, name, world, x, y, z, pitch, yaw"
+                    +",last_modified,date_created"
+                    +" FROM hsp_player_backup;");
+            stmt.execute("DROP TABLE hsp_player_backup;");
+            stmt.execute("COMMIT;");
+            stmt.close();
+            conn.close();
+
+            success = true;
+        }
+        catch(SQLException e) {
+            log.severe(logPrefix + " error attempting to update SQLite database schema!");
+            e.printStackTrace();
+        }
+
+        if( success ) {
+            SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=180");
+            update.execute();
+            log.info(logPrefix + " Upgrade from version 1.7.0 database to version 1.8.0 complete");
+        }
+        else {
+            log.severe(logPrefix + " Upgrade from version 1.7.0 database to version 1.8.0 **FAILED**");
+        }
     }
 
 	// Ebeans does nothing with these methods

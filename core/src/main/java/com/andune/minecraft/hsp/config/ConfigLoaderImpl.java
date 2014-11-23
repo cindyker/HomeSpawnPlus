@@ -86,8 +86,14 @@ public class ConfigLoaderImpl implements ConfigLoader {
             log.debug("No single config.yml found, using multiple config files");
             yaml = singleYaml;
         }
-        else
+        else {
             singleConfigFlag = true;
+
+            if( singleYaml != null ) {
+                log.debug("Single YAML file in use. Applying defaults for {} from 2.0-style config.", fileName);
+                yaml.addDefaultConfig(singleYaml.getRootConfigurationSection());
+            }
+        }
 
         ConfigurationSection cs = yaml.getConfigurationSection(basePath);
 
@@ -107,9 +113,6 @@ public class ConfigLoaderImpl implements ConfigLoader {
                 log.warn("ConfigurationSection \"" + basePath + "\" not found, bad things might happen!");
             }
         }
-
-        if( !singleConfigFlag && singleYaml != null )
-            singleYaml.addDefaultConfig(singleYaml.getRootConfigurationSection());
 
         return cs;
     }

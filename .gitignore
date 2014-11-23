@@ -8,5 +8,7 @@ old
 .project
 .settings
 dependency-reduced-pom.xml
-.idea
 *.iml
+.idea
+release.properties
+**/pom.xml.releaseBackup

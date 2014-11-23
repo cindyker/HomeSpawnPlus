@@ -1,0 +1,238 @@
+name: HomeSpawnPlus
+main: com.andune.minecraft.hsp.HomeSpawnPlusBukkit
+url: ${project.url}
+version: ${project.version}
+author: andune
+database: true
+softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]
+permissions:
+    hsp.*:
+        description: Gives access to all HomeSpawnPlus permissions
+        children:
+            hsp.admin: true
+            hsp.home.bedsethome: true
+            hsp.command.home: true
+            hsp.command.home.others: true
+            hsp.command.sethome: true
+            hsp.command.sethome.others: true
+            hsp.command.spawn: true
+            hsp.command.spawnlist: true
+            hsp.command.spawndelete: true
+            hsp.command.setspawn: true
+            hsp.command.setdefaultspawn: true
+            hsp.command.setgroupspawn: true
+            hsp.command.groupspawn: true
+            hsp.CooldownExempt.home: true
+            hsp.CooldownExempt.spawn: true
+            hsp.CooldownExempt.groupspawn: true
+            hsp.WarmupExempt.home: true
+            hsp.WarmupExempt.spawn: true
+            hsp.WarmupExempt.groupspawn: true
+            hsp.CostExempt.groupspawn: true
+            hsp.CostExempt.spawn: true
+            hsp.CostExempt.home: true
+            hsp.CostExempt.sethome: true
+            hsp.command.setfirstspawn: true
+            hsp.singleGlobalHomeExempt: true
+            hsp.command.permcheck: true
+            hsp.command.groupquery: true
+    hsp.home.bedsethome:
+        description: Allows a user to set home by right-clicking a bed
+        default: true
+    hsp.singleGlobalHomeExempt:
+        description: Exempts a user from the single global home restriction (if set in the config)
+        default: op
+    hsp.admin:
+        description: Allows access to admin functions of HomeSpawnPlus
+        default: op
+    hsp.basic:
+        description: Gives access to basic set of commands
+        children:
+            hsp.command.home: true
+            hsp.command.sethome: true
+            hsp.command.spawn: true
+    hsp.full:
+        description: Gives access to the full set of user commands
+        children:
+            hsp.command.home: true
+            hsp.command.home.named: true
+            hsp.command.home.otherworld: true
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
+            hsp.command.setdefaulthome: true
+            hsp.command.homedelete: true
+            hsp.command.homelist: true
+            hsp.command.spawn: true
+            hsp.command.spawn.named: true
+    hsp.command.home.*:
+        description: Gives full access to all /home command forms
+        children:
+            hsp.command.home: true
+            hsp.command.home.named: true
+            hsp.command.home.otherworld: true
+    hsp.command.sethome.*:
+        description: Gives full access to all /sethome command forms
+        children:
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
+    hsp.command.*:
+        description: Gives access to all HomeSpawnPlus commands
+        children:
+            hsp.command.groupquery: true
+            hsp.command.groupspawn: true
+            hsp.command.home: true
+            hsp.command.home.named: true
+            hsp.command.home.otherworld: true
+            hsp.command.homedelete: true
+            hsp.command.homedeleteother: true
+            hsp.command.homeinvite: true
+            hsp.command.homeinvitedelete: true
+            hsp.command.homeinviteteleport: true
+            hsp.command.homeinvitelist: true
+            hsp.command.homeinviteaccept: true
+            hsp.command.homelist: true
+            hsp.command.homelistother: true
+            hsp.command.homeother: true
+            hsp.command.setdefaulthome: true
+            hsp.command.setdefaultspawn: true
+            hsp.command.setfirstspawn: true
+            hsp.command.setgroupspawn: true
+            hsp.command.sethome: true
+            hsp.command.sethome.named: true
+            hsp.command.sethomeother: true
+            hsp.command.setspawn: true
+            hsp.command.setmapspawn: true
+            hsp.command.spawn: true
+            hsp.command.spawn.named: true
+            hsp.command.spawndelete: true
+            hsp.command.spawnlist: true
+    hsp.command.groupspawn:
+        description: Allows use of the /groupspawn command
+        default: op
+    hsp.command.groupquery:
+        description: Allows use of the /groupquery command
+        default: op
+    hsp.command.home:
+        description: Allows use of the /home command
+        default: op
+    hsp.command.home.named:
+        description: Allows use of the /home <name> command to teleport to named homes
+        default: op
+    hsp.command.home.otherworld:
+        description: "Allows use of the /home w:<world> command to teleport to homes on other worlds (also affects /home <name> if it would cross world boundaries)"
+        default: op
+    hsp.command.homedelete:
+        description: Allows use of the /homedelete to delete homes
+        default: op
+    hsp.command.homedeleteother:
+        description: "Allows use of the /homedeleteother to delete other people's homes"
+        default: op
+    hsp.command.homelist:
+        description: Allows use of the /homelist command to list homes
+        default: op
+    hsp.command.homelistother:
+        description: Allows use of the /homelistother command to list other people's homes
+        default: op
+    hsp.command.homeother:
+        description: "Allows use of the /homeother command to teleport to other people's homes"
+        default: op
+    hsp.command.homeinvite:
+        description: Allows use of the /homeinvite command
+        default: op
+    hsp.command.homeinvitedelete:
+        description: Allows use of the /homeinvitedelete command
+        default: op
+    hsp.command.homeinvitelist:
+        description: Allows use of the /homeinvitelist command
+        default: op
+    hsp.command.homeinviteteleport:
+        description: Allows use of the /homeinviteteleport command
+        default: op
+    hsp.command.homeinviteaccept:
+        description: Allows use of the /homeinviteaccept command
+        default: op
+    hsp.command.setdefaulthome:
+        description: Allows use of the /setdefaulthome command
+        default: op
+    hsp.command.setdefaultspawn:
+        description: Allows use of the /setdefaultspawn command
+        default: op
+    hsp.command.setfirstspawn:
+        description: Allows use of the /setfirstspawn command
+        default: op
+    hsp.command.setgroupspawn:
+        description: Allows use of the /setgroupspawn command
+        default: op
+    hsp.command.sethome:
+        description: Allows use of the /sethome command
+        default: op
+    hsp.command.sethomeother:
+        description: "Allows use of the /sethomeother command to set other people's homes"
+        default: op
+    hsp.command.setspawn:
+        description: Allows use of the /setspawn command
+        default: op
+    hsp.command.setmapspawn:
+        description: Allows use of the /setmapspawn command
+        default: op
+    hsp.command.spawn:
+        description: Allows use of the /spawn command
+        default: op
+    hsp.command.spawn.named:
+        description: Allows use of the /spawn <name> command
+        default: op
+    hsp.command.spawndelete:
+        description: Allows use of the /spawndelete command
+        default: op
+    hsp.command.spawnlist:
+        description: Allows use of the /spawnlist command
+        default: op
+    hsp.CooldownExempt.*:
+        description: Exempt from all cooldowns
+        children:
+          hsp.CooldownExempt.home: true
+          hsp.CooldownExempt.spawn: true
+          hsp.CooldownExempt.groupspawn: true
+    hsp.CooldownExempt.home:
+        description: Exempt from /home cooldown
+        default: op
+    hsp.CooldownExempt.spawn:
+        description: Exempt from /spawn cooldown
+        default: op
+    hsp.CooldownExempt.groupspawn:
+        description: Exempt from /groupspawn cooldown
+        default: op
+    hsp.WarmupExempt.*:
+        description: Exempt from all warmups
+        children:
+          hsp.WarmupExempt.home: true
+          hsp.WarmupExempt.spawn: true
+          hsp.WarmupExempt.groupspawn: true
+    hsp.WarmupExempt.home:
+        description: Exempt from /home warmup
+        default: op
+    hsp.WarmupExempt.spawn:
+        description: Exempt from /spawn warmup
+        default: op
+    hsp.WarmupExempt.groupspawn:
+        description: Exempt from /groupspawn warmup
+        default: op
+    hsp.CostExempt.*:
+        description: Exempt from all costs
+        children:
+          hsp.CostExempt.home: true
+          hsp.CostExempt.sethome: true
+          hsp.CostExempt.spawn: true
+          hsp.CostExempt.groupspawn: true
+    hsp.CostExempt.home:
+        description: Exempt from /home costs
+        default: op
+    hsp.CostExempt.sethome:
+        description: Exempt from /sethome costs
+        default: op
+    hsp.CostExempt.spawn:
+        description: Exempt from /spawn costs
+        default: op
+    hsp.CostExempt.groupspawn:
+        description: Exempt from /groupspawn costs
+        default: op

@@ -1,0 +1,381 @@
+<!-- Maven build file for HomeSpawnPlus -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>HomeSpawnPlus-bukkit</artifactId>
+    <name>HomeSpawnPlus-bukkit</name>
+    <properties>
+        <coreBaseDir>../core</coreBaseDir>
+    </properties>
+
+    <parent>
+        <groupId>com.andune.minecraft.hsp</groupId>
+        <artifactId>HomeSpawnPlus-parent</artifactId>
+        <version>2.0-beta2-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <scm>
+        <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
+        <url>https://github.com/andune/HomeSpawnPlus</url>
+        <developerConnection>scm:git:git@github.com:andune/HomeSpawnPlus.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
+
+    <repositories>
+        <repository>
+            <id>andune-repo</id>
+            <url>http://andune.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>onarandombox</id>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>repobo-snap</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Bukkit -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.7.9-R0.2</version>
+        </dependency>
+
+        <!-- HomeSpawnPlus core module -->
+        <dependency>
+            <groupId>com.andune.minecraft.hsp</groupId>
+            <artifactId>HomeSpawnPlus-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- Common library -->
+        <dependency>
+            <groupId>com.andune.minecraft.commonlib</groupId>
+            <artifactId>commonlib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.andune.minecraft.commonlib</groupId>
+            <artifactId>commonBukkitlib</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+        <!-- Dependency Injection (guice) -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+
+        <!-- WorldEdit/WEPIF -->
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>5.6.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spout</groupId>
+                    <artifactId>spoutapi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- WorldGuard -->
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>5.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spout</groupId>
+                    <artifactId>spoutapi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.25</version>
+        </dependency>
+
+        <!-- WorldBorder -->
+        <dependency>
+            <groupId>com.github.brettflan</groupId>
+            <artifactId>WorldBorder</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+
+        <!-- MultiVerse -->
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5-b692</version>
+        </dependency>
+        <dependency>
+            <groupId>com.onarandombox.multiverseportals</groupId>
+            <artifactId>Multiverse-Portals</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <!-- Essentials -->
+        <dependency>
+            <groupId>net.essentials</groupId>
+            <artifactId>Essentials</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+
+        <!-- Start of Test Dependencies -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <!-- End of Test Dependencies -->
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <finalName>${project.artifactId}</finalName>
+
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${coreBaseDir}/src/main/resources/</directory>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/resources/</directory>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>build.number</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <!-- Plugins -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                          <minimizeJar>true</minimizeJar>
+                            -->
+                            <outputFile>${project.build.directory}/HomeSpawnPlus.jar</outputFile>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.reflections:reflections</include>
+                                    <!-- <include>javassist:javassist</include> -->
+                                    <include>com.google.inject:guice</include>
+                                    <include>javax.inject:javax.inject</include>
+                                    <include>aopalliance:aopalliance</include>
+                                    <include>com.google.inject.extensions:guice-assistedinject</include>
+                                    <include>com.andune.minecraft.commonlib:commonlib</include>
+                                    <include>com.andune.minecraft.commonlib:commonBukkitlib</include>
+                                    <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
+                                    <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
+                                </includes>
+                            </artifactSet>
+
+                            <filters>
+                                <filter>
+                                    <artifact>com.andune.minecraft.commonlib:commonlib</artifact>
+                                    <excludes>
+                                        <exclude>javax/inject/**</exclude>
+                                        <exclude>org/aopalliance/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>${project.groupId}.shade.reflections</shadedPattern>
+                                </relocation>
+                                <!-- <relocation> <pattern>javaassist</pattern> <shadedPattern>${project.groupId}.javaassist</shadedPattern>
+                                  </relocation> -->
+                                <relocation>
+                                    <pattern>com.google.inject</pattern>
+                                    <shadedPattern>${project.groupId}.shade.guice</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections-maven</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>reflections</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <includeExclude>+com\.andune\.minecraft\.hsp\..*</includeExclude>
+                            <serializer>com.andune.minecraft.commonlib.reflections.YamlSerializer</serializer>
+                            <destinations>
+                                ${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.yml
+                            </destinations>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.andune.minecraft.commonlib</groupId>
+                        <artifactId>commonlib</artifactId>
+                        <version>0.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.yaml</groupId>
+                        <artifactId>snakeyaml</artifactId>
+                        <version>1.9</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- <plugin> <groupId>com.google.code.maven-replacer-plugin</groupId>
+              <artifactId>maven-replacer-plugin</artifactId> <version>1.3.8</version> <executions>
+              <execution> <phase>prepare-package</phase> <goals> <goal>replace</goal> </goals>
+              </execution> </executions> <configuration> <file>target/classes/plugin.yml</file>
+              <replacements> <replacement> <token>maven-version-number</token> <value>${project.version}-b${project.build.number}</value>
+              </replacement> </replacements> </configuration> </plugin> -->
+
+            <!-- JAR creation plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>../lib</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${build.number}</Implementation-Build>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Assembly -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>release</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-with-dependencies</finalName>
+                            <descriptor>${basedir}/src/main/assembly/default.xml</descriptor>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Release -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <!--$NO-MVN-MAN-VER$ -->
+                <configuration>
+                    <preparationGoals>assembly:assembly</preparationGoals>
+                    <goals>assembly:assembly</goals>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+                  only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <!-- this silences a benign eclipse error related to org.reflections -->
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.reflections</groupId>
+                                        <artifactId>
+                                            reflections-maven
+                                        </artifactId>
+                                        <versionRange>
+                                            [0.9.8,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>reflections</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

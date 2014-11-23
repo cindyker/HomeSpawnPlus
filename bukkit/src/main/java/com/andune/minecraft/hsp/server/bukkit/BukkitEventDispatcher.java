@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
+import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
 import com.andune.minecraft.commonlib.server.bukkit.event.BukkitEventPriority;
@@ -63,15 +64,17 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
     private final BukkitFactory bukkitFactory;
     private final ConfigWarmup configWarmup;
     private final ConfigCore configCore;
+    private final Server server;
 
     @Inject
     public BukkitEventDispatcher(EventListener listener, Plugin plugin, BukkitFactory bukkitFactory,
-                                 ConfigWarmup configWarmup, ConfigCore configCore) {
+                                 ConfigWarmup configWarmup, ConfigCore configCore, Server server) {
         this.eventListener = listener;
         this.plugin = plugin;
         this.bukkitFactory = bukkitFactory;
         this.configWarmup = configWarmup;
         this.configCore = configCore;
+        this.server = server;
     }
 
     /**
@@ -89,7 +92,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                     public void execute(Listener listener, Event event) throws EventException {
                         try {
                             com.andune.minecraft.commonlib.server.api.events.PlayerJoinEvent apiEvent =
-                                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory);
+                                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerJoinEvent((PlayerJoinEvent) event, bukkitFactory, plugin, server);
                             eventListener.playerJoin(apiEvent);
                         } catch (Exception e) {
                             throw new EventException(e);

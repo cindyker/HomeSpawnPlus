@@ -46,7 +46,8 @@ public enum EventType {
     MULTIVERSE_TELEPORT("multiverseTeleport"),
     ENTER_REGION("onregionenter"),
     EXIT_REGION("onregionexit"),
-    NEW_PLAYER("onNewPlayer");
+    NEW_PLAYER("onNewPlayer"),
+    TELEPORT_OBSERVE("onTeleportObserve");
 
     private String configOption;
 

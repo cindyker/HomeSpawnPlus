@@ -279,7 +279,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         // because this event is not to change locations. However, this event
         // could be used with modeEffect to create teleport effects.
         final StrategyContext context = factory.newStrategyContext();
-        context.setEventType("onTeleportObserve");
+        context.setEventType(EventType.TELEPORT_OBSERVE.toString());
         context.setPlayer(event.getPlayer());
         context.setLocation(event.getTo()); // location involved is the target location
         engine.getStrategyResult(context);

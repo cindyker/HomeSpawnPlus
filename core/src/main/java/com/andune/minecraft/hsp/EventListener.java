@@ -116,9 +116,25 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
                 log.info("New player {} detected.", p.getName());
         }
 
+        // Try to find them by UUID first. If not found, try playerName instead
+        com.andune.minecraft.hsp.entity.Player storagePlayer = storage.getPlayerDAO().findPlayerByUUID(p.getUUID());
+        if (storagePlayer == null) {
+            storagePlayer = storage.getPlayerDAO().findPlayerByName(p.getName());
+        }
+
         // if they don't have a player record yet, create one.
-        if (storage.getPlayerDAO().findPlayerByName(p.getName()) == null) {
-            com.andune.minecraft.hsp.entity.Player storagePlayer = new com.andune.minecraft.hsp.entity.Player(p);
+        if (storagePlayer == null) {
+            storagePlayer = new com.andune.minecraft.hsp.entity.Player(p);
+            try {
+                storage.getPlayerDAO().savePlayer(storagePlayer);
+            } catch (StorageException e) {
+                log.warn("Caught exception writing to storage ", e);
+            }
+        }
+        // or if they do have a player record, make sure UUID is set correctly
+        else if (storagePlayer.getUUIDString() == null ||
+                !storagePlayer.getUUIDString().equals(p.getUUID()) ) {
+            storagePlayer.setUUIDString(p.getUUID().toString());
             try {
                 storage.getPlayerDAO().savePlayer(storagePlayer);
             } catch (StorageException e) {

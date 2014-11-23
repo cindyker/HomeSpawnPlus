@@ -37,14 +37,17 @@ import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
+import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.manager.HomeInviteManager;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeInviteDAO;
 import com.andune.minecraft.hsp.util.HomeUtil;
+import static com.andune.minecraft.hsp.entity.HomeInvite.PUBLIC_HOME;
 
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.Set;
+
 
 /**
  * @author andune
@@ -122,25 +125,6 @@ public class HomeInvite extends BaseCommand {
             }
         }
 
-        String invitee = args[0];
-        final Player onlinePlayer = server.getPlayer(invitee);
-        final OfflinePlayer offlinePlayer = server.getBestMatchPlayer(invitee);
-        if (onlinePlayer == null && offlinePlayer == null) {
-            server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
-                    "player", invitee);
-            return true;
-        }
-        if (onlinePlayer != null)
-            invitee = onlinePlayer.getName();
-        else if (offlinePlayer != null)
-            invitee = offlinePlayer.getName();
-
-        if (!config.allowBedHomeInvites() && home.isBedHome()) {
-            server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NOT_ALLOWED,
-                    "home", home.getName());
-            return true;
-        }
-
         long expiresTime = 0;        // default to never expires
         String expireTimeAsString = null;
         if (args.length > 2) {
@@ -164,8 +148,51 @@ public class HomeInvite extends BaseCommand {
                 expiresTime = System.currentTimeMillis() + timeInMilliseconds;
             }
         }
-        // it's just a temporary invite
         else {
+            expiresTime = -1;
+        }
+
+        if (!config.allowBedHomeInvites() && home.isBedHome()) {
+            server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_NOT_ALLOWED,
+                    "home", home.getName());
+            return true;
+        }
+
+        String invitee = args[0];
+        if (invitee.equalsIgnoreCase(PUBLIC_HOME)) {
+            if( !config.allowPublicInvites() ) {
+                server.sendLocalizedMessage(p, HSPMessages.PUBLIC_HOME_INVITES_NOT_ALLOWED);
+                return true;
+            }
+
+            // public homes default to permanent if no time range is given
+            if (expiresTime == -1)
+                expiresTime = 0;
+
+            invitee = PUBLIC_HOME;
+        }
+
+        Player onlinePlayer = null;
+        OfflinePlayer offlinePlayer = null;
+
+        // If it's not a public home, find the invitee, which could possibly
+        // be either an online or offline player
+        if (!invitee.equals(PUBLIC_HOME)) {
+            onlinePlayer = server.getPlayer(invitee);
+            offlinePlayer = server.getBestMatchPlayer(invitee);
+            if (onlinePlayer == null && offlinePlayer == null) {
+                server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+                        "player", invitee);
+                return true;
+            }
+            if (onlinePlayer != null)
+                invitee = onlinePlayer.getName();
+            else if (offlinePlayer != null)
+                invitee = offlinePlayer.getName();
+        }
+
+        // if it's just a temporary invite, just send it out now
+        if (expiresTime == -1) {
             if (onlinePlayer == null) {
                 server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
                         "player", invitee);
@@ -201,7 +228,7 @@ public class HomeInvite extends BaseCommand {
             homeInvite = new com.andune.minecraft.hsp.entity.HomeInvite();
         }
 
-        homeInvite.setHome(home);
+        homeInvite.setHome((HomeImpl) home);
         homeInvite.setInvitedPlayer(invitee);
 
         if (expiresTime == 0)
@@ -232,5 +259,4 @@ public class HomeInvite extends BaseCommand {
 
         return true;
     }
-
 }

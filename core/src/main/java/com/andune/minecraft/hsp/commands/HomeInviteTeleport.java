@@ -121,8 +121,13 @@ public class HomeInviteTeleport extends BaseCommand {
                 return true;
             }
 
+            // only allow public homes if admin has enabled them
+            if (homeInvite.isPublic()) {
+                if (!homeInviteConfig.allowPublicInvites())
+                    homeInvite = null;
+            }
             // if we're not the invited player, we can't use this invite id
-            if (!p.getName().equals(homeInvite.getInvitedPlayer()))
+            else if (!p.getName().equals(homeInvite.getInvitedPlayer()))
                 homeInvite = null;
 
             // check for expiry of the invite

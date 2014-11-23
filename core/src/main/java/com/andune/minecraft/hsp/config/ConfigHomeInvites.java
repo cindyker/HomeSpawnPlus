@@ -77,4 +77,13 @@ public class ConfigHomeInvites extends ConfigBase implements Initializable {
     public boolean useHomeCooldown() {
         return super.getBoolean("useHomeCooldown");
     }
+
+    /**
+     * Determine whether public home invites are allowed.
+     *
+     * @return
+     */
+    public boolean allowPublicInvites() {
+        return super.getBoolean("allowPublicInvites");
+    }
 }

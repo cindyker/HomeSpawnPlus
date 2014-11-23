@@ -12,3 +12,9 @@ homeInvite:
   # set to false if you don't want to allow
   # players to send invite for bedHomes
   allowBedHomeInvites: true
+
+  # set to false if you do not want to allow players to make
+  # public home invites. Note that players must have permission
+  # to make permanent home invites in order to create public
+  # invites. (homeinvite.permanent)
+  allowPublicInvites: true

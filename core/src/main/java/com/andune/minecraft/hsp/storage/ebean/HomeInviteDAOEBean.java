@@ -118,6 +118,11 @@ public class HomeInviteDAOEBean implements HomeInviteDAO {
     }
 
     @Override
+    public Set<HomeInvite> findAllPublicInvites() {
+        return findAllAvailableInvites(HomeInvite.PUBLIC_HOME);
+    }
+
+    @Override
     public Set<HomeInvite> findAllOpenInvites(String player) {
         Set<HomeInvite> invites = new HashSet<HomeInvite>(5);
 

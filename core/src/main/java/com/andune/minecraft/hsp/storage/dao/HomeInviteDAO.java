@@ -75,6 +75,13 @@ public interface HomeInviteDAO extends PurgePlayer {
     Set<HomeInvite> findAllAvailableInvites(String invitee);
 
     /**
+     * Return all available public invites.
+     *
+     * @return
+     */
+    Set<HomeInvite> findAllPublicInvites();
+
+    /**
      * Given a player, return all open invites that we have
      * outstanding.
      *

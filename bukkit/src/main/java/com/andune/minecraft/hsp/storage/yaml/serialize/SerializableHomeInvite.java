@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.storage.yaml.serialize;
 
 import com.andune.minecraft.hsp.entity.Home;
+import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.entity.HomeInvite;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -72,7 +73,7 @@ public class SerializableHomeInvite extends AbstractSerializableBasicEntity<Home
         if (o instanceof Integer) {
             Home h = homeDAO.findHomeById((Integer) o);
             if (h != null)
-                getObject().setHome(h);
+                getObject().setHome((HomeImpl) h);
         }
         o = map.get(ATTR_INVITED_PLAYER);
         if (o instanceof String)

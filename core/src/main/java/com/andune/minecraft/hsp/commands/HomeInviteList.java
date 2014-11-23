@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.config.ConfigHomeInvites;
 import com.andune.minecraft.hsp.entity.HomeInvite;
@@ -59,8 +60,34 @@ public class HomeInviteList extends BaseCommand {
     @Override
     public boolean execute(Player p, String[] args) {
         HomeInviteDAO dao = storage.getHomeInviteDAO();
+        Set<HomeInvite> invites = null;
 
-        Set<HomeInvite> invites = dao.findAllOpenInvites(p.getName());
+        // show public invites if requested
+        if( config.allowPublicInvites() && args != null && args.length > 0 && args[0].equalsIgnoreCase("public") ) {
+            invites = dao.findAllPublicInvites();
+            if( invites != null && invites.size() > 0 ) {
+                p.sendMessage("Public home invites:");
+                for (HomeInvite invite : invites) {
+                    if (isExpired(invite))
+                        continue;
+                    String homeName = invite.getHome().getName();
+                    p.sendMessage("(id " + invite.getId() + ") -> Invite for home " + homeName
+                                    + " from player " + invite.getHome().getPlayerName()
+                                    + " [expires: " + (invite.getExpires() != null ?
+                                    general.displayTimeString(
+                                            invite.getExpires().getTime() - System.currentTimeMillis(), true, "m") :
+                                    "never")
+                                    + "]"
+                    );
+                }
+            } else {
+                p.sendMessage("There are no public home invites available");
+            }
+
+            return true;
+        }
+
+        invites = dao.findAllOpenInvites(p.getName());
         if (invites != null && invites.size() > 0) {
             p.sendMessage("Open invites for your homes:");
             for (HomeInvite invite : invites) {
@@ -99,6 +126,13 @@ public class HomeInviteList extends BaseCommand {
         } else
             p.sendMessage("You have no invites to other players homes");
 
+        if (config.allowPublicInvites()) {
+            invites = dao.findAllPublicInvites();
+            if( invites != null && invites.size() > 0 ) {
+                server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_LIST_PUBLIC_AVAILABLE);
+                return true;
+            }
+        }
         return true;
     }
 

@@ -125,6 +125,11 @@ public class HomeInviteDAOYaml extends AbstractDAOYaml<HomeInvite, SerializableH
     }
 
     @Override
+    public Set<HomeInvite> findAllPublicInvites() {
+        return findAllAvailableInvites(HomeInvite.PUBLIC_HOME);
+    }
+
+    @Override
     public Set<HomeInvite> findAllOpenInvites(String player) {
         Set<HomeInvite> set = new HashSet<HomeInvite>(5);
 

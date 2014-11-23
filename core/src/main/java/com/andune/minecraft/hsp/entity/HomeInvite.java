@@ -49,6 +49,9 @@ import java.util.Date;
         }
 )
 public class HomeInvite implements BasicEntity {
+    // String used as invitee to indicate the home is public.
+    public static final String PUBLIC_HOME = "public";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -75,6 +78,10 @@ public class HomeInvite implements BasicEntity {
     @CreatedTimestamp
     private Timestamp dateCreated;
 
+    public boolean isPublic() {
+        return PUBLIC_HOME.equals(invitedPlayer);
+    }
+
     public int getId() {
         return id;
     }
@@ -87,8 +94,8 @@ public class HomeInvite implements BasicEntity {
         return home;
     }
 
-    public void setHome(Home home) {
-        this.home = (HomeImpl) home;
+    public void setHome(HomeImpl home) {
+        this.home = home;
     }
 
     public String getInvitedPlayer() {

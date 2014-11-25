@@ -444,7 +444,6 @@ public class DatabaseUpgrade {
         try {
             Connection conn = ebeanUtils.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("BEGIN TRANSACTION;");
             stmt.execute("CREATE TABLE hsp_player_backup("
                     +" id integer primary key"
                     +",name varchar(32) not null"
@@ -471,7 +470,7 @@ public class DatabaseUpgrade {
             stmt.execute("CREATE TABLE hsp_player("
                     +" id integer primary key"
                     +",name varchar(32) not null"
-                    +",uuid varchar(32)"
+                    +",uuid varchar(36)"
 //                    +",uuid varchar(32) not null"
                     +",world varchar(32)"
                     +",x double"
@@ -491,7 +490,6 @@ public class DatabaseUpgrade {
                     +",last_modified,date_created"
                     +" FROM hsp_player_backup;");
             stmt.execute("DROP TABLE hsp_player_backup;");
-            stmt.execute("COMMIT;");
             stmt.close();
             conn.close();
 

@@ -1,7 +1,7 @@
 name: HomeSpawnPlus
 main: com.andune.minecraft.hsp.HomeSpawnPlusBukkit
 url: ${project.url}
-version: ${project.version}
+version: ${build.version}
 author: andune
 database: true
 softdepend: [Vault, WorldEdit, WorldGuard, dynmap, WorldBorder, Multiverse-Core, Multiverse-Portals]

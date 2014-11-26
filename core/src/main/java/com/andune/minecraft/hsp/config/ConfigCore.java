@@ -327,7 +327,8 @@ public class ConfigCore extends ConfigBase implements Initializable {
     public enum NewPlayerStrategy {
         ORIGINAL,
         BUKKIT,
-        PLAYER_DAT
+        PLAYER_DAT,
+        ORIGINAL_ONLY
     }
 
     /**
@@ -347,6 +348,8 @@ public class ConfigCore extends ConfigBase implements Initializable {
             strategy = NewPlayerStrategy.BUKKIT;
         else if (NewPlayerStrategy.PLAYER_DAT.toString().equals(strategyString))
             strategy = NewPlayerStrategy.PLAYER_DAT;
+        else if (NewPlayerStrategy.ORIGINAL_ONLY.toString().equals(strategyString))
+            strategy = NewPlayerStrategy.ORIGINAL_ONLY;
 
         return strategy;
     }

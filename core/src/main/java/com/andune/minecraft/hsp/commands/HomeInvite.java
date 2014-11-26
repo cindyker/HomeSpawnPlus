@@ -130,6 +130,9 @@ public class HomeInvite extends BaseCommand {
         if (args.length > 2) {
             if (args[2].equals("forever") || args[2].startsWith("perm"))
                 expiresTime = 0;    // forever
+            else if (args[2].startsWith("temp") ) {
+                expiresTime = -1;   // temporary invite only
+            }
             else {
                 StringBuffer lengthOfTime = new StringBuffer();
                 for (int i = 2; i < args.length; i++) {
@@ -149,7 +152,28 @@ public class HomeInvite extends BaseCommand {
             }
         }
         else {
-            expiresTime = -1;
+            String defaultPermanentTimeout = config.getDefaultPermanentTimeout();
+            log.debug("defaultPermanentTimeout = {}", defaultPermanentTimeout);
+
+            int intValue = 1;
+            try {
+                intValue = Integer.valueOf(defaultPermanentTimeout);
+            } catch(NumberFormatException e) {} // ignore
+
+            // if admin set to 0, the default invite time is forever
+            if (intValue == 0) {
+                expiresTime = 0;
+            }
+            // -1 indicates admin prefers temporary invites as the default
+            else if (intValue < 0 ) {
+                expiresTime = -1;
+            }
+            // some other value was set, we need to parse it
+            else {
+                long timeInMilliseconds = general.parseTimeInput(defaultPermanentTimeout.toString());
+                expireTimeAsString = general.displayTimeString(timeInMilliseconds, false, null);
+                expiresTime = System.currentTimeMillis() + timeInMilliseconds;
+            }
         }
 
         if (!config.allowBedHomeInvites() && home.isBedHome()) {

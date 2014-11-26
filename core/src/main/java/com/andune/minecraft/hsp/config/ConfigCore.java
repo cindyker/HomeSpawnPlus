@@ -386,6 +386,16 @@ public class ConfigCore extends ConfigBase implements Initializable {
     }
 
     /**
+     * Boolean to determine whether we warn when missing configuration
+     * items are detected and defaults are used.
+     *
+     * @return
+     */
+    public boolean isWarnMissingConfigItems() {
+        return super.getBoolean("warnMissingConfigItems");
+    }
+
+    /**
      * Return the admin-defined event priority.
      *
      * @return

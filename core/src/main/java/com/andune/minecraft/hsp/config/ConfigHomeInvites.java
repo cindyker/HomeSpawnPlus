@@ -86,4 +86,15 @@ public class ConfigHomeInvites extends ConfigBase implements Initializable {
     public boolean allowPublicInvites() {
         return super.getBoolean("allowPublicInvites");
     }
+
+    /**
+     * Return the default permanent timeout. -1 indicates no default,
+     * 0 indicates forever, and any other string is parsed as if it was a
+     * time string just like the /homeinvite command: ie. "5m" is 5 minutes.
+     *
+     * @return
+     */
+    public String getDefaultPermanentTimeout() {
+        return super.getString("defaultPermanentTimeout");
+    }
 }

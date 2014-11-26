@@ -28,37 +28,46 @@
 /**
  *
  */
-package com.andune.minecraft.hsp.guice;
-
+package com.andune.minecraft.hsp.server.bukkit.config;
 
 import com.andune.minecraft.hsp.config.ConfigBootstrap;
+import com.andune.minecraft.hsp.config.ConfigOptions;
 import com.andune.minecraft.hsp.config.ConfigStorage;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.andune.minecraft.hsp.storage.BaseStorageFactory;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import javax.inject.Singleton;
 
 /**
- * Factory class to create an injector specific to the Bukkit module.
+ * This loads configuration elements as part of "1st pass bootstrap", where
+ * config elements actually control parts of the configuration process.
+ *
+ * A second config pass is done through the normal configuration process of
+ * HSP with foreknowledge of the elements loaded during this bootstrap.
  *
  * @author andune
  */
-public class BukkitInjectorFactory implements InjectorFactory {
-    private final Object originalPluginObject;
-    private final ConfigBootstrap configBootstrap;
+@Singleton
+@ConfigOptions(fileName = "core.yml", basePath = "core")
+public class BukkitConfigBootstrap implements ConfigBootstrap {
+    private final YamlConfiguration yaml;
 
-    public BukkitInjectorFactory(Object originalPluginObject, ConfigBootstrap configBootstrap) {
-        this.originalPluginObject = originalPluginObject;
-        this.configBootstrap = configBootstrap;
+    public BukkitConfigBootstrap(YamlConfiguration yaml) {
+        this.yaml = yaml;
     }
 
-    /**
-     * Factory to create Guice Injector.
-     *
-     * @return
-     */
-    public Injector createInjector() {
-        // in the future this will choose different injectors based on the
-        // environment. For now the only environment we support is Bukkit.
-        Injector injector = Guice.createInjector(new HSPModule(configBootstrap), new BukkitModule(originalPluginObject));
-        return injector;
+    @Override
+    public Type getStorageType() {
+        return BaseStorageFactory.getType(yaml.getString("core.storage"));
+    }
+
+    @Override
+    public boolean useInMemoryCache() {
+        return yaml.getBoolean("core.inMemoryCache");
+    }
+
+    @Override
+    public boolean isWarnMissingConfigItems() {
+        return yaml.getBoolean("core.warnMissingConfigItems");
     }
 }

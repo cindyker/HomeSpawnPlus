@@ -33,6 +33,13 @@ core:
   # working the way the admin expects.
   warnConflicts: true
 
+  # HSP includes defaults for all config items in these config
+  # files. If a new version comes out with new options, HSP will
+  # automatically pick up the defaults. If this flag is true,
+  # it will also print out a message on startup so you know there
+  # are new config items.
+  warnMissingConfigItems: true
+
   # Warn if the player ended up somewhere other than where HSP
   # expected. This often indicates another plugin doing something
   # that you don't intend.

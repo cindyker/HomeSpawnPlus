@@ -25,43 +25,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+package com.andune.minecraft.hsp.config;
+
 /**
+ * Config items that are needed to bootstrap the configuration process.
+ * It is expected that these all exist in the core config.
  *
- */
-package com.andune.minecraft.hsp.server.bukkit.config;
-
-import com.andune.minecraft.hsp.config.ConfigOptions;
-import com.andune.minecraft.hsp.config.ConfigStorage;
-import com.andune.minecraft.hsp.storage.BaseStorageFactory;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import javax.inject.Singleton;
-
-/**
- * While storage is technically part of the core config, it is broken out
- * separately because the Storage sub-system has config dependencies and must
- * be injected into several objects that would cause circular injection issues.
- * So we have a separate config that can make a decision about what storage
- * system to inject before any other configs are even loaded.
+ * By design, a 2-pass config load will happen. The first pass will load
+ * the core YML and populate the BootStrap elements, the second pass will
+ * process Core and all other configs through the normal config loading
+ * process with foreknowledge of the bootstrapped elements.
  *
  * @author andune
  */
-@Singleton
-@ConfigOptions(fileName = "core.yml", basePath = "core")
-public class BukkitConfigStorage implements ConfigStorage {
-    private final YamlConfiguration yaml;
-
-    public BukkitConfigStorage(YamlConfiguration yaml) {
-        this.yaml = yaml;
-    }
-
-    @Override
-    public Type getStorageType() {
-        return BaseStorageFactory.getType(yaml.getString("core.storage"));
-    }
-
-    @Override
-    public boolean useInMemoryCache() {
-        return yaml.getBoolean("core.inMemoryCache");
-    }
+public interface ConfigBootstrap extends ConfigStorage {
+    public boolean isWarnMissingConfigItems();
 }

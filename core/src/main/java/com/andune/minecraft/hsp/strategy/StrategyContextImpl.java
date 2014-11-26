@@ -431,7 +431,7 @@ public class StrategyContextImpl implements StrategyContext {
 
             // different worlds? doesn't meet bounds limits, must be same-world. Also prevents
             // exception from Location.distance()
-            if (anchor.getWorld() != newLocation.getWorld())
+            if (!anchor.getWorld().getName().equals(newLocation.getWorld().getName()))
                 return false;
 
             ModeDistanceLimits limits = (ModeDistanceLimits) mode;

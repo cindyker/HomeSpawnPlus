@@ -102,16 +102,7 @@ public class ConfigLoaderImpl implements ConfigLoader {
             if( singleYaml != null ) {
                 log.debug("Single YAML file in use. Applying defaults for {} from 2.0-style config.", fileName);
                 final ConfigurationSection cs = loadDefaultsFromJar(fileName, basePath);
-                final Set<String> missingDefaults = yaml.addDefaultConfig(cs);
-
-                if (missingDefaults.size() > 0) {
-                    if (bootstrap.isWarnMissingConfigItems()) {
-                        warnOnceMissingConfigItems();
-                        for (String key : missingDefaults) {
-                            warnUtil.infoOnce(key, "Missing config key {}, using default value {}", key, cs.get(key));
-                        }
-                    }
-                }
+                yaml.addDefaultConfig(cs);
             }
         }
 

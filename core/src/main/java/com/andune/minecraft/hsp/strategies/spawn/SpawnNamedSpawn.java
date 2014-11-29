@@ -30,11 +30,14 @@
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.strategy.*;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author andune
@@ -42,6 +45,9 @@ import javax.inject.Inject;
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnNamedSpawn extends BaseStrategy {
+    @Inject
+    protected Server server;
+
     protected Storage storage;
 
     @Inject
@@ -67,6 +73,36 @@ public class SpawnNamedSpawn extends BaseStrategy {
             name = namedSpawn;
 
         Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
+
+        // try by ID number if name didn't work
+        if (spawn == null) {
+            int id = -1;
+
+            String idString = name;
+            if (idString.startsWith("id:")) {
+                idString = idString.substring(3);
+            }
+
+            try {
+                id = Integer.valueOf(idString);
+            } catch(NumberFormatException e) {} // ignore
+
+            if (id > -1) {
+                spawn = storage.getSpawnDAO().findSpawnById(id);
+            }
+        }
+
+        // last, see if a world matches the arg and if so, use the default
+        // spawn of that world
+        if (spawn == null) {
+            List<World> worlds = server.getWorlds();
+            for(World w : worlds) {
+                if (w.getName().equalsIgnoreCase(name)) {
+                    spawn = storage.getSpawnDAO().findSpawnByWorld(w.getName());
+                    break;
+                }
+            }
+        }
 
         // since namedSpawn is very specific, it's usually an error condition if we didn't
         // find a named spawn that the admin identified, so print a warning so they can

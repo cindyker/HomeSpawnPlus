@@ -48,7 +48,7 @@ import java.util.UUID;
  * @author andune
  */
 public class DatabaseUpgrade {
-    private static final int CURRENT_VERSION = 200;
+    private static final int CURRENT_VERSION = 201;
     private final Logger log = LoggerFactory.getLogger(StorageEBeans.class);
 
     private final EbeanServer db;
@@ -119,8 +119,8 @@ public class DatabaseUpgrade {
         if (knownVersion < 170)
             updateToVersion170();
 
-        if (knownVersion < 200)
-            updateToVersion200();
+        if (knownVersion < 201)
+            updateToVersion201();
     }
 
     private void updateToVersion63() {
@@ -434,10 +434,15 @@ public class DatabaseUpgrade {
         log.info("Upgrade from version 1.5.0 database to version 1.7.0 complete");
     }
 
-    private void updateToVersion200() {
-        log.info("Upgrading from version 1.7.0 database to version 2.0.0");
+    private void updateToVersion201() {
+        log.info("Upgrading database to version 2.0.1");
 
         boolean success = false;
+
+        String autoIncrement = "";
+        if (!isSqlLite()) {
+            autoIncrement = "auto_increment";
+        }
 
         // Mysql allows simple ALTER TABLE statements, SQLite does not. So
         // we use a temporary table algorithm which is friendly to both.
@@ -468,7 +473,7 @@ public class DatabaseUpgrade {
             // DB constraints on UUID.
             stmt.execute("DROP TABLE hsp_player;");
             stmt.execute("CREATE TABLE hsp_player("
-                    +" id integer primary key"
+                    +" id integer primary key " + autoIncrement
                     +",name varchar(32) not null"
                     +",uuid varchar(36)"
 //                    +",uuid varchar(32) not null"
@@ -500,9 +505,9 @@ public class DatabaseUpgrade {
         }
 
         if (success) {
-            SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=200");
+            SqlUpdate update = db.createSqlUpdate("update hsp_version set database_version=201");
             update.execute();
-            log.info("Upgrade from version 1.7.0 database to version 2.0.0 complete");
+            log.info("Upgrade database to version 2.0.1 complete");
 
             // The update method we use above changes tables out from
             // underneath ebeans. There is no way that I know of to tell ebeans
@@ -525,7 +530,7 @@ public class DatabaseUpgrade {
             }
         }
         else {
-            log.error("Upgrade from version 1.7.0 database to version 2.0.0 ** NOT SUCCESSFUL **");
+            log.error("Upgrade database to version 2.0.1 ** NOT SUCCESSFUL **");
         }
     }
 

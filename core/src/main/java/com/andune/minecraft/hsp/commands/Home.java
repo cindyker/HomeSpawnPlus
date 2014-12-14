@@ -247,7 +247,7 @@ public class Home extends BaseCommand implements UberCommandFallThrough {
                             "home", homeName));
             }
 
-            teleport.teleport(p, l, context.getTeleportOptions());
+            teleport.teleport(p, l, (context != null ? context.getTeleportOptions() : null));
         }
     }
 

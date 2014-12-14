@@ -1,4 +1,12 @@
-v2.0 -
+v2.0-beta2 - Dec 13, 2014
+  - support for minecraft uuids
+  - fix for new_player to detect new players with uuids properly
+  - fix for modeDistanceLimits bug (github issue #17)
+  - new feature: option for unlimited time as default for invitations (github issue #18)
+  - fix mysql DB update so it doesn't break new player logins (github issue #24)
+  - /spawn now can take world as an argument and will teleport to default spawn of that world
+
+v2.0 alpha - never released
 * Major refactor
   - Primary benefit: Server API abstraction layer - HSP is no longer tightly coupled to Bukkit. MC-API, Spout etc can be supported
     from 90% of the same codebase, so HSP can support other server platforms from the same code. This follows the pattern of

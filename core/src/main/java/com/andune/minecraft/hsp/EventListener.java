@@ -260,7 +260,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         // cross-world teleport event?
         if (config.isRecordLastLocation() && !event.getTo().getWorld().equals(event.getFrom().getWorld())) {
             PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
-            PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+            PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getFrom().getWorld().getName(), event.getPlayer().getName());
             if (playerLastLocation == null) {
                 playerLastLocation = new PlayerLastLocation();
                 playerLastLocation.setPlayerName(event.getPlayer().getName());

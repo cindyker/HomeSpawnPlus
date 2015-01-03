@@ -42,9 +42,34 @@ public interface ConfigStorage {
         YAML_SINGLE_FILE,
         PERSISTANCE_REIMPLEMENTED_EBEANS,
         UNKNOWN;
-    }
 
-    ;
+        /**
+         * Ordinarily this is BAD to expose enum ordinal values. Sadly, these
+         * values started life as static ints and were exposed in the config
+         * directly that way, so many existing configs have the int values in
+         * them and so backwards compatibility requires we allow the int values
+         * to still work.
+         */
+        static public Type getType(int intType) {
+            Type[] types = Type.values();
+            for (int i = 0; i < types.length; i++) {
+                if (types[i].ordinal() == intType)
+                    return types[i];
+            }
+
+            return Type.UNKNOWN;
+        }
+
+        static public Type getType(String stringType) {
+            Type[] types = Type.values();
+            for (int i = 0; i < types.length; i++) {
+                if (types[i].toString().equalsIgnoreCase(stringType))
+                    return types[i];
+            }
+
+            return Type.UNKNOWN;
+        }
+    }
 
     public Type getStorageType();
 

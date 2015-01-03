@@ -47,6 +47,17 @@ public class SpawnWorldGuardRegion extends BaseStrategy {
     @Inject
     private WorldGuard worldGuard;
 
+    public SpawnWorldGuardRegion() {
+        if( log.isDebugEnabled() ) {
+            log.debug("SpawnWorldGuardRegion constructor() invoked. worldGuard={}", worldGuard);
+            try {
+                throw new Exception();
+            } catch(Exception e) {
+                log.debug("SpawnWorldGuardRegion constructor() stack trace: ", e);
+            }
+        }
+    }
+
     @Override
     public StrategyResult evaluate(StrategyContext context) {
         if (!worldGuard.isEnabled()) {
@@ -59,6 +70,7 @@ public class SpawnWorldGuardRegion extends BaseStrategy {
 
     @Override
     public void validate() throws StrategyException {
+        log.debug("SpawnWorldGuardRegion.validate worldGuard={}", worldGuard);
         if (!worldGuard.isEnabled())
             throw new StrategyException("Attempted to use " + getStrategyConfigName() + " without WorldGuard installed. Strategy ignored.");
     }

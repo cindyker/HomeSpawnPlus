@@ -63,6 +63,8 @@ public class StrategyFactory implements Initializable {
 
         noArgStrategies = new HashMap<String, Class<? extends Strategy>>(30);
         oneArgStrategies = new HashMap<String, Class<? extends Strategy>>(15);
+
+        log.debug("StrategyFactory injector = {}", injector.hashCode());
     }
 
     @Override

@@ -66,9 +66,14 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
             LogUtil.enableDebug();
 
         try {
+            getLogger().log(Level.FINE, "Initializing BukkitInjectorFactory");
             BukkitInjectorFactory factory = new BukkitInjectorFactory(this,
                     new BukkitConfigBootstrap(getBootstrapConfig()));
+
+            getLogger().log(Level.FINE, "Instantiating HomeSpawmPlus mainClass");
             mainClass = new HomeSpawnPlus(factory);
+
+            getLogger().log(Level.FINE, "invoking mainClass.onEnable()");
             mainClass.onEnable();
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Caught exception loading plugin, shutting down", e);

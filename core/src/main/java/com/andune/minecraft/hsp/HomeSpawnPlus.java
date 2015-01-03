@@ -68,10 +68,18 @@ public class HomeSpawnPlus {
 
     public void onEnable() throws Exception {
 //        GuiceDebug.enable();
+        log.debug("HomeSpawnPlus.onEnable, creating injector");
         final Injector injector = injectorFactory.createInjector(); // IoC container
+
+        log.debug("HomeSpawnPlus.onEnable, injecting this.members");
         injector.injectMembers(this);   // inject all dependencies for this object
 
+        log.debug("HomeSpawnPlus.onEnable injector = {}", injector.hashCode());
+
+        log.debug("HomeSpawnPlus.onEnable, running initAll");
         initializer.initAll();
+
+        log.debug("HomeSpawnPlus.onEnable, registering events");
         eventDispatcher.registerEvents();
 
         log.info("{} version {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());

@@ -161,6 +161,10 @@ public class BukkitModule extends AbstractModule {
     // instances, because if we let Guice try to auto-wire them, it will walk
     // the class members and blow up when it can't process member variables
     // that don't exist, as is often the case for optional plugin dependencies.
+    //
+    // Also note, the implementation itself must be returned for the concrete
+    // class, otherwise the Initializer will initialize a different object than
+    // the one the interface returns.
     ///////////////
     private BukkitEconomy economy;
     private BukkitDynmapModule dynmap;
@@ -177,9 +181,7 @@ public class BukkitModule extends AbstractModule {
             economy = new BukkitEconomy(config, hlm);
         return economy;
     }
-
     @Provides
-    @Singleton
     protected Economy getEconomy(BukkitEconomy bukkitEconomy) {
         return bukkitEconomy;
     }
@@ -191,17 +193,20 @@ public class BukkitModule extends AbstractModule {
             dynmap = new BukkitDynmapModule(plugin, configDynmap, storage, server);
         return dynmap;
     }
-
     @Provides
     protected DynmapModule getDynmapModule(BukkitDynmapModule bukkitDynmapModule) {
         return bukkitDynmapModule;
     }
 
     @Provides
-    protected WorldBorder getWorldBorder() {
+    protected WorldBorderModule getWorldBorderModule() {
         if (worldBorder == null)
             worldBorder = new WorldBorderModule(plugin);
         return worldBorder;
+    }
+    @Provides
+    protected WorldBorder getWorldBorder() {
+        return getWorldBorderModule();
     }
 
     @Provides
@@ -211,31 +216,53 @@ public class BukkitModule extends AbstractModule {
         }
         return multiverseCore;
     }
-
     @Provides
     protected MultiverseCore getMultiverseCore(ConfigCore configCore) {
         return getMultiverseCoreModule(configCore);
     }
 
     @Provides
-    protected MultiversePortals getMultiversePortals(ConfigCore configCore, MultiverseCoreModule mvCore) {
+    protected MultiversePortalsModule getMultiversePortalsModule(ConfigCore configCore, MultiverseCoreModule mvCore) {
         if (multiversePortals == null) {
             multiversePortals = new MultiversePortalsModule(configCore, plugin, mvCore);
         }
         return multiversePortals;
     }
-
     @Provides
-    protected WorldGuard getWorldGuard(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
-        if (worldGuard == null)
-            worldGuard = new WorldGuardModule(plugin, factory, strategyEngine, server);
-        return worldGuard;
+    protected MultiversePortals getMultiversePortals(ConfigCore configCore, MultiverseCoreModule mvCore) {
+        return getMultiversePortalsModule(configCore, mvCore);
     }
 
     @Provides
-    protected Essentials getEssentials(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister, Scheduler scheduler) {
+    protected WorldGuardModule getWorldGuardModule(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
+        if( log.isDebugEnabled() ) {
+            log.debug("BukkitModule.getWorldGuard invoked. worldGuard={}", worldGuard);
+            try {
+                throw new Exception();
+            } catch(Exception e) {
+                log.debug("BukkitModule.getWorldGuard stack trace: ", e);
+            }
+        }
+
+        if (worldGuard == null)
+            worldGuard = new WorldGuardModule(plugin, factory, strategyEngine, server);
+
+        log.debug("BukkitModule.getWorldGuard returning value worldGuard={}", worldGuard);
+        return worldGuard;
+    }
+    @Provides
+    protected WorldGuard getWorldGuard(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
+        return getWorldGuardModule(factory, strategyEngine, server);
+    }
+
+    @Provides
+    protected EssentialsModule getEssentialsModule(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister, Scheduler scheduler) {
         if (essentials == null)
             essentials = new EssentialsModule(plugin, bukkitCommandRegister, scheduler);
         return essentials;
+    }
+    @Provides
+    protected Essentials getEssentials(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister, Scheduler scheduler) {
+        return getEssentialsModule(bukkitPlugin, bukkitCommandRegister, scheduler);
     }
 }

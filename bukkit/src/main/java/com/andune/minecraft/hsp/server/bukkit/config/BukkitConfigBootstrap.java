@@ -47,8 +47,6 @@ import javax.inject.Singleton;
  *
  * @author andune
  */
-@Singleton
-@ConfigOptions(fileName = "core.yml", basePath = "core")
 public class BukkitConfigBootstrap implements ConfigBootstrap {
     private final YamlConfiguration yaml;
 
@@ -58,7 +56,7 @@ public class BukkitConfigBootstrap implements ConfigBootstrap {
 
     @Override
     public Type getStorageType() {
-        return BaseStorageFactory.getType(yaml.getString("core.storage"));
+        return ConfigStorage.Type.getType(yaml.getString("core.storage"));
     }
 
     @Override

@@ -235,6 +235,7 @@ public class BukkitModule extends AbstractModule {
 
     @Provides
     protected WorldGuardModule getWorldGuardModule(BukkitFactory factory, StrategyEngine strategyEngine, Server server) {
+        /*
         if( log.isDebugEnabled() ) {
             log.debug("BukkitModule.getWorldGuard invoked. worldGuard={}", worldGuard);
             try {
@@ -243,11 +244,12 @@ public class BukkitModule extends AbstractModule {
                 log.debug("BukkitModule.getWorldGuard stack trace: ", e);
             }
         }
+        */
 
         if (worldGuard == null)
             worldGuard = new WorldGuardModule(plugin, factory, strategyEngine, server);
 
-        log.debug("BukkitModule.getWorldGuard returning value worldGuard={}", worldGuard);
+//        log.debug("BukkitModule.getWorldGuard returning value worldGuard={}", worldGuard);
         return worldGuard;
     }
     @Provides

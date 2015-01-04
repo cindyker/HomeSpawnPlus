@@ -94,6 +94,7 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     public HSP() {
         List<SubCommand> cmds = new ArrayList<SubCommand>(10);
         cmds.add(new ReloadConfig());
+        cmds.add(new ReloadEvents());
         cmds.add(new Modules());
         cmds.add(new Dedup());
         cmds.add(new LowerCase());
@@ -259,6 +260,30 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
 
             if (success)
                 server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_CONFIG_RELOADED);
+        }
+    }
+
+    private class ReloadEvents extends SubCommand {
+        public String getName() {
+            return "reloadevents";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"re"};
+        }
+
+        public void run() {
+            boolean success = false;
+            try {
+                strategyConfig.loadConfig();
+                success = true;
+            } catch (Exception e) {
+                log.error("Caught exception reloading config", e);
+                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_ERROR_RELOADING);
+            }
+
+            if (success)
+                sender.sendMessage("Successfully reloaded event config");
         }
     }
 

@@ -97,7 +97,7 @@ public class Player implements EntityWithLocation {
     /**
      * Update last logout location to the given location.
      *
-     * @param p
+     * @param l the location of the player
      */
     public void updateLastLogoutLocation(Location l) {
         setWorld(l.getWorld().getName());
@@ -112,7 +112,7 @@ public class Player implements EntityWithLocation {
         if (getWorld() == null)
             return null;
 
-        return ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+        return ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
     }
 
     public int getId() {

@@ -37,7 +37,14 @@ import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.validation.Length;
 import com.avaje.ebean.validation.NotNull;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import java.sql.Timestamp;
 
@@ -100,7 +107,6 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
      *
      * @param l
      * @param updatedBy
-     * @param group     the Group this spawn represents. Can be null to represent global spawn for the given world.
      */
     public SpawnImpl(Location l, String updatedBy) {
         setLocation(l);
@@ -123,7 +129,7 @@ public class SpawnImpl implements EntityWithLocation, Spawn {
     @Override
     public Location getLocation() {
         if (location == null) {
-            location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+            location = ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
         }
 
         return location;

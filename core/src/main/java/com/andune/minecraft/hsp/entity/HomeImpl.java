@@ -129,7 +129,7 @@ public class HomeImpl implements EntityWithLocation, Home {
     @Override
     public Location getLocation() {
         if (location == null) {
-            location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+            location = ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
         }
 
         return location;

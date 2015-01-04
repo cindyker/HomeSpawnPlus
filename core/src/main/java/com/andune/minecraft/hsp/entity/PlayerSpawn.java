@@ -107,6 +107,9 @@ public class PlayerSpawn implements EntityWithLocation {
     public void setSpawn(Spawn spawn) {
         this.spawn = (SpawnImpl) spawn;
     }
+    public void setSpawn(SpawnImpl spawn) {
+        this.spawn = spawn;
+    }
 
     public int getId() {
         return id;
@@ -205,7 +208,7 @@ public class PlayerSpawn implements EntityWithLocation {
             return spawn.getLocation();
 
         if (location == null) {
-            location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+            location = ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
         }
         return location;
     }

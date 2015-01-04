@@ -35,6 +35,7 @@ import com.andune.minecraft.commonlib.server.api.Factory;
 import com.andune.minecraft.commonlib.server.api.Location;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * While IoC injection should be preferred over static Factory
@@ -51,6 +52,7 @@ import javax.inject.Inject;
  *
  * @author andune
  */
+@Singleton
 public class ObjectFactory implements Initializable {
     private static Factory factory;
 
@@ -85,7 +87,7 @@ public class ObjectFactory implements Initializable {
      * @param pitch     the pitch (360-degree verticle view angle)
      * @return the new Location object
      */
-    static Location newLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
+    public static Location newLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
         return factory.newLocation(worldName, x, y, z, yaw, pitch);
     }
 

@@ -156,7 +156,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
 
         // execute ON_JOIN strategy to find out where we should put the player, but only
         // if there was no result from newPlayer checks
-        if (result == null || !result.isExplicitDefault())
+        if (result == null || result.isExplicitDefault() || result.getLocation() == null)
             result = engine.getStrategyResult(EventType.ON_JOIN, p);
 
         Location joinLocation = null;

@@ -186,6 +186,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
         com.andune.minecraft.commonlib.server.api.events.PlayerQuitEvent apiEvent =
                 new com.andune.minecraft.commonlib.server.bukkit.events.PlayerQuitEvent(event, bukkitFactory);
         eventListener.playerQuit(apiEvent);
+        bukkitFactory.clearPlayerCache();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -193,6 +194,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
         com.andune.minecraft.commonlib.server.api.events.PlayerKickEvent apiEvent =
                 new com.andune.minecraft.commonlib.server.bukkit.events.PlayerKickEvent(event, bukkitFactory);
         eventListener.playerKick(apiEvent);
+        bukkitFactory.clearPlayerCache();
     }
 
     // this event is dynamically hooked only if needed

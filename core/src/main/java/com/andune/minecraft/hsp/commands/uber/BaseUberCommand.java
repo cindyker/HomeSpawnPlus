@@ -238,6 +238,8 @@ public abstract class BaseUberCommand extends BaseCommand {
      */
     @Override
     public boolean execute(CommandSender sender, String cmd, String[] args) {
+        log.debug("BaseUberCommand.execute sender={}, sender.hash={}, cmd={}, args={}",
+                sender, sender.hashCode(), cmd, args);
         if (sender instanceof Player || !requiresPlayerArgumentFromConsole()) {
             return this.executePrivate(sender, cmd, args);
         }
@@ -253,6 +255,8 @@ public abstract class BaseUberCommand extends BaseCommand {
     }
 
     private boolean executePrivate(CommandSender sender, String label, String[] args) {
+        log.debug("BaseUberCommand.executePrivate sender={}, sender.hash={}, cmd={}, args={}",
+                sender, sender.hashCode(), label, args);
         Command command = null;
 
         if (args.length < 1) {

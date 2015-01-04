@@ -65,7 +65,7 @@ public class Spawn extends BaseCommand implements UberCommandFallThrough {
         return privateExecute(p, args, false);
     }
 
-    public boolean privateExecute(final Player p, String[] args, boolean dryRun) {
+    private boolean privateExecute(final Player p, String[] args, boolean dryRun) {
         log.debug("/spawn command called player={}, args={}, dryRun={}", p, args, dryRun);
         String cooldownName = "spawn";
 
@@ -197,6 +197,7 @@ public class Spawn extends BaseCommand implements UberCommandFallThrough {
                             "spawn", spawnName));
             }
 
+            log.debug("command Spawn.doSpawnTeleport() p={}, l={}, teleportOptions={}", p, l, context.getTeleportOptions());
             teleport.teleport(p, l, context.getTeleportOptions());
         }
     }

@@ -115,6 +115,8 @@ public abstract class BaseCommand implements Command {
      */
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         isConsoleCommand = false;
+        log.debug("BaseCommand.execute sender={}, sender.hash={}, cmd={}, args={}",
+                sender, sender.hashCode(), cmd, args);
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
@@ -149,6 +151,8 @@ public abstract class BaseCommand implements Command {
     }
 
     protected boolean runPlayerCommandFromConsole(CommandSender sender, NewArgs newArgs) {
+        log.debug("BaseCommand.runPlayerCommandFromConsole sender={}, sender.hash={}, newArgs={}",
+                sender, sender.hashCode(), newArgs);
         if (newArgs.getErrorMessage() != null) {
             sender.sendMessage(newArgs.getErrorMessage());
             return true;

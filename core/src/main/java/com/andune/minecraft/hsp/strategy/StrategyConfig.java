@@ -104,4 +104,9 @@ public interface StrategyConfig extends Initializable {
      */
     public Map<String, Integer> getStrategyCountMap();
 
+    /**
+     * Used in order to (re)load the config during initialization
+     * or runtime.
+     */
+    public void loadConfig();
 }

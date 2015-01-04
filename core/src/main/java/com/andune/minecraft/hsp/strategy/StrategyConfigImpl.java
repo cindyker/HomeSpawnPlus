@@ -141,6 +141,12 @@ public class StrategyConfigImpl implements StrategyConfig {
         worldStrategies.clear();
         permissionStrategies.clear();
 
+        try {
+            configEvents.init();
+        } catch(Exception e) {
+            log.warn("Error when attempting to reload configEvents", e);
+        }
+
         ConfigurationSection section = configEvents.getBaseSection();
         loadDefaultStrategies(section);
 

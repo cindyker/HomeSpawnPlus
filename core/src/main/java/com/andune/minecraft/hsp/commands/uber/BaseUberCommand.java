@@ -39,7 +39,13 @@ import com.andune.minecraft.hsp.server.api.Command;
 import com.andune.minecraft.hsp.server.api.Factory;
 import org.reflections.Reflections;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author andune
@@ -184,6 +190,17 @@ public abstract class BaseUberCommand extends BaseCommand {
         return sb.substring(0, sb.length() - 1);
     }
 
+    /**
+     * Return true if this Uber Command requires a player argument as the
+     * first arg when run from the console. Default is true but can be
+     * overridden by a subclass that desired different behavior.
+     *
+     * @return
+     */
+    protected boolean requiresPlayerArgumentFromConsole() {
+        return true;
+    }
+
     private boolean appendAdditionalHelp(StringBuffer sb, Map<String, String> additionalHelp,
                                          Map<String, String> additionalHelpAliases, String key) {
         if (additionalHelp != null && additionalHelp.get(key) != null) {
@@ -205,32 +222,43 @@ public abstract class BaseUberCommand extends BaseCommand {
     }
 
     /**
-     * Run a given uber command, possibly in dryRun mode.
+     * This method signature is invoked from the command processing routines directly and
+     * has the job of determining whether the command is coming from the console or not.
      *
-     * @param sender the object (person/console) sending the command
-     * @param label  the actual command being run (sometimes this is an alias
-     *               name)
-     * @param args   any arguments to the command
-     * @param dryRun For uber commands, it can be useful to know whether or not
-     *               a given command context (player, label, args) would do
-     *               anything, without it actually doing anything. This can then
-     *               be used to determine whether to actually call the uber
-     *               command with the given context, or perhaps pass on the
-     *               context to another command.
-     * @return In normal mode, returns true if the execution was successful,
-     * false if the command system should keep looking and pass this command on
-     * to the next plugin.<br> <br> In dryRun mode, returns true if the command
-     * would have resulted in a command execution (actual status unknown), false
-     * if the command would have resulted in a usage being displayed or a normal
-     * mode false value.
+     * If coming from the console, some special processing is done to allow admins to
+     * run commands as a user, which can also be useful for command blocks.
+     *
+     * If not coming from the console, control passes through to normal command processing.
+     *
+     * @param sender the sender object (usually a Player or Console)
+     * @param cmd    the actual command that was run (if a command supports aliases, this will
+     *               return the exact alias that was used)
+     * @param args   any arguments passed to the command
+     * @return
      */
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
+    public boolean execute(CommandSender sender, String cmd, String[] args) {
+        if (sender instanceof Player || !requiresPlayerArgumentFromConsole()) {
+            return this.executePrivate(sender, cmd, args);
+        }
+        else {
+            if (args.length < 1) {
+                sender.sendMessage("From the console, command /" + cmd + " requires the first argument to be the player to run as");
+                return true;
+            }
+
+            NewArgs newArgs = extractPlayerArgument(cmd, args);
+            return super.runPlayerCommandFromConsole(sender, newArgs);
+        }
+    }
+
+    private boolean executePrivate(CommandSender sender, String label, String[] args) {
         Command command = null;
 
         if (args.length < 1) {
             command = subCommands.get("");
-        } else if (args[0].equalsIgnoreCase("help")) {
+        }
+        else if (args[0].equalsIgnoreCase("help")) {
             if (args.length > 1) {
                 command = subCommands.get(args[1]);
                 if (command == null)
@@ -241,7 +269,8 @@ public abstract class BaseUberCommand extends BaseCommand {
             if (command != null) {
                 usage = command.getUsage();
                 usage = usage.replaceAll("/<command>", "/" + baseName + " " + args[1]);
-            } else
+            }
+            else
                 usage = getUsage(sender);
 
             // if there is a baseFallThroughCommand, check if we should run that
@@ -251,7 +280,8 @@ public abstract class BaseUberCommand extends BaseCommand {
 
             sender.sendMessage(usage);
             return true;
-        } else {
+        }
+        else {
             command = subCommands.get(args[0]);
             if (command == null)
                 command = subCommandAliases.get(args[0]);

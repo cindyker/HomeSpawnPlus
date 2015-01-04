@@ -43,4 +43,9 @@ public class HSP extends BaseUberCommand {
     public HSP(Factory factory, Reflections reflections, com.andune.minecraft.hsp.commands.HSP baseCommand) {
         super(factory, reflections, baseCommand);
     }
+
+    @Override
+    protected boolean requiresPlayerArgumentFromConsole() {
+        return false;
+    }
 }

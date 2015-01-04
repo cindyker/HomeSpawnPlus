@@ -140,37 +140,49 @@ public abstract class BaseCommand implements Command {
                 return true;
             }
             else {
-                String playerName = args[0];
-                Player p = server.getPlayer(playerName);
-                if (p == null) {
-                    sender.sendMessage("Player " + playerName + " not found online.");
-                    return true;
-                }
-
-                // flag this as a console command, this allows permissions
-                // checks to pass even though we're going to simulate the
-                // command running as the given player
-                isConsoleCommand = true;
-
-                String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-                Joiner joiner = Joiner.on(" ").skipNulls();
-                String joinedArgs = joiner.join(newArgs);
-                String newCmd = cmd + " " + joinedArgs;
-                sender.sendMessage("Running command as player \"" + playerName + "\": " + newCmd);
-
-                // do generic error logging for convenience
-                try {
-                    return this.execute(p, newArgs);
-                } catch (Exception e) {
-                    log.warn("Caught exception in command /" + getCommandName(), e);
-                    server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
-                } finally {
-                    isConsoleCommand = false;
-                }
+                NewArgs newArgs = extractPlayerArgument(cmd, args);
+                return runPlayerCommandFromConsole(sender, newArgs);
             }
         }
 
         return false;
+    }
+
+    protected boolean runPlayerCommandFromConsole(CommandSender sender, NewArgs newArgs) {
+        if (newArgs.getErrorMessage() != null) {
+            sender.sendMessage(newArgs.getErrorMessage());
+            return true;
+        }
+
+        try {
+            // flag this as a console command, this allows permissions
+            // checks to pass even though we're going to simulate the
+            // command running as the given player
+            isConsoleCommand = true;
+            sender.sendMessage("Running command as player \"" + newArgs.getPlayer().getName() + "\": " + newArgs.getFullCommand());
+
+            return this.execute(newArgs.getPlayer(), newArgs.getCommand(), newArgs.getArgs());
+        } catch (Exception e) {
+            log.warn("Caught exception in command /" + getCommandName(), e);
+
+            // send error message to both places
+            server.sendLocalizedMessage(sender, HSPMessages.GENERIC_ERROR);
+            server.sendLocalizedMessage(newArgs.getPlayer(), HSPMessages.GENERIC_ERROR);
+            return true;
+        } finally {
+            isConsoleCommand = false;
+        }
+    }
+
+    protected NewArgs extractPlayerArgument(final String cmd, final String[] args) {
+        String playerName = args[0];
+        Player p = server.getPlayer(playerName);
+        if (p == null) {
+            return new NewArgs("Player " + playerName + " not found online.");
+        }
+
+        String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
+        return new NewArgs(p, cmd, newArgs);
     }
 
     public void setCommandParameters(Map<String, Object> params) {
@@ -565,5 +577,49 @@ public abstract class BaseCommand implements Command {
             }
             return result;
         }
+    }
+
+    protected class NewArgs {
+        private final Player player;
+        private final String[] args;
+        private final String command;
+        private final String fullCommand;
+        private final String errorMessage;
+
+        public NewArgs(Player player, String cmd, String[] args) {
+            this.player = player;
+            this.args = args;
+            this.command = cmd;
+            this.errorMessage = null;
+
+            Joiner joiner = Joiner.on(" ").skipNulls();
+            String joinedArgs = joiner.join(args);
+            fullCommand = cmd + " " + joinedArgs;
+        }
+        public NewArgs(String errorMesssage) {
+            this.errorMessage = errorMesssage;
+            this.player = null;
+            this.args = null;
+            this.command = null;
+            this.fullCommand = null;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public String[] getArgs() {
+            return args;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public String getCommand() {
+            return command;
+        }
+
+        public String getFullCommand() { return fullCommand; }
     }
 }

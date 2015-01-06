@@ -68,16 +68,21 @@ public class SpawnDelete extends BaseCommand {
 
         SpawnDAO dao = storage.getSpawnDAO();
 
-        int id = -1;
-        try {
-            id = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
-        }
-        if (id != -1)
-            spawn = dao.findSpawnById(id);
+        spawn = dao.findSpawnByName(args[1]);
 
-        if (spawn == null)
-            spawn = dao.findSpawnByName(args[0]);
+        if (spawn==null) {
+            // parse out "id:" prefix if present
+            if (args[1].startsWith("id:")) {
+                args[1] = args[1].substring(3);
+            }
+            int id = -1;
+            try {
+                id = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+            }
+            if (id != -1)
+                spawn = dao.findSpawnById(id);
+        }
 
         if (spawn == null) {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,

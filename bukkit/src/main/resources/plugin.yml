@@ -36,6 +36,7 @@ permissions:
             hsp.singleGlobalHomeExempt: true
             hsp.command.permcheck: true
             hsp.command.groupquery: true
+            hsp.command.setplayerspawn: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -106,6 +107,7 @@ permissions:
             hsp.command.spawn.named: true
             hsp.command.spawndelete: true
             hsp.command.spawnlist: true
+            hsp.command.setplayerspawn: true
     hsp.command.groupspawn:
         description: Allows use of the /groupspawn command
         default: op
@@ -235,4 +237,7 @@ permissions:
         default: op
     hsp.CostExempt.groupspawn:
         description: Exempt from /groupspawn costs
+        default: op
+    hsp.command.setplayerspawn:
+        description: Allows use of the /setplayerspawn command
         default: op

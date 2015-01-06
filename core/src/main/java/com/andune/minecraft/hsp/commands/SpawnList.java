@@ -55,7 +55,7 @@ public class SpawnList extends BaseCommand {
 
     @Override
     public String[] getCommandAliases() {
-        return new String[]{"spawnl", "listspawns"};
+        return new String[]{"spawnl", "listspawns", "spawns"};
     }
 
     @Override

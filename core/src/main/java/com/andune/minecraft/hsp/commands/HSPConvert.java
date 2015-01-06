@@ -60,7 +60,7 @@ public class HSPConvert extends BaseCommand {
 
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         if (!permissions.isAdmin(sender))
-            return false;
+            return true;
 
         Converter converter = null;
 

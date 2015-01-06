@@ -66,7 +66,7 @@ public class SpawnList extends BaseCommand {
     @Override
     public boolean execute(CommandSender p, String cmd, String[] originalArgs) {
         if (!defaultCommandChecks(p))
-            return false;
+            return true;
 
         boolean showMapSpawn = false;
         List<String> args = new ArrayList<String>(originalArgs.length);

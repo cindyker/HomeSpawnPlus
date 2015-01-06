@@ -65,7 +65,7 @@ public class HomeDeleteOther extends BaseCommand {
     @Override
     public boolean execute(CommandSender p, String cmd, String[] args) {
         if (!defaultCommandChecks(p))
-            return false;
+            return true;
 
         if (args.length < 1) {
             return false;

@@ -30,6 +30,8 @@
  */
 package com.andune.minecraft.hsp.commands.uber;
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Factory;
 import org.reflections.Reflections;
 
@@ -47,5 +49,13 @@ public class HSP extends BaseUberCommand {
     @Override
     protected boolean requiresPlayerArgumentFromConsole() {
         return false;
+    }
+
+    @Override
+    protected boolean checkUberPrivs(CommandSender sender) {
+        if (sender instanceof Player)
+            return super.hasPermission((Player) sender, true);
+        else
+            return true;
     }
 }

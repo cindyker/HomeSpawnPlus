@@ -93,6 +93,17 @@ public abstract class BaseUberCommand extends BaseCommand {
         return getUsage(null);
     }
 
+    /**
+     * By default uber commands are always allowed. This can be overridden by
+     * a subclass to implement different rules (ie. /hsp command is admin
+     * only)
+     *
+     * @return
+     */
+    protected boolean checkUberPrivs(CommandSender sender) {
+        return true;
+    }
+
     private Map<String, String> getAdditionalHelp() {
         if (baseFallThroughCommand != null)
             return baseFallThroughCommand.getAdditionalHelp();
@@ -240,6 +251,11 @@ public abstract class BaseUberCommand extends BaseCommand {
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         log.debug("BaseUberCommand.execute sender={}, sender.hash={}, cmd={}, args={}",
                 sender, sender.hashCode(), cmd, args);
+
+        if (!checkUberPrivs(sender)) {
+            return true;
+        }
+
         if (sender instanceof Player || !requiresPlayerArgumentFromConsole()) {
             return this.executePrivate(sender, cmd, args);
         }

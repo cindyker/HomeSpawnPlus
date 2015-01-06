@@ -61,7 +61,7 @@ public class PermCheck extends BaseCommand {
     @Override
     public boolean execute(CommandSender sender, String cmd, String[] args) {
         if (!defaultCommandChecks(sender))
-            return false;
+            return true;
 
         if (args.length < 1)
             return false;

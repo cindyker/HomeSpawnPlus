@@ -325,15 +325,17 @@ public abstract class BaseUberCommand extends BaseCommand {
                 return true;
             }
             // otherwise print out uber-command help syntax
-            else
-                return false;
+            else {
+                sender.sendMessage(getUsage(sender));
+                return true;
+            }
         }
         // if there is a baseFallThroughCommand, check if we should run that
         else if (baseFallThroughCommand != null && baseFallThroughCommand.processUberCommandDryRun(sender, label, args)) {
             return baseFallThroughCommand.execute(sender, label, args);
         }
 
-        sender.sendMessage(getUsage());
+        sender.sendMessage(getUsage(sender));
         return true;
     }
 

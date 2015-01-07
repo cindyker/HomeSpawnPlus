@@ -9,13 +9,16 @@ Building
 ---
 Building a release version of HSP 2.0 is very simple, all dependencies are available via maven:
 
+```
   git clone https://github.com/andune/HomeSpawnPlus
   cd HomeSpawnPlus
   git checkout 2.0-beta2
   mvn package
+````
 
 Building the latest dev build requires a little more work since you must build the SNAPSHOT dependencies yourself:
 
+```
   git clone https://github.com/andune/anduneCommonLib
   cd anduneCommonLib
   mvn install
@@ -27,5 +30,6 @@ Building the latest dev build requires a little more work since you must build t
   git clone https://github.com/andune/HomeSpawnPlus
   cd HomeSpawnPlus
   mvn package
+```
 
 In both cases, the resulting JAR for Bukkit can be found in bukkit/target/HomeSpawnPlus.jar

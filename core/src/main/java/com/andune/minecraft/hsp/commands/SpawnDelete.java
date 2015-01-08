@@ -65,19 +65,18 @@ public class SpawnDelete extends BaseCommand {
         if (args.length < 1) {
             return false;
         }
-
+        String spawnArg = args[0];
         SpawnDAO dao = storage.getSpawnDAO();
-
-        spawn = dao.findSpawnByName(args[1]);
+        spawn = dao.findSpawnByName(spawnArg);
 
         if (spawn==null) {
             // parse out "id:" prefix if present
-            if (args[1].startsWith("id:")) {
-                args[1] = args[1].substring(3);
+            if (spawnArg.startsWith("id:")) {
+                spawnArg = spawnArg.substring(3);
             }
             int id = -1;
             try {
-                id = Integer.parseInt(args[1]);
+                id = Integer.parseInt(spawnArg);
             } catch (NumberFormatException e) {
             }
             if (id != -1)
@@ -90,10 +89,14 @@ public class SpawnDelete extends BaseCommand {
             return true;
         }
 
+        String spawnName = args[0];
+        if (spawn.getName() != null)
+            spawnName += " [name: "+spawn.getName()+"]";
+
         try {
             dao.deleteSpawn(spawn);
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
-                    "name", args[0]);
+                    "name", spawnName);
         } catch (StorageException e) {
             server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
             log.warn("Error caught in /" + getCommandName(), e);

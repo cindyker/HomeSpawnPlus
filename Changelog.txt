@@ -1,3 +1,8 @@
+v2.0-beta3 - Jan 7, 2015
+  - lots of bug fixes, thanks to all the beta testers finding and reporting bugs!
+  - updated to work with WorldGuard 6.0
+  - new /setpersonalspawn command (intended for admins)
+
 v2.0-beta2 - Dec 13, 2014
   - support for minecraft uuids
   - fix for new_player to detect new players with uuids properly

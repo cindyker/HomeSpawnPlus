@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.andune.minecraft.hsp</groupId>
         <artifactId>HomeSpawnPlus-parent</artifactId>
-        <version>2.0-beta3-SNAPSHOT</version>
+        <version>2.0-beta3</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.andune.minecraft.commonlib</groupId>
             <artifactId>commonBukkitlib</artifactId>
-            <version>0.8.1-SNAPSHOT</version>
+            <version>0.8.1</version>
         </dependency>
 
         <!-- Dependency Injection (guice) -->

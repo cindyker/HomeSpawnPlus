@@ -90,7 +90,7 @@ public class StrategyConfigImpl implements StrategyConfig {
 
     @Override
     public int getInitPriority() {
-        return 4;
+        return 12;
     }
 
     /**

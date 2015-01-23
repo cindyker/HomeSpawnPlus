@@ -77,7 +77,6 @@ public class SetSpawn extends BaseCommand {
                 if (config.isOverrideWorld()) {
                     final Location l = p.getLocation();
                     l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                    p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETSPAWN_SET_SUCCESS));
                     p.sendMessage(server.getLocalizedMessage(HSPMessages.CMD_SETMAPSPAWN_SET_SUCCESS,
                             "world", l.getWorld().getName(), "location", l.shortLocationString()));
                 }

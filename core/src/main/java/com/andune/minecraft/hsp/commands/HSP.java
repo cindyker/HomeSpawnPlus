@@ -295,6 +295,7 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         private final String enabled = "%green%enabled%default_color%";
         private final String disabled = "%red%disabled%default_color%";
         private final String detectedVersion = ", detected version %blue%";
+        private final String detectedNullVersion = ", detected version %red%null";
 
         public String getName() {
             return "modules";
@@ -303,34 +304,34 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         public void run() {
             sender.sendMessage("Dynmap module "
                     + (dynmap.isEnabled() ? enabled : disabled)
-                    + detectedVersion + dynmap.getVersion());
+                    + (dynmap.getVersion() != null ? detectedVersion + dynmap.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("Multiverse-Core module "
                     + (multiverseCore.isEnabled() ? enabled : disabled)
                     + ((multiverseCore.getVersion() != null && !configCore.isMultiverseEnabled()) ?
                       " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
-                    + detectedVersion + multiverseCore.getVersion() );
+                    + (multiverseCore.getVersion() != null ? detectedVersion + multiverseCore.getVersion() : detectedNullVersion) );
             sender.sendMessage("Multiverse-Portals module "
                     + (multiversePortals.isEnabled() ? enabled : disabled)
                     + ((multiversePortals.getVersion() != null && !configCore.isMultiverseEnabled()) ?
                     " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
-                    + detectedVersion + multiversePortals.getVersion() );
+                    + (multiversePortals.getVersion() != null ? detectedVersion + multiversePortals.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("WorldBorder module "
                     + (worldBorder.isEnabled() ? enabled : disabled)
-                    + detectedVersion + worldBorder.getVersion());
+                    + (worldBorder.getVersion() != null ? detectedVersion + worldBorder.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("WorldGuard module "
                     + (worldGuard.isEnabled() ? enabled : disabled)
-                    + detectedVersion + worldGuard.getVersion());
+                    + (worldGuard.getVersion() != null ? detectedVersion + worldGuard.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("Essentials module "
                     + (essentials.isEnabled() ? enabled : disabled)
-                    + detectedVersion + essentials.getVersion());
+                    + (essentials.getVersion() != null ? detectedVersion + essentials.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("Vault module "
                     + (vault.isEnabled() ? enabled : disabled)
-                    + detectedVersion + vault.getVersion());
+                    + (vault.getVersion() != null ? detectedVersion + vault.getVersion() : detectedNullVersion) );
         }
     }
 

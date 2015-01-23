@@ -307,10 +307,14 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
 
             sender.sendMessage("Multiverse-Core module "
                     + (multiverseCore.isEnabled() ? enabled : disabled)
-                    + detectedVersion + multiverseCore.getVersion());
+                    + ((multiverseCore.getVersion() != null && !configCore.isMultiverseEnabled()) ?
+                      " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
+                    + detectedVersion + multiverseCore.getVersion() );
             sender.sendMessage("Multiverse-Portals module "
                     + (multiversePortals.isEnabled() ? enabled : disabled)
-                    + detectedVersion + multiversePortals.getVersion());
+                    + ((multiversePortals.getVersion() != null && !configCore.isMultiverseEnabled()) ?
+                    " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
+                    + detectedVersion + multiversePortals.getVersion() );
 
             sender.sendMessage("WorldBorder module "
                     + (worldBorder.isEnabled() ? enabled : disabled)

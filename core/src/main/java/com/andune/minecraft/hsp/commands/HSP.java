@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Economy;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -44,6 +45,7 @@ import com.andune.minecraft.hsp.integration.Essentials;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.integration.vault.Vault;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -86,6 +88,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     private ConfigCore configCore;
     @Inject
     private StrategyConfig strategyConfig;
+    @Inject
+    private Vault vault;
 
     private final List<SubCommand> subCommands;
     private final List<String> subCommandNames;
@@ -288,33 +292,41 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     }
 
     private class Modules extends SubCommand {
+        private final String enabled = "%green%enabled%default_color%";
+        private final String disabled = "%red%disabled%default_color%";
+        private final String detectedVersion = ", detected version %blue%";
+
         public String getName() {
             return "modules";
         }
 
         public void run() {
             sender.sendMessage("Dynmap module "
-                    + (dynmap.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + dynmap.getVersion());
+                    + (dynmap.isEnabled() ? enabled : disabled)
+                    + detectedVersion + dynmap.getVersion());
 
             sender.sendMessage("Multiverse-Core module "
-                    + (multiverseCore.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + multiverseCore.getVersion());
+                    + (multiverseCore.isEnabled() ? enabled : disabled)
+                    + detectedVersion + multiverseCore.getVersion());
             sender.sendMessage("Multiverse-Portals module "
-                    + (multiversePortals.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + multiversePortals.getVersion());
+                    + (multiversePortals.isEnabled() ? enabled : disabled)
+                    + detectedVersion + multiversePortals.getVersion());
 
             sender.sendMessage("WorldBorder module "
-                    + (worldBorder.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + worldBorder.getVersion());
+                    + (worldBorder.isEnabled() ? enabled : disabled)
+                    + detectedVersion + worldBorder.getVersion());
 
             sender.sendMessage("WorldGuard module "
-                    + (worldGuard.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + worldGuard.getVersion());
+                    + (worldGuard.isEnabled() ? enabled : disabled)
+                    + detectedVersion + worldGuard.getVersion());
 
             sender.sendMessage("Essentials module "
-                    + (essentials.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + essentials.getVersion());
+                    + (essentials.isEnabled() ? enabled : disabled)
+                    + detectedVersion + essentials.getVersion());
+
+            sender.sendMessage("Vault module "
+                    + (vault.isEnabled() ? enabled : disabled)
+                    + detectedVersion + vault.getVersion());
         }
     }
 

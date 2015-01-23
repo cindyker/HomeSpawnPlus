@@ -108,8 +108,8 @@
 
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.2.25</version>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.5</version>
         </dependency>
 
         <!-- WorldBorder -->

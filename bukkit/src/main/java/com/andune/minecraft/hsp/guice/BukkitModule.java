@@ -48,6 +48,8 @@ import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCoreModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortalsModule;
+import com.andune.minecraft.hsp.integration.vault.Vault;
+import com.andune.minecraft.hsp.integration.vault.VaultModule;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
@@ -173,12 +175,13 @@ public class BukkitModule extends AbstractModule {
     private MultiversePortalsModule multiversePortals;
     private WorldGuardModule worldGuard;
     private EssentialsModule essentials;
+    private VaultModule vault;
 
     @Provides
     @Singleton
-    protected BukkitEconomy getBukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm) {
+    protected BukkitEconomy getBukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm, VaultModule vaultModule) {
         if (economy == null)
-            economy = new BukkitEconomy(config, hlm);
+            economy = new BukkitEconomy(config, hlm, vaultModule);
         return economy;
     }
     @Provides
@@ -266,5 +269,16 @@ public class BukkitModule extends AbstractModule {
     @Provides
     protected Essentials getEssentials(Plugin bukkitPlugin, BukkitCommandRegister bukkitCommandRegister, Scheduler scheduler) {
         return getEssentialsModule(bukkitPlugin, bukkitCommandRegister, scheduler);
+    }
+
+    @Provides
+    protected VaultModule getVaultModule() {
+        if (vault == null)
+            vault = new VaultModule(plugin);
+        return vault;
+    }
+    @Provides
+    protected Vault getVault() {
+        return getVaultModule();
     }
 }

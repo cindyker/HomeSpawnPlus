@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
+import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.entity.Spawn;
@@ -73,6 +74,7 @@ public class SpawnNamedSpawn extends BaseStrategy {
             name = namedSpawn;
 
         Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
+        Location l = null;
 
         // try by ID number if name didn't work
         if (spawn == null) {
@@ -99,18 +101,31 @@ public class SpawnNamedSpawn extends BaseStrategy {
             for(World w : worlds) {
                 if (w.getName().equalsIgnoreCase(name)) {
                     spawn = storage.getSpawnDAO().findSpawnByWorld(w.getName());
+
+                    // if we found the world but it doesn't have an HSP spawn
+                    // location, then grab the world's default Minecraft
+                    // spawn location.
+                    if (spawn == null)
+                        l = w.getSpawnLocation();
                     break;
                 }
             }
         }
 
-        // since namedSpawn is very specific, it's usually an error condition if we didn't
-        // find a named spawn that the admin identified, so print a warning so they can
-        // fix the issue.
-        if (spawn == null)
-            log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
+        if (spawn != null) {
+            return new StrategyResultImpl(spawn);
+        }
+        else if (l != null) {
+            return new StrategyResultImpl(l);
+        }
+        else {
+            // since namedSpawn is very specific, it's usually an error condition if we didn't
+            // find a named spawn that the admin identified, so print a warning so they can
+            // fix the issue.
 
-        return new StrategyResultImpl(spawn);
+            log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
+            return resultFactory.create(false, false);
+        }
     }
 
     @Override

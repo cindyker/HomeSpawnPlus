@@ -55,9 +55,12 @@ public class SpawnLocalPlayerSpawn extends BaseStrategy {
 
         PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
 
+        log.debug("SpawnLocalPlayerSpawn.evaluate() ps={}, ps.id={}", ps, ps.getId());
         if (ps != null) {
-            if (ps.getSpawn() != null)
+            if (ps.getSpawn() != null) {
+                log.debug("SpawnLocalPlayerSpawn.evaluate() ps.getSpawn()={}, id={}", ps.getSpawn(), ps.getSpawn().getId());
                 result = new StrategyResultImpl(ps.getSpawn());
+            }
             else
                 result = new StrategyResultImpl(ps.getLocation());
         }

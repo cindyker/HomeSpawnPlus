@@ -36,6 +36,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.SqlUpdate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -152,6 +153,10 @@ public class SpawnDAOEBean implements SpawnDAO {
      */
     @Override
     public void deleteSpawn(Spawn spawn) {
+        SqlUpdate update = ebean.createSqlUpdate("delete from hsp_playerspawn where spawn_id = :spawn");
+        update.setParameter("spawn", spawn.getId());
+        update.execute();
+
         ebean.delete((SpawnImpl) spawn);
     }
 

@@ -257,6 +257,18 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         log.debug("ENTER observePlayerTeleport(): player={}, to={}, from={}",
                 event.getPlayer(), event.getTo(), event.getFrom());
 
+        // a new behavior is that we get sometimes a half dozen or more
+        // observe events going "from/to" the same location. I'm not sure
+        // what causes this but we want to de-dup these events so they
+        // don't spam the log or cause any other unwanted behaviors.
+        if (event.getTo().getWorld().equals(event.getFrom().getWorld()) &&
+            event.getTo().getBlockX() == event.getFrom().getBlockX() &&
+            event.getTo().getBlockY() == event.getFrom().getBlockY() &&
+            event.getTo().getBlockZ() == event.getFrom().getBlockZ() ) {
+            log.debug("de-duping same-location observePlayerTeleport event");
+            return;
+        }
+
         // cross-world teleport event?
         if (config.isRecordLastLocation() && !event.getTo().getWorld().equals(event.getFrom().getWorld())) {
             PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();

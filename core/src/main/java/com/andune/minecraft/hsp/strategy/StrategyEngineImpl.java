@@ -189,8 +189,9 @@ public class StrategyEngineImpl implements StrategyEngine {
             // but lets be sure we don't blow up if it is. Only process world strategy if
             // player is in a world.
             if (context.getEventLocation().getWorld() != null) {
-                log.debug("evaluateStrategies: evaluating world-based strategies");
-                Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), context.getEventLocation().getWorld().getName());
+                final String locationWorld = context.getEventLocation().getWorld().getName();
+                log.debug("evaluateStrategies: evaluating world-based strategies. locationWorld={}", locationWorld);
+                Set<Strategy> worldStrategies = strategyConfig.getWorldStrategies(context.getEventType(), locationWorld);
                 if (worldStrategies != null && worldStrategies.size() > 0) {
                     log.debug("evaluateStrategies: evaluating {} world strategies", worldStrategies.size());
                     context.resetCurrentModes();
@@ -331,8 +332,11 @@ public class StrategyEngineImpl implements StrategyEngine {
      */
     private StrategyResult evaluateStrategies(final StrategyContext context, final Set<Strategy> strategies) {
         StrategyResult result = null;
+        log.debug("evaluateStrategies(private): ENTER hash={}, context={}", (context != null ? context.hashCode() : null), context);
 
         for (Strategy strat : strategies) {
+            log.debug("evaluateStrategies(private): checking strategy {}", strat.getStrategyConfigName());
+
             // mode strategies are always allowed. otherwise, check to see if we are allowed
             // to process strategies based on the current modes
             if (!(strat instanceof ModeStrategyImpl) && !context.isStrategyProcessingAllowed()) {
@@ -352,6 +356,7 @@ public class StrategyEngineImpl implements StrategyEngine {
                 break;
         }
 
+        log.debug("evaluateStrategies(private): EXIT hash={}", (context != null ? context.hashCode() : null));
         return result;
     }
 

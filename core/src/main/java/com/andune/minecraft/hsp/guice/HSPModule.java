@@ -130,9 +130,7 @@ public class HSPModule extends AbstractModule {
     @Singleton
     protected Reflections provideReflections() {
         if (reflections == null) {
-            this.reflections = Reflections.collect("META-INF/reflections",
-                    new FilterBuilder().include(".*-reflections.yml"),
-                    new YamlSerializer());
+            this.reflections = new Reflections("com.andune.minecraft.hsp");
         }
         return reflections;
     }

@@ -65,6 +65,8 @@ public class MultiverseListener implements Listener {
     }
 
     public void onMultiverseTeleport(MVTeleportEvent event) {
+        log.debug("onMultiverseTeleport(): invoked, event={}", event);
+        
         if (event.isCancelled())
             return;
 
@@ -75,6 +77,8 @@ public class MultiverseListener implements Listener {
     }
 
     public void onMultiversePortalEvent(MVPortalEvent event) {
+        log.debug("onMultiversePortalEvent(): invoked, event={}", event);
+
         if (event.isCancelled())
             return;
 

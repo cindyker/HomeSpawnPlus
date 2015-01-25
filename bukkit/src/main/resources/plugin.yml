@@ -37,6 +37,7 @@ permissions:
             hsp.command.permcheck: true
             hsp.command.groupquery: true
             hsp.command.setplayerspawn: true
+            hsp.command.showplayerspawn: true
     hsp.home.bedsethome:
         description: Allows a user to set home by right-clicking a bed
         default: true
@@ -108,6 +109,7 @@ permissions:
             hsp.command.spawndelete: true
             hsp.command.spawnlist: true
             hsp.command.setplayerspawn: true
+            hsp.command.showplayerspawn: true
     hsp.command.groupspawn:
         description: Allows use of the /groupspawn command
         default: op
@@ -240,4 +242,7 @@ permissions:
         default: op
     hsp.command.setplayerspawn:
         description: Allows use of the /setplayerspawn command
+        default: op
+    hsp.command.showplayerspawn:
+        description: Allows use of the /showplayerspawn command
         default: op

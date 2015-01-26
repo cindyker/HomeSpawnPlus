@@ -60,8 +60,10 @@ public class SetDefaultHome extends BaseCommand {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_SPECIFY_HOMENAME);
         } else {
             String homeName = args[0];
+            log.debug("/setdefaulthome homeName={}", homeName);
 
-            com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(p.getName(), homeName);
+            com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
+            log.debug("/setdefaulthome home={}, playerName={}", home, p.getName());
 
             if (home != null) {
                 home.setDefaultHome(true);
@@ -73,6 +75,10 @@ public class SetDefaultHome extends BaseCommand {
                     server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
                     log.warn("Error caught in /" + getCommandName(), e);
                 }
+            }
+            else {
+                server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND,
+                        "name", args[0]);
             }
         }
 

@@ -231,8 +231,10 @@ public class HomeLimitsManager {
             else
                 value = entry.getValue().getGlobal();
 
+            log.debug("checking per-permission key = {}, value={}", entry.getKey(), value);
+
             // only if there is a limit value for this entry do we do any extra processing
-            if (value != null && value > 0) {
+            if (value != null && value != 0) {
                 // ok now check to see if player has a permisson in the list
                 for (String perm : entry.getValue().getPermissions()) {
                     log.debug("processing per-permission permission {}", perm);

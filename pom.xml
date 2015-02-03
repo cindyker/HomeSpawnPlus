@@ -32,8 +32,9 @@
 
     <modules>
         <module>api</module>
-        <module>bukkit</module>
         <module>core</module>
+        <module>bukkit</module>
+        <module>sponge</module>
     </modules>
 
     <dependencyManagement>

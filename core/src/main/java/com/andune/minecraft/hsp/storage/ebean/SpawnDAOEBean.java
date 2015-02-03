@@ -157,6 +157,14 @@ public class SpawnDAOEBean implements SpawnDAO {
         update.setParameter("spawn", spawn.getId());
         update.execute();
 
+        // per Ebean documentation, server Cache invalidation is deduced automatically
+        // from an update.execute(SqlUpdate), (http://goo.gl/0mVHRG) so there
+        // should be no opportunity for a cached PlayerSpawn object to still
+        // hold reference to a deleted spawn. However a stack trace reported
+        // by a user suggests this may not be true. In which case this commented
+        // out call to getServerCacheManager().clearAll() would provide a fix.
+//        ebean.getServerCacheManager().clearAll();
+
         ebean.delete((SpawnImpl) spawn);
     }
 

@@ -32,7 +32,9 @@
 
     <modules>
         <module>api</module>
+<!-- stop building bukkit temporarily while in heavy dev on Sponge to save compile time
         <module>bukkit</module>
+-->
         <module>core</module>
         <module>sponge</module>
     </modules>

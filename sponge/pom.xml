@@ -1,0 +1,287 @@
+<!-- Maven build file for HomeSpawnPlus
+     File copied from bukkit.yml as a base and modified from there, many
+     comments reflect deltas between Bukkit functionality and what is
+     currently available on Sponge
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>HomeSpawnPlus-sponge</artifactId>
+    <name>HomeSpawnPlus-sponge</name>
+    <properties>
+        <coreBaseDir>../core</coreBaseDir>
+    </properties>
+
+    <parent>
+        <groupId>com.andune.minecraft.hsp</groupId>
+        <artifactId>HomeSpawnPlus-parent</artifactId>
+        <version>2.0-beta2-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <scm>
+        <connection>scm:git:git://github.com/andune/HomeSpawnPlus.git</connection>
+        <url>https://github.com/andune/HomeSpawnPlus</url>
+        <developerConnection>scm:git:git@github.com:andune/HomeSpawnPlus.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
+
+    <repositories>
+        <repository>
+            <id>andune-repo</id>
+            <url>http://andune.com/nexus/content/groups/public/</url>
+        </repository>
+<!-- no Multiverse on Sponge, yet
+        <repository>
+            <id>onarandombox</id>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
+-->
+    </repositories>
+
+    <dependencies>
+        <!-- Sponge -->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- HomeSpawnPlus core module -->
+        <dependency>
+            <groupId>com.andune.minecraft.hsp</groupId>
+            <artifactId>HomeSpawnPlus-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- Common library -->
+        <dependency>
+            <groupId>com.andune.minecraft.commonlib</groupId>
+            <artifactId>commonlib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.andune.minecraft.commonlib</groupId>
+            <artifactId>commonSpongelib</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Dependency Injection (guice) -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+
+        <!-- WorldEdit/WEPIF - not available yet
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>5.6.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spout</groupId>
+                    <artifactId>spoutapi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+-->
+
+        <!-- WorldGuard 
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>5.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spout</groupId>
+                    <artifactId>spoutapi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+-->
+
+        <!--
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.25</version>
+        </dependency>
+-->
+
+        <!-- WorldBorder
+        <dependency>
+            <groupId>com.github.brettflan</groupId>
+            <artifactId>WorldBorder</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+-->
+
+        <!-- MultiVerse 
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5-b692</version>
+        </dependency>
+        <dependency>
+            <groupId>com.onarandombox.multiverseportals</groupId>
+            <artifactId>Multiverse-Portals</artifactId>
+            <version>2.5</version>
+        </dependency>
+-->
+
+        <!-- Essentials - hopefully not needed at all in Sponge
+        <dependency>
+            <groupId>net.essentials</groupId>
+            <artifactId>Essentials</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+-->
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+
+        <!-- Start of Test Dependencies -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <!-- End of Test Dependencies -->
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <finalName>${project.artifactId}</finalName>
+
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${coreBaseDir}/src/main/resources/</directory>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/resources/</directory>
+            </resource>
+
+<!-- hopefully not needed, Sponge uses annotations instead of a plugin.yml
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+-->
+
+        </resources>
+
+        <!-- Plugins -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                          <minimizeJar>true</minimizeJar>
+                            -->
+                            <outputFile>${project.build.directory}/HomeSpawnPlus.jar</outputFile>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.reflections:reflections</include>
+                                    <!-- <include>javassist:javassist</include> -->
+                                    <include>com.google.inject:guice</include>
+                                    <include>javax.inject:javax.inject</include>
+                                    <include>aopalliance:aopalliance</include>
+                                    <include>com.google.inject.extensions:guice-assistedinject</include>
+                                    <include>com.andune.minecraft.commonlib:commonlib</include>
+                                    <include>com.andune.minecraft.commonlib:commonSpongelib</include>
+                                    <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
+                                    <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
+                                </includes>
+                            </artifactSet>
+
+                            <filters>
+                                <filter>
+                                    <artifact>com.andune.minecraft.commonlib:commonlib</artifact>
+                                    <excludes>
+                                        <exclude>javax/inject/**</exclude>
+                                        <exclude>org/aopalliance/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>${project.groupId}.shade.reflections</shadedPattern>
+                                </relocation>
+                                <!-- <relocation> <pattern>javaassist</pattern> <shadedPattern>${project.groupId}.javaassist</shadedPattern>
+                                  </relocation> -->
+                                <relocation>
+                                    <pattern>com.google.inject</pattern>
+                                    <shadedPattern>${project.groupId}.shade.guice</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JAR creation plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>../lib</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${build.number}</Implementation-Build>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Release -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <!--$NO-MVN-MAN-VER$ -->
+                <configuration>
+                    <preparationGoals>assembly:assembly</preparationGoals>
+                    <goals>assembly:assembly</goals>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Economy;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;

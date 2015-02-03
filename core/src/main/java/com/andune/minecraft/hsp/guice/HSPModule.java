@@ -48,6 +48,7 @@ import com.andune.minecraft.hsp.storage.dao.*;
 import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.BedUtilsImpl;
+import com.andune.minecraft.hsp.util.WarnUtil;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ import com.andune.minecraft.commonlib.server.api.Factory;
 import com.andune.minecraft.commonlib.server.api.Location;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * While IoC injection should be preferred over static Factory
@@ -51,6 +52,7 @@ import javax.inject.Inject;
  *
  * @author andune
  */
+@Singleton
 public class ObjectFactory implements Initializable {
     private static Factory factory;
 
@@ -85,7 +87,7 @@ public class ObjectFactory implements Initializable {
      * @param pitch     the pitch (360-degree verticle view angle)
      * @return the new Location object
      */
-    static Location newLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
+    public static Location newLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
         return factory.newLocation(worldName, x, y, z, yaw, pitch);
     }
 

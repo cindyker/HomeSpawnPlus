@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.server.bukkit.config;
 
+import com.andune.minecraft.hsp.config.ConfigBootstrap;
 import com.andune.minecraft.hsp.config.ConfigOptions;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.andune.minecraft.hsp.storage.BaseStorageFactory;
@@ -38,30 +39,33 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import javax.inject.Singleton;
 
 /**
- * While storage is technically part of the core config, it is broken out
- * separately because the Storage sub-system has config dependencies and must
- * be injected into several objects that would cause circular injection issues.
- * So we have a separate config that can make a decision about what storage
- * system to inject before any other configs are even loaded.
+ * This loads configuration elements as part of "1st pass bootstrap", where
+ * config elements actually control parts of the configuration process.
+ *
+ * A second config pass is done through the normal configuration process of
+ * HSP with foreknowledge of the elements loaded during this bootstrap.
  *
  * @author andune
  */
-@Singleton
-@ConfigOptions(fileName = "core.yml", basePath = "core")
-public class BukkitConfigStorage implements ConfigStorage {
+public class BukkitConfigBootstrap implements ConfigBootstrap {
     private final YamlConfiguration yaml;
 
-    public BukkitConfigStorage(YamlConfiguration yaml) {
+    public BukkitConfigBootstrap(YamlConfiguration yaml) {
         this.yaml = yaml;
     }
 
     @Override
     public Type getStorageType() {
-        return BaseStorageFactory.getType(yaml.getString("core.storage"));
+        return ConfigStorage.Type.getType(yaml.getString("core.storage"));
     }
 
     @Override
     public boolean useInMemoryCache() {
         return yaml.getBoolean("core.inMemoryCache");
+    }
+
+    @Override
+    public boolean isWarnMissingConfigItems() {
+        return yaml.getBoolean("core.warnMissingConfigItems");
     }
 }

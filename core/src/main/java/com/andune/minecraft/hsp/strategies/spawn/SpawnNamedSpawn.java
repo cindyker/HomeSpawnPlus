@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,15 @@
  */
 package com.andune.minecraft.hsp.strategies.spawn;
 
+import com.andune.minecraft.commonlib.server.api.Location;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.entity.Spawn;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.strategy.*;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author andune
@@ -42,6 +46,9 @@ import javax.inject.Inject;
 @NoArgStrategy
 @OneArgStrategy
 public class SpawnNamedSpawn extends BaseStrategy {
+    @Inject
+    protected Server server;
+
     protected Storage storage;
 
     @Inject
@@ -67,14 +74,58 @@ public class SpawnNamedSpawn extends BaseStrategy {
             name = namedSpawn;
 
         Spawn spawn = storage.getSpawnDAO().findSpawnByName(name);
+        Location l = null;
 
-        // since namedSpawn is very specific, it's usually an error condition if we didn't
-        // find a named spawn that the admin identified, so print a warning so they can
-        // fix the issue.
-        if (spawn == null)
+        // try by ID number if name didn't work
+        if (spawn == null) {
+            int id = -1;
+
+            String idString = name;
+            if (idString.startsWith("id:")) {
+                idString = idString.substring(3);
+            }
+
+            try {
+                id = Integer.valueOf(idString);
+            } catch(NumberFormatException e) {} // ignore
+
+            if (id > -1) {
+                spawn = storage.getSpawnDAO().findSpawnById(id);
+            }
+        }
+
+        // last, see if a world matches the arg and if so, use the default
+        // spawn of that world
+        if (spawn == null) {
+            List<World> worlds = server.getWorlds();
+            for(World w : worlds) {
+                if (w.getName().equalsIgnoreCase(name)) {
+                    spawn = storage.getSpawnDAO().findSpawnByWorld(w.getName());
+
+                    // if we found the world but it doesn't have an HSP spawn
+                    // location, then grab the world's default Minecraft
+                    // spawn location.
+                    if (spawn == null)
+                        l = w.getSpawnLocation();
+                    break;
+                }
+            }
+        }
+
+        if (spawn != null) {
+            return new StrategyResultImpl(spawn);
+        }
+        else if (l != null) {
+            return new StrategyResultImpl(l);
+        }
+        else {
+            // since namedSpawn is very specific, it's usually an error condition if we didn't
+            // find a named spawn that the admin identified, so print a warning so they can
+            // fix the issue.
+
             log.warn("No spawn found for name \"{}\" for \"{}\" strategy", name, getStrategyConfigName());
-
-        return new StrategyResultImpl(spawn);
+            return resultFactory.create(false, false);
+        }
     }
 
     @Override

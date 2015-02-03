@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ public class SpawnLocalRandom extends BaseStrategy {
     @Inject
     protected SpawnDAO spawnDAO;
 
-    private Random random = new Random(System.currentTimeMillis());
+    private Random random = new Random(hashCode());
 
     @Override
     public StrategyResult evaluate(StrategyContext context) {
@@ -71,12 +71,14 @@ public class SpawnLocalRandom extends BaseStrategy {
             }
 
             if (playerLocalWorld.equals(theSpawn.getWorld())) {
+                log.debug("SpawnLocalRandom: added spawn choice {}", theSpawn);
                 spawnChoices.add(theSpawn);
             }
         }
         if (spawnChoices.size() > 0) {
             int randomChoice = random.nextInt(spawnChoices.size());
             spawn = spawnChoices.get(randomChoice);
+            log.debug("SpawnLocalRandom: size = {}, randomChoice = {}, spawn = {}", spawnChoices.size(), randomChoice, spawn);
         }
 
         return new StrategyResultImpl(spawn);

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Economy;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -44,6 +45,7 @@ import com.andune.minecraft.hsp.integration.Essentials;
 import com.andune.minecraft.hsp.integration.dynmap.DynmapModule;
 import com.andune.minecraft.hsp.integration.multiverse.MultiverseCore;
 import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
+import com.andune.minecraft.hsp.integration.vault.Vault;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.storage.StorageException;
@@ -86,6 +88,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     private ConfigCore configCore;
     @Inject
     private StrategyConfig strategyConfig;
+    @Inject
+    private Vault vault;
 
     private final List<SubCommand> subCommands;
     private final List<String> subCommandNames;
@@ -94,6 +98,7 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     public HSP() {
         List<SubCommand> cmds = new ArrayList<SubCommand>(10);
         cmds.add(new ReloadConfig());
+        cmds.add(new ReloadEvents());
         cmds.add(new Modules());
         cmds.add(new Dedup());
         cmds.add(new LowerCase());
@@ -262,34 +267,71 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         }
     }
 
+    private class ReloadEvents extends SubCommand {
+        public String getName() {
+            return "reloadevents";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"re"};
+        }
+
+        public void run() {
+            boolean success = false;
+            try {
+                strategyConfig.loadConfig();
+                success = true;
+            } catch (Exception e) {
+                log.error("Caught exception reloading config", e);
+                server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_ERROR_RELOADING);
+            }
+
+            if (success)
+                sender.sendMessage("Successfully reloaded event config");
+        }
+    }
+
     private class Modules extends SubCommand {
+        private final String enabled = "%green%enabled%default_color%";
+        private final String disabled = "%red%disabled%default_color%";
+        private final String detectedVersion = ", detected version %blue%";
+        private final String detectedNullVersion = ", detected version %red%null";
+
         public String getName() {
             return "modules";
         }
 
         public void run() {
             sender.sendMessage("Dynmap module "
-                    + (dynmap.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + dynmap.getVersion());
+                    + (dynmap.isEnabled() ? enabled : disabled)
+                    + (dynmap.getVersion() != null ? detectedVersion + dynmap.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("Multiverse-Core module "
-                    + (multiverseCore.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + multiverseCore.getVersion());
+                    + (multiverseCore.isEnabled() ? enabled : disabled)
+                    + ((multiverseCore.getVersion() != null && !configCore.isMultiverseEnabled()) ?
+                      " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
+                    + (multiverseCore.getVersion() != null ? detectedVersion + multiverseCore.getVersion() : detectedNullVersion) );
             sender.sendMessage("Multiverse-Portals module "
-                    + (multiversePortals.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + multiversePortals.getVersion());
+                    + (multiversePortals.isEnabled() ? enabled : disabled)
+                    + ((multiversePortals.getVersion() != null && !configCore.isMultiverseEnabled()) ?
+                    " %blue%[config: core.isMultiVerseEnabled]%default_color%" : "")
+                    + (multiversePortals.getVersion() != null ? detectedVersion + multiversePortals.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("WorldBorder module "
-                    + (worldBorder.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + worldBorder.getVersion());
+                    + (worldBorder.isEnabled() ? enabled : disabled)
+                    + (worldBorder.getVersion() != null ? detectedVersion + worldBorder.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("WorldGuard module "
-                    + (worldGuard.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + worldGuard.getVersion());
+                    + (worldGuard.isEnabled() ? enabled : disabled)
+                    + (worldGuard.getVersion() != null ? detectedVersion + worldGuard.getVersion() : detectedNullVersion) );
 
             sender.sendMessage("Essentials module "
-                    + (essentials.isEnabled() ? "enabled" : "disabled")
-                    + ", detected version " + essentials.getVersion());
+                    + (essentials.isEnabled() ? enabled : disabled)
+                    + (essentials.getVersion() != null ? detectedVersion + essentials.getVersion() : detectedNullVersion) );
+
+            sender.sendMessage("Vault module "
+                    + (vault.isEnabled() ? enabled : disabled)
+                    + (vault.getVersion() != null ? detectedVersion + vault.getVersion() : detectedNullVersion) );
         }
     }
 

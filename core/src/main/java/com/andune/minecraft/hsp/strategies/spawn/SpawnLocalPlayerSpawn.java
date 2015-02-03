@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,9 +55,12 @@ public class SpawnLocalPlayerSpawn extends BaseStrategy {
 
         PlayerSpawn ps = playerSpawnDAO.findByWorldAndPlayerName(worldName, p.getName());
 
+        log.debug("SpawnLocalPlayerSpawn.evaluate() ps={}, ps.id={}", ps, (ps != null ? ps.getId() : "null"));
         if (ps != null) {
-            if (ps.getSpawn() != null)
+            if (ps.getSpawn() != null) {
+                log.debug("SpawnLocalPlayerSpawn.evaluate() ps.getSpawn()={}, id={}", ps.getSpawn(), ps.getSpawn().getId());
                 result = new StrategyResultImpl(ps.getSpawn());
+            }
             else
                 result = new StrategyResultImpl(ps.getLocation());
         }

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,26 +58,30 @@ public class SpawnDelete extends BaseCommand {
     @Override
     public boolean execute(CommandSender p, String cmd, String[] args) {
         if (!defaultCommandChecks(p))
-            return false;
+            return true;
 
         Spawn spawn = null;
 
         if (args.length < 1) {
             return false;
         }
-
+        String spawnArg = args[0];
         SpawnDAO dao = storage.getSpawnDAO();
+        spawn = dao.findSpawnByName(spawnArg);
 
-        int id = -1;
-        try {
-            id = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
+        if (spawn==null) {
+            // parse out "id:" prefix if present
+            if (spawnArg.startsWith("id:")) {
+                spawnArg = spawnArg.substring(3);
+            }
+            int id = -1;
+            try {
+                id = Integer.parseInt(spawnArg);
+            } catch (NumberFormatException e) {
+            }
+            if (id != -1)
+                spawn = dao.findSpawnById(id);
         }
-        if (id != -1)
-            spawn = dao.findSpawnById(id);
-
-        if (spawn == null)
-            spawn = dao.findSpawnByName(args[0]);
 
         if (spawn == null) {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_NO_SPAWN_FOUND,
@@ -85,10 +89,14 @@ public class SpawnDelete extends BaseCommand {
             return true;
         }
 
+        String spawnName = args[0];
+        if (spawn.getName() != null)
+            spawnName += " [name: "+spawn.getName()+"]";
+
         try {
             dao.deleteSpawn(spawn);
             server.sendLocalizedMessage(p, HSPMessages.CMD_SPAWNDELETE_SPAWN_DELETED,
-                    "name", args[0]);
+                    "name", spawnName);
         } catch (StorageException e) {
             server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
             log.warn("Error caught in /" + getCommandName(), e);

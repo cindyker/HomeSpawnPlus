@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,12 +93,19 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
                 isNewPlayer = !bukkitPlayer.hasPlayedBefore();
                 break;
 
+            case ORIGINAL_ONLY:
+                if (playerDAO.findPlayerByName(getName()) == null) {
+                    isNewPlayer = true;
+                    break;
+                }
+                break;
+
             case ORIGINAL:
                 if (playerDAO.findPlayerByName(getName()) == null) {
                     isNewPlayer = true;
                     break;
                 }
-                // ORIGINAL FALLS THORUGH TO PLAYER_DAT
+                // ORIGINAL FALLS THROUGH TO PLAYER_DAT
 
             case PLAYER_DAT:
             default:
@@ -106,9 +113,9 @@ public class BukkitPlayer extends com.andune.minecraft.commonlib.server.bukkit.B
 
                 final List<org.bukkit.World> worlds = Bukkit.getWorlds();
                 final String worldName = worlds.get(0).getName();
-                final String playerDat = getName() + ".dat";
+                final String playerDat = getUUID().toString() + ".dat";
 
-                File file = new File(worldContainer, worldName + "/players/" + playerDat);
+                File file = new File(worldContainer, worldName + "/playerdata/" + playerDat);
                 if (!file.exists()) {
                     isNewPlayer = true;
                 }

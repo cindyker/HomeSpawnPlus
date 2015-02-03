@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,12 +38,14 @@ import com.andune.minecraft.commonlib.server.api.Factory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.YamlFile;
 import com.andune.minecraft.commonlib.server.api.config.ConfigException;
+import com.andune.minecraft.hsp.util.WarnUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * ConfigLoader separated into interface and implementation to avoid
@@ -57,18 +59,25 @@ import java.io.IOException;
 @Singleton
 public class ConfigLoaderImpl implements ConfigLoader {
     private static final Logger log = LoggerFactory.getLogger(ConfigLoaderImpl.class);
+    private static final String WARNING_MISSING_CONFIG_ITEMS = "warningMissingConfigItems";
+    private static final String WARNING_OLD_CONFIG_FILE = "warningOldConfigFile";
 
     private final Plugin plugin;
     private final Factory factory;
     private final JarUtils jarUtil;
+    private final WarnUtil warnUtil;
+    private final ConfigBootstrap bootstrap;
 
     private YamlFile singleConfigFile;
 
     @Inject
-    public ConfigLoaderImpl(Plugin plugin, Factory factory, JarUtils jarUtil) {
+    public ConfigLoaderImpl(Plugin plugin, Factory factory, JarUtils jarUtil, WarnUtil warnUtil,
+                            ConfigBootstrap bootstrap) {
         this.plugin = plugin;
         this.factory = factory;
         this.jarUtil = jarUtil;
+        this.warnUtil = warnUtil;
+        this.bootstrap = bootstrap;
     }
 
     /* (non-Javadoc)
@@ -76,12 +85,13 @@ public class ConfigLoaderImpl implements ConfigLoader {
      */
     @Override
     public ConfigurationSection load(String fileName, String basePath) throws IOException, ConfigException {
+        YamlFile yaml = getSingleConfigFile();
+        boolean singleConfigFlag = false;
+
         // load individual config file. This will either be used directly, or
         // if a single large config file is found, this will be used as defaults
         YamlFile singleYaml = loadSingleConfig(fileName, basePath);
 
-        YamlFile yaml = getSingleConfigFile();
-        boolean singleConfigFlag = false;
         if (yaml == null) {
             log.debug("No single config.yml found, using multiple config files");
             yaml = singleYaml;
@@ -91,7 +101,8 @@ public class ConfigLoaderImpl implements ConfigLoader {
 
             if( singleYaml != null ) {
                 log.debug("Single YAML file in use. Applying defaults for {} from 2.0-style config.", fileName);
-                yaml.addDefaultConfig(singleYaml.getRootConfigurationSection());
+                final ConfigurationSection cs = loadDefaultsFromJar(fileName, basePath);
+                yaml.addDefaultConfig(cs);
             }
         }
 
@@ -103,14 +114,13 @@ public class ConfigLoaderImpl implements ConfigLoader {
             // try to load the defaults out of new-style config
             if (yaml != null) {
                 log.debug("Defaults for \"{}\" missing, trying to load from single config defaults", basePath);
-                yaml = loadSingleConfig(fileName, basePath);
-                cs = yaml.getConfigurationSection(basePath);
+                cs = singleYaml.getConfigurationSection(basePath);
             }
 
             // if it's still null, create an empty section and print a warning
             if (cs == null) {
                 cs = yaml.createConfigurationSection(basePath);
-                log.warn("ConfigurationSection \"" + basePath + "\" not found, bad things might happen!");
+                log.error("ConfigurationSection \"" + basePath + "\" not found, bad things might happen!");
             }
         }
 
@@ -123,7 +133,43 @@ public class ConfigLoaderImpl implements ConfigLoader {
             installDefaultFile(fileName);
         YamlFile yaml = factory.newYamlFile();
         yaml.load(configFileName);
+
+        // Individual configs use JAR file for defaults, in case new config
+        // options are added after the configs have been copied into place.
+        ConfigurationSection cs = loadDefaultsFromJar(fileName, basePath);
+        Set<String> missingDefaults = yaml.addDefaultConfig(cs);
+
+        if (missingDefaults.size() > 0) {
+            if (bootstrap.isWarnMissingConfigItems()) {
+                warnOnceMissingConfigItems();
+                for (String key : missingDefaults) {
+                    warnUtil.infoOnce(key, "Missing config key {}, using default value {}", key, cs.get(key));
+                }
+            }
+        }
+
         return yaml;
+    }
+
+    /**
+     * Return the default 2.0-style single ConfigurationSection from the JAR file.
+     *
+     * @param fileName
+     * @return
+     */
+    private ConfigurationSection loadDefaultsFromJar(String fileName, String basePath) {
+        YamlFile yaml = factory.newYamlFile();
+
+        try {
+            String jarContents = jarUtil.readFileFromJar("config/" + fileName);
+            yaml.loadFromString(jarContents);
+        } catch(IOException e) {
+            log.warn("Error loading default configs from JAR for file " + fileName, e);
+        } catch(ConfigException e) {
+            log.warn("Error loading default configs from JAR for file "+fileName, e);
+        }
+
+        return yaml.getRootConfigurationSection();
     }
 
     /**
@@ -143,6 +189,10 @@ public class ConfigLoaderImpl implements ConfigLoader {
                 log.debug("Single config.yml file exists, loading file");
                 singleConfigFile = factory.newYamlFile();
                 singleConfigFile.load(configYml);
+
+                warnUtil.warnOnce(WARNING_OLD_CONFIG_FILE, "Old-style (1.7) config file found, it will take priority over"
+                        + " new-style (2.0) config files. You should copy your settings into the 2.0-style configs and then"
+                        + " delete your old config.yml");
             }
         }
 
@@ -165,6 +215,13 @@ public class ConfigLoaderImpl implements ConfigLoader {
         File configFile = new File(configDir, fileName);
         if (!configFile.exists())
             jarUtil.copyConfigFromJar("config/" + fileName, configFile);
+    }
+
+    private void warnOnceMissingConfigItems() {
+        warnUtil.warnOnce(WARNING_MISSING_CONFIG_ITEMS, "It was found that you have some configuration items"
+                +" missing from your config files. Defaults for these values will be loaded and you will see"
+                +" a message about each missing value. Either copy these values into your config files or set"
+                +" core.warnMissingConfigItems to false if you want to disable this warning.");
     }
 
     /* (non-Javadoc)

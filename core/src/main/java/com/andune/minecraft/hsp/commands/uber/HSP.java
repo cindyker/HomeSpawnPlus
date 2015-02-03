@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
  */
 package com.andune.minecraft.hsp.commands.uber;
 
+import com.andune.minecraft.commonlib.server.api.CommandSender;
+import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.server.api.Factory;
 import org.reflections.Reflections;
 
@@ -42,5 +44,18 @@ public class HSP extends BaseUberCommand {
     @Inject
     public HSP(Factory factory, Reflections reflections, com.andune.minecraft.hsp.commands.HSP baseCommand) {
         super(factory, reflections, baseCommand);
+    }
+
+    @Override
+    protected boolean requiresPlayerArgumentFromConsole() {
+        return false;
+    }
+
+    @Override
+    protected boolean checkUberPrivs(CommandSender sender) {
+        if (sender instanceof Player)
+            return super.hasPermission((Player) sender, true);
+        else
+            return true;
     }
 }

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,20 +100,15 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
 
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Core");
         if (p != null) {
-            // we only support specific versions because of the in-depth hooking we do of Multiverse
-            // internals, so there's no guarantee HSP's hooking will work with future versions
-            // until specific support is added and known to work.
-            if (p.getDescription().getVersion().startsWith("2.4") || p.getDescription().getVersion().startsWith("2.5")) {
-                com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
-                log.debug("Hooking Multiverse");
-                teleporter = new MultiverseSafeTeleporter(multiverse, this);
-                teleporter.install();
-                this.multiverseListener = new MultiverseListener();
+            com.onarandombox.MultiverseCore.MultiverseCore multiverse = (com.onarandombox.MultiverseCore.MultiverseCore) p;
+            log.debug("Hooking Multiverse");
+            teleporter = new MultiverseSafeTeleporter(multiverse, this);
+            teleporter.install();
+            this.multiverseListener = new MultiverseListener();
 
-                registerListener();
-            } else {
-                log.info("Unsupported version of Multiverse: " + p.getDescription().getVersion());
-            }
+            registerListener();
+
+            multiverseListener.setMultiverseCoreModule(this);
         }
     }
 
@@ -156,6 +151,8 @@ public class MultiverseCoreModule implements MultiverseCore, Initializable {
                         }
                     },
                     plugin);
+
+            log.debug("Successfully hooked Multiverse-Core");
         }
     }
 }

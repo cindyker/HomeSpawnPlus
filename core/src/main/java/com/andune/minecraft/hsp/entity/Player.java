@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,7 @@ public class Player implements EntityWithLocation {
     /**
      * Update last logout location to the given location.
      *
-     * @param p
+     * @param l the location of the player
      */
     public void updateLastLogoutLocation(Location l) {
         setWorld(l.getWorld().getName());
@@ -112,7 +112,7 @@ public class Player implements EntityWithLocation {
         if (getWorld() == null)
             return null;
 
-        return ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+        return ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
     }
 
     public int getId() {

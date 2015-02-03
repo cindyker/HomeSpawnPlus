@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.dao.SpawnDAO;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.SqlUpdate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -152,6 +153,18 @@ public class SpawnDAOEBean implements SpawnDAO {
      */
     @Override
     public void deleteSpawn(Spawn spawn) {
+        SqlUpdate update = ebean.createSqlUpdate("delete from hsp_playerspawn where spawn_id = :spawn");
+        update.setParameter("spawn", spawn.getId());
+        update.execute();
+
+        // per Ebean documentation, server Cache invalidation is deduced automatically
+        // from an update.execute(SqlUpdate), (http://goo.gl/0mVHRG) so there
+        // should be no opportunity for a cached PlayerSpawn object to still
+        // hold reference to a deleted spawn. However a stack trace reported
+        // by a user suggests this may not be true. In which case this commented
+        // out call to getServerCacheManager().clearAll() would provide a fix.
+//        ebean.getServerCacheManager().clearAll();
+
         ebean.delete((SpawnImpl) spawn);
     }
 

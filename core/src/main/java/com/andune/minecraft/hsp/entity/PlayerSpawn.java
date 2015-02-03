@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,15 @@ import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
 
 import javax.annotation.Nullable;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import java.sql.Timestamp;
 
 /**
@@ -105,7 +113,10 @@ public class PlayerSpawn implements EntityWithLocation {
     }
 
     public void setSpawn(Spawn spawn) {
-        this.spawn = (SpawnImpl) spawn;
+        this.setSpawn((SpawnImpl) spawn);
+    }
+    public void setSpawn(SpawnImpl spawn) {
+        this.spawn = spawn;
     }
 
     public int getId() {
@@ -205,7 +216,7 @@ public class PlayerSpawn implements EntityWithLocation {
             return spawn.getLocation();
 
         if (location == null) {
-            location = ObjectFactory.newLocation(world, x, y, z, yaw, pitch);
+            location = ObjectFactory.newLocation(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
         }
         return location;
     }

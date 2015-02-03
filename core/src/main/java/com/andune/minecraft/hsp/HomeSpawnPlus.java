@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,10 +68,18 @@ public class HomeSpawnPlus {
 
     public void onEnable() throws Exception {
 //        GuiceDebug.enable();
+        log.debug("HomeSpawnPlus.onEnable, creating injector");
         final Injector injector = injectorFactory.createInjector(); // IoC container
+
+        log.debug("HomeSpawnPlus.onEnable, injecting this.members");
         injector.injectMembers(this);   // inject all dependencies for this object
 
+        log.debug("HomeSpawnPlus.onEnable injector = {}", injector.hashCode());
+
+        log.debug("HomeSpawnPlus.onEnable, running initAll");
         initializer.initAll();
+
+        log.debug("HomeSpawnPlus.onEnable, registering events");
         eventDispatcher.registerEvents();
 
         log.info("{} version {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -231,8 +231,10 @@ public class HomeLimitsManager {
             else
                 value = entry.getValue().getGlobal();
 
+            log.debug("checking per-permission key = {}, value={}", entry.getKey(), value);
+
             // only if there is a limit value for this entry do we do any extra processing
-            if (value != null && value > 0) {
+            if (value != null && value != 0) {
                 // ok now check to see if player has a permisson in the list
                 for (String perm : entry.getValue().getPermissions()) {
                     log.debug("processing per-permission permission {}", perm);

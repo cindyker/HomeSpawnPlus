@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ package com.andune.minecraft.hsp;
 
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.hsp.guice.BukkitInjectorFactory;
-import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigStorage;
+import com.andune.minecraft.hsp.server.bukkit.config.BukkitConfigBootstrap;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.andune.minecraft.hsp.util.LogUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -66,9 +66,14 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
             LogUtil.enableDebug();
 
         try {
+            getLogger().log(Level.FINE, "Initializing BukkitInjectorFactory");
             BukkitInjectorFactory factory = new BukkitInjectorFactory(this,
-                    new BukkitConfigStorage(getStorageConfig()));
+                    new BukkitConfigBootstrap(getBootstrapConfig()));
+
+            getLogger().log(Level.FINE, "Instantiating HomeSpawmPlus mainClass");
             mainClass = new HomeSpawnPlus(factory);
+
+            getLogger().log(Level.FINE, "invoking mainClass.onEnable()");
             mainClass.onEnable();
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Caught exception loading plugin, shutting down", e);
@@ -77,37 +82,37 @@ public class HomeSpawnPlusBukkit extends JavaPlugin {
     }
 
     /**
-     * Find and load the storage configuration, this is required prior to
+     * Find and load the bootstrap configuration, this is required prior to
      * handing off control to the core injection routines.
      *
      * @return
      * @throws Exception
      */
-    private YamlConfiguration getStorageConfig() throws Exception {
-        YamlConfiguration storageConfig = new YamlConfiguration();
-        YamlConfiguration defaultStorageConfig = new YamlConfiguration();
+    private YamlConfiguration getBootstrapConfig() throws Exception {
+        YamlConfiguration bootstrapConfig = new YamlConfiguration();
+        YamlConfiguration defaultBootstrapConfig = new YamlConfiguration();
 
-        // use file if it exists
-        File storageConfigFile = new File(getDataFolder(), "config/core.yml");
-        if (storageConfigFile.exists()) {
-            storageConfig.load(new File(getDataFolder(), "config/core.yml"));
+        // use old-style (1.7) config if it exists, it has priority
+        File bootstrapConfigFile = new File(getDataFolder(), "config.yml");
+        if (bootstrapConfigFile.exists()) {
+            bootstrapConfig.load(new File(getDataFolder(), "config.yml"));
         } else {
-            // otherwise try the old-style single config file
-            storageConfigFile = new File(getDataFolder(), "config.yml");
-            if (storageConfigFile.exists()) {
-                storageConfig.load(new File(getDataFolder(), "config.yml"));
+            // otherwise use the new-style (2.0) config file
+            bootstrapConfigFile = new File(getDataFolder(), "config/core.yml");
+            if (bootstrapConfigFile.exists()) {
+                bootstrapConfig.load(new File(getDataFolder(), "config/core.yml"));
             }
             // otherwise use the default file in the JAR
             else {
-                storageConfig.load(super.getResource("config/core.yml"));
+                bootstrapConfig.load(super.getResource("config/core.yml"));
             }
         }
 
         // set defaults to in-JAR config to cover any missing values
-        defaultStorageConfig.load(super.getResource("config/core.yml"));
-        storageConfig.setDefaults(defaultStorageConfig);
+        defaultBootstrapConfig.load(super.getResource("config/core.yml"));
+        bootstrapConfig.setDefaults(defaultBootstrapConfig);
 
-        return storageConfig;
+        return bootstrapConfig;
     }
 
     @Override

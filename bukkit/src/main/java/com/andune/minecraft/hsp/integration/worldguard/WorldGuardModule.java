@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@
 package com.andune.minecraft.hsp.integration.worldguard;
 
 import com.andune.minecraft.commonlib.Initializable;
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.World;
@@ -49,6 +51,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WorldGuardModule implements WorldGuard, Initializable {
+    private final Logger log = LoggerFactory.getLogger(WorldGuardModule.class);
     private final Plugin plugin;
     private final BukkitFactory factory;
     private final StrategyEngine strategyEngine;
@@ -89,6 +92,8 @@ public class WorldGuardModule implements WorldGuard, Initializable {
 
         worldGuardInterface = new WorldGuardInterface(plugin, factory);
         worldGuardRegion = new RegionListener(plugin, this, factory, strategyEngine, server);
+        log.debug("WorldGuardModule initialized. worldGuardInterface={}, worldGuardRegion={}, this={}",
+                worldGuardInterface, worldGuardRegion, this);
     }
 
     @Override
@@ -109,6 +114,8 @@ public class WorldGuardModule implements WorldGuard, Initializable {
 
     @Override
     public Location getWorldGuardSpawnLocation(Location location) {
+        log.debug("WorldGuardModule.getWorldGuardSpawnLocation. worldGuardInterface={}, worldGuardRegion={}, this={}",
+                worldGuardInterface, worldGuardRegion, this);
         return worldGuardInterface.getWorldGuardSpawnLocation(location);
     }
 

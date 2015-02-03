@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
 
     private final Plugin plugin;
     private final ConfigCore configCore;
-    private final MultiverseListener multiverseListener;
+    private final MultiverseCoreModule mvCore;
     private String sourcePortalName;
     private String destinationPortalName;
 
@@ -61,7 +61,7 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
     public MultiversePortalsModule(ConfigCore configCore, Plugin plugin, MultiverseCoreModule mvCore) {
         this.configCore = configCore;
         this.plugin = plugin;
-        this.multiverseListener = mvCore.getMultiverseListener();
+        this.mvCore = mvCore;
     }
 
     @Override
@@ -92,10 +92,9 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
 
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
         if (p != null) {
-            if (p.getDescription().getVersion().startsWith("2.4")) {
-                log.debug("Registering Multiverse-Portals listener");
-                registerListener();
-            }
+            log.debug("Registering Multiverse-Portals listener");
+            registerListener();
+            mvCore.getMultiverseListener().setMultiversePortalsModule(this);
         }
     }
 
@@ -132,18 +131,20 @@ public class MultiversePortalsModule implements MultiversePortals, Initializable
         Plugin p = plugin.getServer().getPluginManager().getPlugin("Multiverse-Portals");
         if (p != null) {
             plugin.getServer().getPluginManager().registerEvent(com.onarandombox.MultiversePortals.event.MVPortalEvent.class,
-                    multiverseListener,
+                    mvCore.getMultiverseListener(),
                     EventPriority.NORMAL,
                     new EventExecutor() {
                         public void execute(Listener listener, Event event) throws EventException {
                             try {
-                                multiverseListener.onMultiversePortalEvent((com.onarandombox.MultiversePortals.event.MVPortalEvent) event);
+                                mvCore.getMultiverseListener().onMultiversePortalEvent((com.onarandombox.MultiversePortals.event.MVPortalEvent) event);
                             } catch (Exception e) {
                                 throw new EventException(e);
                             }
                         }
                     },
                     plugin);
+
+            log.debug("Successfully hooked Multiverse-Portals");
         }
     }
 }

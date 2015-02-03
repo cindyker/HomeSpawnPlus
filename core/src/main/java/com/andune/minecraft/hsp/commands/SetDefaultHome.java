@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,8 +60,10 @@ public class SetDefaultHome extends BaseCommand {
             server.sendLocalizedMessage(p, HSPMessages.CMD_SETDEFAULTHOME_SPECIFY_HOMENAME);
         } else {
             String homeName = args[0];
+            log.debug("/setdefaulthome homeName={}", homeName);
 
-            com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(p.getName(), homeName);
+            com.andune.minecraft.hsp.entity.Home home = storage.getHomeDAO().findHomeByNameAndPlayer(homeName, p.getName());
+            log.debug("/setdefaulthome home={}, playerName={}", home, p.getName());
 
             if (home != null) {
                 home.setDefaultHome(true);
@@ -73,6 +75,10 @@ public class SetDefaultHome extends BaseCommand {
                     server.sendLocalizedMessage(p, HSPMessages.GENERIC_ERROR);
                     log.warn("Error caught in /" + getCommandName(), e);
                 }
+            }
+            else {
+                server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_NO_NAMED_HOME_FOUND,
+                        "name", args[0]);
             }
         }
 

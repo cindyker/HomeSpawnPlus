@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -156,7 +156,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
 
         // execute ON_JOIN strategy to find out where we should put the player, but only
         // if there was no result from newPlayer checks
-        if (result == null || !result.isExplicitDefault())
+        if (result == null || result.isExplicitDefault() || result.getLocation() == null)
             result = engine.getStrategyResult(EventType.ON_JOIN, p);
 
         Location joinLocation = null;
@@ -257,10 +257,22 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         log.debug("ENTER observePlayerTeleport(): player={}, to={}, from={}",
                 event.getPlayer(), event.getTo(), event.getFrom());
 
+        // a new behavior is that we get sometimes a half dozen or more
+        // observe events going "from/to" the same location. I'm not sure
+        // what causes this but we want to de-dup these events so they
+        // don't spam the log or cause any other unwanted behaviors.
+        if (event.getTo().getWorld().equals(event.getFrom().getWorld()) &&
+            event.getTo().getBlockX() == event.getFrom().getBlockX() &&
+            event.getTo().getBlockY() == event.getFrom().getBlockY() &&
+            event.getTo().getBlockZ() == event.getFrom().getBlockZ() ) {
+            log.debug("de-duping same-location observePlayerTeleport event");
+            return;
+        }
+
         // cross-world teleport event?
         if (config.isRecordLastLocation() && !event.getTo().getWorld().equals(event.getFrom().getWorld())) {
             PlayerLastLocationDAO dao = storage.getPlayerLastLocationDAO();
-            PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+            PlayerLastLocation playerLastLocation = dao.findByWorldAndPlayerName(event.getFrom().getWorld().getName(), event.getPlayer().getName());
             if (playerLastLocation == null) {
                 playerLastLocation = new PlayerLastLocation();
                 playerLastLocation.setPlayerName(event.getPlayer().getName());

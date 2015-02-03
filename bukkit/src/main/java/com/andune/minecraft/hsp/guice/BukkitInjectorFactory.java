@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 package com.andune.minecraft.hsp.guice;
 
 
+import com.andune.minecraft.hsp.config.ConfigBootstrap;
 import com.andune.minecraft.hsp.config.ConfigStorage;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -42,11 +43,11 @@ import com.google.inject.Injector;
  */
 public class BukkitInjectorFactory implements InjectorFactory {
     private final Object originalPluginObject;
-    private final ConfigStorage configStorage;
+    private final ConfigBootstrap configBootstrap;
 
-    public BukkitInjectorFactory(Object originalPluginObject, ConfigStorage configStorage) {
+    public BukkitInjectorFactory(Object originalPluginObject, ConfigBootstrap configBootstrap) {
         this.originalPluginObject = originalPluginObject;
-        this.configStorage = configStorage;
+        this.configBootstrap = configBootstrap;
     }
 
     /**
@@ -57,7 +58,7 @@ public class BukkitInjectorFactory implements InjectorFactory {
     public Injector createInjector() {
         // in the future this will choose different injectors based on the
         // environment. For now the only environment we support is Bukkit.
-        Injector injector = Guice.createInjector(new HSPModule(configStorage), new BukkitModule(originalPluginObject));
+        Injector injector = Guice.createInjector(new HSPModule(configBootstrap), new BukkitModule(originalPluginObject));
         return injector;
     }
 }

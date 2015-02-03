@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,13 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.server.api.Economy;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.hsp.config.ConfigEconomy;
 import com.andune.minecraft.hsp.config.ConfigEconomy.PerPermissionEconomyEntry;
+import com.andune.minecraft.hsp.integration.vault.Vault;
 import com.andune.minecraft.hsp.manager.HomeLimitsManager;
 
 import java.util.List;
@@ -41,13 +45,37 @@ import java.util.Map;
 /**
  * @author andune
  */
-public class BukkitEconomy extends com.andune.minecraft.commonlib.server.bukkit.BukkitEconomy {
-    protected final ConfigEconomy config;
-    protected final HomeLimitsManager homeLimitsManager;
+public class BukkitEconomy implements Economy {
+    private static final Logger log = LoggerFactory.getLogger(BukkitEconomy.class);
 
-    public BukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm) {
+    private final ConfigEconomy config;
+    private final HomeLimitsManager homeLimitsManager;
+    private final Vault vault;
+
+    public BukkitEconomy(ConfigEconomy config, HomeLimitsManager hlm, Vault vault) {
         this.config = config;
         this.homeLimitsManager = hlm;
+        this.vault = vault;
+    }
+
+    @Override
+    public String format(double amount) {
+        return vault.format(amount);
+    }
+
+    @Override
+    public double getBalance(String playerName) {
+        return vault.getBalance(playerName);
+    }
+
+    @Override
+    public String withdrawPlayer(String playerName, double amount) {
+        return vault.withdrawPlayer(playerName, amount);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return vault.isEconomyEnabled();
     }
 
     public int getCommandCost(Player player, String command) {

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,19 @@
 package com.andune.minecraft.hsp.guice;
 
 import com.andune.minecraft.commonlib.General;
+import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
 import com.andune.minecraft.commonlib.reflections.YamlSerializer;
+import com.andune.minecraft.commonlib.server.api.Factory;
+import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.api.impl.TeleportOptionsImpl;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.PermissionsImpl;
+import com.andune.minecraft.hsp.config.ConfigBootstrap;
 import com.andune.minecraft.hsp.config.ConfigLoader;
 import com.andune.minecraft.hsp.config.ConfigLoaderImpl;
 import com.andune.minecraft.hsp.config.ConfigStorage;
@@ -49,6 +53,7 @@ import com.andune.minecraft.hsp.storage.dao.*;
 import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.BedUtilsImpl;
+import com.andune.minecraft.hsp.util.WarnUtil;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -63,11 +68,11 @@ import javax.inject.Singleton;
  * @author andune
  */
 public class HSPModule extends AbstractModule {
-    private final ConfigStorage configStorage;
+    private final ConfigBootstrap configBootstrap;
     private Reflections reflections;
 
-    public HSPModule(ConfigStorage configStorage) {
-        this.configStorage = configStorage;
+    public HSPModule(ConfigBootstrap configBootstrap) {
+        this.configBootstrap = configBootstrap;
     }
 
     /* (non-Javadoc)
@@ -105,8 +110,14 @@ public class HSPModule extends AbstractModule {
 
     @Provides
     @Singleton
+    protected ConfigBootstrap getConfigBootstrap() {
+        return configBootstrap;
+    }
+
+    @Provides
+    @Singleton
     protected ConfigStorage getConfigStorage() {
-        return configStorage;
+        return configBootstrap;
     }
 
     @Provides
@@ -119,9 +130,7 @@ public class HSPModule extends AbstractModule {
     @Singleton
     protected Reflections provideReflections() {
         if (reflections == null) {
-            this.reflections = Reflections.collect("META-INF/reflections",
-                    new FilterBuilder().include(".*-reflections.yml"),
-                    new YamlSerializer());
+            this.reflections = new Reflections("com.andune.minecraft.hsp");
         }
         return reflections;
     }

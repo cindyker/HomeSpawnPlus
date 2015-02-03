@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -212,4 +212,16 @@ public enum HSPMessages {
     CMD_HSP_LIST_STRATEGIES_REQUIRES_ARG,
     PUBLIC_HOME_INVITES_NOT_ALLOWED,
     CMD_HOME_INVITE_LIST_PUBLIC_AVAILABLE,
+    CMD_SETPLAYERSPAWN_USAGE,
+    WORLD_NOT_FOUND,
+    CMD_SETPLAYERSPAWN_BADXYZ,
+    CMD_SETPLAYERSPAWN_SUCCESS_SPAWN,
+    CMD_SETPLAYERSPAWN_SUCCESS_LOCATION,
+    CMD_SETPLAYERSPAWN_CONSOLE_ERROR,
+
+    CMD_SHOWPLAYERSPAWN_USAGE,
+    CMD_SHOWPLAYERSPAWN_NO_SPAWN_FOUND,
+    CMD_SHOWPLAYERSPAWN_SPAWN_FOUND,
+    CMD_SHOWPLAYERSPAWN_LOCATION_FOUND,
+    CMD_SHOWPLAYERSPAWN_PLAYER_SPAWN_LIST,
 }

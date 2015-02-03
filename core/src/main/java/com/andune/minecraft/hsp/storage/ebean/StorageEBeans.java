@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (c) 2013 Andune (andune.alleria@gmail.com)
+ * Copyright (c) 2015 Andune (andune.alleria@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,11 @@ public class StorageEBeans implements Storage {
             } catch (PersistenceException ex) {
                 log.info("Installing database for "
                         + plugin.getName()
-                        + " due to first time usage");
+                        + " due to first time usage. The warnings you are likely"
+                        + " to see below are normal and are a result of the way"
+                        + " ebeans initializes databases. HSP will run fine despite"
+                        + " these warnings and you will not see them when you"
+                        + " restart your server.");
 
                 // for some reason bukkit's EBEAN implementation blows up when trying
                 // to create the HomeInvite FK relationship. Persistance reimplemented

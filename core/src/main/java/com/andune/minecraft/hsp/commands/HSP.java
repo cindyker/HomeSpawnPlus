@@ -32,7 +32,6 @@ package com.andune.minecraft.hsp.commands;
 
 import com.andune.minecraft.commonlib.General;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
-import com.andune.minecraft.commonlib.server.api.Economy;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Scheduler;
 import com.andune.minecraft.hsp.HSPMessages;
@@ -48,12 +47,12 @@ import com.andune.minecraft.hsp.integration.multiverse.MultiversePortals;
 import com.andune.minecraft.hsp.integration.vault.Vault;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
+import com.andune.minecraft.hsp.server.core.DummyPlayer;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
-import com.andune.minecraft.hsp.strategy.EventType;
-import com.andune.minecraft.hsp.strategy.Strategy;
-import com.andune.minecraft.hsp.strategy.StrategyConfig;
+import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.BackupUtil;
+import com.andune.minecraft.hsp.util.SpawnUtil;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -90,10 +89,15 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
     private StrategyConfig strategyConfig;
     @Inject
     private Vault vault;
+    @Inject
+    private SpawnUtil spawnUtil;
+    @Inject
+    private StrategyEngine engine;
 
     private final List<SubCommand> subCommands;
     private final List<String> subCommandNames;
     private final Map<String, String> subCommandAliases;
+    private final Map<String, DummyPlayer> dummyPlayers;
 
     public HSP() {
         List<SubCommand> cmds = new ArrayList<SubCommand>(10);
@@ -107,6 +111,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         cmds.add(new Purge());
         cmds.add(new ListEvents());
         cmds.add(new ListStrategies());
+        cmds.add(new DummyPlayerCommand());
+        cmds.add(new SimulateEvent());
         this.subCommands = Collections.unmodifiableList(cmds);
 
         List<String> names = new ArrayList<String>(10);
@@ -118,6 +124,8 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         }
         this.subCommandNames = Collections.unmodifiableList(names);
         this.subCommandAliases = Collections.unmodifiableMap(aliases);
+
+        this.dummyPlayers = new HashMap<String, DummyPlayer>();
     }
 
     private List<String> getSubCommandNames() {
@@ -249,6 +257,7 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
         }
 
         public void run() {
+
             boolean success = false;
             try {
                 initializer.initConfigs();
@@ -264,6 +273,172 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
 
             if (success)
                 server.sendLocalizedMessage(sender, HSPMessages.CMD_HSP_CONFIG_RELOADED);
+        }
+    }
+
+    private class DummyPlayerCommand extends SubCommand {
+        private final String USAGE = "Valid sub-commands:\n"
+                +"  create <name> - create dummy player object named <name>\n"
+                +"  lock <name> - lock dummy player state, so it won't change with simulated events\n"
+                +"  list - show active dummy player objects\n"
+                +"  show - show details for a given dummy player"
+                +"  purge - purge all active dummy player objects"
+                +"  setNewPlayer <player> <true|false> - setNewPlayer flag for a dummy player";
+
+        public String getName() {
+            return "dummyplayer";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"dp", "dummy"};
+        }
+
+        public void run() {
+            if (args == null || args.length < 2) {
+                sender.sendMessage(USAGE);
+                return;
+            }
+
+            if (args[1].equalsIgnoreCase("create")) {
+                if (args.length > 2) {
+                    String name = args[2];
+                    DummyPlayer dummy = new DummyPlayer(sender, server, permissions);
+                    dummy.setName(args[2]);
+
+                    // default to player's location, if caller is a Player
+                    if (sender instanceof Player) {
+                        dummy.setLocation(((Player) sender).getLocation());
+                    }
+                    // otherwise set to location of Default Spawn
+                    else {
+                        dummy.setLocation(spawnUtil.getDefaultSpawn().getLocation());
+                    }
+
+                    sender.sendMessage("Dummy player object named \""+dummy.getName()
+                            +"\" created. Location = "+dummy.getLocation().shortLocationString());
+                    dummyPlayers.put(dummy.getName(), dummy);
+                }
+                else {
+                    sender.sendMessage(USAGE);
+                }
+            }
+            else if (args[1].equalsIgnoreCase("list") ) {
+                for(Map.Entry<String, DummyPlayer> entry : dummyPlayers.entrySet()) {
+                    sender.sendMessage(entry.getKey());
+                }
+            }
+            else if (args[1].equalsIgnoreCase("show") ) {
+                if (args.length < 3) {
+                    sender.sendMessage(USAGE);
+                    return;
+                }
+
+                DummyPlayer dummy = dummyPlayers.get(args[2]);
+                if (dummy != null) {
+                    sender.sendMessage("Details for dummy player \""+dummy.getName()+"\":");
+                    sender.sendMessage("  Location="+dummy.getLocation().shortLocationString());
+                    sender.sendMessage("  isNewPlayer="+dummy.isNewPlayer());
+                    sender.sendMessage("  state isLocked?="+dummy.isLocked());
+                }
+                else {
+                    sender.sendMessage("Dummy player named \""+args[2]+"\" not found");
+                }
+            }
+            else if (args[1].equalsIgnoreCase("lock")) {
+                if (args.length < 3) {
+                    sender.sendMessage(USAGE);
+                    return;
+                }
+
+                DummyPlayer dummy = dummyPlayers.get(args[2]);
+                if (dummy != null) {
+                    dummy.setLockState(true);
+                    sender.sendMessage("State locked for dummy player \""+dummy.getName()+"\"");
+                }
+                else {
+                    sender.sendMessage("Dummy player named \""+args[2]+"\" not found");
+                }
+            }
+            else if (args[1].equalsIgnoreCase("purge") ) {
+                dummyPlayers.clear();
+                sender.sendMessage("Dummy players purged");
+            }
+            else {
+                sender.sendMessage(USAGE);
+            }
+        }
+    }
+
+    private class SimulateEvent extends SubCommand {
+        private final String USAGE = "Simulate strategy on a DummyPlayer object\n"
+                +"  <playerName> <eventName>";
+
+        public String getName() {
+            return "simulateevent";
+        }
+
+        public String[] getAliases() {
+            return new String[]{"se", "sim"};
+        }
+
+        public void run() {
+            if (args.length < 3) {
+                sender.sendMessage(USAGE);
+                return;
+            }
+
+            final String dummyName = args[1];
+            final DummyPlayer dummy = dummyPlayers.get(dummyName);
+            if (dummy==null) {
+                sender.sendMessage("Dummy player \""+args[1]+"\" not found. Use \"/hsp dp\" sub-command to create a DummyPlayer object");
+                return;
+            }
+
+            final String eventType = args[2];
+
+            // do validation of eventType and warn admin if not found
+            EventType eventTypeValidate = null;
+            for (EventType t : EventType.values()) {
+                if (t.toString().equalsIgnoreCase(eventType)) {
+                    eventTypeValidate = t;
+                    break;
+                }
+            }
+            if (eventTypeValidate == null) {
+                sender.sendMessage("Event \""+eventType+"\" not found. Continuing assuming custom event type. You can use \"/hsp le\" to show standard HSP event types.");
+            }
+
+            StrategyResult result = engine.getStrategyResult(eventType, dummy);
+            if (result.isSuccess()) {
+                if (result.getHome() != null) {
+                    sender.sendMessage("StrategyResult returned a home object: "
+                            +" HomeId={"+result.getHome().getId()+"},"
+                            +" HomeName={"+result.getHome().getName()+"},"
+                            +" HomeOwner={"+result.getHome().getPlayerName()+"},"
+                            +" HomeLoc={"+result.getHome().getLocation().shortLocationString()+"},");
+                    dummy.setLocation(result.getHome().getLocation());
+                }
+                else if (result.getSpawn() != null) {
+                    sender.sendMessage("StrategyResult returned a spawn object: "
+                            +" SpawnId={"+result.getSpawn().getId()+"},"
+                            +" SpawnName={"+result.getSpawn().getName()+"},"
+                            +" SpawnLoc={"+result.getSpawn().getLocation().shortLocationString()+"},");
+                    dummy.setLocation(result.getSpawn().getLocation());
+                }
+                else if (result.getLocation() != null) {
+                    sender.sendMessage("StrategyResult returned a location: "+result.getLocation());
+                    dummy.setLocation(result.getLocation());
+                }
+                else if (result.isExplicitDefault()) {
+                    sender.sendMessage("StrategyResult returned explicit default. This means HSP will do nothing with this event.");
+                }
+                else {
+                    sender.sendMessage("StrategyResult returned successfully, but with no location. This means HSP will do nothing with this event.");
+                }
+            }
+            else {
+                sender.sendMessage("StrategyResult did not return a successful result. This means HSP would do nothing with this event.");
+            }
         }
     }
 

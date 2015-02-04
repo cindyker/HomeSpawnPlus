@@ -124,7 +124,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
             if (key.startsWith("cooldownPer")) {   // cooldownPerPermission and cooldownPerWorld
                 hasCooldownPerX = true;
                 isCooldownPerX = (Boolean) o;
-            } else if (key.equals("resetOnDeath")) {
+            } else if (key.equalsIgnoreCase("resetOnDeath")) {
                 hasResetOnDeath = true;
                 isResetOnDeath = (Boolean) o;
             } else {
@@ -138,7 +138,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
     }
 
     public static class CooldownsPerPermission extends PerPermissionEntry {
-        private Entry entry;
+        private Entry entry = new Entry();
 
         public boolean hasCooldownPerPermission() {
             return entry.hasCooldownPerX;
@@ -172,7 +172,7 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
     }
 
     public static class CooldownsPerWorld extends PerWorldEntry {
-        private Entry entry;
+        private Entry entry = new Entry();
 
         public boolean hasCooldownPerWorld() {
             return entry.hasCooldownPerX;

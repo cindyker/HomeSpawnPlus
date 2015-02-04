@@ -359,6 +359,37 @@ public class HSP extends BaseCommand implements UberCommandFallThrough {
                     sender.sendMessage("Dummy player named \""+args[2]+"\" not found");
                 }
             }
+            else if (args[1].equalsIgnoreCase("unlock")) {
+                if (args.length < 3) {
+                    sender.sendMessage(USAGE);
+                    return;
+                }
+
+                DummyPlayer dummy = dummyPlayers.get(args[2]);
+                if (dummy != null) {
+                    dummy.setLockState(false);
+                    sender.sendMessage("State unlocked for dummy player \""+dummy.getName()+"\"");
+                }
+                else {
+                    sender.sendMessage("Dummy player named \""+args[2]+"\" not found");
+                }
+            }
+            else if (args[1].equalsIgnoreCase("setNewPlayer")) {
+                if (args.length < 4) {
+                    sender.sendMessage(USAGE);
+                    return;
+                }
+
+                DummyPlayer dummy = dummyPlayers.get(args[2]);
+                if (dummy != null) {
+                    dummy.setIsNewPlayer(Boolean.valueOf(args[3]));
+                    sender.sendMessage("newPlayer state for DummyPlayer \""+dummy.getName()
+                            +"\" is now set to: "+dummy.isNewPlayer());
+                }
+                else {
+                    sender.sendMessage("Dummy player named \""+args[2]+"\" not found");
+                }
+            }
             else if (args[1].equalsIgnoreCase("purge") ) {
                 dummyPlayers.clear();
                 sender.sendMessage("Dummy players purged");

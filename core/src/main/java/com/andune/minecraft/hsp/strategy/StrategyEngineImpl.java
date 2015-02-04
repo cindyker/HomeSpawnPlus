@@ -316,6 +316,7 @@ public class StrategyEngineImpl implements StrategyEngine {
                 log.debug("applying mode effect {}", modeEffect.getEffect());
                 effectsManager.addPlayerEffect(context.getPlayer(), modeEffect.getEffect(),
                         modeEffect.isToEffect(), modeEffect.isFromEffect());
+                logVerbose("Special effect mode applied: {}", modeEffect.getEffect());
             }
         }
 

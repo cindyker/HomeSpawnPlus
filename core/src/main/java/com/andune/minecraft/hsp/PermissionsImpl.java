@@ -35,8 +35,10 @@ import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.CommandSender;
 import com.andune.minecraft.commonlib.server.api.PermissionSystem;
 import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.server.api.Command;
+import com.andune.minecraft.hsp.server.core.DummyPlayer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -70,7 +72,20 @@ public class PermissionsImpl implements Permissions {
      */
     @Override
     public boolean hasPermission(CommandSender sender, String perm) {
-        boolean result = permSystem.has(sender, perm);
+        boolean result = false;
+
+        // when using DummyPlayer objects, prefer the string syntax as this
+        // allows simulated permissions checks to succeed also
+        if (sender instanceof DummyPlayer) {
+            Player p = (Player) sender;
+            World w = null;
+            if (p.getLocation() != null)
+                w = p.getLocation().getWorld();
+            if (w != null)
+                result = permSystem.has(w.getName(), p.getName(), perm);
+        }
+        else
+            result = permSystem.has(sender, perm);
         log.debug("hasPermission: sender={}, perm={}, result={}", sender, perm, result);
 
         // support legacy HSP "defaultPermissions" setting

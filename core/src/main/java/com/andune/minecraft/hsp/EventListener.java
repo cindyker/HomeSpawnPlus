@@ -53,6 +53,7 @@ import com.andune.minecraft.hsp.strategy.StrategyEngine;
 import com.andune.minecraft.hsp.strategy.StrategyResult;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.SpawnUtil;
+import com.andune.minecraft.hsp.util.NameChangeUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -75,6 +76,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     private final EffectsManager effectsManager;
     private final CooldownManager cooldownManager;
     private final DeathManager deathManager;
+    private final NameChangeUtil nameChangeUtil;
 
     /**
      * We record the last known player/location for common events so that we can
@@ -94,7 +96,8 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     public EventListener(ConfigCore config, Storage storage, StrategyEngine engine, Factory factory,
                          MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
                          BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager,
-                         CooldownManager cooldownManager, DeathManager deathManager) {
+                         CooldownManager cooldownManager, DeathManager deathManager,
+                         NameChangeUtil nameChangeUtil) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -107,6 +110,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         this.effectsManager = effectsManager;
         this.cooldownManager = cooldownManager;
         this.deathManager = deathManager;
+        this.nameChangeUtil = nameChangeUtil;
     }
 
     @Override
@@ -123,6 +127,15 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         com.andune.minecraft.hsp.entity.Player storagePlayer = storage.getPlayerDAO().findPlayerByUUID(p.getUUID());
         if (storagePlayer == null) {
             storagePlayer = storage.getPlayerDAO().findPlayerByName(p.getName());
+        }
+
+        // detect player name change
+        if (storagePlayer != null && !p.getName().equals(storagePlayer.getName())) {
+            final String oldName = storagePlayer.getName();
+            log.info("Player {} changed names (oldName={}, uid={})", p.getName(),
+                    oldName, p.getUUID());
+            int count = nameChangeUtil.changeName(p.getName(), storagePlayer.getName());
+            log.info("Updated {} rows in database from oldName ({}) to newName ({}) (uid={})", count, oldName, p.getName(), p.getUUID());
         }
 
         // if they don't have a player record yet, create one.

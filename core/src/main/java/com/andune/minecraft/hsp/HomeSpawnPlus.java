@@ -36,6 +36,7 @@ import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.event.EventDispatcher;
 import com.andune.minecraft.hsp.guice.InjectorFactory;
 import com.andune.minecraft.hsp.util.SpawnUtil;
+import com.andune.minecraft.hsp.util.NameChangeUtil;
 import com.google.inject.Injector;
 
 import javax.inject.Inject;
@@ -60,6 +61,8 @@ public class HomeSpawnPlus {
     private Plugin plugin;
     @Inject
     private SpawnUtil spawnUtil;
+    @Inject
+    private NameChangeUtil nameChangeUtil;
     private boolean initialized = false;
 
     public HomeSpawnPlus(InjectorFactory injectorFactory) {
@@ -81,6 +84,8 @@ public class HomeSpawnPlus {
 
         log.debug("HomeSpawnPlus.onEnable, registering events");
         eventDispatcher.registerEvents();
+
+        nameChangeUtil.cleanupDupUUIDs();
 
         log.info("{} version {} is enabled", plugin.getName(), plugin.getVersion(), plugin.getBuild());
         initialized = true;

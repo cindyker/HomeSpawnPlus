@@ -6,8 +6,10 @@ import com.andune.minecraft.hsp.entity.*;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.*;
+import com.andune.minecraft.hsp.config.ConfigCore;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -23,9 +25,11 @@ public class NameChangeUtil {
     private final HomeInviteDAO homeInviteDAO;
     private final PlayerLastLocationDAO playerLastLocationDAO;
     private final PlayerSpawnDAO playerSpawnDAO;
+    private final ConfigCore configCore;
 
     @Inject
-    public NameChangeUtil(Storage storage) {
+    public NameChangeUtil(Storage storage, ConfigCore configCore) {
+        this.configCore = configCore;
         this.playerDAO = storage.getPlayerDAO();
         this.homeDAO = storage.getHomeDAO();
         this.homeInviteDAO = storage.getHomeInviteDAO();
@@ -109,5 +113,46 @@ public class NameChangeUtil {
         }
 
         return rows;
+    }
+
+    public void cleanupDupUUIDs() {
+        HashMap<String, Player> uuidMap = new HashMap<String, Player>();
+
+        if (configCore.isUuidCleanupOnStartup()) {
+            int dupsRemoved=0;
+
+            Set<Player> players = playerDAO.findAllPlayers();
+            if (players != null && players.size() > 0) {
+                for(Player p : players) {
+                    final String UUIDString = p.getUUIDString();
+
+                    // this means we found a UUID collision
+                    if (uuidMap.get(UUIDString) != null) {
+                        Player toDelete = uuidMap.get(UUIDString);
+
+                        // compare IDs. the newer one gets deleted, it's the dup
+                        if (toDelete.getId() < p.getId()) {
+                            toDelete = p;
+                        }
+                        else {
+                            // if we're deleting the previous hash key, store the
+                            // new player object for future comparisons, in case
+                            // there are more UUID duplicates. This ensures even
+                            // if there are 3 or more dups, this loop will keep
+                            // the oldest entry out of all of them.
+                            uuidMap.put(UUIDString, p);
+                        }
+
+                        dupsRemoved += playerDAO.purgePlayer(toDelete.getName());
+                    }
+                    else {
+                        uuidMap.put(UUIDString, p);
+                    }
+                }
+            }
+
+            if (dupsRemoved > 0)
+                log.info("Cleaned up {} duplicate UUID rows", dupsRemoved);
+        }
     }
 }

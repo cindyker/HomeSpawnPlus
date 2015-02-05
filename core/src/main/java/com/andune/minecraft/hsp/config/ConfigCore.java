@@ -314,6 +314,22 @@ public class ConfigCore extends ConfigBase implements Initializable {
     }
 
     /**
+     * If true, HSP will run UUID cleanup when it starts up. To be
+     * used if there are duplicate UUIDs in the player table as a
+     * result of name changes that didn't get migrated automatically.
+     */
+    public boolean isUuidCleanupOnStartup() {
+        if (super.contains("uuidCleanupOnStartup"))
+            return super.getBoolean("uuidCleanupOnStartup");
+        else {
+            // we'll turn this on by default for a few builds to automatically
+            // fix problems for servers that had players login during the
+            // UUID transition before HSP code migrated them automatically.
+            return true;
+        }
+    }
+
+    /**
      * Return the configured string for the storage type we should
      * use. Examples: "ebeans", "yaml"
      *

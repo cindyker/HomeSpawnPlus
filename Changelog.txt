@@ -1,3 +1,15 @@
+v2.0 - Feb 8, 2015
+  - fix for name changes/UUID processing (issue #34)
+  - fix for Cooldown per-world/per-permission (issue #33)
+  - addition of "/hsp dp" and "/hsp se" to create DummyPlayer objects and run simulated events on them (helpful for testing strategies)
+  - fix so invite HomeLimit values (-1) work properly (issue #30)
+  - fix /setdefaulthome (issue #30)
+  - add "/spawn showplayerspawn" command (issue #29)
+  - HSP 2.0 compatibility with Multiverse 2.5 (issue #28)
+  - de-dup majority of observePlayerTeleport() events
+  - /spawn <world> works as expected
+  - more general code cleanup and refactoring
+
 v2.0-beta3 - Jan 7, 2015
   - lots of bug fixes, thanks to all the beta testers finding and reporting bugs!
   - updated to work with WorldGuard 6.0

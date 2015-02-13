@@ -317,7 +317,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
 
     @Override
     public void observeRespawn(PlayerRespawnEvent event) {
-        if (config.isWarnLocationChange())
+        if (!config.isWarnLocationChange())
             return;
 
         if (lastRespawnPlayer != null && lastRespawnLocation != null) {
@@ -332,7 +332,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
 
             // do manual world/x/y/z check instead of .equals() so that we avoid comparing
             // pitch/yaw and also so we round to integer blocks instead of exact double loc
-            if (respawnLoc.getWorld() != lastRespawnLocation.getWorld()
+            if (!lastRespawnLocation.getWorld().equals(respawnLoc.getWorld())
                     || respawnLoc.getBlockX() != lastRespawnLocation.getBlockX()
                     || respawnLoc.getBlockY() != lastRespawnLocation.getBlockY()
                     || respawnLoc.getBlockZ() != lastRespawnLocation.getBlockZ()) {

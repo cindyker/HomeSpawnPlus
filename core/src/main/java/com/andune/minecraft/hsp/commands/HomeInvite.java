@@ -218,7 +218,7 @@ public class HomeInvite extends BaseCommand {
         // if it's just a temporary invite, just send it out now
         if (expiresTime == -1) {
             if (onlinePlayer == null) {
-                server.sendLocalizedMessage(p, HSPMessages.PLAYER_NOT_FOUND,
+                server.sendLocalizedMessage(p, HSPMessages.CMD_HOME_INVITE_REQUIRES_ONLINE_PLAYER_NOT_FOUND,
                         "player", invitee);
                 return true;
             }

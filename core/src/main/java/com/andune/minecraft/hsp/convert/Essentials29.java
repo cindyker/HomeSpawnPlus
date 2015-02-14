@@ -98,15 +98,18 @@ public class Essentials29 extends BaseConverter {
                     Double yaw = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".yaw");
                     Double pitch = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".pitch");
 
-                    String lowerCaseName = file.getName();
-                    lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
+                    String playerName = section.getString("lastAccountName");
+                    if (playerName == null) {
+                        String lowerCaseName = file.getName();
+                        lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
 
-                    // Essentials stores names in lowercase, HSP keeps proper case. So we
-                    // try to lookup the proper case name from the Bukkit offlinePlayers
-                    // map. If one doesn't exist, then we just use the lowercase name.
-                    String playerName = offlinePlayers.get(lowerCaseName);
-                    if (playerName == null)
-                        playerName = lowerCaseName;
+                        // Essentials stores names in lowercase, HSP keeps proper case. So we
+                        // try to lookup the proper case name from the Bukkit offlinePlayers
+                        // map. If one doesn't exist, then we just use the lowercase name.
+                        playerName = offlinePlayers.get(lowerCaseName);
+                        if (playerName == null)
+                            playerName = lowerCaseName;
+                    }
 
                     Location l = factory.newLocation(world.getName(), x, y, z,
                             yaw.floatValue(), pitch.floatValue());

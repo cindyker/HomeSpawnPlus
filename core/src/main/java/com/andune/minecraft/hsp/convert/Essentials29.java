@@ -75,12 +75,29 @@ public class Essentials29 extends BaseConverter {
         assert(files != null);
 
         for (File file : files) {
+            log.debug("Processing file {}", file);
             YamlFile userData = factory.newYamlFile();
             userData.load(file);
             ConfigurationSection section = userData.getRootConfigurationSection();
 
+            String playerName = section.getString("lastAccountName");
+            if (playerName == null) {
+                String lowerCaseName = file.getName();
+                lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
+
+                // Essentials stores names in lowercase, HSP keeps proper case. So we
+                // try to lookup the proper case name from the Bukkit offlinePlayers
+                // map. If one doesn't exist, then we just use the lowercase name.
+                playerName = offlinePlayers.get(lowerCaseName);
+                if (playerName == null)
+                    playerName = lowerCaseName;
+            }
+
+            log.debug("Found playerName {} for file {}", playerName, file);
+
             Set<String> homes = section.getKeys(ESSENTIALS_CONFIG_HOMES);
             if (homes != null && homes.size() > 0) {
+                log.debug("Found {} homes in file {}", homes.size(), file);
                 for (String home : homes) {
                     String worldName = section.getString(ESSENTIALS_CONFIG_HOMES + "." + home + ".world");
                     // if there's no world, this user doesn't have a home set.  Skip it.
@@ -91,25 +108,13 @@ public class Essentials29 extends BaseConverter {
                         log.warn("Essentials 2.9 converter: tried to convert home from world \"{}\", but no such world exists", worldName);
                         continue;
                     }
+                    log.debug("Converting home {} for player {} on world {}", home, playerName, world);
 
                     Double x = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".x");
                     Double y = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".y");
                     Double z = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".z");
                     Double yaw = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".yaw");
                     Double pitch = section.getDouble(ESSENTIALS_CONFIG_HOMES + "." + home + ".pitch");
-
-                    String playerName = section.getString("lastAccountName");
-                    if (playerName == null) {
-                        String lowerCaseName = file.getName();
-                        lowerCaseName = lowerCaseName.substring(0, lowerCaseName.lastIndexOf('.'));
-
-                        // Essentials stores names in lowercase, HSP keeps proper case. So we
-                        // try to lookup the proper case name from the Bukkit offlinePlayers
-                        // map. If one doesn't exist, then we just use the lowercase name.
-                        playerName = offlinePlayers.get(lowerCaseName);
-                        if (playerName == null)
-                            playerName = lowerCaseName;
-                    }
 
                     Location l = factory.newLocation(world.getName(), x, y, z,
                             yaw.floatValue(), pitch.floatValue());
@@ -126,8 +131,8 @@ public class Essentials29 extends BaseConverter {
                     try {
                         dao.saveHome(hspHome);
                         convertedCount++;
-                    } catch (StorageException e) {
-                        log.warn("StorageException attempting to convert Essentials 2.9 home", e);
+                    } catch (Exception e) {
+                        log.warn("Exception attempting to convert Essentials 2.9 home \"{}\" for player {}", home, playerName, e);
                     }
                 }
             }

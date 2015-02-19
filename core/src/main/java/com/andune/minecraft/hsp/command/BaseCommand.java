@@ -269,8 +269,10 @@ public abstract class BaseCommand implements Command {
 
         if (!returnValue) {
             int price = getPrice(p);
+            log.debug("costCheck() price={}", price);
             if (price > 0) {
                 double balance = economy.getBalance(p.getName());
+                log.debug("costCheck() balance={}", balance);
                 if (balance >= price)
                     returnValue = true;
             }

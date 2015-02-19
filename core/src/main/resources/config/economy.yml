@@ -4,6 +4,9 @@
 #
 # http://dev.bukkit.org/server-mods/vault/
 cost:
+  # set to false to disable economy for HSP
+  enabled: true
+
   # if verbose is true, the player will get a message stating that their
   # account has been charged whenever they use a command with a cost.
   verbose: true

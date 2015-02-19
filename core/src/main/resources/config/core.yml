@@ -183,3 +183,12 @@ core:
   # access to execute lower(). If you're getting errors in your
   # log about lower(), turn this option off.
   useEbeanSearchLower: true
+
+  # If your server was running HSP version before 2.0-b608 at
+  # the time that Mojang released name changes (Feb 4, 2015),
+  # it's possible you have duplicate rows for users that
+  # changed their name. If so, you will see errors when those
+  # users login that look like the ones reported in github
+  # issue #36: http://goo.gl/ChsbpZ  If this happens to you,
+  # set this flag to true and your problems are solved.
+  uuidCleanupOnStartup: false

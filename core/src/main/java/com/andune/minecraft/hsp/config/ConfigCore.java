@@ -319,14 +319,7 @@ public class ConfigCore extends ConfigBase implements Initializable {
      * result of name changes that didn't get migrated automatically.
      */
     public boolean isUuidCleanupOnStartup() {
-        if (super.contains("uuidCleanupOnStartup"))
-            return super.getBoolean("uuidCleanupOnStartup");
-        else {
-            // we'll turn this on by default for a few builds to automatically
-            // fix problems for servers that had players login during the
-            // UUID transition before HSP code migrated them automatically.
-            return true;
-        }
+        return super.getBoolean("uuidCleanupOnStartup");
     }
 
     /**

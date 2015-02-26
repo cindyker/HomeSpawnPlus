@@ -220,7 +220,7 @@ public class HomeDAOEBean implements HomeDAO {
 
     @Override
     public int purgePlayer(String playerName) {
-        return util.deleteRows(TABLE, "playerName", playerName);
+        return util.deleteRows(TABLE, "player_name", playerName);
     }
 
     @Override

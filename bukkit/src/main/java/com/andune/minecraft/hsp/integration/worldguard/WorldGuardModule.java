@@ -57,7 +57,7 @@ public class WorldGuardModule implements WorldGuard, Initializable {
     private final StrategyEngine strategyEngine;
     private WorldGuardInterface worldGuardInterface;
     private RegionListener worldGuardRegion;
-    private Server server;
+    private final Server server;
 
     @Inject
     public WorldGuardModule(Plugin plugin, BukkitFactory factory,
@@ -65,6 +65,7 @@ public class WorldGuardModule implements WorldGuard, Initializable {
         this.plugin = plugin;
         this.factory = factory;
         this.strategyEngine = strategyEngine;
+        this.server = server;
     }
 
     @Override

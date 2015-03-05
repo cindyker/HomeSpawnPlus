@@ -100,15 +100,15 @@ public class StrategyConfigImpl implements StrategyConfig {
      * @param eventType
      * @param worldContext the world context, if any (can be null)
      */
-    private void checkTypeForRegion(String eventType, String worldContext) {
-        eventType = eventType.toLowerCase();
+    private void checkTypeForRegion(final String eventType, final String worldContext) {
+        final String lcEventType = eventType.toLowerCase();
         log.debug("checkTypeForRegion() eventType={}", eventType);
         int index = eventType.indexOf(';');
         if (index == -1)
             return;
 
-        if (eventType.startsWith(EventType.ENTER_REGION.toString())
-                || eventType.startsWith(EventType.EXIT_REGION.toString())) {
+        if (lcEventType.startsWith(EventType.ENTER_REGION.toString())
+                || lcEventType.startsWith(EventType.EXIT_REGION.toString())) {
             String region = eventType.substring(index + 1);
             World world = null;
             int commaIndex = region.indexOf(',');

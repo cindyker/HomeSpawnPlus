@@ -2,7 +2,7 @@ HomeSpawnPlus is a home/spawn management tool for Bukkit/Minecraft.
 
 Please read http://dev.bukkit.org/server-mods/homespawnplus for detailed description and support.
 
-Latest official dev build is available on [Jenkins](http://andune.com/jenkins/job/HomeSpawnPlus_v20/)
+Latest official dev build is available on [Jenkins](http://andune.com/jenkins/job/HomeSpawnPlus/)
 
 A big thank you to YourKit for their amazing support of open source projects. Their performance and memory tracking tool has been used during the development and testing of HomeSpawnPlus to keep HSP tuned and performing well. You can visit their website at http://www.yourkit.com
 

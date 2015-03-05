@@ -30,6 +30,7 @@
  */
 package com.andune.minecraft.hsp.server.api;
 
+import com.andune.minecraft.commonlib.server.api.Vector;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 
 /**

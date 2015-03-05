@@ -47,7 +47,8 @@ public enum EventType {
     ENTER_REGION("onregionenter"),
     EXIT_REGION("onregionexit"),
     NEW_PLAYER("onNewPlayer"),
-    TELEPORT_OBSERVE("onTeleportObserve");
+    TELEPORT_OBSERVE("onTeleportObserve"),
+    FALL_THROUGH_WORLD("onFallThroughWorld");
 
     private String configOption;
 

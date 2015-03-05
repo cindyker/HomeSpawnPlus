@@ -34,6 +34,8 @@ import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.Server;
+import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.commonlib.server.api.events.*;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;
@@ -77,6 +79,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     private final CooldownManager cooldownManager;
     private final DeathManager deathManager;
     private final NameChangeUtil nameChangeUtil;
+    private final Server server;
 
     /**
      * We record the last known player/location for common events so that we can
@@ -97,7 +100,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
                          MultiverseCore multiverseCore, MultiversePortals multiversePortals, SpawnUtil spawnUtil,
                          BedUtils bedUtil, WarmupManager warmupManager, EffectsManager effectsManager,
                          CooldownManager cooldownManager, DeathManager deathManager,
-                         NameChangeUtil nameChangeUtil) {
+                         NameChangeUtil nameChangeUtil, Server server) {
         this.config = config;
         this.storage = storage;
         this.engine = engine;
@@ -111,6 +114,7 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
         this.cooldownManager = cooldownManager;
         this.deathManager = deathManager;
         this.nameChangeUtil = nameChangeUtil;
+        this.server = server;
     }
 
     @Override
@@ -420,5 +424,23 @@ public class EventListener implements com.andune.minecraft.commonlib.server.api.
     public void playerDeath(PlayerDeathEvent event) {
         cooldownManager.onDeath(event.getPlayer());
         deathManager.playerDied(event.getPlayer());
+    }
+
+    @Override
+    public void playerFallThroughWorld(PlayerFallThroughWorldEvent event) {
+        log.debug("playerFallThroughWorld: player y = {}, event = {}", event.getPlayer().getLocation().getBlockY(), event);
+
+        final StrategyContext context = factory.newStrategyContext();
+        context.setEventType(EventType.FALL_THROUGH_WORLD.toString());
+        context.setPlayer(event.getPlayer());
+        StrategyResult result = engine.getStrategyResult(context);
+
+        // if strategy returned a location, we cancel the event and
+        // teleport the player there
+        if (result.isSuccess() && result.getLocation() != null) {
+            event.setCancelled(true);
+            event.getPlayer().setVelocity(factory.newVector(0, 0, 0));
+            event.getPlayer().teleport(result.getLocation());
+        }
     }
 }

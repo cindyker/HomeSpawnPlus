@@ -2,10 +2,7 @@ package com.andune.minecraft.hsp.server.core;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.commonlib.server.api.CommandSender;
-import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.commonlib.server.api.Player;
-import com.andune.minecraft.commonlib.server.api.World;
+import com.andune.minecraft.commonlib.server.api.*;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.server.api.Server;
 
@@ -133,6 +130,11 @@ public class DummyPlayer implements Player {
     public void teleport(Location location) {
         if (!locked)
             this.location = location;
+    }
+
+    @Override
+    public void setVelocity(Vector vector) {
+        // do nothing
     }
 
     public boolean equals(Object o) {

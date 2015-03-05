@@ -30,6 +30,8 @@
  */
 package com.andune.minecraft.hsp.server.bukkit;
 
+import com.andune.minecraft.commonlib.Logger;
+import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Server;
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.bukkit.BukkitFactory;
@@ -51,6 +53,7 @@ import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashSet;
 
 /**
  * Bridge class between Bukkit event system and HSP API event interface.
@@ -59,6 +62,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.server.api.event.EventDispatcher, org.bukkit.event.Listener {
+    private final static Logger log = LoggerFactory.getLogger(BukkitEventDispatcher.class);
+
     private final EventListener eventListener;
     private final Plugin plugin;
     private final BukkitFactory bukkitFactory;
@@ -117,6 +122,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                 },
                 plugin);
 
+        /*
         // only hook EntityDamageEvent if it's needed by warmups
         if (configWarmup.isEnabled() && configWarmup.isCanceledOnDamage()) {
             plugin.getServer().getPluginManager().registerEvent(EntityDamageEvent.class,
@@ -133,6 +139,7 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
                     },
                     plugin);
         }
+        */
     }
 
     /**
@@ -197,15 +204,31 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
         bukkitFactory.clearPlayerCache();
     }
 
-    // this event is dynamically hooked only if needed
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamage(org.bukkit.event.entity.EntityDamageEvent event) {
         if (event.isCancelled())
             return;
         if (!(event.getEntity() instanceof org.bukkit.entity.Player))
             return;
+        final org.bukkit.entity.Player p = (org.bukkit.entity.Player) event.getEntity();
+        log.debug("EntityDamageEvent: fallDistance = {}", p.getFallDistance());
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+            com.andune.minecraft.commonlib.server.api.events.PlayerFallThroughWorldEvent apiEvent =
+                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerFallThroughWorldEvent(event, (Player) event.getEntity(), bukkitFactory);
+            eventListener.playerFallThroughWorld(apiEvent);
+
+            // if the event was cancelled, clear Fall Distance so they don't
+            // die after the teleport
+            if (apiEvent.isCancelled()) {
+                p.setFallDistance(0);
+            }
+
+            return;
+        }
 
         com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent apiEvent =
-                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerDamageEvent((Player) event.getEntity(), bukkitFactory);
+                new com.andune.minecraft.commonlib.server.bukkit.events.PlayerDamageEvent(event, (Player) event.getEntity(), bukkitFactory);
         eventListener.playerDamage(apiEvent);
     }
 

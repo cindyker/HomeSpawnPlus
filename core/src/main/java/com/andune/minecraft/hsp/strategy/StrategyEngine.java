@@ -49,7 +49,7 @@ public interface StrategyEngine {
      *
      * @param event
      * @param player
-     * @return
+     * @return result is guaranteed to not be null
      */
     public StrategyResult getStrategyResult(StrategyContext context, String... args);
 

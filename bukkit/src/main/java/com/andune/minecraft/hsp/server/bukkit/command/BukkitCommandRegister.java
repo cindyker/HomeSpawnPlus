@@ -171,7 +171,7 @@ public class BukkitCommandRegister implements Initializable {
                     aliases.add((String) o);
                 }
                 else
-                    log.warn("invalid aliases defined for command ", cmdName, ": ", o);
+                    log.warn("invalid aliases defined for command {}: {}", cmdName, o);
 
                 if (aliases == null)
                     aliases = new ArrayList<String>(1);
@@ -273,7 +273,7 @@ public class BukkitCommandRegister implements Initializable {
         }
 
         if (cmdClass == null) {
-            log.warn("No class defined or found for command ", cmd);
+            log.warn("No class defined or found for command {}", cmd);
             return;
         }
 
@@ -282,7 +282,7 @@ public class BukkitCommandRegister implements Initializable {
             command.setCommandName(cmd.toLowerCase());    // default to name of instance key
             register(command, cmdParams);
         } catch (ClassCastException e) {
-            log.warn("class " + cmdClass + " does not implement Command interface");
+            log.warn("class {} does not implement Command interface", cmdClass);
         } catch (Exception e) {
             log.warn("error loading class {}", cmdClass, e);
         }

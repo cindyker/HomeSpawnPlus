@@ -116,7 +116,7 @@ public class StrategyConfigImpl implements StrategyConfig {
                 String worldName = region.substring(commaIndex + 1);
                 world = server.getWorld(worldName);
                 if (world == null)
-                    log.warn("eventType ", eventType, " references non-existant world ", worldName);
+                    log.warn("eventType {} references non-existant world {}", eventType, worldName);
                 region = region.substring(0, commaIndex);
             } else if (worldContext != null) {
                 world = server.getWorld(worldContext);
@@ -125,7 +125,7 @@ public class StrategyConfigImpl implements StrategyConfig {
             if (worldGuard.isEnabled()) {
                 worldGuard.registerRegion(world, region);
             } else {
-                log.warn("eventType ", eventType, " depends on WorldGuard which is not present or enabled. Skipping.");
+                log.warn("eventType {} depends on WorldGuard which is not present or enabled. Skipping.", eventType);
             }
         }
     }

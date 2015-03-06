@@ -173,7 +173,7 @@
                     <dependency>
                         <groupId>com.andune.minecraft.commonlib</groupId>
                         <artifactId>commonlib</artifactId>
-                        <version>0.4</version>
+                        <version>1.0.1-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>org.yaml</groupId>

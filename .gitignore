@@ -12,3 +12,4 @@ dependency-reduced-pom.xml
 .idea
 release.properties
 **/pom.xml.releaseBackup
+**/nb-configuration.xml

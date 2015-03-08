@@ -44,8 +44,8 @@ public enum EventType {
     CROSS_WORLD_TELEPORT("crossWorldTeleport"),
     MULTIVERSE_TELEPORT_CROSSWORLD("multiverseCrossWorldTeleport"),
     MULTIVERSE_TELEPORT("multiverseTeleport"),
-    ENTER_REGION("onregionenter"),
-    EXIT_REGION("onregionexit"),
+    ENTER_REGION("onRegionEnter"),
+    EXIT_REGION("onRegionExit"),
     NEW_PLAYER("onNewPlayer"),
     TELEPORT_OBSERVE("onTeleportObserve"),
     FALL_THROUGH_WORLD("onFallThroughWorld");

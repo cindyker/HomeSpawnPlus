@@ -53,7 +53,7 @@ import java.util.*;
 public class StrategyConfigImpl implements StrategyConfig {
     private static final Logger log = LoggerFactory.getLogger(StrategyConfigImpl.class);
 
-    private final Map<String, Set<Strategy>> defaultStrategies;
+    private final StrategyMap defaultStrategies;
     private final Map<String, WorldStrategies> worldStrategies;
     private final Map<String, PermissionStrategies> permissionStrategies;
 
@@ -70,8 +70,8 @@ public class StrategyConfigImpl implements StrategyConfig {
         this.strategyFactory = strategyFactory;
         this.worldGuard = worldGuard;
 
-        defaultStrategies = new HashMap<String, Set<Strategy>>();
-        worldStrategies = new HashMap<String, WorldStrategies>();
+        defaultStrategies    = new StrategyMap();
+        worldStrategies      = new HashMap<String, WorldStrategies>();
         permissionStrategies = new LinkedHashMap<String, PermissionStrategies>();
     }
 
@@ -101,14 +101,14 @@ public class StrategyConfigImpl implements StrategyConfig {
      * @param worldContext the world context, if any (can be null)
      */
     private void checkTypeForRegion(final String eventType, final String worldContext) {
-        final String lcEventType = eventType.toLowerCase();
         log.debug("checkTypeForRegion() eventType={}", eventType);
         int index = eventType.indexOf(';');
         if (index == -1)
             return;
 
-        if (lcEventType.startsWith(EventType.ENTER_REGION.toString())
-                || lcEventType.startsWith(EventType.EXIT_REGION.toString())) {
+        final String lcEventType = eventType.toLowerCase();
+        if (lcEventType.startsWith(EventType.ENTER_REGION.toString().toLowerCase())
+                || lcEventType.startsWith(EventType.EXIT_REGION.toString().toLowerCase())) {
             String region = eventType.substring(index + 1);
             World world = null;
             int commaIndex = region.indexOf(',');
@@ -133,6 +133,7 @@ public class StrategyConfigImpl implements StrategyConfig {
     /**
      * Called to load strategies out of the config and into run-time variables.
      */
+    @Override
     public void loadConfig() {
         log.debug("loadConfig() enter");
 
@@ -170,10 +171,6 @@ public class StrategyConfigImpl implements StrategyConfig {
 
         Set<String> eventTypes = section.getKeys();
         for (String eventType : eventTypes) {
-            // get config children, then use lowercase to make configs case-insensitive
-            List<String> strategies = section.getStringList(eventType);
-            eventType = eventType.toLowerCase();
-
             // skip special sections
             // this is an ugly leakage of concerns from the config object, and a good
             // reason to eventually move the majority of this functionality into
@@ -182,27 +179,10 @@ public class StrategyConfigImpl implements StrategyConfig {
                     || eventType.equalsIgnoreCase(ConfigEvents.SETTING_EVENTS_WORLDBASE))
                 continue;
 
-            if (strategies != null && strategies.size() > 0) {
-                checkTypeForRegion(eventType, null);
-
-                Set<Strategy> set = defaultStrategies.get(eventType);
-                if (set == null) {
-                    set = new LinkedHashSet<Strategy>();
-                    defaultStrategies.put(eventType, set);
-                }
-
-                for (String item : strategies) {
-                    try {
-                        log.debug("loadDefaultStrategies() loading strategy {} for event {}",
-                                item, eventType);
-                        Strategy strategy = strategyFactory.newStrategy(item);
-                        set.add(strategy);
-                        count++;
-                    } catch (StrategyException e) {
-                        log.warn("Error loading strategy " + item + ": " + e.getMessage(), e);
-                    }
-                }
-            }
+            // get config children, then use lowercase to make configs case-insensitive
+            List<String> strategies = section.getStringList(eventType);
+            
+            count += loadStrategiesIntoMap(strategies, eventType, defaultStrategies, null);
         }
 
         log.debug("loadDefaultStrategies() loaded {} total default strategy objects", count);
@@ -236,27 +216,8 @@ public class StrategyConfigImpl implements StrategyConfig {
                 for (String eventType : types) {
                     // get config children, then use lowercase to make configs case-insensitive
                     List<String> strategies = section.getStringList(world + "." + eventType);
-                    eventType = eventType.toLowerCase();
-
-                    Set<Strategy> set = worldStrat.eventStrategies.get(eventType);
-                    if (set == null) {
-                        set = new LinkedHashSet<Strategy>();
-                        worldStrat.eventStrategies.put(eventType.toString(), set);
-                    }
-
-                    if (strategies != null && strategies.size() > 0) {
-                        checkTypeForRegion(eventType, world);
-
-                        for (String item : strategies) {
-                            try {
-                                Strategy strategy = strategyFactory.newStrategy(item);
-                                set.add(strategy);
-                                count++;
-                            } catch (StrategyException e) {
-                                log.warn("Error loading strategy " + item + ": " + e.getMessage(), e);
-                            }
-                        }
-                    }
+                    
+                    count += loadStrategiesIntoMap(strategies, eventType, worldStrat, world);
                 }
             }
         }
@@ -288,7 +249,7 @@ public class StrategyConfigImpl implements StrategyConfig {
             List<String> perms = section.getStringList(entry + ".permissions");
 
             // if no explicit permissions were defined, then setup the default ones
-            if (perms == null || perms.size() == 0) {
+            if (perms == null || perms.isEmpty()) {
                 perms = new ArrayList<String>(3);
 
                 perms.add("hsp.events." + entry);               // add basePath permission
@@ -311,35 +272,44 @@ public class StrategyConfigImpl implements StrategyConfig {
             for (String eventType : entryKeys) {
                 // get config children, then use lowercase to make configs case-insensitive
                 List<String> strategies = entrySection.getStringList(eventType);
-                eventType = eventType.toLowerCase();
 
                 // skip the "permissions" entry
-                if (eventType.equals("permissions"))
+                if (eventType.equalsIgnoreCase("permissions"))
                     continue;
 
-                if (strategies != null && strategies.size() > 0) {
-                    checkTypeForRegion(eventType, null);
-
-                    Set<Strategy> set = permStrat.eventStrategies.get(eventType);
-                    if (set == null) {
-                        set = new LinkedHashSet<Strategy>();
-                        permStrat.eventStrategies.put(eventType, set);
-                    }
-
-                    for (String item : strategies) {
-                        try {
-                            Strategy strategy = strategyFactory.newStrategy(item);
-                            set.add(strategy);
-                            count++;
-                        } catch (StrategyException e) {
-                            log.warn("Error loading strategy " + item + ": " + e.getMessage(), e);
-                        }
-                    }
-                }
+                count += loadStrategiesIntoMap(strategies, eventType, permStrat, null);
             }
         }
 
         log.debug("loadPermissionStrategies() loaded {} total permission strategy objects", count);
+    }
+
+    private int loadStrategiesIntoMap(List<String> strategies, String eventType, StrategyMap map, String world)
+    {
+       int count = 0;
+       if (strategies != null && !strategies.isEmpty()) {
+          checkTypeForRegion(eventType, world);
+
+          String lcEventType = eventType.toLowerCase();
+          StrategySet set = map.get(lcEventType);
+          if (set == null) {
+             set = new StrategySet();
+             map.put(lcEventType, set);
+          }
+
+          for (String item : strategies) {
+             try {
+               log.debug("loadStrategiesIntoMap() loading strategy {} for event {} (class {})",
+                       item, eventType, map.getClass().getSimpleName());
+                Strategy strategy = strategyFactory.newStrategy(item);
+                set.add(strategy);
+                count++;
+             } catch (StrategyException e) {
+                log.warn("Error loading strategy " + item + ": " + e.getMessage(), e);
+             }
+          }
+       }
+       return count;
     }
 
     /* (non-Javadoc)
@@ -362,7 +332,7 @@ public class StrategyConfigImpl implements StrategyConfig {
                 log.debug("checking permission {}", perm);
                 if (player.hasPermission(perm)) {
                     log.debug("player {} does have perm {}, looking up strategies", player, perm);
-                    Set<Strategy> set = strat.eventStrategies.get(event);
+                    Set<Strategy> set = strat.get(event);
                     if (set != null)
                         strategies.add(set);
                     break;
@@ -380,7 +350,7 @@ public class StrategyConfigImpl implements StrategyConfig {
     public Set<Strategy> getWorldStrategies(final String event, final String world) {
         WorldStrategies worldStrats = worldStrategies.get(world);
         if (worldStrats != null)
-            return worldStrats.eventStrategies.get(event);
+            return worldStrats.get(event);
         else
             return null;
     }
@@ -393,7 +363,7 @@ public class StrategyConfigImpl implements StrategyConfig {
         int count = 0;
         for (EventType type : EventType.values()) {
             for (PermissionStrategies strat : permissionStrategies.values()) {
-                Set<Strategy> set = strat.eventStrategies.get(type.toString());
+                Set<Strategy> set = strat.get(type.toString());
                 if (set != null) {
                     for (@SuppressWarnings("unused") Strategy s : set) {
                         count++;
@@ -412,7 +382,7 @@ public class StrategyConfigImpl implements StrategyConfig {
         int count = 0;
         for (EventType type : EventType.values()) {
             for (WorldStrategies strat : worldStrategies.values()) {
-                Set<Strategy> set = strat.eventStrategies.get(type.toString());
+                Set<Strategy> set = strat.get(type.toString());
                 if (set != null) {
                     for (@SuppressWarnings("unused") Strategy s : set) {
                         count++;
@@ -447,13 +417,13 @@ public class StrategyConfigImpl implements StrategyConfig {
         for (EventType type : EventType.values()) {
             // for each permission strategy, increment strategy counter
             for (PermissionStrategies strat : permissionStrategies.values()) {
-                Set<Strategy> set = strat.eventStrategies.get(type.toString());
+                Set<Strategy> set = strat.get(type.toString());
                 incrementStrategyCounters(map, set);
             }
 
             // for each world strategy, increment strategy counter
             for (WorldStrategies strat : worldStrategies.values()) {
-                Set<Strategy> set = strat.eventStrategies.get(type.toString());
+                Set<Strategy> set = strat.get(type.toString());
                 incrementStrategyCounters(map, set);
             }
         }
@@ -472,22 +442,25 @@ public class StrategyConfigImpl implements StrategyConfig {
 
         for (Strategy s : set) {
             Integer i = map.get(s.getStrategyConfigName());
-            if (i == null)
-                i = Integer.valueOf(1);
-            else
-                i++;
+            i = (i != null) ? i++ : 1;
             map.put(s.getStrategyConfigName(), i);
         }
     }
-
-    private class WorldStrategies {
-        //		String worldName;
-        Map<String, Set<Strategy>> eventStrategies = new HashMap<String, Set<Strategy>>();
+    
+    private static class StrategySet extends LinkedHashSet<Strategy>
+    {
+    }
+    
+    private static class StrategyMap extends LinkedHashMap<String, StrategySet>
+    {
+    }
+    
+    private static class WorldStrategies extends StrategyMap
+    {
     }
 
-    private class PermissionStrategies {
-        //		String configNode;
+    private static class PermissionStrategies extends StrategyMap
+    {
         List<String> permissions;
-        Map<String, Set<Strategy>> eventStrategies = new HashMap<String, Set<Strategy>>();
     }
 }

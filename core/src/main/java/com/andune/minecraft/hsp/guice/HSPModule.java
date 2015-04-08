@@ -30,14 +30,9 @@
  */
 package com.andune.minecraft.hsp.guice;
 
-import com.andune.minecraft.commonlib.General;
-import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.i18n.LocaleStringReplacerImpl;
-import com.andune.minecraft.commonlib.reflections.YamlSerializer;
-import com.andune.minecraft.commonlib.server.api.Factory;
-import com.andune.minecraft.commonlib.server.api.Plugin;
 import com.andune.minecraft.commonlib.server.api.TeleportOptions;
 import com.andune.minecraft.commonlib.server.api.event.EventListener;
 import com.andune.minecraft.commonlib.server.api.impl.TeleportOptionsImpl;
@@ -53,12 +48,10 @@ import com.andune.minecraft.hsp.storage.dao.*;
 import com.andune.minecraft.hsp.strategy.*;
 import com.andune.minecraft.hsp.util.BedUtils;
 import com.andune.minecraft.hsp.util.BedUtilsImpl;
-import com.andune.minecraft.hsp.util.WarnUtil;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import org.reflections.Reflections;
-import org.reflections.util.FilterBuilder;
 
 import javax.inject.Singleton;
 

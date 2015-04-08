@@ -32,7 +32,6 @@ package com.andune.minecraft.hsp.convert;
 
 import com.andune.minecraft.commonlib.server.api.*;
 import com.andune.minecraft.hsp.entity.HomeImpl;
-import com.andune.minecraft.hsp.storage.StorageException;
 import com.andune.minecraft.hsp.storage.dao.HomeDAO;
 
 import java.io.File;

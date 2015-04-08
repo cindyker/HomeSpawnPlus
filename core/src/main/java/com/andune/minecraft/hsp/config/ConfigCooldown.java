@@ -109,8 +109,14 @@ public class ConfigCooldown extends ConfigPerXBase<CooldownsPerPermission, Coold
      * @return
      */
     public int getPerWorldCooldown(String cooldown, String world) {
-        CooldownsPerWorld entry = super.perWorldEntries.get(world);
-        return entry != null ? entry.getCooldowns().get(cooldown) : 0;
+        CooldownsPerWorld cooldowns = super.perWorldEntries.get(world);
+        if(cooldowns != null)
+        {
+            Map<String, Integer> cooldownMap = cooldowns.getCooldowns();
+            if(cooldownMap != null && cooldownMap.containsKey(cooldown))
+               return cooldownMap.get(cooldown);
+        }
+        return 0;
     }
 
     private static class Entry {

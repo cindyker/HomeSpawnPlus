@@ -29,7 +29,6 @@ package com.andune.minecraft.hsp.strategies;
 
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
-import com.andune.minecraft.hsp.entity.HomeImpl;
 import com.andune.minecraft.hsp.manager.DeathManager;
 import com.andune.minecraft.hsp.strategy.StrategyContext;
 import com.andune.minecraft.hsp.strategy.StrategyContextImpl;

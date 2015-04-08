@@ -80,7 +80,7 @@ public class ConfigWarmup extends ConfigPerXBase<WarmupsPerPermission, WarmupsPe
      * @return
      */
     public int getPerWorldWarmup(String warmup, String world) {
-        WarmupsPerWorld warmups = perWorldEntries.get(world);
+        WarmupsPerWorld warmups = super.perWorldEntries.get(world);
         if(warmups != null)
         {
             Map<String, Integer> warmupMap = warmups.getWarmups();

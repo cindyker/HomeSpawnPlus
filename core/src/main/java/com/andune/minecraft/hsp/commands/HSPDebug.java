@@ -37,7 +37,6 @@ import com.andune.minecraft.hsp.command.BaseCommand;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.config.ConfigCommand;
 import com.andune.minecraft.hsp.config.ConfigCore;
-import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.ebean.StorageEBeans;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.cache.ServerCacheManager;

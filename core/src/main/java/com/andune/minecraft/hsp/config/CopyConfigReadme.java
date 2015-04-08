@@ -29,7 +29,6 @@ package com.andune.minecraft.hsp.config;
 
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.JarUtils;
-import com.andune.minecraft.commonlib.server.api.Factory;
 import com.andune.minecraft.commonlib.server.api.Plugin;
 
 import javax.inject.Inject;

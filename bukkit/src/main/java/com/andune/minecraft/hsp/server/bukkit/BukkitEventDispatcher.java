@@ -211,20 +211,26 @@ public class BukkitEventDispatcher implements com.andune.minecraft.commonlib.ser
         if (!(event.getEntity() instanceof org.bukkit.entity.Player))
             return;
         final org.bukkit.entity.Player p = (org.bukkit.entity.Player) event.getEntity();
-        log.debug("EntityDamageEvent: fallDistance = {}", p.getFallDistance());
+        log.debug("EntityDamageEvent: cause = {}, fallDistance = {}", event.getCause(), p.getFallDistance());
 
         if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
-            com.andune.minecraft.commonlib.server.api.events.PlayerFallThroughWorldEvent apiEvent =
-                    new com.andune.minecraft.commonlib.server.bukkit.events.PlayerFallThroughWorldEvent(event, (Player) event.getEntity(), bukkitFactory);
-            eventListener.playerFallThroughWorld(apiEvent);
+            // One would think DamageCause.VOID would be for VOID falling through
+            // world events and DamageCause.SUICIDE would be for /kill suicide
+            // events. One would be wrong. So we have to check y location to make
+            // sure the cause really is falling through world and not suicide.
+            if (p.getLocation().getBlockY() < 0) {
+                com.andune.minecraft.commonlib.server.api.events.PlayerFallThroughWorldEvent apiEvent =
+                        new com.andune.minecraft.commonlib.server.bukkit.events.PlayerFallThroughWorldEvent(event, (Player) event.getEntity(), bukkitFactory);
+                eventListener.playerFallThroughWorld(apiEvent);
 
-            // if the event was cancelled, clear Fall Distance so they don't
-            // die after the teleport
-            if (apiEvent.isCancelled()) {
-                p.setFallDistance(0);
+                // if the event was cancelled, clear Fall Distance so they don't
+                // die after the teleport
+                if (apiEvent.isCancelled()) {
+                    p.setFallDistance(0);
+                }
+
+                return;
             }
-
-            return;
         }
 
         com.andune.minecraft.commonlib.server.api.events.PlayerDamageEvent apiEvent =

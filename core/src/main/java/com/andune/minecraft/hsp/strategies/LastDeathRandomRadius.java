@@ -37,7 +37,7 @@ import javax.inject.Inject;
  * Allow spawning at a random radius from the last death location.
  *
  * Config file Format:
- *   lastDeathRandomRadius:radius;yVariance
+ *   lastDeathRandomRadius:maxRadius;minRadius;yVariance
  *
  * yVariance is optional. If you set it to 0, this strategy will try very
  * hard to keep the random spawn location chosen at the same Y level as
@@ -58,7 +58,7 @@ import javax.inject.Inject;
 public class LastDeathRandomRadius extends BaseStrategy {
     // max number of times to try a random location that meets the requested
     // admin criteria before giving up and just using the one we have.
-    private static final int MAX_TRIES = 10;
+    private static final int MAX_TRIES = 15;
 
     @Inject
     private DeathManager deathManager;
@@ -67,7 +67,8 @@ public class LastDeathRandomRadius extends BaseStrategy {
     @Inject
     private Teleport teleport;
     private final String arg;
-    private int radius = 0;
+    private int minRadius = 0;
+    private int maxRadius = 0;
     private int yVariance = -1;
 
     public LastDeathRandomRadius(final String arg) {
@@ -82,37 +83,54 @@ public class LastDeathRandomRadius extends BaseStrategy {
 
         Location result = null;
         if( l != null ) {
-            log.debug("radius = {}, yVariance = {}", radius, yVariance);
+            log.debug("minRadius = {}, maxRadius = {}, yVariance = {}", minRadius, maxRadius, yVariance);
             final TeleportOptions teleportOptions = context.getTeleportOptions();
 
-            for (int i=0; i < MAX_TRIES; i++) {
-                final int minX = l.getBlockX() - radius;
-                final int minZ = l.getBlockZ() - radius;
+            int i=0;
+            for (; i < MAX_TRIES; i++) {
+                final int minX = l.getBlockX() - maxRadius;
+                final int minZ = l.getBlockZ() - maxRadius;
                 // if yVariance was given, use that. Otherwise calculate based on radius
-                final int minY = yVariance > -1 ? l.getBlockY() - yVariance : l.getBlockY() - radius;
+                final int minY = yVariance > -1 ? l.getBlockY() - yVariance : l.getBlockY() - maxRadius;
                 final Location min = factory.newLocation(l.getWorld().getName(), minX, minY, minZ, 0, 0);
                 log.debug("min = {}", min);
 
-                final int maxX = l.getBlockX() + radius;
-                final int maxZ = l.getBlockZ() + radius;
+                final int maxX = l.getBlockX() + maxRadius;
+                final int maxZ = l.getBlockZ() + maxRadius;
                 // if yVariance was given, use that. Otherwise calculate based on radius
-                final int maxY = yVariance > -1 ? l.getBlockY() - yVariance : l.getBlockY() + radius;
+                final int maxY = yVariance > -1 ? l.getBlockY() - yVariance : l.getBlockY() + maxRadius;
                 Location max = factory.newLocation(l.getWorld().getName(), maxX, maxY, maxZ, 0, 0);
                 log.debug("max = {}", max);
                 result = teleport.findRandomSafeLocation(min, max, teleportOptions);
+                if (result==null) {
+                    log.debug("result==null. No random safe location found this loop");
+                    continue;
+                }
 
                 // random "safe" result might be outside of admin requested
                 // bounds. If so, loop and try again.
-                if( yVariance > 0 ) {
+                if( yVariance > -1 ) {
                     final int y = result.getBlockY();
                     if( y < minY || y > maxY ) {
-                        log.debug("result y={}, minY={}, maxY={}. Retrying random location");
+                        log.debug("result y={}, minY={}, maxY={}. Retrying random location", y, minY, maxY);
+                        continue;
+                    }
+                }
+                if( minRadius > 0 ) {
+                    double distance = result.distance(l);
+                    if( distance < minRadius ) {
+                        log.debug("distance = {}, minRadius = {}. distance < minRadius, retrying random location", distance, minRadius);
                         continue;
                     }
                 }
 
                 // If we get here, we have a good random location, we're done.
                 break;
+            }
+
+            if (i==MAX_TRIES) {
+                log.info(getStrategyConfigName()+" unable to find random location that met configured range after MAX_TRIES({}) loops. Returning null result.", MAX_TRIES);
+                result = null;
             }
         }
 
@@ -122,33 +140,49 @@ public class LastDeathRandomRadius extends BaseStrategy {
     @Override
     public void validate() throws StrategyException {
         if (arg == null)
-            throw new StrategyException(getStrategyConfigName() + " requires radius as an argument. None was given");
+            throw new StrategyException(getStrategyConfigName() + " requires an argument. None was given");
 
-        String radiusString = arg;
+        String maxRadiusString = arg;
+        String minRadiusString = null;
         String yVarianceString = null;
+
         int i = arg.indexOf(";");
         if (i != -1) {
-            radiusString = arg.substring(0, i);
-            yVarianceString = arg.substring(i + 1, arg.length());
+            final String[] args = arg.split(";");
+            maxRadiusString = args[0];
+
+            if (args.length > 1) {
+                minRadiusString = args[1];
+            }
+            if (args.length > 2) {
+                yVarianceString = args[2];
+            }
         }
 
         try {
-            radius = Integer.valueOf(radiusString);
+            maxRadius = Integer.valueOf(maxRadiusString);
         }
         catch (NumberFormatException e) {
-            throw new StrategyException(getStrategyConfigName() + " caught exception processing radius argument. A number is required.", e);
+            throw new StrategyException(getStrategyConfigName() + " caught exception processing maxRadius argument. A number is required.", e);
         }
 
-        if( yVarianceString != null ) {
+        if (minRadiusString != null) {
+            try {
+                minRadius = Integer.valueOf(minRadiusString);
+            } catch (NumberFormatException e) {
+                throw new StrategyException(getStrategyConfigName() + " caught exception processing minRadiusString argument. A number is required.", e);
+            }
+        }
+
+        if (yVarianceString != null) {
             try {
                 yVariance = Integer.valueOf(yVarianceString);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 throw new StrategyException(getStrategyConfigName() + " caught exception processing yVariance argument. A number is required.", e);
             }
         }
 
-        if( radius < 1 )
-            throw new StrategyException(getStrategyConfigName() + ": radius > 0 is required. Was given "+radius+" instead");
+        if (maxRadius < 1)
+            throw new StrategyException(getStrategyConfigName() + ": radius > 0 is required. Was given " + maxRadius + " instead");
     }
 }

@@ -41,7 +41,6 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.testng.AssertJUnit.*;
 

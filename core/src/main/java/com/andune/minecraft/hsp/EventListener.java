@@ -35,7 +35,6 @@ import com.andune.minecraft.commonlib.LoggerFactory;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.Server;
-import com.andune.minecraft.commonlib.server.api.Teleport;
 import com.andune.minecraft.commonlib.server.api.events.*;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.entity.PlayerLastLocation;

@@ -44,15 +44,11 @@ import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.storage.Storage;
 import com.andune.minecraft.hsp.storage.StorageException;
 import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlUpdate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.PersistenceException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 

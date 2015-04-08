@@ -34,7 +34,6 @@ import com.andune.minecraft.commonlib.server.api.Player;
 import com.andune.minecraft.commonlib.server.api.World;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.command.BaseCommand;
-import com.andune.minecraft.hsp.command.CommandException;
 import com.andune.minecraft.hsp.commands.uber.UberCommand;
 import com.andune.minecraft.hsp.entity.*;
 import com.andune.minecraft.hsp.server.api.Factory;

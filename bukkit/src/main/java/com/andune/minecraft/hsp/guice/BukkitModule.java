@@ -136,9 +136,11 @@ public class BukkitModule extends AbstractModule {
 
         bind(YamlFile.class)
                 .to(BukkitYamlConfigFile.class);
-        bind(com.andune.minecraft.commonlib.Logger.class)
-                .to(com.andune.minecraft.commonlib.BukkitLoggerImpl.class);
     }
+
+    @Provides
+    @Singleton
+    protected Logger getLogger() { return log; }
 
     @Provides
     @Singleton

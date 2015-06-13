@@ -27,8 +27,8 @@
  */
 package com.andune.minecraft.hsp.guice;
 
+import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.server.api.Economy;
-import com.andune.minecraft.hsp.HomeSpawnPlusSponge;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.integration.Essentials;
@@ -45,28 +45,80 @@ import com.andune.minecraft.hsp.integration.worldborder.WorldBorder;
 import com.andune.minecraft.hsp.integration.worldborder.WorldBorderModule;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuard;
 import com.andune.minecraft.hsp.integration.worldguard.WorldGuardModule;
+import com.andune.minecraft.hsp.server.api.Factory;
+import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.core.EconomyImpl;
+import com.andune.minecraft.hsp.server.sponge.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.plugin.PluginContainer;
+
+import java.io.File;
 
 /**
  * @author andune
  */
 public class SpongeModule extends AbstractModule {
     private final Game game;
-    private final PluginContainer pc;
+    private final PluginContainer pluginContainer;
+    private final File pluginDataFolder;
 
-    public SpongeModule(Game game, PluginContainer pc) {
+    public SpongeModule(Game game, PluginContainer pluginContainer, File pluginDataFolder) {
         this.game = game;
-        this.pc = pc;
+        this.pluginContainer = pluginContainer;
+        this.pluginDataFolder = pluginDataFolder;
     }
 
     @Override
     protected void configure() {
+        bind(Server.class)
+                .to(SpongeServer.class);
+        bind(com.andune.minecraft.commonlib.server.api.Server.class)
+                .to(SpongeServer.class);
+
+        bind(Factory.class)
+                .to(SpongeFactory.class);
+        bind(SpongeFactoryInterface.class)
+                .to(SpongeFactory.class);
+        bind(com.andune.minecraft.commonlib.server.api.Factory.class)
+                .to(SpongeFactory.class);
+
         bind(Economy.class)
                 .to(EconomyImpl.class);
+        bind(com.andune.minecraft.commonlib.server.api.Plugin.class)
+                .to(SpongePlugin.class);
+    }
+
+    private SpongePlugin spongePlugin;
+    @Provides
+    @Singleton
+    protected SpongePlugin getPlugin(PluginContainer pluginContainer, JarUtils jarUtil) {
+        if (spongePlugin == null) {
+            spongePlugin = new SpongePlugin(pluginContainer, jarUtil, pluginDataFolder);
+        }
+
+        return spongePlugin;
+    }
+
+    @Provides
+    @Singleton
+    protected PluginContainer getPluginContainer() {
+        return pluginContainer;
+    }
+
+    @Provides
+    @Singleton
+    protected Game provideGame() {
+        return game;
+    }
+
+    @Provides
+    @Singleton
+    protected JarUtils getJarUtils() {
+        // TODO: find way to pass in JAR file or another way to implement this
+        return new JarUtils(pluginDataFolder, null);
     }
 
     ///////////////

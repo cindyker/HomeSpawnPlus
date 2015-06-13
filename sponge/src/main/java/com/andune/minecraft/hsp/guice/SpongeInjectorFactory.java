@@ -33,6 +33,8 @@ import com.google.inject.Injector;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.io.File;
+
 /**
  * @author andune
  */
@@ -40,11 +42,13 @@ public class SpongeInjectorFactory implements InjectorFactory {
     private final Game game;
     private final PluginContainer pc;
     private final ConfigBootstrap configBootstrap;
+    private final File pluginDataFolder;
 
-    public SpongeInjectorFactory(Game game, PluginContainer pc, ConfigBootstrap configBootstrap) {
+    public SpongeInjectorFactory(Game game, PluginContainer pc, ConfigBootstrap configBootstrap, File pluginDataFolder) {
         this.game = game;
         this.pc = pc;
         this.configBootstrap = configBootstrap;
+        this.pluginDataFolder = pluginDataFolder;
     }
 
     /**
@@ -55,7 +59,7 @@ public class SpongeInjectorFactory implements InjectorFactory {
     public Injector createInjector() {
         // in the future this will choose different injectors based on the
         // environment. For now the only environment we support is Bukkit.
-        Injector injector = Guice.createInjector(new HSPModule(configBootstrap), new SpongeModule(game, pc));
+        Injector injector = Guice.createInjector(new HSPModule(configBootstrap), new SpongeModule(game, pc, pluginDataFolder));
         return injector;
     }
 }

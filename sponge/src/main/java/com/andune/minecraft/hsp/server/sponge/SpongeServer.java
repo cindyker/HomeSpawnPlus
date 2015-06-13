@@ -3,8 +3,11 @@ package com.andune.minecraft.hsp.server.sponge;
 import com.andune.minecraft.commonlib.Initializable;
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
+import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.i18n.Locale;
 import com.andune.minecraft.commonlib.server.api.*;
+import com.andune.minecraft.hsp.HSPMessages;
+import com.andune.minecraft.hsp.server.api.*;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.spongepowered.api.Game;
@@ -15,7 +18,7 @@ import java.util.*;
 /**
  * @author andune
  */
-public class SpongeServer implements Server, Initializable {
+public class SpongeServer implements com.andune.minecraft.hsp.server.api.Server, Initializable {
     private final Logger log = LoggerFactory.getLogger(SpongeServer.class);
 
     private final Game game;
@@ -23,6 +26,7 @@ public class SpongeServer implements Server, Initializable {
     private final Teleport teleport;
     private final Locale locale;
     private final SpongeFactoryInterface spongeFactory;
+    private final Colors colors;
 
     /* A cached list of worlds, so we don't have to constantly recreate new world
      * wrapper objects.
@@ -36,13 +40,29 @@ public class SpongeServer implements Server, Initializable {
 
     @Inject
     public SpongeServer(Game game, Plugin plugin, Teleport teleport, Locale locale,
-                        SpongeFactoryInterface spongeFactory)
+                        SpongeFactoryInterface spongeFactory, Colors colors)
     {
         this.game = game;
         this.plugin = plugin;
         this.teleport = teleport;
         this.locale = locale;
         this.spongeFactory = spongeFactory;
+        this.colors = colors;
+    }
+
+    @Override
+    public String getLocalizedMessage(HSPMessages key, Object... args) {
+        return getLocalizedMessage(key.toString(), args);
+    }
+
+    @Override
+    public void sendLocalizedMessage(CommandSender sender, HSPMessages key, Object... args) {
+        sendLocalizedMessage(sender, key.toString(), args);
+    }
+
+    @Override
+    public String getDefaultColor() {
+        return colors.getDefaultColorString();
     }
 
     // TODO: implement for Sponge

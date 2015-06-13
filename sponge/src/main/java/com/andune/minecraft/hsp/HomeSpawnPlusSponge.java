@@ -94,7 +94,7 @@ public class HomeSpawnPlusSponge {
         try {
             logger.debug("Initializing BukkitInjectorFactory");
             SpongeInjectorFactory factory = new SpongeInjectorFactory(game, pluginContainer,
-                    new SpongeConfigBootstrap(getBootstrapConfig()));
+                    new SpongeConfigBootstrap(getBootstrapConfig()), configRootDir);
 
             logger.debug("Instantiating HomeSpawnPlus mainClass");
             mainClass = new HomeSpawnPlus(factory);

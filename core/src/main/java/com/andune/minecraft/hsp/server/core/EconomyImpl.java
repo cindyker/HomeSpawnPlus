@@ -39,12 +39,15 @@ import com.andune.minecraft.hsp.config.ConfigEconomy.PerPermissionEconomyEntry;
 import com.andune.minecraft.hsp.integration.vault.Vault;
 import com.andune.minecraft.hsp.manager.HomeLimitsManager;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author andune
  */
+@Singleton
 public class EconomyImpl implements Economy {
     private static final Logger log = LoggerFactory.getLogger(EconomyImpl.class);
 
@@ -52,6 +55,7 @@ public class EconomyImpl implements Economy {
     private final HomeLimitsManager homeLimitsManager;
     private final Vault vault;
 
+    @Inject
     public EconomyImpl(ConfigEconomy config, HomeLimitsManager hlm, Vault vault) {
         this.config = config;
         this.homeLimitsManager = hlm;

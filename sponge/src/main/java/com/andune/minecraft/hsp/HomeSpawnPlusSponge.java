@@ -33,13 +33,13 @@ import com.andune.minecraft.hsp.server.sponge.config.SpongeConfigBootstrap;
 import com.andune.minecraft.hsp.util.LogUtil;
 import com.google.common.base.Optional;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartedEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.service.config.ConfigRoot;
 import org.spongepowered.api.service.config.ConfigService;
-import org.spongepowered.api.util.event.Subscribe;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

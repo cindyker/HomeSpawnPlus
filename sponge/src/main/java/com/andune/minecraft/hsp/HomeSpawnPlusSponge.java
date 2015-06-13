@@ -32,15 +32,23 @@ import com.andune.minecraft.hsp.guice.SpongeInjectorFactory;
 import com.andune.minecraft.hsp.server.sponge.config.SpongeConfigBootstrap;
 import com.andune.minecraft.hsp.util.LogUtil;
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartedEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.config.ConfigRoot;
 import org.spongepowered.api.service.config.ConfigService;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,11 +57,21 @@ import java.util.logging.Logger;
  *
  * @author andune
  */
-@Plugin(id = "HomeSpawnPlus", name = "HomeSpawnPlus", version = "2.0-SNAPSHOT")
+@Plugin(id = "HomeSpawnPlus", name = "HomeSpawnPlus", version = "2.0.1-SNAPSHOT")
 public class HomeSpawnPlusSponge {
     private HomeSpawnPlus mainClass;
     private PluginContainer pluginContainer;
     private ConfigService configService;
+
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private File configRootDir;
+
+    @Inject
+    private PluginManager pluginManager;
+
+    @Inject
+    private org.slf4j.Logger logger;
 
     @Subscribe
     public void initialize(ServerStartedEvent event) {
@@ -68,28 +86,23 @@ public class HomeSpawnPlusSponge {
             LogUtil.enableDebug();
 
         final Game game = event.getGame();
-        final PluginManager pm = game.getPluginManager();
-        Optional<PluginContainer> pcRef = pm.getPlugin("HomeSpawnPlus");
-        Optional<ConfigService> csRef = game.getServiceManager().provide(ConfigService.class);
+//        final PluginManager pm = game.getPluginManager();
+//        Optional<PluginContainer> pcRef = pluginManager.getPlugin("HomeSpawnPlus");
+//        Optional<ConfigService> csRef = game.getServiceManager().provide(ConfigService.class);
 
-        // this will throw an exception if the reference is null, which is fine
-        // for now since we'd want this to blow up so we can fix it.
-        pluginContainer = pcRef.get();
-        configService = csRef.get();
-
-        org.slf4j.Logger log = pm.getLogger(pluginContainer);
+//        org.slf4j.Logger log = pluginManager.getLogger(pluginContainer);
         try {
-            log.debug("Initializing BukkitInjectorFactory");
+            logger.debug("Initializing BukkitInjectorFactory");
             SpongeInjectorFactory factory = new SpongeInjectorFactory(game, pluginContainer,
                     new SpongeConfigBootstrap(getBootstrapConfig()));
 
-            log.debug("Instantiating HomeSpawnPlus mainClass");
+            logger.debug("Instantiating HomeSpawnPlus mainClass");
             mainClass = new HomeSpawnPlus(factory);
 
-            log.debug("invoking mainClass.onEnable()");
+            logger.debug("invoking mainClass.onEnable()");
             mainClass.onEnable();
         } catch (Exception e) {
-            log.error("Caught exception loading plugin, shutting down", e);
+            logger.error("Caught exception loading plugin, shutting down", e);
         }
 
     }
@@ -101,10 +114,17 @@ public class HomeSpawnPlusSponge {
      * @return
      * @throws Exception
      */
-    private ConfigRoot getBootstrapConfig() throws Exception {
-        // TODO: this probably won't work, Sponge config API is very new and
-        // conflicting documentation exists, so this is just here to satisfy
-        // the return type dependency for now.
-        return configService.getPluginConfig(this);
+    private ConfigurationNode getBootstrapConfig() throws Exception {
+        File bootStrapConfigFile = new File(configRootDir, "core.conf");
+
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(bootStrapConfigFile).build();
+        ConfigurationNode rootNode;
+        try {
+            rootNode = loader.load();
+        } catch(IOException e) {
+            rootNode = null;
+        }
+
+        return rootNode;
     }
 }

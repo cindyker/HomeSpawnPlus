@@ -222,17 +222,19 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.reflections:reflections</include>
+<!--
                                     <include>com.google.inject:guice</include>
+                                    <include>com.google.inject.extensions:guice-assistedinject</include>
+                                    <include>org.slf4j:slf4j-api</include>
+                                    <include>org.slf4j:slf4j-jdk14</include>
+                                    <include>org.javassist:javassist</include>
+-->
                                     <include>javax.inject:javax.inject</include>
                                     <include>aopalliance:aopalliance</include>
-                                    <include>com.google.inject.extensions:guice-assistedinject</include>
                                     <include>com.andune.minecraft.commonlib:commonlib</include>
                                     <include>com.andune.minecraft.commonlib:commonSpongelib</include>
                                     <include>com.andune.minecraft.hsp:HomeSpawnPlus-api</include>
                                     <include>com.andune.minecraft.hsp:HomeSpawnPlus-core</include>
-                                    <include>org.slf4j:slf4j-api</include>
-                                    <include>org.slf4j:slf4j-jdk14</include>
-                                    <include>org.javassist:javassist</include>
                                 </includes>
                             </artifactSet>
 
@@ -251,6 +253,7 @@
                                     <pattern>org.reflections</pattern>
                                     <shadedPattern>${project.groupId}.shade.reflections</shadedPattern>
                                 </relocation>
+<!--
                                 <relocation>
                                     <pattern>com.google.inject</pattern>
                                     <shadedPattern>${project.groupId}.shade.guice</shadedPattern>
@@ -260,12 +263,13 @@
                                     <shadedPattern>${project.groupId}.shade.slf4j</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.andune.minecraft.commonlib</pattern>
-                                    <shadedPattern>${project.groupId}.shade.commonlib</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.javassist</pattern>
                                     <shadedPattern>${project.groupId}.shade.javassist</shadedPattern>
+                                </relocation>
+-->
+                                <relocation>
+                                    <pattern>com.andune.minecraft.commonlib</pattern>
+                                    <shadedPattern>${project.groupId}.shade.commonlib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

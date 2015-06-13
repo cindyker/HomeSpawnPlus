@@ -29,13 +29,13 @@ package com.andune.minecraft.hsp.server.sponge.config;
 
 import com.andune.minecraft.hsp.config.ConfigBootstrap;
 import com.andune.minecraft.hsp.config.ConfigStorage;
-import org.spongepowered.api.service.config.ConfigRoot;
+import ninja.leaping.configurate.ConfigurationNode;
 
 /**
  * @author andune
  */
 public class SpongeConfigBootstrap implements ConfigBootstrap {
-    public SpongeConfigBootstrap(ConfigRoot bootstrapConfig) {
+    public SpongeConfigBootstrap(ConfigurationNode bootstrapConfig) {
         // TODO: do something useful
     }
 

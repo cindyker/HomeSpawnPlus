@@ -2,7 +2,6 @@ package com.andune.minecraft.hsp.server.sponge;
 
 import com.andune.minecraft.commonlib.server.api.BlockType;
 import com.andune.minecraft.commonlib.server.api.BlockTypes;
-import org.bukkit.Material;
 
 import java.util.HashMap;
 

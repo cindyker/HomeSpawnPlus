@@ -35,10 +35,10 @@ import com.andune.minecraft.commonlib.server.api.Block;
 import com.andune.minecraft.commonlib.server.api.BlockFace;
 import com.andune.minecraft.commonlib.server.api.Location;
 import com.andune.minecraft.commonlib.server.api.World;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.world.extent.Extent;
-
-import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -61,6 +61,8 @@ public class SpongeBlock implements Block {
 
     public SpongeBlock(Location l) {
         checkNotNull(l);
+        Optional<org.spongepowered.api.world.World> optional = game.getServer().getWorld(l.getWorld().getName());
+        org.spongepowered.api.world.World w = optional.get();
         spongeLocation = new org.spongepowered.api.world.Location(w, l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
     public SpongeBlock(Block b) {

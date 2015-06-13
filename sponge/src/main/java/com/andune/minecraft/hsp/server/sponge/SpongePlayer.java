@@ -32,6 +32,8 @@ package com.andune.minecraft.hsp.server.sponge;
 
 import com.andune.minecraft.commonlib.i18n.Colors;
 import com.andune.minecraft.commonlib.server.api.*;
+import com.andune.minecraft.commonlib.server.api.Player;
+import org.spongepowered.api.entity.player.*;
 
 /**
  * TODO: need to map to Sponge equivalent
@@ -49,9 +51,10 @@ public class SpongePlayer extends SpongeCommandSender implements CommandSender, 
     /** Protected constructor, should only be invoked from BukkitFactory.
      *
      */
-    protected SpongePlayer(PermissionSystem perm, Colors colors,
-                           org.spongepowered.api.entity.player.Player spongePlayer,
-                           SpongeFactory factory, com.andune.minecraft.hsp.server.api.Server server) {
+    protected SpongePlayer(org.spongepowered.api.entity.player.Player spongePlayer,
+                           SpongeFactory factory, com.andune.minecraft.hsp.server.api.Server server,
+                           PermissionSystem perm, Colors colors)
+    {
         super(spongePlayer, server, colors);
         this.perm = perm;
         this.colors = colors;

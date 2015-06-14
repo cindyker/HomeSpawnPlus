@@ -32,10 +32,7 @@ package com.andune.minecraft.hsp.util;
 
 import com.andune.minecraft.commonlib.Logger;
 import com.andune.minecraft.commonlib.LoggerFactory;
-import com.andune.minecraft.commonlib.server.api.Block;
-import com.andune.minecraft.commonlib.server.api.BlockFace;
-import com.andune.minecraft.commonlib.server.api.Location;
-import com.andune.minecraft.commonlib.server.api.Player;
+import com.andune.minecraft.commonlib.server.api.*;
 import com.andune.minecraft.hsp.HSPMessages;
 import com.andune.minecraft.hsp.Permissions;
 import com.andune.minecraft.hsp.config.ConfigCore;
@@ -101,11 +98,11 @@ public class BedUtilsImpl implements BedUtils {
      */
     private Location findBedRecursive(Block b, HashSet<Location> checkedLocs, int currentLevel, int maxDepth) {
         log.debug("findBed: b={} currentLevel={}", b, currentLevel);
-        if (b.getTypeId() == 26) { // it's a bed! make sure the other half is there
+        if (b.getType().getBlockType() == BlockTypes.BED) { // it's a bed! make sure the other half is there
             log.debug("findBed: Block ", b, " is bed block");
             for (BlockFace bf : cardinalFaces) {
                 Block nextBlock = b.getRelative(bf);
-                if (nextBlock.getTypeId() == 26) {
+                if (nextBlock.getType().getBlockType() == BlockTypes.BED) {
                     log.debug("findBed: Block {} is second bed block", nextBlock);
                     return b.getLocation();
                 }
@@ -118,11 +115,11 @@ public class BedUtilsImpl implements BedUtils {
             if (checkedLocs.contains(nextBlock.getLocation())) // don't check the same block twice
                 continue;
 
-            if (nextBlock.getTypeId() == 26) { // it's a bed! make sure the other half is there
+            if (nextBlock.getType().getBlockType() == BlockTypes.BED) { // it's a bed! make sure the other half is there
                 log.debug("findBed: Block {} is bed block", nextBlock);
                 for (BlockFace cardinal : cardinalFaces) {
                     Block possibleBedBlock = nextBlock.getRelative(cardinal);
-                    if (possibleBedBlock.getTypeId() == 26) {
+                    if (possibleBedBlock.getType().getBlockType() == BlockTypes.BED) {
                         log.debug("findBed: Block {} is second bed block", possibleBedBlock);
                         return nextBlock.getLocation();
                     }

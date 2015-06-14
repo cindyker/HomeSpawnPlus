@@ -44,13 +44,14 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.service.config.ConfigDir;
-import org.spongepowered.api.service.config.ConfigRoot;
 import org.spongepowered.api.service.config.ConfigService;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * TODO: version should be set by maven
@@ -87,8 +88,11 @@ public class HomeSpawnPlusSponge {
 
         final Game game = event.getGame();
 //        final PluginManager pm = game.getPluginManager();
-//        Optional<PluginContainer> pcRef = pluginManager.getPlugin("HomeSpawnPlus");
+        Optional<PluginContainer> pcRef = pluginManager.getPlugin("HomeSpawnPlus");
+        pluginContainer = pcRef.get();
 //        Optional<ConfigService> csRef = game.getServiceManager().provide(ConfigService.class);
+
+        checkNotNull(pluginContainer);
 
 //        org.slf4j.Logger log = pluginManager.getLogger(pluginContainer);
         try {

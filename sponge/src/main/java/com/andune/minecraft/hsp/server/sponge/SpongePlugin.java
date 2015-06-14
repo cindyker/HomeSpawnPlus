@@ -29,6 +29,8 @@ public class SpongePlugin implements Plugin {
         this.pluginDataFolder = pluginDataFolder;
     }
 
+    public Object getPluginObject() { return pluginContainer.getInstance(); }
+
     @Override
     public File getDataFolder() {
         return pluginDataFolder;

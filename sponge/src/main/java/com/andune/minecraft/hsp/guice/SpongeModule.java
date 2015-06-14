@@ -29,6 +29,10 @@ package com.andune.minecraft.hsp.guice;
 
 import com.andune.minecraft.commonlib.JarUtils;
 import com.andune.minecraft.commonlib.server.api.Economy;
+import com.andune.minecraft.commonlib.server.api.PermissionSystem;
+import com.andune.minecraft.commonlib.server.api.Scheduler;
+import com.andune.minecraft.commonlib.server.api.Teleport;
+import com.andune.minecraft.commonlib.server.api.event.EventDispatcher;
 import com.andune.minecraft.hsp.config.ConfigCore;
 import com.andune.minecraft.hsp.config.ConfigDynmap;
 import com.andune.minecraft.hsp.integration.Essentials;
@@ -49,6 +53,12 @@ import com.andune.minecraft.hsp.server.api.Factory;
 import com.andune.minecraft.hsp.server.api.Server;
 import com.andune.minecraft.hsp.server.core.EconomyImpl;
 import com.andune.minecraft.hsp.server.sponge.*;
+import com.andune.minecraft.hsp.storage.EbeanServerFactory;
+import com.andune.minecraft.hsp.storage.SpongeStorageFactory;
+import com.andune.minecraft.hsp.storage.StorageFactory;
+import com.andune.minecraft.hsp.storage.ebean.EBeanUtils;
+import com.andune.minecraft.hsp.storage.ebean.SpongeEBeanUtils;
+import com.avaje.ebean.EbeanServer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -89,6 +99,18 @@ public class SpongeModule extends AbstractModule {
                 .to(EconomyImpl.class);
         bind(com.andune.minecraft.commonlib.server.api.Plugin.class)
                 .to(SpongePlugin.class);
+        bind(PermissionSystem.class)
+                .to(SpongePermissionSystem.class);
+        bind(Scheduler.class)
+                .to(SpongeScheduler.class);
+        bind(StorageFactory.class)
+                .to(SpongeStorageFactory.class);
+        bind(Teleport.class)
+                .to(SpongeTeleport.class);
+        bind(EventDispatcher.class)
+                .to(SpongeEventDispatcher.class);
+        bind(EBeanUtils.class)
+                .to(SpongeEBeanUtils.class);
     }
 
     private SpongePlugin spongePlugin;
@@ -100,6 +122,17 @@ public class SpongeModule extends AbstractModule {
         }
 
         return spongePlugin;
+    }
+
+    private EbeanServer ebeanServer;
+    @Provides
+    @Singleton
+    protected EbeanServer getEbeanServer(EbeanServerFactory factory) {
+        if (ebeanServer == null) {
+            ebeanServer = factory.getEbeanServer(pluginContainer.getName());
+        }
+
+        return ebeanServer;
     }
 
     @Provides

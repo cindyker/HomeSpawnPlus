@@ -161,7 +161,7 @@ public class HomeUtil {
         if (childWorlds.size() == 0)
             childWorlds = null;
         Home home = homeDAO.findDefaultHome(locWorld, playerName);
-        if (home == null)
+        if (home == null && inherited != null)
             home = homeDAO.findDefaultHome(inherited, playerName);
         if (home == null && childWorlds != null) {
             for (String child : childWorlds) {

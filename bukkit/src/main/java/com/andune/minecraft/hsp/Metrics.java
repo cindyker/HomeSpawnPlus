@@ -409,7 +409,7 @@ public class Metrics implements Initializable {
         StringBuffer data = new StringBuffer(encode("guid") + '=' + encode(guid)
                 + encodeDataPair("version", description.getVersion())
                 + encodeDataPair("server", Bukkit.getVersion())
-                + encodeDataPair("players", Integer.toString(Bukkit.getServer().getOnlinePlayers().length))
+                + encodeDataPair("players", Integer.toString(Bukkit.getServer().getOnlinePlayers().size()))
                 + encodeDataPair("revision", String.valueOf(REVISION)));
 
         // If we're pinging, append it

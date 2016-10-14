@@ -2,9 +2,16 @@ HomeSpawnPlus is a home/spawn management tool for Bukkit/Minecraft.
 
 Please read http://dev.bukkit.org/server-mods/homespawnplus for detailed description and support.
 
-Latest official dev build is available on [Jenkins](http://andune.com/jenkins/job/HomeSpawnPlus/)
+**Update Oct 14, 2016:**
 
-A big thank you to YourKit for their amazing support of open source projects. Their performance and memory tracking tool has been used during the development and testing of HomeSpawnPlus to keep HSP tuned and performing well. You can visit their website at http://www.yourkit.com
+Jenkins server is now offline and a [static web page](http://andune.com/) is now hosting the dev builds for those still using this plugin. MD5 and SHA1 hashes are provided here for authenticity.
+
+HomeSpawnPlus.jar (build 638, built Aug 18, 2016):
+
+MD5: aceb3f50af1bfb432c794003c504c3e7
+
+SHA1: 3573581ed3a1aa4794bbec291e731cb390979c6e
+
 
 ---
 Building
